@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">GoldManagement</string>
+    <string name="search_users">Search Users</string>
+    <string name="users">Users</string>
+    <string name="requests">Requests</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
 </resources>
