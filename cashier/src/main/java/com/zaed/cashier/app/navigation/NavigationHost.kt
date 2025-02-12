@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.component.auth.login.LoginScreen
 import com.zaed.common.ui.component.auth.signup.SignUpScreen
 import kotlinx.serialization.Serializable
@@ -26,6 +27,7 @@ fun NavigationHost(
     ){
         composable<Route.SignUp> {
             SignUpScreen(
+                role = UserRole.CASHIER,
                 onBack = {
                     navController.popBackStack()
                 },
@@ -43,6 +45,7 @@ fun NavigationHost(
         }
         composable<Route.Login> {
             LoginScreen(
+                role = UserRole.CASHIER,
                 onBack = {
                     navController.popBackStack()
                 },
