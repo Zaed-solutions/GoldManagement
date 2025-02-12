@@ -7,7 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.zaed.accountant.ui.theme.AccountantAppTheme
+import com.example.compose.AccountantAppTheme
 import com.zaed.app.navigation.NavigationHost
 import com.zaed.app.navigation.Route
 import com.zaed.common.data.model.User
