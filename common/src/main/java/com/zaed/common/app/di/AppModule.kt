@@ -16,20 +16,18 @@ import com.zaed.common.domain.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.LoginUserUseCase
 import com.zaed.common.domain.LogoutUserUseCase
 import com.zaed.common.domain.SignUpUserUseCase
+import com.zaed.common.ui.component.auth.MainViewModel
 import com.zaed.common.ui.component.auth.login.LoginViewModel
 import com.zaed.common.ui.component.auth.signup.SignUpViewModel
-import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val localSourceModule = module {
     singleOf(::LocalStorageImpl) { bind<LocalStorage>() }
 }
-val viewModelModule = module {
-    viewModelOf(::SignUpViewModel)
-    viewModelOf(::LoginViewModel)
-}
+
 val useCaseModule = module {
     singleOf(::LogoutUserUseCase)
     singleOf(::GetCurrentUserLoggedInUseCase)
@@ -38,6 +36,11 @@ val useCaseModule = module {
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }
+}
+val viewModelModule = module {
+    viewModelOf(::SignUpViewModel)
+    viewModelOf(::LoginViewModel)
+    viewModelOf(::MainViewModel)
 }
 val remoteSourceModule = module {
     singleOf(::AuthenticationRemoteSourceImpl) {bind<AuthenticationRemoteSource>()}

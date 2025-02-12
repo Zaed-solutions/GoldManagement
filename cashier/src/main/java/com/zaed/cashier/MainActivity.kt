@@ -9,11 +9,11 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.cashier.app.navigation.NavigationHost
 import com.zaed.cashier.app.navigation.Route
-import com.zaed.cashier.ui.MainViewModel
 import com.zaed.cashier.ui.theme.CashierAppTheme
 import com.zaed.common.data.model.User
 import com.zaed.common.data.model.UserApprovementStatusType
 import com.zaed.common.data.model.UserRole
+import com.zaed.common.ui.component.auth.MainViewModel
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class MainActivity : ComponentActivity() {

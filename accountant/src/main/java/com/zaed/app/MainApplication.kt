@@ -1,4 +1,4 @@
-package com.zaed.cashier.app
+package com.zaed.app
 
 import android.app.Application
 import com.zaed.common.app.di.localSourceModule
