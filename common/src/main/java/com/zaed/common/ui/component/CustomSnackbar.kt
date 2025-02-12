@@ -7,7 +7,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.ui.AuthenticationUiState
+import com.zaed.common.ui.component.auth.AuthenticationUiState
 
 @Composable
 fun CustomSnackbar(

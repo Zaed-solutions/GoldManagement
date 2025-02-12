@@ -1,10 +1,9 @@
-package com.zaed.cashier.ui.auth.login
+package com.zaed.common.ui.component.auth.login
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.zaed.common.data.model.ui.AuthenticationUiAction
-import com.zaed.common.ui.component.auth.LoginScreenContent
+import com.zaed.common.ui.component.auth.AuthenticationUiAction
 import org.koin.androidx.compose.koinViewModel
 
 @Composable

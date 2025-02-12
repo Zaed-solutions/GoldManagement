@@ -1,14 +1,14 @@
-package com.zaed.cashier.ui.auth.login
+package com.zaed.common.ui.component.auth.login
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zaed.common.data.model.UserRole
 import com.zaed.common.data.model.request.LoginUserRequest
-import com.zaed.common.data.model.ui.AuthenticationUiAction
-import com.zaed.common.data.model.ui.AuthenticationUiState
-import com.zaed.common.data.model.ui.FieldsError
-import com.zaed.common.data.model.ui.LoginError
 import com.zaed.common.domain.LoginUserUseCase
+import com.zaed.common.ui.component.auth.AuthenticationUiAction
+import com.zaed.common.ui.component.auth.AuthenticationUiState
+import com.zaed.common.ui.component.auth.FieldsError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,10 +26,19 @@ class LoginViewModel(
             AuthenticationUiAction.OnSignIn -> signIn()
             is AuthenticationUiAction.OnUpdatePassword -> updatePassword(action.password)
             is AuthenticationUiAction.OnUpdateUserName -> updateUserName(action.userName)
+            is AuthenticationUiAction.OnUpdateRole -> updateRole(action.role)
             AuthenticationUiAction.ResetError -> resetError()
             else -> {}
         }
 
+    }
+
+    private fun updateRole(role: UserRole) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update {
+                it.copy(role = role)
+            }
+        }
     }
 
     private fun resetError() {
@@ -53,6 +62,7 @@ class LoginViewModel(
             val loginUserRequest = LoginUserRequest(
                 userName = uiState.value.userName,
                 password = uiState.value.password,
+                role = uiState.value.role
             )
             loginUserUseCase(loginUserRequest).onSuccess { user ->
                 _uiState.update {

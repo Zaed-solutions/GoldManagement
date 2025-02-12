@@ -4,13 +4,13 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Source
-import com.zaed.common.data.model.ui.LoginError
-import com.zaed.common.data.model.ui.SignUpError
 import com.zaed.common.data.model.User
 import com.zaed.common.data.model.UserApprovementStatusType
-import com.zaed.common.data.model.ui.log
 import com.zaed.common.data.model.request.LoginUserRequest
 import com.zaed.common.data.model.request.SignUpUserRequest
+import com.zaed.common.ui.component.auth.LoginError
+import com.zaed.common.ui.component.auth.signup.SignUpError
+import com.zaed.common.ui.component.auth.signup.log
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow

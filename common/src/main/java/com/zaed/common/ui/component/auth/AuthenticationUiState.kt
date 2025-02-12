@@ -1,14 +1,16 @@
-package com.zaed.common.data.model.ui
+package com.zaed.common.ui.component.auth
 
 import androidx.annotation.StringRes
 import com.zaed.common.R
 import com.zaed.common.data.model.User
+import com.zaed.common.data.model.UserRole
 
 data class AuthenticationUiState(
     val fullName: String = "",
     val userName: String = "",
     val password: String = "",
     val isLoading: Boolean = false,
+    val role: UserRole = UserRole.NONE,
     val user: User? = null,
     val fieldsError: FieldsError = FieldsError.NONE,
     val errorMessage: Exception? = null,

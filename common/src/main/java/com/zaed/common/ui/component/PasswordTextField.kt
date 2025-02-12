@@ -22,7 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.ui.FieldsError
+import com.zaed.common.ui.component.auth.FieldsError
 
 @Composable
 fun PasswordTextField(

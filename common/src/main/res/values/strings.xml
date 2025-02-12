@@ -25,4 +25,12 @@
     <string name="enter_your_account_credentials_to_sign_in">"Enter your Account Credentials to sign in "</string>
     <string name="login_success">Login Success</string>
     <string name="sign_up_success">"Sign Up Success "</string>
+    <string name="sign_up_success_wait_for_manager_approval">Sign up success wait for manager approval</string>
+    <string name="cashier">Cashier</string>
+    <string name="manager">Manager</string>
+    <string name="accountant">Accountant</string>
+    <string name="distributor">Distibutor</string>
+    <string name="sign_up_as">"Sign Up AS "</string>
+    <string name="sign_in_as">"Sign in as "</string>
+    <string name="invalid_role">Invalid Roles</string>
 </resources>

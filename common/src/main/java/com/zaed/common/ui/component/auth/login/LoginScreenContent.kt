@@ -1,4 +1,4 @@
-package com.zaed.common.ui.component.auth
+package com.zaed.common.ui.component.auth.login
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -28,23 +28,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.UserApprovementStatusType
-import com.zaed.common.data.model.ui.AuthenticationUiAction
-import com.zaed.common.data.model.ui.AuthenticationUiState
-import com.zaed.common.data.model.ui.FieldsError
-import com.zaed.common.data.model.ui.LoginError
+import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.component.AlreadyHaveAccountTextButton
 import com.zaed.common.ui.component.AnimatedLoading
 import com.zaed.common.ui.component.CustomSnackbar
 import com.zaed.common.ui.component.PasswordTextField
 import com.zaed.common.ui.component.TextInputTextField
+import com.zaed.common.ui.component.auth.AuthenticationUiAction
+import com.zaed.common.ui.component.auth.AuthenticationUiState
+import com.zaed.common.ui.component.auth.FieldsError
 import com.zaed.common.ui.theme.GoldManagementTheme
 import kotlinx.coroutines.delay
 
 @Composable
 fun LoginScreenContent(
+    role : UserRole = UserRole.NONE,
     uiState: AuthenticationUiState,
     onAction: (AuthenticationUiAction) -> Unit = {}
 ) {
+    LaunchedEffect(role){
+        onAction(AuthenticationUiAction.OnUpdateRole(role))
+    }
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     LaunchedEffect(uiState.errorMessage, uiState.successMessage) {
@@ -62,8 +66,6 @@ fun LoginScreenContent(
                         context.getString(R.string.your_account_is_pending_for_approval),
                         withDismissAction = true
                     )
-                    delay(1500)
-                    onAction(AuthenticationUiAction.OnNavigateToPendingScreen)
                 }
                 UserApprovementStatusType.APPROVED -> {
                     snackbarHostState.showSnackbar(
@@ -89,11 +91,6 @@ fun LoginScreenContent(
             CustomSnackbar(snackbarHostState, uiState)
         },
         modifier = Modifier.systemBarsPadding(),
-//        topBar = {
-//            SignUpTopAppBar(
-//                onBackClicked = { onAction(AuthenticationUiAction.OnBack) }
-//            )
-//        }
     ) {
         Column(
             modifier = Modifier
@@ -107,7 +104,10 @@ fun LoginScreenContent(
             Spacer(Modifier.weight(1f))
 
             Text(
-                text = stringResource(R.string.sign_in),
+                text =  buildString {
+                    append(stringResource(R.string.sign_in_as))
+                    append(stringResource(role.value))
+                },
                 style = MaterialTheme.typography.headlineLarge.copy(
                     fontWeight = FontWeight.Bold
                 ),

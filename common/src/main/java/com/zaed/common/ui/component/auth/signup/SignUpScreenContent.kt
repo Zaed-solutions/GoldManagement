@@ -1,4 +1,4 @@
-package com.zaed.common.ui.component.auth
+package com.zaed.common.ui.component.auth.signup
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
@@ -29,40 +29,41 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.ui.AuthenticationUiAction
-import com.zaed.common.data.model.ui.AuthenticationUiState
-import com.zaed.common.data.model.ui.FieldsError
-import com.zaed.common.data.model.ui.SignUpError
+import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.component.AlreadyHaveAccountTextButton
 import com.zaed.common.ui.component.AnimatedLoading
 import com.zaed.common.ui.component.CustomSnackbar
 import com.zaed.common.ui.component.PasswordTextField
 import com.zaed.common.ui.component.TextInputTextField
+import com.zaed.common.ui.component.auth.AuthenticationUiAction
+import com.zaed.common.ui.component.auth.AuthenticationUiState
+import com.zaed.common.ui.component.auth.FieldsError
 import com.zaed.common.ui.theme.GoldManagementTheme
-import kotlinx.coroutines.delay
 
 @Composable
 fun SignUpScreenContent(
+    role: UserRole = UserRole.NONE,
     uiState: AuthenticationUiState,
     onAction: (AuthenticationUiAction) -> Unit = {}
 ) {
+    LaunchedEffect(role){
+        onAction(AuthenticationUiAction.OnUpdateRole(role))
+    }
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     LaunchedEffect(uiState.errorMessage, uiState.successMessage) {
         if (uiState.errorMessage != null && uiState.errorMessage is SignUpError) {
             snackbarHostState.showSnackbar(
-                 context.getString(uiState.errorMessage.userMessage),
+                context.getString(uiState.errorMessage.userMessage),
                 withDismissAction = true
             )
             onAction(AuthenticationUiAction.ResetError)
         }
         if (uiState.successMessage != null) {
             snackbarHostState.showSnackbar(
-                context.getString(R.string.sign_up_success),
+                context.getString(R.string.sign_up_success_wait_for_manager_approval),
                 withDismissAction = true
             )
-            delay(1000)
-            onAction(AuthenticationUiAction.OnNavigateToPendingScreen)
         }
     }
     Scaffold(
@@ -70,11 +71,6 @@ fun SignUpScreenContent(
             CustomSnackbar(snackbarHostState, uiState)
         },
         modifier = Modifier.systemBarsPadding(),
-//        topBar = {
-//            SignUpTopAppBar(
-//                onBackClicked = { onAction(AuthenticationUiAction.OnBack) }
-//            )
-//        }
     ) {
         Column(
             modifier = Modifier
@@ -88,7 +84,10 @@ fun SignUpScreenContent(
             Spacer(Modifier.weight(1f))
 
             Text(
-                text = stringResource(R.string.sign_up),
+                text = buildString {
+                    append(stringResource(R.string.sign_up_as))
+                    append(stringResource(role.value))
+                },
                 style = MaterialTheme.typography.headlineLarge.copy(
                     fontWeight = FontWeight.Bold
                 ),

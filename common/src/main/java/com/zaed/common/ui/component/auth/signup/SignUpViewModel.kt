@@ -1,14 +1,13 @@
-package com.zaed.cashier.ui.auth.signup
+package com.zaed.common.ui.component.auth.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.UserRole
 import com.zaed.common.data.model.request.SignUpUserRequest
-import com.zaed.common.data.model.ui.AuthenticationUiAction
-import com.zaed.common.data.model.ui.AuthenticationUiState
-import com.zaed.common.data.model.ui.FieldsError
-import com.zaed.common.data.model.ui.SignUpError
 import com.zaed.common.domain.SignUpUserUseCase
+import com.zaed.common.ui.component.auth.AuthenticationUiAction
+import com.zaed.common.ui.component.auth.AuthenticationUiState
+import com.zaed.common.ui.component.auth.FieldsError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,6 +27,7 @@ class SignUpViewModel(
             is AuthenticationUiAction.OnUpdatePassword -> updatePassword(action.password)
             is AuthenticationUiAction.OnUpdateUserName -> updateUserName(action.userName)
             AuthenticationUiAction.ResetError -> resetError()
+            is AuthenticationUiAction.OnUpdateRole -> updateRole(action.role)
             else -> {}
         }
 
@@ -39,6 +39,13 @@ class SignUpViewModel(
                 errorMessage = null,
                 successMessage = null
             )
+        }
+    }
+    private fun updateRole(role: UserRole) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update {
+                it.copy(role = role)
+            }
         }
     }
 
@@ -54,7 +61,7 @@ class SignUpViewModel(
                 fullName = uiState.value.fullName,
                 userName = uiState.value.userName,
                 password = uiState.value.password,
-                role = UserRole.CASHIER,
+                role = uiState.value.role,
             )
             signUpUserUseCase(signUpUserRequest).collect { result ->
                 result.onSuccess { user ->
