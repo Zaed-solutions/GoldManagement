@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">cashier</string>
+    <string name="welcome">Welcome!</string>
+    <string name="fill_in_your_details_to_create_your_account">Fill in your details to create your account</string>
+    <string name="full_name">Full Name</string>
+    <string name="user_name">User Name</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="already_have_an_account">"Already have an account? "</string>
+    <string name="sign_in">Sign In</string>
+    <string name="user_already_exists">User already exists</string>
+    <string name="empty_full_name">Empty Full Name</string>
+    <string name="invalid_full_name">Invalid full name</string>
+    <string name="empty_user_name">Empty User Name</string>
+    <string name="invalid_user_name">Invalid User Name</string>
+    <string name="empty_password">Empty Password</string>
+    <string name="invalid_password">Invalid Password</string>
 </resources>
