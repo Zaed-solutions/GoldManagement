@@ -11,6 +11,10 @@ sealed class LoginError(
         @StringRes override val userMessage: Int = R.string.user_not_found,
     ): LoginError()
 
+    data class InCorrectPassword(
+        @StringRes override val userMessage: Int = R.string.invalid_password,
+    ): LoginError()
+
     data class InvalidRole(
         @StringRes override val userMessage: Int = R.string.invalid_role,
     ): LoginError()

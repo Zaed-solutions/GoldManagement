@@ -25,4 +25,12 @@
     <string name="enter_your_account_credentials_to_sign_in">أدخل بيانات حسابك للدخول</string>
     <string name="login_success">تم تسجيل الدخول بنجاح</string>
     <string name="sign_up_success">تم انشاء الحساب بنجاح</string>
+    <string name="sign_up_success_wait_for_manager_approval">"تم تسجيل الدخول بنجاح , يرجى انتظار تفعيل الحساب من قبل المدير "</string>
+    <string name="cashier">كاشير</string>
+    <string name="manager">مدير</string>
+    <string name="accountant">محاسب</string>
+    <string name="distributor">موزع</string>
+    <string name="sign_up_as">"سجل حساب جديد ك "</string>
+    <string name="sign_in_as">"سجل دخول ك "</string>
+    <string name="invalid_role">ليس لديك الصلاحيات</string>
 </resources>
