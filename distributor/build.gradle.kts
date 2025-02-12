@@ -9,8 +9,7 @@ plugins {
 
 android {
     namespace = "com.zaed.distributor"
-    compileSdk = 34
-
+    compileSdk = 35
     defaultConfig {
         applicationId = "com.zaed.distributor"
         minSdk = 24
