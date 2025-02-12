@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.zaed.cashier"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.zaed.cashier"

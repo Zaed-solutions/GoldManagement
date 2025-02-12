@@ -1,5 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">cashier</string>
+    <string name="sign_up_failed">Sign Up Failed</string>
+    <string name="login_failed">Login Failed</string>
+    <string name="user_not_found">User Not Found</string>
     <string name="welcome">Welcome!</string>
     <string name="fill_in_your_details_to_create_your_account">Fill in your details to create your account</string>
     <string name="full_name">Full Name</string>
@@ -14,4 +17,12 @@
     <string name="invalid_user_name">Invalid User Name</string>
     <string name="empty_password">Empty Password</string>
     <string name="invalid_password">Invalid Password</string>
+    <string name="don_t_have_an_account">Don\'t have an account</string>
+    <string name="your_account_is_rejected_by_the_manager">your account is rejected by the manager</string>
+    <string name="your_account_is_pending_for_approval">your account is pending for approval</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="enter_your_account_credentials_to_sign_in">"Enter your Account Credentials to sign in "</string>
+    <string name="login_success">Login Success</string>
+    <string name="sign_up_success">"Sign Up Success "</string>
 </resources>
