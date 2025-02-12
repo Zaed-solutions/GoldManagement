@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.zaed.accountant"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.zaed.accountant"
