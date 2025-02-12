@@ -8,7 +8,8 @@ import com.zaed.common.data.model.User
 import com.zaed.common.data.model.UserApprovementStatusType
 import com.zaed.common.data.model.request.LoginUserRequest
 import com.zaed.common.data.model.request.SignUpUserRequest
-import com.zaed.common.ui.component.auth.LoginError
+import com.zaed.common.ui.component.auth.login.LoginError
+import com.zaed.common.ui.component.auth.login.log
 import com.zaed.common.ui.component.auth.signup.SignUpError
 import com.zaed.common.ui.component.auth.signup.log
 import kotlinx.coroutines.channels.awaitClose
