@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sign_up_failed">Sign Up Failed</string>
+    <string name="login_failed">Login Failed</string>
+    <string name="user_not_found">User Not Found</string>
+    <string name="welcome">Welcome!</string>
+    <string name="fill_in_your_details_to_create_your_account">Fill in your details to create your account</string>
+    <string name="full_name">Full Name</string>
+    <string name="user_name">User Name</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="already_have_an_account">"Already have an account? "</string>
+    <string name="sign_in">Sign In</string>
+    <string name="user_already_exists">User already exists</string>
+    <string name="empty_full_name">Empty Full Name</string>
+    <string name="invalid_full_name">Invalid full name</string>
+    <string name="empty_user_name">Empty User Name</string>
+    <string name="invalid_user_name">Invalid User Name</string>
+    <string name="empty_password">Empty Password</string>
+    <string name="invalid_password">Invalid Password</string>
+    <string name="don_t_have_an_account">Don\'t have an account</string>
+    <string name="your_account_is_rejected_by_the_manager">your account is rejected by the manager</string>
+    <string name="your_account_is_pending_for_approval">your account is pending for approval</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="enter_your_account_credentials_to_sign_in">"Enter your Account Credentials to sign in "</string>
+    <string name="login_success">Login Success</string>
+    <string name="sign_up_success">"Sign Up Success "</string>
+    <string name="sign_up_success_wait_for_manager_approval">Sign up success wait for manager approval</string>
+    <string name="cashier">Cashier</string>
+    <string name="manager">Manager</string>
+    <string name="accountant">Accountant</string>
+    <string name="distributor">Distibutor</string>
+    <string name="sign_up_as">"Sign Up AS "</string>
+    <string name="sign_in_as">"Sign in as "</string>
+    <string name="invalid_role">Invalid Roles</string>
+</resources>
