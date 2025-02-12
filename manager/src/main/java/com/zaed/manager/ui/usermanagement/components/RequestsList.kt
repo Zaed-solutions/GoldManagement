@@ -1,15 +1,22 @@
 package com.zaed.manager.ui.usermanagement.components
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -24,7 +31,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.data.model.User
+import com.zaed.common.data.model.UserApprovementStatusType
+import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.components.DetailRow
+import com.zaed.common.ui.components.ExpandableItem
 import com.zaed.manager.R
 import com.zaed.manager.ui.theme.GoldManagementTheme
 
@@ -32,30 +42,35 @@ import com.zaed.manager.ui.theme.GoldManagementTheme
 fun RequestsList(
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
-    requests: List<User>
+    requests: List<User>,
+    onRespondToRequest: (String, Boolean) -> Unit
 ) {
-    AnimatedContent(isLoading) { state ->
-        when {
-            state -> {
-                //todo: loading animation
-            }
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        AnimatedVisibility(isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.TopCenter).padding(top = 64.dp)
+            )
+        }
 
-            else -> {
-                LazyColumn(
-                    modifier = modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(
-                        items = requests,
-                        key = { it.id }
-                    ) { request ->
-                        RequestItem(
-                            modifier = Modifier.animateItem(),
-                            request = request
-                        )
+        LazyColumn(
+            modifier = modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(
+                items = requests,
+                key = { it.id }
+            ) { request ->
+                RequestItem(
+                    modifier = Modifier.animateItem(),
+                    request = request,
+                    onRespondToRequest = { isAccepted ->
+                        onRespondToRequest(request.id, isAccepted)
                     }
-                }
+                )
             }
         }
     }
@@ -64,55 +79,70 @@ fun RequestsList(
 @Composable
 private fun RequestItem(
     modifier: Modifier = Modifier,
-    request: User
+    request: User,
+    onRespondToRequest: (Boolean) -> Unit
 ) {
-    var isExpanded by remember{
-        mutableStateOf(false)
-    }
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        onClick = { isExpanded = !isExpanded },
-        tonalElevation = 2.dp
-    ) {
-        Column(
-            modifier = Modifier.padding(vertical = 24.dp, horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Row (
+    ExpandableItem(
+        modifier = modifier,
+        collapsedContent = {
+            Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = request.fullName,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = request.role.name,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-            }
-            AnimatedVisibility(isExpanded) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp),
+                    modifier = Modifier.weight(1f)
                 ) {
-                    DetailRow(
-                        label = stringResource(R.string.username),
-                        value = request.userName
+                    Text(
+                        text = request.fullName,
+                        style = MaterialTheme.typography.titleLarge,
                     )
-                    DetailRow(
-                        label = stringResource(R.string.password),
-                        value = request.password,
-                        isDividerVisible = false
+                    Text(
+                        text = request.role.name,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+                IconButton(
+                    onClick = {
+                        onRespondToRequest(false)
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        tint = MaterialTheme.colorScheme.error,
+                        contentDescription = null
+                    )
+                }
+                IconButton(
+                    onClick = {
+                        onRespondToRequest(true)
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = null
                     )
                 }
             }
+        },
+        expandedContent = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+            ) {
+                DetailRow(
+                    label = stringResource(R.string.username),
+                    value = request.userName
+                )
+                DetailRow(
+                    label = stringResource(R.string.password),
+                    value = request.password,
+                    isDividerVisible = false
+                )
+            }
         }
-    }
+    )
 }
 
 @Preview(showSystemUi = true, showBackground = true, device = "id:pixel_9_pro")
@@ -121,7 +151,8 @@ private fun ListPreview() {
     val requests = listOf<User>()
     GoldManagementTheme {
         RequestsList(
-            requests = requests
+            requests = requests,
+            onRespondToRequest = {_, _ ->}
         )
     }
 }
@@ -129,10 +160,15 @@ private fun ListPreview() {
 @Preview(showSystemUi = true, showBackground = true, device = "id:pixel_9_pro")
 @Composable
 private fun ItemPreview() {
-    val request = User()
+    val request = User(
+        fullName = "Muhammed Edrees",
+        role = UserRole.ACCOUNTANT
+    )
     GoldManagementTheme {
         RequestItem(
-           request = request
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 48.dp),
+            request = request,
+            onRespondToRequest = {}
         )
     }
 }

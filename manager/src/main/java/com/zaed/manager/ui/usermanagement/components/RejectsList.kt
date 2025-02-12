@@ -23,7 +23,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,23 +32,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.data.model.User
-import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.components.ExpandableItem
 import com.zaed.manager.R
-import com.zaed.manager.ui.theme.GoldManagementTheme
 
 @Composable
-fun UsersList(
+fun RejectsList(
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
-    users: List<User>,
-    onEditClicked: (User) -> Unit = {},
-    onRevokeAccessClicked: (User) -> Unit = {},
-    onDeleteClicked: (User) -> Unit = {}
+    rejects: List<User>,
+    onGrantAccessClicked: (userId: String) -> Unit,
+    onDeleteClicked: (user: User) -> Unit
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
@@ -68,20 +63,17 @@ fun UsersList(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(
-                items = users,
+                items = rejects,
                 key = { it.id }
-            ) { user ->
-                UserItem(
+            ) { reject ->
+                RejectItem(
                     modifier = Modifier.animateItem(),
-                    user = user,
-                    onEditClicked = {
-                        onEditClicked(user)
-                    },
-                    onRevokeAccessClicked = {
-                        onRevokeAccessClicked(user)
+                    reject = reject,
+                    onGrantAccessClicked = {
+                        onGrantAccessClicked(reject.id)
                     },
                     onDeleteClicked = {
-                        onDeleteClicked(user)
+                        onDeleteClicked(reject)
                     }
                 )
             }
@@ -90,11 +82,10 @@ fun UsersList(
 }
 
 @Composable
-private fun UserItem(
+fun RejectItem(
     modifier: Modifier = Modifier,
-    user: User,
-    onEditClicked: () -> Unit = {},
-    onRevokeAccessClicked: () -> Unit = {},
+    reject: User,
+    onGrantAccessClicked: () -> Unit = {},
     onDeleteClicked: () -> Unit = {}
 ) {
     var isOptionMenuVisible by remember {
@@ -108,12 +99,12 @@ private fun UserItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = user.fullName,
+                    text = reject.fullName,
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.weight(1f)
                 )
                 Text(
-                    text = user.role.name,
+                    text = reject.role.name,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(start = 8.dp)
                 )
@@ -140,27 +131,7 @@ private fun UserItem(
                     ) {
                         DropdownMenuItem(
                             onClick = {
-                                onEditClicked()
-                            },
-                            text = {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.edit),
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                    Icon(
-                                        imageVector = Icons.Default.LockPerson,
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-                        )
-                        DropdownMenuItem(
-                            onClick = {
-                                onRevokeAccessClicked()
+                                onGrantAccessClicked()
                             },
                             text = {
                                 Row(
@@ -209,44 +180,14 @@ private fun UserItem(
             ) {
                 DetailRow(
                     label = stringResource(R.string.username),
-                    value = user.userName
+                    value = reject.userName
                 )
                 DetailRow(
                     label = stringResource(R.string.password),
-                    value = user.password,
+                    value = reject.password,
                     isDividerVisible = false
                 )
             }
         }
     )
-}
-
-@Preview(showSystemUi = true, showBackground = true, device = "id:pixel_9_pro")
-@Composable
-private fun ListPreview() {
-    val users = listOf<User>()
-    GoldManagementTheme {
-        UsersList(
-            users = users
-        )
-    }
-}
-
-@Preview(showSystemUi = true, showBackground = true, device = "id:pixel_9_pro")
-@Composable
-private fun ItemPreview() {
-    val user = User(
-        fullName = "Muhammed Edrees",
-        userName = "Edrees123",
-        password = "123456",
-        role = UserRole.CASHIER
-    )
-    GoldManagementTheme {
-        UserItem(
-            modifier = Modifier
-                .padding(16.dp)
-                .padding(top = 64.dp),
-            user = user
-        )
-    }
 }

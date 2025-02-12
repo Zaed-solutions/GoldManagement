@@ -5,4 +5,9 @@
     <string name="requests">Requests</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
+    <string name="edit">Edit</string>
+    <string name="revoke_access">Revoke access</string>
+    <string name="delete">Delete</string>
+    <string name="rejects">Rejects</string>
+    <string name="user_management">User Management</string>
 </resources>

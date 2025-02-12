@@ -51,5 +51,6 @@ fun UsersTabRow(
 
 enum class UserManagementTab(val titleRes: Int) {
     Users(R.string.users),
-    Requests(R.string.requests)
+    Requests(R.string.requests),
+    Rejects(R.string.rejects)
 }

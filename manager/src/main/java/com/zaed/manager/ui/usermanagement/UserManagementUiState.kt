@@ -7,5 +7,6 @@ data class UserManagementUiState(
     val allUsers: List<User> = emptyList(),
     val displayedUsers: List<User> = emptyList(),
     val displayedRequests: List<User> = emptyList(),
+    val displayedRejects: List<User> = emptyList(),
     val searchQuery: String = "",
 )
