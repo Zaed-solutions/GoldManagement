@@ -1,44 +1,36 @@
-package com.zaed.common.ui.component.auth.login
+package com.zaed.common.ui.auth.signup
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.UserRole
-import com.zaed.common.data.model.request.LoginUserRequest
-import com.zaed.common.domain.LoginUserUseCase
-import com.zaed.common.ui.component.auth.AuthenticationUiAction
-import com.zaed.common.ui.component.auth.AuthenticationUiState
-import com.zaed.common.ui.component.auth.FieldsError
+import com.zaed.common.data.model.request.SignUpUserRequest
+import com.zaed.common.domain.SignUpUserUseCase
+import com.zaed.common.ui.auth.AuthenticationUiAction
+import com.zaed.common.ui.auth.AuthenticationUiState
+import com.zaed.common.ui.auth.FieldsError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class LoginViewModel(
-    private val loginUserUseCase: LoginUserUseCase
+class SignUpViewModel(
+    private val signUpUserUseCase: SignUpUserUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(AuthenticationUiState())
     val uiState = _uiState.asStateFlow()
 
     fun handleAction(action: AuthenticationUiAction) {
         when (action) {
-            AuthenticationUiAction.OnSignIn -> signIn()
+            AuthenticationUiAction.OnSignUp -> signUp()
+            is AuthenticationUiAction.OnUpdateFullName -> updateFullName(action.fullName)
             is AuthenticationUiAction.OnUpdatePassword -> updatePassword(action.password)
             is AuthenticationUiAction.OnUpdateUserName -> updateUserName(action.userName)
-            is AuthenticationUiAction.OnUpdateRole -> updateRole(action.role)
             AuthenticationUiAction.ResetError -> resetError()
+            is AuthenticationUiAction.OnUpdateRole -> updateRole(action.role)
             else -> {}
         }
 
-    }
-
-    private fun updateRole(role: UserRole) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update {
-                it.copy(role = role)
-            }
-        }
     }
 
     private fun resetError() {
@@ -50,8 +42,15 @@ class LoginViewModel(
         }
     }
 
-    private fun signIn() {
-        Log.d("LoginViewModel", "signIn: ${uiState.value}")
+    private fun updateRole(role: UserRole) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update {
+                it.copy(role = role)
+            }
+        }
+    }
+
+    private fun signUp() {
         if (!validInput()) {
             return
         }
@@ -59,21 +58,22 @@ class LoginViewModel(
             _uiState.update {
                 it.copy(isLoading = true)
             }
-            val loginUserRequest = LoginUserRequest(
+            val signUpUserRequest = SignUpUserRequest(
+                fullName = uiState.value.fullName,
                 userName = uiState.value.userName,
                 password = uiState.value.password,
-                role = uiState.value.role
+                role = uiState.value.role,
             )
-            loginUserUseCase(loginUserRequest).onSuccess { user ->
+            signUpUserUseCase(signUpUserRequest).onSuccess { user ->
                 _uiState.update {
                     it.copy(
                         isLoading = false,
                         user = user,
-                        successMessage = "Login Success"
+                        successMessage = "Sign Up Success"
                     )
                 }
             }.onFailure { error ->
-                if (error is LoginError) {
+                if (error is SignUpError) {
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -82,13 +82,22 @@ class LoginViewModel(
                     }
                 }
             }
-
         }
     }
 
     private fun validInput(): Boolean {
         with(uiState.value) {
-              if (userName.isEmpty()) {
+            if (fullName.isEmpty()) {
+                _uiState.update {
+                    it.copy(fieldsError = FieldsError.EMPTY_FULL_NAME)
+                }
+                return false
+            } else if (fullName.length < 3) {
+                _uiState.update {
+                    it.copy(fieldsError = FieldsError.INVALID_FULL_NAME)
+                }
+                return false
+            } else if (userName.isEmpty()) {
                 _uiState.update {
                     it.copy(fieldsError = FieldsError.EMPTY_USER_NAME)
                 }
@@ -132,9 +141,14 @@ class LoginViewModel(
             }
         }
     }
+
+    private fun updateFullName(fullName: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update {
+                it.copy(fullName = fullName)
+            }
+        }
+    }
 }
-
-
-
 
 

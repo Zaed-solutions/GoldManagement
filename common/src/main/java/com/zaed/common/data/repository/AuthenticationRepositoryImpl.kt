@@ -2,13 +2,14 @@ package com.zaed.common.data.repository
 
 import com.zaed.common.data.model.LocalUser
 import com.zaed.common.data.model.User
+import com.zaed.common.data.model.request.DeleteUserRequest
 import com.zaed.common.data.model.request.LoginUserRequest
 import com.zaed.common.data.model.request.SignUpUserRequest
+import com.zaed.common.data.model.request.UpdateUserRequest
 import com.zaed.common.data.source.local.LocalStorage
 import com.zaed.common.data.source.remote.AuthenticationRemoteSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 
 class AuthenticationRepositoryImpl(
     private val localStorage: LocalStorage,
@@ -80,5 +81,17 @@ class AuthenticationRepositoryImpl(
                 emit(Result.failure(it))
             }
         }
+    }
+
+    override fun fetchUsers(): Flow<Result<List<User>>> {
+        return remoteSource.fetchUsers()
+    }
+
+    override suspend fun updateUser(request: UpdateUserRequest): Result<Unit> {
+        return remoteSource.updateUser(request)
+    }
+
+    override suspend fun deleteUser(request: DeleteUserRequest): Result<Unit> {
+        return remoteSource.deleteUser(request)
     }
 }

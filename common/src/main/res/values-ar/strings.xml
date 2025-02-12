@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="search">البحث</string>
     <string name="sign_up_failed">فشل في التسجيل</string>
     <string name="login_failed">فشل في تسجيل الدخول</string>
     <string name="user_not_found">المستخدم غير موجود</string>

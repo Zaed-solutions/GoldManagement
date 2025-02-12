@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -22,7 +21,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.data.model.User
 import com.zaed.common.ui.components.SearchBar
 import com.zaed.manager.R
-import com.zaed.manager.ui.theme.GoldManagementTheme
+import com.zaed.manager.ui.theme.ManagerTheme
 import com.zaed.manager.ui.usermanagement.components.RejectsList
 import com.zaed.manager.ui.usermanagement.components.RequestsList
 import com.zaed.manager.ui.usermanagement.components.UserManagementBottomSheet
@@ -64,7 +63,7 @@ private fun UserManagementScreenContent(
         topBar = {
             UserManagementTopBar()
         }
-    ){ innerPadding ->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -132,8 +131,8 @@ private fun UserManagementScreenContent(
                 }
             }
             UserManagementBottomSheet(
-                isEditSheetVisible = isEditBottomSheetVisible,
-                isDeleteSheetVisible = isDeleteBottomSheetVisible,
+                isEditBottomSheetVisible = isEditBottomSheetVisible,
+                isDeleteBottomSheetVisible = isDeleteBottomSheetVisible,
                 selectedUser = selectedUser,
                 onDismissRequest = {
                     isEditBottomSheetVisible = false
@@ -156,7 +155,7 @@ private fun UserManagementScreenContent(
 @Preview(showSystemUi = true, showBackground = true, device = "id:pixel_9_pro")
 @Composable
 private fun Preview() {
-    GoldManagementTheme {
+    ManagerTheme {
         UserManagementScreenContent()
     }
 }

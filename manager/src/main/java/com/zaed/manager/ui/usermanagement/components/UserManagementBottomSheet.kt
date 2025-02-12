@@ -7,32 +7,46 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.zaed.common.data.model.User
+import com.zaed.common.ui.components.ConfirmDeleteDialog
+import com.zaed.manager.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserManagementBottomSheet(
     modifier: Modifier = Modifier,
-    isEditSheetVisible: Boolean,
-    isDeleteSheetVisible: Boolean,
+    isEditBottomSheetVisible: Boolean,
+    isDeleteBottomSheetVisible: Boolean,
     selectedUser: User?,
     onDismissRequest: () -> Unit,
     onEditUser: (User) -> Unit,
     onDeleteUser: (String) -> Unit
 ) {
     val bottomSheetState = rememberModalBottomSheetState()
-    AnimatedVisibility(isEditSheetVisible || isDeleteSheetVisible) {
+    AnimatedVisibility(isEditBottomSheetVisible || isDeleteBottomSheetVisible) {
         ModalBottomSheet(
+            modifier = modifier,
             sheetState = bottomSheetState,
             onDismissRequest = onDismissRequest,
         ) {
-            AnimatedContent(isEditSheetVisible to isDeleteSheetVisible, label = "User Management Bottom Sheet") { state ->
+            AnimatedContent(isEditBottomSheetVisible to isDeleteBottomSheetVisible, label = "User Management Bottom Sheet") { state ->
                 when{
                     state.first -> {
-                        //todo: edit bottom sheet
+                        EditUserSheetContent(
+                            selectedUser = selectedUser?:User(),
+                            onDismissRequest = onDismissRequest,
+                            onEditUser = onEditUser
+                        )
                     }
                     state.second -> {
-                        //todo: delete bottom sheet
+                        ConfirmDeleteDialog(
+                            label = stringResource(R.string.user),
+                            onDismiss = onDismissRequest,
+                            onConfirm = {
+                                onDeleteUser(selectedUser?.id ?: "")
+                            }
+                        )
                     }
                 }
             }

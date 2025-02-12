@@ -1,16 +1,27 @@
 package com.zaed.manager.ui.usermanagement
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.User
 import com.zaed.common.data.model.UserApprovementStatusType
+import com.zaed.common.data.model.request.DeleteUserRequest
+import com.zaed.common.data.model.request.UpdateUserRequest
+import com.zaed.common.domain.DeleteUserUseCase
+import com.zaed.common.domain.FetchUsersUseCase
+import com.zaed.common.domain.UpdateUserUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class UserManagementViewModel: ViewModel() {
+class UserManagementViewModel(
+    private val fetchUsersUseCase: FetchUsersUseCase,
+    private val updateUserUseCase: UpdateUserUseCase,
+    private val deleteUserUseCase: DeleteUserUseCase
+): ViewModel() {
+    private val TAG: String = "UserManagementVM"
     private val _uiState = MutableStateFlow(UserManagementUiState())
     val uiState = _uiState.asStateFlow()
     init {
@@ -18,7 +29,18 @@ class UserManagementViewModel: ViewModel() {
     }
 
     private fun fetchUsers() {
-        TODO("Not yet implemented")
+        viewModelScope.launch (Dispatchers.IO){
+            fetchUsersUseCase().collect{ result ->
+                result.onSuccess { data ->
+                    _uiState.update { oldState ->
+                        oldState.copy(allUsers = data)
+                    }
+                    filterData()
+                }.onFailure {
+                    Log.e(TAG, "fetchUsers: ${it.message}", it)
+                }
+            }
+        }
     }
 
     fun handleAction(action: UserManagementUiAction){
@@ -32,16 +54,52 @@ class UserManagementViewModel: ViewModel() {
     }
 
     private fun deleteUser(userId: String) {
-        TODO("Not yet implemented")
+        viewModelScope.launch(Dispatchers.IO) {
+            deleteUserUseCase(
+                DeleteUserRequest(userId)
+            ).onSuccess {
+                Log.d(TAG, "deleteUser: success")
+            }.onFailure {
+                Log.e(TAG, "deleteUser: ${it.message}", it)
+            }
+        }
     }
 
     private fun updateUser(user: User) {
-        TODO("Not yet implemented")
+        viewModelScope.launch {
+            val updates = mapOf(
+                "fullName" to user.fullName,
+                "userName" to user.userName,
+                "password" to user.password
+            )
+            updateUserUseCase(
+                UpdateUserRequest(
+                    userId = user.id,
+                    updates = updates
+                )
+            ).onSuccess {
+                Log.d(TAG, "updateUser: success")
+            }.onFailure {
+                Log.e(TAG, "updateUser: ${it.message}", it)
+            }
+        }
     }
 
     private fun updateApprovedStatus(userId: String, accepted: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            //todo: update user approvement status
+            val updates = mapOf(
+                "approvementStatusType" to if(accepted) UserApprovementStatusType.APPROVED else UserApprovementStatusType.REJECTED
+            )
+            updateUserUseCase(
+                UpdateUserRequest(
+                    userId = userId,
+                    updates = updates
+                )
+            ).onSuccess {
+                Log.d(TAG, "updateApprovedStatus: success")
+            }.onFailure {
+                Log.e(TAG, "updateApprovedStatus: ${it.message}", it)
+            }
         }
     }
 
@@ -54,7 +112,7 @@ class UserManagementViewModel: ViewModel() {
         }
     }
 
-    private fun filterData(searchQuery: String) {
+    private fun filterData(searchQuery: String = "") {
         viewModelScope.launch (Dispatchers.Default){
             with(uiState.value.allUsers){
                 if(searchQuery.isBlank()){

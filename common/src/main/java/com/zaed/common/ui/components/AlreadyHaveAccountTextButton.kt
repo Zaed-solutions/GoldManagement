@@ -1,4 +1,4 @@
-package com.zaed.common.ui.component
+package com.zaed.common.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues

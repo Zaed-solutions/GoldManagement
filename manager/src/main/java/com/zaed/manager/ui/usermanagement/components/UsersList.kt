@@ -23,7 +23,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,7 +39,7 @@ import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.components.ExpandableItem
 import com.zaed.manager.R
-import com.zaed.manager.ui.theme.GoldManagementTheme
+import com.zaed.manager.ui.theme.ManagerTheme
 
 @Composable
 fun UsersList(
@@ -225,7 +224,7 @@ private fun UserItem(
 @Composable
 private fun ListPreview() {
     val users = listOf<User>()
-    GoldManagementTheme {
+    ManagerTheme {
         UsersList(
             users = users
         )
@@ -241,7 +240,7 @@ private fun ItemPreview() {
         password = "123456",
         role = UserRole.CASHIER
     )
-    GoldManagementTheme {
+    ManagerTheme {
         UserItem(
             modifier = Modifier
                 .padding(16.dp)

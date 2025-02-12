@@ -1,4 +1,5 @@
-package com.zaed.common.ui.component.auth.login
+package com.zaed.common.ui.auth.signup
+
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AlternateEmail
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -27,22 +29,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.UserApprovementStatusType
 import com.zaed.common.data.model.UserRole
-import com.zaed.common.ui.component.AlreadyHaveAccountTextButton
-import com.zaed.common.ui.component.AnimatedLoading
-import com.zaed.common.ui.component.CustomSnackbar
-import com.zaed.common.ui.component.PasswordTextField
-import com.zaed.common.ui.component.TextInputTextField
-import com.zaed.common.ui.component.auth.AuthenticationUiAction
-import com.zaed.common.ui.component.auth.AuthenticationUiState
-import com.zaed.common.ui.component.auth.FieldsError
+import com.zaed.common.ui.components.AlreadyHaveAccountTextButton
+import com.zaed.common.ui.components.AnimatedLoading
+import com.zaed.common.ui.components.CustomSnackbar
+import com.zaed.common.ui.components.PasswordTextField
+import com.zaed.common.ui.components.TextInputTextField
+import com.zaed.common.ui.auth.AuthenticationUiAction
+import com.zaed.common.ui.auth.AuthenticationUiState
+import com.zaed.common.ui.auth.FieldsError
 import com.zaed.common.ui.theme.GoldManagementTheme
-import kotlinx.coroutines.delay
 
 @Composable
-fun LoginScreenContent(
-    role : UserRole = UserRole.NONE,
+fun SignUpScreenContent(
+    role: UserRole = UserRole.NONE,
     uiState: AuthenticationUiState,
     onAction: (AuthenticationUiAction) -> Unit = {}
 ) {
@@ -52,7 +52,7 @@ fun LoginScreenContent(
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     LaunchedEffect(uiState.errorMessage, uiState.successMessage) {
-        if (uiState.errorMessage != null && uiState.errorMessage is LoginError) {
+        if (uiState.errorMessage != null && uiState.errorMessage is SignUpError) {
             snackbarHostState.showSnackbar(
                 context.getString(uiState.errorMessage.userMessage),
                 withDismissAction = true
@@ -60,30 +60,10 @@ fun LoginScreenContent(
             onAction(AuthenticationUiAction.ResetError)
         }
         if (uiState.successMessage != null) {
-            when(uiState.user?.approvementStatusType){
-                UserApprovementStatusType.PENDING -> {
-                    snackbarHostState.showSnackbar(
-                        context.getString(R.string.your_account_is_pending_for_approval),
-                        withDismissAction = true
-                    )
-                }
-                UserApprovementStatusType.APPROVED -> {
-                    snackbarHostState.showSnackbar(
-                        context.getString(R.string.login_success),
-                        withDismissAction = true
-                    )
-                    delay(1000)
-                    onAction(AuthenticationUiAction.OnNavigateToHomeScreen)
-                }
-                UserApprovementStatusType.REJECTED -> {
-                    snackbarHostState.showSnackbar(
-                        context.getString(R.string.your_account_is_rejected_by_the_manager),
-                        withDismissAction = true
-                    )
-                    onAction(AuthenticationUiAction.ResetError)
-                }
-                null -> {}
-            }
+            snackbarHostState.showSnackbar(
+                context.getString(R.string.sign_up_success_wait_for_manager_approval),
+                withDismissAction = true
+            )
         }
     }
     Scaffold(
@@ -104,8 +84,8 @@ fun LoginScreenContent(
             Spacer(Modifier.weight(1f))
 
             Text(
-                text =  buildString {
-                    append(stringResource(R.string.sign_in_as))
+                text = buildString {
+                    append(stringResource(R.string.sign_up_as))
                     append(stringResource(role.value))
                 },
                 style = MaterialTheme.typography.headlineLarge.copy(
@@ -113,8 +93,25 @@ fun LoginScreenContent(
                 ),
             )
             Text(
-                text = stringResource(R.string.enter_your_account_credentials_to_sign_in),
+                text = stringResource(R.string.fill_in_your_details_to_create_your_account),
                 style = MaterialTheme.typography.labelLarge
+            )
+            //fullName
+            TextInputTextField(
+                modifier = Modifier
+                    .padding(top = 32.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .align(Alignment.CenterHorizontally),
+                value = uiState.fullName,
+                onValueChange = { onAction(AuthenticationUiAction.OnUpdateFullName(it)) },
+                label = stringResource(R.string.full_name),
+                imageVector = Icons.Default.Person,
+                errorMessage = uiState.fieldsError,
+                isError = uiState.fieldsError in listOf(
+                    FieldsError.EMPTY_FULL_NAME,
+                    FieldsError.INVALID_FULL_NAME
+                )
             )
             //userName
             TextInputTextField(
@@ -149,7 +146,7 @@ fun LoginScreenContent(
                     FieldsError.INVALID_PASSWORD
                 )
             )
-            //sign button
+            //signup button
             Button(
                 modifier = Modifier
                     .padding(top = 32.dp)
@@ -157,20 +154,18 @@ fun LoginScreenContent(
                     .height(56.dp)
                     .padding(horizontal = 16.dp)
                     .align(Alignment.CenterHorizontally),
-                onClick = { onAction(AuthenticationUiAction.OnSignIn) }
+                onClick = { onAction(AuthenticationUiAction.OnSignUp) }
             ) {
                 Text(
                     style = MaterialTheme.typography.titleLarge,
-                    text = stringResource(R.string.sign_in)
+                    text = stringResource(R.string.sign_up)
                 )
             }
             Spacer(Modifier.weight(3f))
-            //don_t_have_an_account
+            //Already have account
             AlreadyHaveAccountTextButton(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                onClick = { onAction(AuthenticationUiAction.OnSignUp) },
-                sectionOne = stringResource(R.string.don_t_have_an_account),
-                sectionTwo = stringResource(R.string.sign_up)
+                onClick = { onAction(AuthenticationUiAction.OnSignIn) }
             )
         }
     }
@@ -179,13 +174,13 @@ fun LoginScreenContent(
 @Preview(showSystemUi = true, showBackground = true)
 @Preview(
     showSystemUi = true, showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL,
+    uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL
 )
 @Composable
-fun LoginScreenContentPreview() {
+fun SignUpScreenContentPreview() {
     GoldManagementTheme {
         Surface() {
-            LoginScreenContent(uiState = AuthenticationUiState())
+            SignUpScreenContent(uiState = AuthenticationUiState())
         }
     }
 }

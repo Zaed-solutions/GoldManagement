@@ -1,10 +1,10 @@
-package com.zaed.common.ui.component.auth.login
+package com.zaed.common.ui.auth.login
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.data.model.UserRole
-import com.zaed.common.ui.component.auth.AuthenticationUiAction
+import com.zaed.common.ui.auth.AuthenticationUiAction
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -13,7 +13,6 @@ fun LoginScreen(
     viewModel: LoginViewModel = koinViewModel(),
     onBack: () -> Unit,
     navigateToSignUp: () -> Unit,
-    onNavigateToPendingScreen: () -> Unit,
     onNavigateToHomeScreen: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -24,7 +23,6 @@ fun LoginScreen(
             when (action) {
                 AuthenticationUiAction.OnBack -> onBack()
                 AuthenticationUiAction.OnSignUp -> navigateToSignUp()
-                AuthenticationUiAction.OnNavigateToPendingScreen -> onNavigateToPendingScreen()
                 AuthenticationUiAction.OnNavigateToHomeScreen -> onNavigateToHomeScreen()
                 else -> viewModel.handleAction(action)
             }

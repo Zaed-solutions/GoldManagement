@@ -1,4 +1,4 @@
-package com.zaed.common.ui.component
+package com.zaed.common.ui.components
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.zaed.common.ui.component.auth.FieldsError
+import com.zaed.common.ui.auth.FieldsError
 
 @Composable
 fun TextInputTextField(
@@ -35,13 +35,14 @@ fun TextInputTextField(
             unfocusedContainerColor = MaterialTheme.colorScheme.background,
             focusedContainerColor = MaterialTheme.colorScheme.background,
         ),
-        leadingIcon = {
-            if (imageVector != null)
+        leadingIcon = if (imageVector != null) {
+            {
                 Icon(
                     imageVector = imageVector,
                     contentDescription = null,
                 )
-        },
+            }
+        } else null,
         shape = RoundedCornerShape(32.dp),
         isError = isError,
         supportingText = {

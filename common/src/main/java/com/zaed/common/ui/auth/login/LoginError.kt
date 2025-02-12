@@ -1,4 +1,4 @@
-package com.zaed.common.ui.component.auth.login
+package com.zaed.common.ui.auth.login
 
 import android.util.Log
 import androidx.annotation.StringRes

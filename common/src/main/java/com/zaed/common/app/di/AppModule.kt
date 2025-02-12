@@ -12,17 +12,21 @@ import com.zaed.common.data.source.local.LocalStorage
 import com.zaed.common.data.source.local.LocalStorageImpl
 import com.zaed.common.data.source.remote.AuthenticationRemoteSource
 import com.zaed.common.data.source.remote.AuthenticationRemoteSourceImpl
+import com.zaed.common.domain.DeleteUserUseCase
+import com.zaed.common.domain.FetchUsersUseCase
 import com.zaed.common.domain.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.LoginUserUseCase
 import com.zaed.common.domain.LogoutUserUseCase
 import com.zaed.common.domain.SignUpUserUseCase
-import com.zaed.common.ui.component.auth.MainViewModel
-import com.zaed.common.ui.component.auth.login.LoginViewModel
-import com.zaed.common.ui.component.auth.signup.SignUpViewModel
+import com.zaed.common.ui.auth.MainViewModel
+import com.zaed.common.domain.UpdateUserUseCase
+import com.zaed.common.ui.auth.login.LoginViewModel
+import com.zaed.common.ui.auth.signup.SignUpViewModel
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
+
 
 val localSourceModule = module {
     singleOf(::LocalStorageImpl) { bind<LocalStorage>() }
@@ -33,6 +37,9 @@ val useCaseModule = module {
     singleOf(::GetCurrentUserLoggedInUseCase)
     singleOf(::LoginUserUseCase)
     singleOf(::SignUpUserUseCase)
+    singleOf(::FetchUsersUseCase)
+    singleOf(::UpdateUserUseCase)
+    singleOf(::DeleteUserUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }

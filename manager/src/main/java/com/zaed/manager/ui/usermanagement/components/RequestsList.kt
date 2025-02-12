@@ -18,25 +18,19 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.data.model.User
-import com.zaed.common.data.model.UserApprovementStatusType
 import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.components.ExpandableItem
 import com.zaed.manager.R
-import com.zaed.manager.ui.theme.GoldManagementTheme
+import com.zaed.manager.ui.theme.ManagerTheme
 
 @Composable
 fun RequestsList(
@@ -149,7 +143,7 @@ private fun RequestItem(
 @Composable
 private fun ListPreview() {
     val requests = listOf<User>()
-    GoldManagementTheme {
+    ManagerTheme {
         RequestsList(
             requests = requests,
             onRespondToRequest = {_, _ ->}
@@ -164,7 +158,7 @@ private fun ItemPreview() {
         fullName = "Muhammed Edrees",
         role = UserRole.ACCOUNTANT
     )
-    GoldManagementTheme {
+    ManagerTheme {
         RequestItem(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 48.dp),
             request = request,

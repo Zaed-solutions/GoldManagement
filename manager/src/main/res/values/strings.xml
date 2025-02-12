@@ -10,4 +10,7 @@
     <string name="delete">Delete</string>
     <string name="rejects">Rejects</string>
     <string name="user_management">User Management</string>
+    <string name="user">User</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
 </resources>

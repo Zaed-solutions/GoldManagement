@@ -1,4 +1,4 @@
-package com.zaed.common.ui.component.auth
+package com.zaed.common.ui.auth
 
 import androidx.annotation.StringRes
 import com.zaed.common.R

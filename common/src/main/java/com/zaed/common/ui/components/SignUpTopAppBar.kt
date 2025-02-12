@@ -1,4 +1,4 @@
-package com.zaed.common.ui.component
+package com.zaed.common.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.WindowInsets
