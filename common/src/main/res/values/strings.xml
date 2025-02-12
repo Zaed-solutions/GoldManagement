@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="search">Search</string>
     <string name="sign_up_failed">Sign Up Failed</string>
     <string name="login_failed">Login Failed</string>
     <string name="user_not_found">User Not Found</string>
@@ -33,4 +34,8 @@
     <string name="sign_up_as">"Sign Up AS "</string>
     <string name="sign_in_as">"Sign in as "</string>
     <string name="invalid_role">Invalid Roles</string>
+    <string name="this_action_cannot_be_undone">This action cannot be undone</string>
+    <string name="are_you_sure_you_want_to_delete_this">Are you sure you want to delete this %1$s</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
 </resources>

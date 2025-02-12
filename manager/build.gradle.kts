@@ -8,13 +8,13 @@ plugins {
 }
 
 android {
-    namespace = "com.zaed.goldmanagement"
-    compileSdk = 34
+    namespace = "com.zaed.manager"
+    compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.zaed.goldmanagement"
-        minSdk = 24
-        targetSdk = 34
+        applicationId = "com.zaed.manager"
+        minSdk = 26
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 

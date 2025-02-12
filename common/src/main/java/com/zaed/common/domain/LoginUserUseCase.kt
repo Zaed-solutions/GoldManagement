@@ -3,7 +3,7 @@ package com.zaed.common.domain
 import com.zaed.common.data.model.User
 import com.zaed.common.data.model.request.LoginUserRequest
 import com.zaed.common.data.repository.AuthenticationRepository
-import com.zaed.common.ui.component.auth.login.LoginError
+import com.zaed.common.ui.auth.login.LoginError
 
 class LoginUserUseCase(
     private val authenticationRepository: AuthenticationRepository

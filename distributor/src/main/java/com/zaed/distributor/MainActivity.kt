@@ -10,7 +10,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.data.model.User
 import com.zaed.common.data.model.UserApprovementStatusType
 import com.zaed.common.data.model.UserRole
-import com.zaed.common.ui.component.auth.MainViewModel
+import com.zaed.common.ui.auth.MainViewModel
 import com.zaed.distributor.app.navigation.NavigationHost
 import com.zaed.distributor.app.navigation.Route
 import com.zaed.distributor.ui.theme.DistributorAppTheme
@@ -39,12 +39,8 @@ fun App(localUser: User?) {
     val startDestination = when {
         localUser == null -> Route.Login
         localUser.role != UserRole.DISTRIBUTOR -> Route.Login
-        else -> when (localUser.approvementStatusType) {
-            UserApprovementStatusType.PENDING -> Route.Pending
-            UserApprovementStatusType.APPROVED -> Route.Home
-            UserApprovementStatusType.REJECTED -> Route.Login
-            else -> Route.Login
-        }
+        localUser.approvementStatusType == UserApprovementStatusType.APPROVED -> Route.Home
+        else -> Route.Login
     }
     NavigationHost(
         startDestination = startDestination
