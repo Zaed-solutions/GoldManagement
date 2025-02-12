@@ -7,7 +7,6 @@ import com.zaed.common.data.model.request.SignUpUserRequest
 import com.zaed.common.data.source.local.LocalStorage
 import com.zaed.common.data.source.remote.AuthenticationRemoteSource
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
@@ -19,7 +18,7 @@ class AuthenticationRepositoryImpl(
         localStorage.getLocalUser()
 
     override suspend fun loginUser(request: LoginUserRequest): Result<User> {
-        val response = remoteSource.loginUser(request).first()
+        val response = remoteSource.loginUser(request)
         response.onSuccess {
             localStorage.setLocalUser(
                 LocalUser(
@@ -36,9 +35,9 @@ class AuthenticationRepositoryImpl(
         return response
     }
 
-    override suspend fun signUpUser(request: SignUpUserRequest): Flow<Result<User>> {
-        val response = remoteSource.signUpUser(request).map{
-            it.onSuccess {
+    override suspend fun signUpUser(request: SignUpUserRequest): Result<User> {
+        val response = remoteSource.signUpUser(request)
+            response.onSuccess {
                 localStorage.setLocalUser(
                     LocalUser(
                         userId = it.id
@@ -52,8 +51,6 @@ class AuthenticationRepositoryImpl(
                     )
                 )
             }
-        }
-
         return response
     }
     override suspend fun logoutCurrentUser(): Result<Unit> {

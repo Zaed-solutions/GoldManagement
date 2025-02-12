@@ -41,6 +41,7 @@ class SignUpViewModel(
             )
         }
     }
+
     private fun updateRole(role: UserRole) {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update {
@@ -50,10 +51,10 @@ class SignUpViewModel(
     }
 
     private fun signUp() {
-        if(!validInput()){
+        if (!validInput()) {
             return
         }
-            viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             _uiState.update {
                 it.copy(isLoading = true)
             }
@@ -63,23 +64,21 @@ class SignUpViewModel(
                 password = uiState.value.password,
                 role = uiState.value.role,
             )
-            signUpUserUseCase(signUpUserRequest).collect { result ->
-                result.onSuccess { user ->
+            signUpUserUseCase(signUpUserRequest).onSuccess { user ->
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        user = user,
+                        successMessage = "Sign Up Success"
+                    )
+                }
+            }.onFailure { error ->
+                if (error is SignUpError) {
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            user = user,
-                            successMessage = "Sign Up Success"
+                            errorMessage = error
                         )
-                    }
-                }.onFailure {error->
-                    if(error is SignUpError) {
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                errorMessage = error
-                            )
-                        }
                     }
                 }
             }
@@ -93,17 +92,17 @@ class SignUpViewModel(
                     it.copy(fieldsError = FieldsError.EMPTY_FULL_NAME)
                 }
                 return false
-            }else if (fullName.length < 3) {
+            } else if (fullName.length < 3) {
                 _uiState.update {
                     it.copy(fieldsError = FieldsError.INVALID_FULL_NAME)
                 }
                 return false
-            }else if (userName.isEmpty()) {
+            } else if (userName.isEmpty()) {
                 _uiState.update {
                     it.copy(fieldsError = FieldsError.EMPTY_USER_NAME)
                 }
                 return false
-            }else if (userName.length < 3) {
+            } else if (userName.length < 3) {
                 _uiState.update {
                     it.copy(fieldsError = FieldsError.INVALID_USER_NAME)
                 }
@@ -113,7 +112,7 @@ class SignUpViewModel(
                     it.copy(fieldsError = FieldsError.EMPTY_PASSWORD)
                 }
                 return false
-            }else if (password.length < 3) {
+            } else if (password.length < 3) {
                 _uiState.update {
                     it.copy(fieldsError = FieldsError.INVALID_PASSWORD)
                 }

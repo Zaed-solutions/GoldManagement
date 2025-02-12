@@ -3,11 +3,13 @@ package com.zaed.common.ui.component.auth.signup
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.component.auth.AuthenticationUiAction
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SignUpScreen(
+    role: UserRole,
     viewModel: SignUpViewModel = koinViewModel(),
     onBack: () -> Unit={},
     navigateToLogIn: () -> Unit={},
@@ -15,6 +17,7 @@ fun SignUpScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     SignUpScreenContent(
+        role = role,
         uiState = uiState,
         onAction = { action ->
             when (action) {

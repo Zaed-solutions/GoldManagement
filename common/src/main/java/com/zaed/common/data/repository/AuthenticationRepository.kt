@@ -10,6 +10,6 @@ interface AuthenticationRepository {
     fun getUserApprovementStatus(): Flow<Result<LocalUser>>
     suspend fun loginUser(request: LoginUserRequest): Result<User>
     suspend fun logoutCurrentUser():Result<Unit>
-    suspend fun signUpUser(request: SignUpUserRequest): Flow<Result<User>>
+    suspend fun signUpUser(request: SignUpUserRequest): Result<User>
     fun getCurrentUser(): Flow<Result<User>>
 }
