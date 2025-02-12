@@ -1,4 +1,4 @@
-package com.zaed.cashier.ui
+package com.zaed.common.ui.component.auth
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
