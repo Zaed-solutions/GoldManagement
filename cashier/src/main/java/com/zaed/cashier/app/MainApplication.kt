@@ -1,6 +1,7 @@
 package com.zaed.cashier.app
 
 import android.app.Application
+import com.zaed.cashier.app.di.appModule
 import com.zaed.common.app.di.localSourceModule
 import com.zaed.common.app.di.remoteSourceModule
 import com.zaed.common.app.di.repositoryModule
@@ -18,6 +19,7 @@ class MainApplication : Application() {
             androidLogger()
             androidContext(this@MainApplication)
             modules(
+                appModule,
                 useCaseModule,
                 localSourceModule,
                 remoteSourceModule,

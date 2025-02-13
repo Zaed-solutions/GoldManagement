@@ -8,11 +8,16 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.zaed.common.data.repository.AuthenticationRepository
 import com.zaed.common.data.repository.AuthenticationRepositoryImpl
+import com.zaed.common.data.repository.SaleRepository
+import com.zaed.common.data.repository.SaleRepositoryImpl
 import com.zaed.common.data.source.local.LocalStorage
 import com.zaed.common.data.source.local.LocalStorageImpl
 import com.zaed.common.data.source.remote.AuthenticationRemoteSource
 import com.zaed.common.data.source.remote.AuthenticationRemoteSourceImpl
+import com.zaed.common.data.source.remote.SaleRemoteSource
+import com.zaed.common.data.source.remote.SaleRemoteSourceImpl
 import com.zaed.common.domain.DeleteUserUseCase
+import com.zaed.common.domain.FetchStoreSalesUseCase
 import com.zaed.common.domain.FetchUsersUseCase
 import com.zaed.common.domain.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.LoginUserUseCase
@@ -40,9 +45,11 @@ val useCaseModule = module {
     singleOf(::FetchUsersUseCase)
     singleOf(::UpdateUserUseCase)
     singleOf(::DeleteUserUseCase)
+    singleOf(::FetchStoreSalesUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }
+    singleOf(::SaleRepositoryImpl) { bind<SaleRepository>() }
 }
 val viewModelModule = module {
     viewModelOf(::SignUpViewModel)
@@ -51,6 +58,7 @@ val viewModelModule = module {
 }
 val remoteSourceModule = module {
     singleOf(::AuthenticationRemoteSourceImpl) {bind<AuthenticationRemoteSource>()}
+    singleOf(::SaleRemoteSourceImpl) { bind<SaleRemoteSource>() }
     single<FirebaseFirestore> {
         val db = Firebase.firestore
         val settings = FirebaseFirestoreSettings.Builder()

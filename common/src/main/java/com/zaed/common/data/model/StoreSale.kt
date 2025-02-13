@@ -1,8 +1,12 @@
 package com.zaed.common.data.model
 
+import java.util.Date
+
 data class StoreSale(
     val id: String = "",
-    val createdAt: Long = 0,
+    val createdAt: Date = Date(),
+    val storeId: String = "",
+    val storeName: String = "",
     val employeeName: String = "",
     val employeeId: String = "",
     val customerName: String = "",

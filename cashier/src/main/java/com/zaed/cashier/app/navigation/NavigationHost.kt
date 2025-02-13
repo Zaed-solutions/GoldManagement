@@ -1,9 +1,7 @@
 package com.zaed.cashier.app.navigation
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -11,6 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import com.zaed.cashier.ui.sales.SalesScreen
 import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
@@ -25,66 +25,80 @@ fun NavigationHost(
         navController = navController,
         startDestination =startDestination,
     ){
-        composable<Route.SignUp> {
+        composable<Route.SignUpRoute> {
             SignUpScreen(
                 role = UserRole.CASHIER,
                 onBack = {
                     navController.popBackStack()
                 },
                 navigateToLogIn = {
-                    navController.navigate(Route.Login)
+                    navController.navigate(Route.LoginRoute)
                 },
             )
         }
-        composable<Route.Login> {
+        composable<Route.LoginRoute> {
             LoginScreen(
                 role = UserRole.CASHIER,
                 onBack = {
                     navController.popBackStack()
                 },
                 navigateToSignUp = {
-                    navController.navigate(Route.SignUp)
+                    navController.navigate(Route.SignUpRoute)
                 },
                 onNavigateToHomeScreen = {
-                    navController.navigate(Route.Home){
-                        popUpTo(Route.Login){
+                    navController.navigate(Route.SalesRoute){
+                        popUpTo(Route.LoginRoute){
                             inclusive = true
                         }
                     }
                 }
             )
         }
-        composable<Route.Home> {
-            HomeScreen()
+        composable<Route.SalesRoute> {
+            SalesScreen(
+                onNavigateToSaleDetails = {
+                    navController.navigate(Route.SaleDetailsRoute(it))
+                },
+                onNavigateToAddSale = {
+                    navController.navigate(Route.AddSaleRoute)
+                }
+            )
+        }
+        composable<Route.SaleDetailsRoute> { backstackEntry ->
+            val saleId = backstackEntry.toRoute<Route.SaleDetailsRoute>().saleId
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ){
+                Text(text = "Sale Details: $saleId")
+            }
+            //todo
+        }
+        composable<Route.AddSaleRoute> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ){
+                Text(text = "Add Sale")
+            }
+            //todo
         }
 
     }
 }
 
-@Composable
-fun HomeScreen() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Home",
-            style = MaterialTheme.typography.titleLarge
-        )
-    }
-}
 
 
 
 sealed interface Route{
     @Serializable
-    data object SignUp: Route
+    data object SignUpRoute: Route
     @Serializable
-    data object Login: Route
+    data object LoginRoute: Route
     @Serializable
-    data object Home: Route
-
-
-
+    data object SalesRoute: Route
+    @Serializable
+    data class SaleDetailsRoute(val saleId: String): Route
+    @Serializable
+    data object AddSaleRoute: Route
 }

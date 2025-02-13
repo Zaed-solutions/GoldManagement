@@ -37,10 +37,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun App(localUser: User?) {
     val startDestination = when {
-        localUser == null -> Route.Login
-        localUser.role != UserRole.CASHIER -> Route.Login
-        localUser.approvementStatusType == UserApprovementStatusType.APPROVED -> Route.Home
-        else -> Route.Login
+        localUser == null -> Route.LoginRoute
+        localUser.role != UserRole.CASHIER -> Route.LoginRoute
+        localUser.approvementStatusType == UserApprovementStatusType.APPROVED -> Route.SalesRoute
+        else -> Route.LoginRoute
     }
     NavigationHost(
         startDestination = startDestination

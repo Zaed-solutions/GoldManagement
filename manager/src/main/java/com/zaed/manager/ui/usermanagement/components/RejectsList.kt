@@ -40,6 +40,7 @@ import com.zaed.common.data.source.local.UserApprovementStatus
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.components.ExpandableItem
 import com.zaed.common.R
+import com.zaed.common.ui.components.ListWithLoading
 
 @Composable
 fun RejectsList(
@@ -49,17 +50,9 @@ fun RejectsList(
     onGrantAccessClicked: (userId: String) -> Unit,
     onDeleteClicked: (user: User) -> Unit
 ) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+    ListWithLoading(
+        isLoading = isLoading
     ) {
-        AnimatedVisibility(isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 64.dp)
-            )
-        }
         LazyColumn(
             modifier = modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),

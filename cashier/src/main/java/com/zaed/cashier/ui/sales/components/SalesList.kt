@@ -1,0 +1,88 @@
+package com.zaed.cashier.ui.sales.components
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.zaed.common.data.model.StoreSale
+import com.zaed.common.ui.components.ListWithLoading
+
+@Composable
+fun SalesList(
+    modifier: Modifier = Modifier,
+    isLoading: Boolean,
+    sales: List<StoreSale>,
+    onSaleClicked: (String) -> Unit,
+) {
+    ListWithLoading(
+        isLoading = isLoading
+    ) {
+        LazyColumn(
+            modifier = modifier.fillMaxSize(),
+            contentPadding = PaddingValues(vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(
+                items = sales,
+                key = { it.id }
+            ) { sale ->
+                SaleItem(
+                    modifier = Modifier.animateItem(),
+                    sale = sale,
+                    onSaleClicked = { onSaleClicked(sale.id) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SaleItem(
+    modifier: Modifier = Modifier,
+    sale: StoreSale,
+    onSaleClicked: () -> Unit
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        onClick = { onSaleClicked() },
+        tonalElevation = 2.dp
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                Text(
+                    text = sale.customerName,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal)
+                )
+                Text(
+                    text = sale.createdAt.toString(),
+                    style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+                )
+            }
+            Text(
+                text = sale.totalPrice.toString(),
+                style = MaterialTheme.typography.titleMedium.copy(
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+        }
+    }
+}

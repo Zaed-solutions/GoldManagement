@@ -1,6 +1,5 @@
 package com.zaed.manager.ui.usermanagement.components
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,12 +13,10 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LockPerson
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -36,11 +33,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.zaed.common.R
 import com.zaed.common.data.model.User
 import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.components.ExpandableItem
-import com.zaed.common.R
+import com.zaed.common.ui.components.ListWithLoading
 import com.zaed.manager.ui.theme.ManagerTheme
 
 @Composable
@@ -52,17 +50,9 @@ fun UsersList(
     onRevokeAccessClicked: (User) -> Unit = {},
     onDeleteClicked: (User) -> Unit = {}
 ) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+    ListWithLoading(
+        isLoading = isLoading
     ) {
-        AnimatedVisibility(isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 64.dp)
-            )
-        }
         LazyColumn(
             modifier = modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
@@ -173,7 +163,7 @@ private fun UserItem(
                                     modifier = Modifier.fillMaxWidth(),
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.SpaceBetween
-                                ){
+                                ) {
                                     Text(
                                         text = stringResource(R.string.revoke_access),
                                         color = MaterialTheme.colorScheme.error
@@ -192,7 +182,7 @@ private fun UserItem(
                                 onDeleteClicked()
                             },
                             text = {
-                                Row (
+                                Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.SpaceBetween
