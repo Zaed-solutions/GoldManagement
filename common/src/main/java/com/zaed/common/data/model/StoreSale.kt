@@ -1,5 +1,6 @@
 package com.zaed.common.data.model
 
+import kotlinx.serialization.Serializable
 import java.util.Date
 
 data class StoreSale(
@@ -14,7 +15,7 @@ data class StoreSale(
     val customerEmail: String = "",
     val products: List<Product> = emptyList(),
     val discount: Discount = Discount(),
-){
+) {
     val totalPrice = products.sumOf { it.price } - when(discount.type){
         DiscountType.NONE -> 0.0
         DiscountType.PERCENTAGE -> products.sumOf { it.price } * discount.value
