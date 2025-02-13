@@ -29,7 +29,7 @@ import com.zaed.common.data.model.User
 import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.components.ExpandableItem
-import com.zaed.manager.R
+import com.zaed.common.R
 import com.zaed.manager.ui.theme.ManagerTheme
 
 @Composable
@@ -50,7 +50,7 @@ fun RequestsList(
         }
 
         LazyColumn(
-            modifier = modifier.fillMaxWidth(),
+            modifier = modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -91,7 +91,7 @@ private fun RequestItem(
                         style = MaterialTheme.typography.titleLarge,
                     )
                     Text(
-                        text = request.role.name,
+                        text = stringResource(request.role.value),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }

@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.data.model.User
 import com.zaed.common.ui.components.SearchBar
-import com.zaed.manager.R
+import com.zaed.common.R
 import com.zaed.manager.ui.theme.ManagerTheme
 import com.zaed.manager.ui.usermanagement.components.RejectsList
 import com.zaed.manager.ui.usermanagement.components.RequestsList

@@ -22,7 +22,6 @@
     <string name="your_account_is_rejected_by_the_manager">your account is rejected by the manager</string>
     <string name="your_account_is_pending_for_approval">your account is pending for approval</string>
     <string name="login">Login</string>
-    <string name="password">Password</string>
     <string name="enter_your_account_credentials_to_sign_in">"Enter your Account Credentials to sign in "</string>
     <string name="login_success">Login Success</string>
     <string name="sign_up_success">"Sign Up Success "</string>
@@ -36,6 +35,19 @@
     <string name="invalid_role">Invalid Roles</string>
     <string name="this_action_cannot_be_undone">This action cannot be undone</string>
     <string name="are_you_sure_you_want_to_delete_this">Are you sure you want to delete this %1$s</string>
-    <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
+    <string name="search_users">Search Users</string>
+    <string name="users">Users</string>
+    <string name="requests">Requests</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="edit">Edit</string>
+    <string name="revoke_access">Revoke access</string>
+    <string name="delete">Delete</string>
+    <string name="rejects">Rejects</string>
+    <string name="user_management">User Management</string>
+    <string name="user">User</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="grant_access">Grant access</string>
 </resources>

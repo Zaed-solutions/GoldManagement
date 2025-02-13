@@ -48,7 +48,7 @@ fun PasswordTextField(
         supportingText = {
             if (isError) {
                 Text(
-                    text = stringResource(errorMessage.message) ,
+                    text = stringResource(errorMessage.message),
                     color = MaterialTheme.colorScheme.error
                 )
             }
@@ -71,7 +71,7 @@ fun PasswordTextField(
                 contentDescription = null,
             )
         },
-
+        singleLine = true,
         colors = OutlinedTextFieldDefaults.colors(
             unfocusedBorderColor = Color.Transparent,
             focusedBorderColor = Color.Transparent,
@@ -79,6 +79,5 @@ fun PasswordTextField(
             focusedContainerColor = MaterialTheme.colorScheme.background,
         ),
         shape = RoundedCornerShape(32.dp),
-
-        )
+    )
 }

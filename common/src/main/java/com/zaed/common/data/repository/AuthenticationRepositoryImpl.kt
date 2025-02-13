@@ -9,11 +9,13 @@ import com.zaed.common.data.model.request.UpdateUserRequest
 import com.zaed.common.data.source.local.LocalStorage
 import com.zaed.common.data.source.remote.AuthenticationRemoteSource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.single
 
 class AuthenticationRepositoryImpl(
     private val localStorage: LocalStorage,
-    private val remoteSource : AuthenticationRemoteSource
+    private val remoteSource: AuthenticationRemoteSource
 ) : AuthenticationRepository {
     override fun getUserApprovementStatus(): Flow<Result<LocalUser>> =
         localStorage.getLocalUser()
@@ -38,22 +40,23 @@ class AuthenticationRepositoryImpl(
 
     override suspend fun signUpUser(request: SignUpUserRequest): Result<User> {
         val response = remoteSource.signUpUser(request)
-            response.onSuccess {
-                localStorage.setLocalUser(
-                    LocalUser(
-                        userId = it.id
-                    )
+        response.onSuccess {
+            localStorage.setLocalUser(
+                LocalUser(
+                    userId = it.id
                 )
+            )
 
-            }.onFailure {
-                localStorage.setLocalUser(
-                    LocalUser(
-                        userId = ""
-                    )
+        }.onFailure {
+            localStorage.setLocalUser(
+                LocalUser(
+                    userId = ""
                 )
-            }
+            )
+        }
         return response
     }
+
     override suspend fun logoutCurrentUser(): Result<Unit> {
         localStorage.setLocalUser(
             LocalUser(
@@ -62,13 +65,12 @@ class AuthenticationRepositoryImpl(
         )
         return Result.success(Unit)
     }
-
-    override  fun getCurrentUser(): Flow<Result<User>> = flow{
-        localStorage.getLocalUser().collect{result->
-            result.onSuccess {localUser->
-                if(localUser.userId.isEmpty()){
+    override fun getCurrentUser(): Flow<Result<User>> = flow {
+        localStorage.getLocalUser().collect { result ->
+            result.onSuccess { localUser ->
+                if (localUser.userId.isEmpty()) {
                     emit(Result.failure(Exception("User not logged in")))
-                }else {
+                } else {
                     remoteSource.fetchCurrentUser(localUser.userId).collect { serverResult ->
                         serverResult.onSuccess {
                             emit(Result.success(it))

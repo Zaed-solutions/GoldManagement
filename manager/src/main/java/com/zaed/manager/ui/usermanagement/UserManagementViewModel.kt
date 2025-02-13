@@ -33,7 +33,7 @@ class UserManagementViewModel(
             fetchUsersUseCase().collect{ result ->
                 result.onSuccess { data ->
                     _uiState.update { oldState ->
-                        oldState.copy(allUsers = data)
+                        oldState.copy(allUsers = data.sortedBy { it.fullName })
                     }
                     filterData()
                 }.onFailure {

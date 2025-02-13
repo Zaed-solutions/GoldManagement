@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.zaed.common.data.model.User
 import com.zaed.common.ui.components.PasswordTextField
 import com.zaed.common.ui.components.TextInputTextField
-import com.zaed.manager.R
+import com.zaed.common.R
 
 @Composable
 fun EditUserSheetContent(
@@ -41,25 +41,28 @@ fun EditUserSheetContent(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         TextInputTextField(
+            modifier = Modifier.fillMaxWidth(),
             value = user.fullName,
             onValueChange = {
                 user = user.copy(fullName = it)
             },
-            label = stringResource(com.zaed.common.R.string.full_name)
+            label = stringResource(R.string.full_name)
         )
         TextInputTextField(
+            modifier = Modifier.fillMaxWidth(),
             value = user.userName,
             onValueChange = {
                 user = user.copy(userName = it)
             },
-            label = stringResource(com.zaed.common.R.string.user_name)
+            label = stringResource(R.string.user_name)
         )
         PasswordTextField(
+            modifier = Modifier.fillMaxWidth(),
             value = user.password,
             onValueChange = {
                 user = user.copy(password = it)
             },
-            label = stringResource(com.zaed.common.R.string.password)
+            label = stringResource(R.string.password)
         )
         Row(
             modifier = Modifier

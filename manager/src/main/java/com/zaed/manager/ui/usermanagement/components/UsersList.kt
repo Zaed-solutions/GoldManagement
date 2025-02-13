@@ -15,6 +15,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LockPerson
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CircularProgressIndicator
@@ -38,7 +40,7 @@ import com.zaed.common.data.model.User
 import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.components.ExpandableItem
-import com.zaed.manager.R
+import com.zaed.common.R
 import com.zaed.manager.ui.theme.ManagerTheme
 
 @Composable
@@ -62,7 +64,7 @@ fun UsersList(
             )
         }
         LazyColumn(
-            modifier = modifier.fillMaxWidth(),
+            modifier = modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -112,7 +114,7 @@ private fun UserItem(
                     modifier = Modifier.weight(1f)
                 )
                 Text(
-                    text = user.role.name,
+                    text = stringResource(user.role.value),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(start = 8.dp)
                 )
@@ -135,6 +137,8 @@ private fun UserItem(
 
                     DropdownMenu(
                         expanded = isOptionMenuVisible,
+                        shadowElevation = 8.dp,
+                        shape = MaterialTheme.shapes.medium,
                         onDismissRequest = { isOptionMenuVisible = false }
                     ) {
                         DropdownMenuItem(
@@ -143,14 +147,17 @@ private fun UserItem(
                             },
                             text = {
                                 Row(
-                                    verticalAlignment = Alignment.CenterVertically
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
                                         text = stringResource(R.string.edit),
                                         color = MaterialTheme.colorScheme.primary
                                     )
                                     Icon(
-                                        imageVector = Icons.Default.LockPerson,
+                                        modifier = Modifier.padding(start = 16.dp),
+                                        imageVector = Icons.Default.Edit,
                                         tint = MaterialTheme.colorScheme.primary,
                                         contentDescription = null
                                     )
@@ -163,13 +170,16 @@ private fun UserItem(
                             },
                             text = {
                                 Row(
-                                    verticalAlignment = Alignment.CenterVertically
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
                                 ){
                                     Text(
                                         text = stringResource(R.string.revoke_access),
                                         color = MaterialTheme.colorScheme.error
                                     )
                                     Icon(
+                                        modifier = Modifier.padding(start = 16.dp),
                                         imageVector = Icons.Default.LockPerson,
                                         tint = MaterialTheme.colorScheme.error,
                                         contentDescription = null
@@ -183,14 +193,17 @@ private fun UserItem(
                             },
                             text = {
                                 Row (
-                                    verticalAlignment = Alignment.CenterVertically
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
                                         text = stringResource(R.string.delete),
                                         color = MaterialTheme.colorScheme.error
                                     )
                                     Icon(
-                                        imageVector = Icons.Default.Delete,
+                                        imageVector = Icons.Default.DeleteForever,
+                                        tint = MaterialTheme.colorScheme.error,
                                         contentDescription = null
                                     )
                                 }
