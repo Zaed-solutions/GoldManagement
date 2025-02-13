@@ -13,24 +13,13 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(
     private val getCurrentUserLoggedInStatusUseCase: GetCurrentUserLoggedInUseCase,
-    private val logoutUseCase: LogoutUserUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState = _uiState.asStateFlow()
     init {
-//        logout()
         getCurrentUserLoggedInStatus()
     }
 
-    private fun logout() {
-        viewModelScope.launch(Dispatchers.IO) {
-            logoutUseCase().onSuccess {
-                    Log.d("MainViewModel", "logout: success")
-                }.onFailure {
-                    Log.d("MainViewModel", "logout: $it")
-                }
-        }
-    }
 
     private fun getCurrentUserLoggedInStatus() {
         viewModelScope.launch(Dispatchers.IO) {

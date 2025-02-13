@@ -45,6 +45,7 @@ fun TextInputTextField(
         } else null,
         shape = RoundedCornerShape(32.dp),
         isError = isError,
+        singleLine = true,
         supportingText = {
             if (isError) {
                 Text(

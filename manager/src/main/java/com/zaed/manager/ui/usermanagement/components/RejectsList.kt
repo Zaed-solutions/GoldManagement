@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.LockPerson
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CircularProgressIndicator
@@ -34,9 +35,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.data.model.User
+import com.zaed.common.data.model.UserApprovementStatusType
+import com.zaed.common.data.source.local.UserApprovementStatus
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.components.ExpandableItem
-import com.zaed.manager.R
+import com.zaed.common.R
 
 @Composable
 fun RejectsList(
@@ -58,7 +61,7 @@ fun RejectsList(
             )
         }
         LazyColumn(
-            modifier = modifier.fillMaxWidth(),
+            modifier = modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -104,7 +107,7 @@ fun RejectItem(
                     modifier = Modifier.weight(1f)
                 )
                 Text(
-                    text = reject.role.name,
+                    text = stringResource(reject.role.value),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(start = 8.dp)
                 )
@@ -126,6 +129,8 @@ fun RejectItem(
                     }
 
                     DropdownMenu(
+                        shadowElevation = 8.dp,
+                        shape = MaterialTheme.shapes.medium,
                         expanded = isOptionMenuVisible,
                         onDismissRequest = { isOptionMenuVisible = false }
                     ) {
@@ -135,13 +140,16 @@ fun RejectItem(
                             },
                             text = {
                                 Row(
-                                    verticalAlignment = Alignment.CenterVertically
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
                                 ){
                                     Text(
-                                        text = stringResource(R.string.revoke_access),
+                                        text = stringResource(R.string.grant_access),
                                         color = MaterialTheme.colorScheme.error
                                     )
                                     Icon(
+                                        modifier = Modifier.padding(start = 16.dp),
                                         imageVector = Icons.Default.LockPerson,
                                         tint = MaterialTheme.colorScheme.error,
                                         contentDescription = null
@@ -155,14 +163,18 @@ fun RejectItem(
                             },
                             text = {
                                 Row (
-                                    verticalAlignment = Alignment.CenterVertically
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
                                         text = stringResource(R.string.delete),
                                         color = MaterialTheme.colorScheme.error
                                     )
                                     Icon(
-                                        imageVector = Icons.Default.Delete,
+                                        modifier = Modifier.padding(start = 16.dp),
+                                        imageVector = Icons.Default.DeleteForever,
+                                        tint = MaterialTheme.colorScheme.error,
                                         contentDescription = null
                                     )
                                 }
