@@ -14,4 +14,15 @@
     <string name="invalid_user_name">Invalid User Name</string>
     <string name="empty_password">Empty Password</string>
     <string name="invalid_password">Invalid Password</string>
+    <string name="network_failure">Network Failed</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="loss_value_is_empty">Loss value is empty</string>
+    <string name="loss_reason_is_empty">Loss reason is empty</string>
+    <string name="loss_value_is_invalid">Loss value is invalid</string>
+    <string name="loss_reason_is_invalid">Loss reason is invalid</string>
+    <string name="value">Value</string>
+    <string name="reason">Reason</string>
+    <string name="add_new_loss">Add New Loss</string>
+    <string name="create">Create</string>
+    <string name="cancel">Cancel</string>
 </resources>
