@@ -1,0 +1,10 @@
+package com.zaed.cashier.ui.sales.details
+
+import com.zaed.common.data.model.StoreSale
+
+sealed interface SaleDetailsUiAction {
+    data class OnUpdateStoreSale(val storeSale: StoreSale) : SaleDetailsUiAction
+    data object OnSubmit : SaleDetailsUiAction
+    data object ResetError : SaleDetailsUiAction
+    data object OnBack : SaleDetailsUiAction
+}

@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.zaed.cashier.ui.loss.LossScreen
 import com.zaed.cashier.ui.sales.SalesScreen
+import com.zaed.cashier.ui.sales.details.SaleDetailsScreen
 import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
@@ -24,7 +25,7 @@ fun NavigationHost(
     val navController = rememberNavController()
     NavHost (
         navController = navController,
-        startDestination =Route.Loss,
+        startDestination =Route.SaleDetailsRoute("saleId"),
     ){
         composable<Route.SignUpRoute> {
             SignUpScreen(
@@ -67,13 +68,11 @@ fun NavigationHost(
         }
         composable<Route.SaleDetailsRoute> { backstackEntry ->
             val saleId = backstackEntry.toRoute<Route.SaleDetailsRoute>().saleId
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ){
-                Text(text = "Sale Details: $saleId")
-            }
-            //todo
+            SaleDetailsScreen(
+                onBack = {
+                    navController.popBackStack()
+                }
+            ) { }
         }
         composable<Route.AddSaleRoute> {
             Box(
