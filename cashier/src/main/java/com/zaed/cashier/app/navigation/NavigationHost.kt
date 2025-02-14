@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.zaed.cashier.ui.loss.LossScreen
 import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.component.auth.login.LoginScreen
 import com.zaed.common.ui.component.auth.signup.SignUpScreen
@@ -23,7 +24,7 @@ fun NavigationHost(
     val navController = rememberNavController()
     NavHost (
         navController = navController,
-        startDestination =startDestination,
+        startDestination =Route.Loss,
     ){
         composable<Route.SignUp> {
             SignUpScreen(
@@ -76,6 +77,13 @@ fun NavigationHost(
         composable<Route.Home> {
             HomeScreen()
         }
+        composable<Route.Loss> {
+            LossScreen(
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
 
     }
 }
@@ -118,6 +126,9 @@ sealed interface Route{
     data object Pending: Route
     @Serializable
     data object Home: Route
+    @Serializable
+    data object Loss: Route
+
 
 
 

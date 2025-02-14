@@ -88,7 +88,10 @@ fun LoginScreenContent(
     }
     Scaffold(
         snackbarHost = {
-            CustomSnackbar(snackbarHostState, uiState)
+            CustomSnackbar(
+                snackbarHostState,
+                uiState.errorMessage != null
+            )
         },
         modifier = Modifier.systemBarsPadding(),
     ) {
@@ -127,7 +130,7 @@ fun LoginScreenContent(
                 onValueChange = { onAction(AuthenticationUiAction.OnUpdateUserName(it)) },
                 label = stringResource(R.string.user_name),
                 imageVector = Icons.Default.AlternateEmail,
-                errorMessage = uiState.fieldsError,
+                errorMessage = uiState.fieldsError.message,
                 isError = uiState.fieldsError in listOf(
                     FieldsError.EMPTY_USER_NAME,
                     FieldsError.INVALID_USER_NAME

@@ -1,5 +1,6 @@
 package com.zaed.common.ui.component
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -12,7 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.zaed.common.ui.component.auth.FieldsError
 
 @Composable
 fun TextInputTextField(
@@ -21,8 +21,9 @@ fun TextInputTextField(
     onValueChange: (String) -> Unit = {},
     label: String = "",
     imageVector: ImageVector? = null,
-    errorMessage: FieldsError = FieldsError.NONE,
-    isError: Boolean = false
+    @StringRes errorMessage: Int =0,
+    isError: Boolean = false,
+    withBorder: Boolean = false
 ) {
     OutlinedTextField(
         modifier = modifier,
@@ -30,8 +31,8 @@ fun TextInputTextField(
         onValueChange = onValueChange,
         label = { Text(text = label) },
         colors = OutlinedTextFieldDefaults.colors(
-            unfocusedBorderColor = Color.Transparent,
-            focusedBorderColor = Color.Transparent,
+            unfocusedBorderColor = if(withBorder) MaterialTheme.colorScheme.outline else Color.Transparent,
+            focusedBorderColor =  if(withBorder) MaterialTheme.colorScheme.outline else Color.Transparent,
             unfocusedContainerColor = MaterialTheme.colorScheme.background,
             focusedContainerColor = MaterialTheme.colorScheme.background,
         ),
@@ -47,7 +48,7 @@ fun TextInputTextField(
         supportingText = {
             if (isError) {
                 Text(
-                    text = stringResource(errorMessage.message),
+                    text = stringResource(errorMessage),
                     color = MaterialTheme.colorScheme.error
                 )
             }
