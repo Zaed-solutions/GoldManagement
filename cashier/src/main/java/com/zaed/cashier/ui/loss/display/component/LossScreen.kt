@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
-import com.zaed.cashier.data.model.Loss
+import com.zaed.common.data.model.Loss
 import com.zaed.cashier.ui.loss.display.LossScreenContent
 import com.zaed.cashier.ui.loss.display.LossUiAction
 import com.zaed.cashier.ui.loss.display.LossUiState

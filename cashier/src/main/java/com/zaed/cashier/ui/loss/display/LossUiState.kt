@@ -2,7 +2,8 @@ package com.zaed.cashier.ui.loss.display
 
 import androidx.annotation.StringRes
 import com.zaed.cashier.R
-import com.zaed.cashier.data.model.Loss
+import com.zaed.common.data.model.Loss
+import com.zaed.common.ui.util.LossError
 
 data class LossUiState(
     val losses: List<Loss> = emptyList(),

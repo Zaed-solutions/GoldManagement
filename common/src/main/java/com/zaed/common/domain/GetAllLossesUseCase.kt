@@ -1,7 +1,8 @@
-package com.zaed.cashier.domain.loss
+package com.zaed.common.domain
 
-import com.zaed.cashier.data.model.Loss
-import com.zaed.cashier.data.repository.LossRepository
+import com.zaed.common.data.model.Loss
+import com.zaed.common.data.model.request.GetAllLossesRequest
+import com.zaed.common.data.repository.LossRepository
 import kotlinx.coroutines.flow.Flow
 
 class GetAllLossesUseCase(
@@ -11,7 +12,3 @@ class GetAllLossesUseCase(
         return lossRepository.getAllLosses(request)
     }
 }
-
-data class GetAllLossesRequest(
-    val storeId :String =""
-)

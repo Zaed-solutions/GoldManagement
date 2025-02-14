@@ -1,4 +1,4 @@
-package com.zaed.cashier.data.model
+package com.zaed.common.data.model
 
  data class Loss(
      val id : String = "",

@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zaed.cashier.data.model.Loss
+import com.zaed.common.data.model.Loss
 import com.zaed.common.ui.components.SwipeToRevealItem
 import com.zaed.common.ui.util.toMoneyFormat
 
