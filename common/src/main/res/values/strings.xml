@@ -50,4 +50,9 @@
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
     <string name="grant_access">Grant access</string>
+    <string name="none">None</string>
+    <string name="percentage_discount">Percentage Discount</string>
+    <string name="amount_discount">Amount Discount</string>
+    <string name="unknown_error">Unknown Error</string>
+    <string name="network_failure">Network failure</string>
 </resources>

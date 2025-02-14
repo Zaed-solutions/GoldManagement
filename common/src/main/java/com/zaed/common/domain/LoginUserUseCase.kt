@@ -8,16 +8,16 @@ import com.zaed.common.ui.auth.login.LoginError
 class LoginUserUseCase(
     private val authenticationRepository: AuthenticationRepository
 ) {
-    suspend operator fun invoke(request: LoginUserRequest):Result<User> {
-       val result = authenticationRepository.loginUser(request)
-         if(result.isSuccess){
+    suspend operator fun invoke(request: LoginUserRequest): Result<User> {
+        val result = authenticationRepository.loginUser(request)
+        if (result.isSuccess) {
             val user = result.getOrNull()
-             return if (user?.role == request.role) {
-                 Result.success(user)
-             } else {
-                 Result.failure(LoginError.InvalidRole())
-             }
-        }else{
+            return if (user?.role == request.role) {
+                Result.success(user)
+            } else {
+                Result.failure(LoginError.InvalidRole())
+            }
+        } else {
             return Result.failure(result.exceptionOrNull()!!)
         }
     }

@@ -2,10 +2,6 @@ package com.zaed.cashier.app
 
 import android.app.Application
 import com.zaed.cashier.app.di.appModule
-import com.zaed.cashier.app.di.cashierRemoteSource
-import com.zaed.cashier.app.di.cashierRepositoryModule
-import com.zaed.cashier.app.di.cashierUseCaseModule
-import com.zaed.cashier.app.di.cashierViewModelModule
 import com.zaed.common.app.di.localSourceModule
 import com.zaed.common.app.di.remoteSourceModule
 import com.zaed.common.app.di.repositoryModule
@@ -29,10 +25,6 @@ class MainApplication : Application() {
                 remoteSourceModule,
                 repositoryModule,
                 viewModelModule,
-                cashierViewModelModule,
-                cashierUseCaseModule,
-                cashierRemoteSource,
-                cashierRepositoryModule
             )
         }
     }

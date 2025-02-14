@@ -1,9 +1,9 @@
-package com.zaed.cashier.data.repository
+package com.zaed.common.data.repository
 
-import com.zaed.cashier.data.model.Loss
-import com.zaed.cashier.data.source.LossRemoteDataSource
-import com.zaed.cashier.domain.loss.CreateNewLossRequest
-import com.zaed.cashier.domain.loss.GetAllLossesRequest
+import com.zaed.common.data.model.Loss
+import com.zaed.common.data.model.request.CreateNewLossRequest
+import com.zaed.common.data.model.request.GetAllLossesRequest
+import com.zaed.common.data.source.remote.LossRemoteDataSource
 import kotlinx.coroutines.flow.Flow
 
 class LossRepositoryImpl(

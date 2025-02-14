@@ -1,11 +1,11 @@
-package com.zaed.cashier.data.source
+package com.zaed.common.data.source.remote
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
-import com.zaed.cashier.data.model.Loss
-import com.zaed.cashier.domain.loss.CreateNewLossRequest
-import com.zaed.cashier.domain.loss.GetAllLossesRequest
-import com.zaed.cashier.ui.loss.display.BaseError
+import com.zaed.common.data.model.Loss
+import com.zaed.common.data.model.request.CreateNewLossRequest
+import com.zaed.common.data.model.request.GetAllLossesRequest
+import com.zaed.common.ui.util.BaseError
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
