@@ -21,4 +21,12 @@
     <string name="customer_name">Customer Name</string>
     <string name="customer_phone">Customer Phone</string>
     <string name="customer_email">Customer Email</string>
+    <string name="discount_value">Discount Value</string>
+    <string name="products">Products</string>
+    <string name="minimum_price">Minimum Price</string>
+    <string name="qty_placeholder">QTY: %1$s</string>
+    <string name="minimum_price_placeholder">Minimum price: %1$s</string>
+    <string name="price">Price</string>
+    <string name="search">Search</string>
+    <string name="add_product">Add Product</string>
 </resources>

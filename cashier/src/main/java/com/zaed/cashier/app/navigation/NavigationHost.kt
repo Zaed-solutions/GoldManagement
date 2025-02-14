@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.zaed.cashier.ui.addsale.AddSaleScreen
 import com.zaed.cashier.ui.sales.SalesScreen
 import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.auth.login.LoginScreen
@@ -79,9 +80,17 @@ fun NavigationHost(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ){
-                Text(text = "Add Sale")
+                AddSaleScreen(
+                    onBackClicked = { navController.popBackStack() },
+                    onNavigateToSaleDetails = { saleId ->
+                        navController.navigate(Route.SaleDetailsRoute(saleId)){
+                            popUpTo(Route.SalesRoute){
+                                inclusive = false
+                            }
+                        }
+                    }
+                )
             }
-            //todo
         }
 
     }

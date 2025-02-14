@@ -20,7 +20,9 @@ fun TextInputTextField(
     value: String = "",
     onValueChange: (String) -> Unit = {},
     label: String = "",
+    placeHolder: String = "",
     imageVector: ImageVector? = null,
+    containerColor: Color = MaterialTheme.colorScheme.background,
     errorMessage: FieldsError = FieldsError.NONE,
     isError: Boolean = false
 ) {
@@ -28,12 +30,17 @@ fun TextInputTextField(
         modifier = modifier,
         value = value,
         onValueChange = onValueChange,
-        label = { Text(text = label) },
+        label = if(label.isBlank()) null else { { Text(text = label) } },
+        placeholder = if (placeHolder.isNotBlank()) {
+            {
+                Text(text = placeHolder)
+            }
+        } else null,
         colors = OutlinedTextFieldDefaults.colors(
             unfocusedBorderColor = Color.Transparent,
             focusedBorderColor = Color.Transparent,
-            unfocusedContainerColor = MaterialTheme.colorScheme.background,
-            focusedContainerColor = MaterialTheme.colorScheme.background,
+            unfocusedContainerColor = containerColor,
+            focusedContainerColor = containerColor,
         ),
         leadingIcon = if (imageVector != null) {
             {

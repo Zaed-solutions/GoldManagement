@@ -16,9 +16,10 @@ data class StoreSale(
     val products: List<Product> = emptyList(),
     val discount: Discount = Discount(),
 ) {
-    val totalPrice = products.sumOf { it.price } - when(discount.type){
+    val totalPrice
+        get() = products.sumOf { it.price * it.quantity } - when(discount.type){
         DiscountType.NONE -> 0.0
-        DiscountType.PERCENTAGE -> products.sumOf { it.price } * discount.value
+        DiscountType.PERCENTAGE -> products.sumOf { it.price * it.quantity } * discount.value
         DiscountType.AMOUNT -> discount.value
     }
 }

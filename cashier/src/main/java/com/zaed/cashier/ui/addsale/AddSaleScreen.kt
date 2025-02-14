@@ -11,6 +11,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -20,6 +21,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.cashier.ui.addsale.components.AddSaleBottomBar
 import com.zaed.cashier.ui.addsale.components.AddSaleTopBar
 import com.zaed.cashier.ui.addsale.components.SelectCustomerContent
+import com.zaed.cashier.ui.addsale.components.SelectProductsContent
 import com.zaed.cashier.ui.theme.CashierAppTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -28,14 +30,24 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun AddSaleScreen(
     modifier: Modifier = Modifier,
-    viewModel: AddSaleViewModel = koinViewModel()
+    viewModel: AddSaleViewModel = koinViewModel(),
+    onBackClicked: () -> Unit,
+    onNavigateToSaleDetails: (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect (state.isFinished){
+        if(state.isFinished){
+            onNavigateToSaleDetails(state.sale.id)
+        }
+    }
     AddSaleScreenContent(
         state = state,
         onAction = { action ->
-            when(action){
-                AddSaleUiAction.OnBackClicked ->{TODO()}
+            when (action) {
+                AddSaleUiAction.OnBackClicked -> {
+                    onBackClicked()
+                }
+
                 else -> viewModel.handleAction(action)
             }
         }
@@ -52,7 +64,7 @@ private fun AddSaleScreenContent(
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
     val pagerState = rememberPagerState { 2 }
-    Scaffold (
+    Scaffold(
         modifier = modifier,
         topBar = {
             AddSaleTopBar { onAction(AddSaleUiAction.OnBackClicked) }
@@ -76,32 +88,74 @@ private fun AddSaleScreenContent(
                 }
             )
         }
-    ){ innerPadding ->
-        Column (
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-        ){
+        ) {
             LinearProgressIndicator(
                 progress = { pagerState.currentPage.toFloat() / pagerState.pageCount },
-                modifier = Modifier.fillMaxWidth().height(8.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(8.dp)
             )
             HorizontalPager(
                 modifier = Modifier.padding(top = 16.dp),
                 state = pagerState,
                 userScrollEnabled = false,
             ) { page ->
-                when(page){
+                when (page) {
                     0 -> {
                         SelectCustomerContent(
                             sale = state.sale,
-                            onUpdateCustomerName = { onAction(AddSaleUiAction.OnUpdateCustomerName(it)) },
-                            onUpdateCustomerPhone = { onAction(AddSaleUiAction.OnUpdateCustomerPhone(it)) },
-                            onUpdateCustomerEmail = { onAction(AddSaleUiAction.OnUpdateCustomerEmail(it)) }
+                            onUpdateCustomerName = {
+                                onAction(
+                                    AddSaleUiAction.OnUpdateCustomerName(
+                                        it
+                                    )
+                                )
+                            },
+                            onUpdateCustomerPhone = {
+                                onAction(
+                                    AddSaleUiAction.OnUpdateCustomerPhone(
+                                        it
+                                    )
+                                )
+                            },
+                            onUpdateCustomerEmail = {
+                                onAction(
+                                    AddSaleUiAction.OnUpdateCustomerEmail(
+                                        it
+                                    )
+                                )
+                            }
                         )
                     }
+
                     1 -> {
-//                        SelectProductsContent()
+                        SelectProductsContent(
+                            allProducts = state.allProducts,
+                            sale = state.sale,
+                            onUpdateProductPrice = { id, price ->
+                                onAction(AddSaleUiAction.OnUpdateProductPrice(id, price))
+                            },
+                            onAddProduct = {
+                                onAction(AddSaleUiAction.OnAddProduct(it))
+                            },
+                            onRemoveProduct = {
+                                onAction(AddSaleUiAction.OnRemoveProduct(it))
+                            },
+                            onUpdateDiscountType = {
+                                onAction(AddSaleUiAction.OnUpdateDiscountType(it))
+                            },
+                            onUpdateDiscountValue = {
+                                onAction(AddSaleUiAction.OnUpdateDiscountValue(it))
+                            },
+                            onUpdateProductCount = { id, count ->
+                                onAction(AddSaleUiAction.OnUpdateProductQuantity(id, count))
+                            }
+                        )
                     }
                 }
             }

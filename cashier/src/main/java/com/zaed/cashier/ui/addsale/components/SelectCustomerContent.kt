@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,22 +35,25 @@ fun SelectCustomerContent(
         TextInputTextField(
             modifier = Modifier.fillMaxWidth(),
             value = sale.customerName,
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
             onValueChange = onUpdateCustomerName,
-            label = stringResource(R.string.customer_name),
+            placeHolder = stringResource(R.string.customer_name),
             imageVector = Icons.Default.Person,
         )
         TextInputTextField(
             modifier = Modifier.fillMaxWidth(),
             value = sale.customerPhoneNumber,
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
             onValueChange = onUpdateCustomerPhone,
-            label = stringResource(R.string.customer_phone),
+            placeHolder = stringResource(R.string.customer_phone),
             imageVector = Icons.Default.Phone,
         )
         TextInputTextField(
             modifier = Modifier.fillMaxWidth(),
             value = sale.customerEmail,
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
             onValueChange = onUpdateCustomerEmail,
-            label = stringResource(R.string.customer_email),
+            placeHolder = stringResource(R.string.customer_email),
             imageVector = Icons.Default.Mail,
         )
     }

@@ -4,19 +4,28 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.firebase.firestore.LocalCacheSettings
+import com.google.firebase.firestore.MemoryCacheSettings
+import com.google.firebase.firestore.PersistentCacheSettings
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.zaed.common.data.repository.AuthenticationRepository
 import com.zaed.common.data.repository.AuthenticationRepositoryImpl
+import com.zaed.common.data.repository.ProductRepository
+import com.zaed.common.data.repository.ProductRepositoryImpl
 import com.zaed.common.data.repository.SaleRepository
 import com.zaed.common.data.repository.SaleRepositoryImpl
 import com.zaed.common.data.source.local.LocalStorage
 import com.zaed.common.data.source.local.LocalStorageImpl
 import com.zaed.common.data.source.remote.AuthenticationRemoteSource
 import com.zaed.common.data.source.remote.AuthenticationRemoteSourceImpl
+import com.zaed.common.data.source.remote.ProductRemoteSource
+import com.zaed.common.data.source.remote.ProductRemoteSourceImpl
 import com.zaed.common.data.source.remote.SaleRemoteSource
 import com.zaed.common.data.source.remote.SaleRemoteSourceImpl
+import com.zaed.common.domain.AddStoreSaleUseCase
 import com.zaed.common.domain.DeleteUserUseCase
+import com.zaed.common.domain.FetchAllProductsUseCase
 import com.zaed.common.domain.FetchStoreSalesUseCase
 import com.zaed.common.domain.FetchUsersUseCase
 import com.zaed.common.domain.GetCurrentUserLoggedInUseCase
@@ -46,10 +55,13 @@ val useCaseModule = module {
     singleOf(::UpdateUserUseCase)
     singleOf(::DeleteUserUseCase)
     singleOf(::FetchStoreSalesUseCase)
+    singleOf(::AddStoreSaleUseCase)
+    singleOf(::FetchAllProductsUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }
     singleOf(::SaleRepositoryImpl) { bind<SaleRepository>() }
+    singleOf(::ProductRepositoryImpl) { bind<ProductRepository>() }
 }
 val viewModelModule = module {
     viewModelOf(::SignUpViewModel)
@@ -59,10 +71,15 @@ val viewModelModule = module {
 val remoteSourceModule = module {
     singleOf(::AuthenticationRemoteSourceImpl) {bind<AuthenticationRemoteSource>()}
     singleOf(::SaleRemoteSourceImpl) { bind<SaleRemoteSource>() }
+    singleOf(::ProductRemoteSourceImpl) { bind<ProductRemoteSource>() }
     single<FirebaseFirestore> {
         val db = Firebase.firestore
         val settings = FirebaseFirestoreSettings.Builder()
-            .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
+            .setLocalCacheSettings(
+                PersistentCacheSettings.newBuilder()
+                    .setSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
+                    .build()
+            )
             .build()
         db.firestoreSettings = settings
         db

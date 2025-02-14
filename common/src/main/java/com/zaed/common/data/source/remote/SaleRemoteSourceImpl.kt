@@ -3,10 +3,12 @@ package com.zaed.common.data.source.remote
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.common.data.model.StoreSale
+import com.zaed.common.data.model.request.AddStoreSaleRequest
 import com.zaed.common.data.model.request.FetchStoreSalesRequest
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 
 class SaleRemoteSourceImpl(
     private val firestore: FirebaseFirestore,
@@ -29,6 +31,17 @@ class SaleRemoteSourceImpl(
             trySend(Result.failure(e))
         } finally {
             awaitClose { }
+        }
+    }
+
+    override suspend fun addStoreSale(request: AddStoreSaleRequest): Result<String> {
+        return try {
+            val docRef = storeSalesCollection.document()
+            docRef.set(request.sale.copy(id = docRef.id)).await()
+            Result.success(docRef.id)
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            Result.failure(e)
         }
     }
 }
