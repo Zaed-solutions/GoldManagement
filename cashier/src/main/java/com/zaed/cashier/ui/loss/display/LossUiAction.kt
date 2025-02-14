@@ -1,9 +1,12 @@
-package com.zaed.cashier.ui.loss
+package com.zaed.cashier.ui.loss.display
 
 sealed interface LossUiAction {
     data class OnCreateNewLoss(
         val reason : String = "",
         val value : String = ""
+    ) : LossUiAction
+    data class OnDeleteLoss(
+        val id : String = ""
     ) : LossUiAction
     data object OnAddNewLoss : LossUiAction
     data object ResetError : LossUiAction

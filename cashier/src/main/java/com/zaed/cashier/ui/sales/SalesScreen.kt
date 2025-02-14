@@ -50,7 +50,7 @@ fun SalesScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SalesScreenContent(
+private fun SalesScreenContent(
     modifier: Modifier = Modifier,
     state: SalesUiState,
     onAction: (SalesUiAction) -> Unit

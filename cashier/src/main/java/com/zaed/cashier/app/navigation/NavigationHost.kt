@@ -10,7 +10,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.zaed.cashier.ui.loss.LossScreen
+import com.zaed.cashier.ui.loss.display.component.LossScreen
+import com.zaed.cashier.ui.addsale.AddSaleScreen
 import com.zaed.cashier.ui.sales.SalesScreen
 import com.zaed.cashier.ui.sales.details.SaleDetailsScreen
 import com.zaed.common.data.model.UserRole
@@ -79,9 +80,17 @@ fun NavigationHost(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ){
-                Text(text = "Add Sale")
+                AddSaleScreen(
+                    onBackClicked = { navController.popBackStack() },
+                    onNavigateToSaleDetails = { saleId ->
+                        navController.navigate(Route.SaleDetailsRoute(saleId)){
+                            popUpTo(Route.SalesRoute){
+                                inclusive = false
+                            }
+                        }
+                    }
+                )
             }
-            //todo
         }
 
         composable<Route.Loss> {

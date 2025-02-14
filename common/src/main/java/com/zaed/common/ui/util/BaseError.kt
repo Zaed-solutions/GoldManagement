@@ -1,8 +1,8 @@
-package com.zaed.cashier.ui.loss
+package com.zaed.common.ui.util
 
 import android.util.Log
 import androidx.annotation.StringRes
-import com.zaed.cashier.R
+import com.zaed.common.R
 
 sealed class BaseError(
     @StringRes open val userMessage: Int = 0,
@@ -30,14 +30,3 @@ enum class LossErrorType(
         R.string.network_failure
     ),
 }
-
-sealed class LossError(
-    errorType: LossErrorType,
-) : BaseError(errorType.userMessage) {
-    data class NetworkLoss(
-        override val location: String = "",
-        val errorType: LossErrorType
-    ):LossError(LossErrorType.NETWORK_FAILURE)
-}
-
-

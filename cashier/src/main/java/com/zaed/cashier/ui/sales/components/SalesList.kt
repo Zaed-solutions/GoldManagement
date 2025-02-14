@@ -1,5 +1,6 @@
 package com.zaed.cashier.ui.sales.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.zaed.common.data.model.StoreSale
 import com.zaed.common.ui.components.ListWithLoading
+import com.zaed.common.ui.util.formatMoney
 
 @Composable
 fun SalesList(
@@ -76,8 +78,9 @@ fun SaleItem(
                     style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
                 )
             }
+            Log.d("SalesList", "SaleItem: ${sale.totalPrice},,,,${sale.products}")
             Text(
-                text = sale.totalPrice.toString(),
+                text = sale.totalPrice.formatMoney(),
                 style = MaterialTheme.typography.titleMedium.copy(
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold

@@ -1,6 +1,7 @@
-package com.zaed.cashier.domain.loss
+package com.zaed.common.domain
 
-import com.zaed.cashier.data.repository.LossRepository
+import com.zaed.common.data.model.request.CreateNewLossRequest
+import com.zaed.common.data.repository.LossRepository
 
 class CreateNewLossUseCase(
     private val lossRepository: LossRepository
@@ -11,7 +12,3 @@ class CreateNewLossUseCase(
 
 }
 
-data class CreateNewLossRequest(
-    val value : Double = 0.0,
-    val reason : String = "",
-)

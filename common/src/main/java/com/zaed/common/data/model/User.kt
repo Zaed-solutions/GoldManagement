@@ -1,6 +1,8 @@
 package com.zaed.common.data.model
 
 data class User(
+    val storeId: String = "",
+    val storeName: String = "",
     val id : String = "",
     val fullName :String = "",
     val userName: String = "",

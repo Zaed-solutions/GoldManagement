@@ -1,5 +1,7 @@
-package com.zaed.cashier.ui.loss
+package com.zaed.cashier.ui.loss.display
 
+import LossItem
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +14,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -20,14 +21,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,49 +36,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.cashier.R
-import com.zaed.cashier.data.model.Loss
-import com.zaed.cashier.ui.theme.CashierAppTheme
+import com.zaed.cashier.ui.loss.display.component.AnimatedBottomSheetWithCreateAndDismiss
 import com.zaed.common.ui.component.BackIcon
 import com.zaed.common.ui.components.AnimatedLoading
+import com.zaed.common.ui.components.ConfirmDeleteDialog
 import com.zaed.common.ui.components.CustomSnackbar
 import com.zaed.common.ui.components.TextInputTextField
-import com.zaed.common.ui.util.toMoneyFormat
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
-
-@Composable
-fun LossScreen(
-    viewModel: LossViewModel = koinViewModel(),
-    onBack: () -> Unit,
-) {
-    val uiState by viewModel.uiState.collectAsState()
-
-    LossScreenContent(
-        uiState = uiState,
-        onAction = { action ->
-            when (action) {
-                LossUiAction.OnBack -> onBack()
-                else -> viewModel.handleAction(action)
-            }
-        }
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LossScreenContent(
     uiState: LossUiState,
-    onAction: (LossUiAction) -> Unit
+    onAction: (LossUiAction) -> Unit,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     var isCreateNewLossSheetOpen by remember { mutableStateOf(false) }
+    var isDeleteLossSheetOpen by remember { mutableStateOf(false to "") }
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
@@ -147,15 +124,23 @@ fun LossScreenContent(
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(uiState.losses) { loss ->
-                    LossItem(loss = loss)
+                    LossItem(
+                        loss = loss,
+                        onClickEdit = {
+                            Toast.makeText(context, "Edit", Toast.LENGTH_SHORT).show()
+                        },
+                        onClickDelete = {
+                            isDeleteLossSheetOpen = true to loss.id
+                        }
+                    )
                 }
             }
         }
-        AnimatedBottomSheetWithCreateAndDissmis(
+        AnimatedBottomSheetWithCreateAndDismiss(
             isCreateNewLossSheetOpen,
             sheetState,
             scope,
-            onDissmis = {
+            onDismiss = {
                 scope.launch {
                     sheetState.hide()
                 }
@@ -235,101 +220,23 @@ fun LossScreenContent(
                 }
             }
         }
-
-    }
-}
-
-@Composable
-@OptIn(ExperimentalMaterial3Api::class)
-private fun AnimatedBottomSheetWithCreateAndDissmis(
-    isCreateNewLossSheetOpen: Boolean,
-    sheetState: SheetState,
-    scope: CoroutineScope,
-    onDissmis: () -> Unit,
-    content: @Composable () -> Unit
-) {
-    AnimatedVisibility(isCreateNewLossSheetOpen) {
-        ModalBottomSheet(
-            sheetState = sheetState,
-            onDismissRequest = {
-                scope.launch {
-                    sheetState.hide()
-                }
-                onDissmis()
-            },
-        ) {
-            content()
-        }
-    }
-}
-
-
-@Composable
-fun LossItem(loss: Loss) {
-    Card(
-        modifier = Modifier.padding(8.dp),
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = loss.value.toMoneyFormat(),
-                modifier = Modifier.padding(bottom = 8.dp),
-                style = MaterialTheme.typography.displayMedium.copy(
-                    color = MaterialTheme.colorScheme.primary
+        AnimatedVisibility(isDeleteLossSheetOpen.first) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    isDeleteLossSheetOpen = false to ""
+                },
+            ) {
+                ConfirmDeleteDialog(
+                    onDismiss = {
+                        isDeleteLossSheetOpen = false to ""
+                    },
+                    onConfirm = {
+                        onAction(LossUiAction.OnDeleteLoss(isDeleteLossSheetOpen.second))
+                        isDeleteLossSheetOpen = false to ""
+                    }
                 )
-            )
-            Text(
-                text = loss.reason,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 8.dp),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
+            }
         }
+
     }
-}
-
-@Preview
-@Composable
-private fun LossScreenPreview() {
-    CashierAppTheme {
-        LossScreenContent(
-            uiState = LossUiState(
-                losses = listOf(
-                    Loss(
-                        id = "1",
-                        value = 100.0,
-                        reason = "fijnfinrifnrifnr"
-                    ),
-                    Loss(
-                        id = "1",
-                        value = 100.0,
-                        reason = "fijnfinrifnrifnr"
-                    ),
-                    Loss(
-                        id = "1",
-                        value = 100.0,
-                        reason = "fijnfinrifnrifnr"
-                    ),
-                    Loss(
-                        id = "1",
-                        value = 100.0,
-                        reason = "fijnfinrifnrifnr"
-                    ),
-                    Loss(
-                        id = "1",
-                        value = 10000.0,
-                        reason = "fijnfinrifnrifnr"
-                    ),
-
-                    )
-            ),
-            {}
-        )
-    }
-
 }

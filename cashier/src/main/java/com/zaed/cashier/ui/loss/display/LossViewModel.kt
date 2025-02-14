@@ -1,12 +1,13 @@
-package com.zaed.cashier.ui.loss
+package com.zaed.cashier.ui.loss.display
 
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zaed.cashier.domain.loss.CreateNewLossRequest
-import com.zaed.cashier.domain.loss.CreateNewLossUseCase
-import com.zaed.cashier.domain.loss.GetAllLossesRequest
-import com.zaed.cashier.domain.loss.GetAllLossesUseCase
+import com.zaed.common.data.model.request.CreateNewLossRequest
+import com.zaed.common.data.model.request.GetAllLossesRequest
+import com.zaed.common.domain.CreateNewLossUseCase
+import com.zaed.common.domain.GetAllLossesUseCase
+import com.zaed.common.ui.util.LossError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,10 +43,15 @@ class LossViewModel(
                 value = action.value,
                 reason = action.reason
             )
+            is LossUiAction.OnDeleteLoss -> deleteLoss(action.id)
             LossUiAction.ResetError -> resetError()
             LossUiAction.ResetSuccess -> resetSuccessState()
             else -> {}
         }
+    }
+
+    private fun deleteLoss(id: String) {
+        //TODO: delete loss if needed
     }
 
 
