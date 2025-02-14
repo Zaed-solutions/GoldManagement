@@ -7,17 +7,16 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
-import com.zaed.common.ui.auth.AuthenticationUiState
 
 @Composable
 fun CustomSnackbar(
     snackbarHostState: SnackbarHostState,
-    uiState: AuthenticationUiState
+    isError: Boolean = false
 ) {
     SnackbarHost(snackbarHostState) { data ->
         Snackbar(
             shape = RoundedCornerShape(36.dp),
-            containerColor = if (uiState.errorMessage != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+            containerColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
             snackbarData = data
         )
     }

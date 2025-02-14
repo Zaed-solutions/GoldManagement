@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.zaed.cashier.ui.loss.display.component.LossScreen
 import com.zaed.cashier.ui.addsale.AddSaleScreen
 import com.zaed.cashier.ui.sales.SalesScreen
 import com.zaed.common.data.model.UserRole
@@ -24,7 +25,7 @@ fun NavigationHost(
     val navController = rememberNavController()
     NavHost (
         navController = navController,
-        startDestination =startDestination,
+        startDestination =Route.Loss,
     ){
         composable<Route.SignUpRoute> {
             SignUpScreen(
@@ -93,8 +94,18 @@ fun NavigationHost(
             }
         }
 
+        composable<Route.Loss> {
+            LossScreen(
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
     }
 }
+
+
 
 
 
@@ -106,6 +117,10 @@ sealed interface Route{
     data object LoginRoute: Route
     @Serializable
     data object SalesRoute: Route
+    @Serializable
+    data object Home: Route
+    @Serializable
+    data object Loss: Route
     @Serializable
     data class SaleDetailsRoute(val saleId: String): Route
     @Serializable

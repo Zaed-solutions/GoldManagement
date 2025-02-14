@@ -20,7 +20,7 @@ import com.zaed.common.R
 @Composable
 fun ConfirmDeleteDialog(
     modifier: Modifier = Modifier,
-    label: String,
+    label: String="",
     subtitle: String = stringResource(R.string.this_action_cannot_be_undone),
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
