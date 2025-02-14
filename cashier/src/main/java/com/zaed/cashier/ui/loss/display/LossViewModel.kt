@@ -1,4 +1,4 @@
-package com.zaed.cashier.ui.loss
+package com.zaed.cashier.ui.loss.display
 
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
@@ -42,10 +42,15 @@ class LossViewModel(
                 value = action.value,
                 reason = action.reason
             )
+            is LossUiAction.OnDeleteLoss -> deleteLoss(action.id)
             LossUiAction.ResetError -> resetError()
             LossUiAction.ResetSuccess -> resetSuccessState()
             else -> {}
         }
+    }
+
+    private fun deleteLoss(id: String) {
+        //TODO: delete loss if needed
     }
 
 

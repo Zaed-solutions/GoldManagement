@@ -25,4 +25,5 @@
     <string name="add_new_loss">Add New Loss</string>
     <string name="create">Create</string>
     <string name="cancel">Cancel</string>
+    <string name="are_you_sure_you_want_to_delete_this_loss">Are you sure you want to delete this loss?</string>
 </resources>

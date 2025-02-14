@@ -5,7 +5,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.cashier.data.model.Loss
 import com.zaed.cashier.domain.loss.CreateNewLossRequest
 import com.zaed.cashier.domain.loss.GetAllLossesRequest
-import com.zaed.cashier.ui.loss.BaseError
+import com.zaed.cashier.ui.loss.display.BaseError
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow

@@ -9,7 +9,7 @@ import com.zaed.cashier.data.source.LossRemoteDataSource
 import com.zaed.cashier.data.source.LossRemoteDataSourceImpl
 import com.zaed.cashier.domain.loss.CreateNewLossUseCase
 import com.zaed.cashier.domain.loss.GetAllLossesUseCase
-import com.zaed.cashier.ui.loss.LossViewModel
+import com.zaed.cashier.ui.loss.display.LossViewModel
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 
