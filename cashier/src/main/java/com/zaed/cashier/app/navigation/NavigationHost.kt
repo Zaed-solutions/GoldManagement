@@ -10,7 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.zaed.cashier.ui.loss.LossScreen
+import com.zaed.cashier.ui.loss.display.component.LossScreen
 import com.zaed.cashier.ui.sales.SalesScreen
 import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.auth.login.LoginScreen

@@ -1,4 +1,4 @@
-package com.zaed.cashier.ui.loss
+package com.zaed.cashier.ui.loss.display
 
 import androidx.annotation.StringRes
 import com.zaed.cashier.R

@@ -1,4 +1,4 @@
-package com.zaed.cashier.ui.loss
+package com.zaed.cashier.ui.loss.display
 
 import android.util.Log
 import androidx.annotation.StringRes
@@ -37,7 +37,7 @@ sealed class LossError(
     data class NetworkLoss(
         override val location: String = "",
         val errorType: LossErrorType
-    ):LossError(LossErrorType.NETWORK_FAILURE)
+    ): LossError(LossErrorType.NETWORK_FAILURE)
 }
 
 
