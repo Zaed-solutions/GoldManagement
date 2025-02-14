@@ -43,10 +43,10 @@ import androidx.compose.ui.unit.dp
 import com.zaed.cashier.R
 import com.zaed.cashier.data.model.Loss
 import com.zaed.cashier.ui.theme.CashierAppTheme
-import com.zaed.common.ui.component.AnimatedLoading
 import com.zaed.common.ui.component.BackIcon
-import com.zaed.common.ui.component.CustomSnackbar
-import com.zaed.common.ui.component.TextInputTextField
+import com.zaed.common.ui.components.AnimatedLoading
+import com.zaed.common.ui.components.CustomSnackbar
+import com.zaed.common.ui.components.TextInputTextField
 import com.zaed.common.ui.util.toMoneyFormat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

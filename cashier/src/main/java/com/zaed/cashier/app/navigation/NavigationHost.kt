@@ -10,8 +10,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.zaed.cashier.ui.sales.SalesScreen
 import com.zaed.cashier.ui.loss.LossScreen
+import com.zaed.cashier.ui.sales.SalesScreen
 import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
@@ -96,32 +96,7 @@ fun NavigationHost(
     }
 }
 
-@Composable
-fun HomeScreen() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Home",
-            style = MaterialTheme.typography.titleLarge
-        )
-    }}
 
-@Composable
-fun PendingScreen() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Pending",
-            style = MaterialTheme.typography.titleLarge
-        )
-    }
-}
 
 
 

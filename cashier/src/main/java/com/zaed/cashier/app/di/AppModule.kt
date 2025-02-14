@@ -10,10 +10,8 @@ import com.zaed.cashier.data.source.LossRemoteDataSourceImpl
 import com.zaed.cashier.domain.loss.CreateNewLossUseCase
 import com.zaed.cashier.domain.loss.GetAllLossesUseCase
 import com.zaed.cashier.ui.loss.LossViewModel
-import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
 
 
 val cashierViewModelModule = module {
@@ -32,5 +30,6 @@ val cashierRepositoryModule = module {
     singleOf(::LossRepositoryImpl) { bind<LossRepository>() }
 }
 val cashierRemoteSource = module {
+
     singleOf(::LossRemoteDataSourceImpl) { bind<LossRemoteDataSource>() }
 }
