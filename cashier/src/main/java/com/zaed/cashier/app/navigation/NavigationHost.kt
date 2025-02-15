@@ -25,7 +25,7 @@ fun NavigationHost(
     val navController = rememberNavController()
     NavHost (
         navController = navController,
-        startDestination =startDestination,
+        startDestination = startDestination,
     ){
         composable<Route.SignUpRoute> {
             SignUpScreen(
