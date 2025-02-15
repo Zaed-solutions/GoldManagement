@@ -5,7 +5,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.common.data.model.Loss
 import com.zaed.common.data.model.request.CreateNewLossRequest
 import com.zaed.common.data.model.request.GetAllLossesRequest
-import com.zaed.common.ui.util.BaseError
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -20,16 +19,15 @@ class LossRemoteDataSourceImpl(
     override suspend fun createNewLoss(request: CreateNewLossRequest): Result<Unit> {
         return try {
             val document = lossCollection.document()
-            document.set(request).await()
+            val loss = Loss(
+                id = document.id,
+                value = request.value,
+                reason = request.reason,
+            )
+            document.set(loss).await()
             Result.success(Unit)
         }catch (e:Exception){
-            val error = BaseError.Unknown(
-                reason = e.message ?: "Unknown error",
-            )
-            crashlytics.recordException(error)
-            crashlytics.log(error.toString())
-            error.log()
-            Result.failure(error)
+            Result.failure(e)
         }
 
     }
@@ -38,13 +36,7 @@ class LossRemoteDataSourceImpl(
         try {
             lossCollection.addSnapshotListener{ snapshot, e ->
                 if(e != null){
-                    val error = BaseError.Unknown(
-                        reason = e.message ?: "Unknown error",
-                    )
-                    error.log()
-                    crashlytics.recordException(error)
-                    crashlytics.log(error.toString())
-                    trySend(Result.failure(error))
+                    trySend(Result.failure(e))
                 }
                 if(snapshot != null && !snapshot.isEmpty){
                     val losses = snapshot.toObjects(Loss::class.java)
@@ -55,13 +47,8 @@ class LossRemoteDataSourceImpl(
             }
 
         }catch (e:Exception){
-            val error = BaseError.Unknown(
-                reason = e.message ?: "Unknown error",
-            )
-            crashlytics.recordException(error)
-            crashlytics.log(error.toString())
-            error.log()
-            trySend(Result.failure(error))
+
+            trySend(Result.failure(e))
         }
         awaitClose {}
     }

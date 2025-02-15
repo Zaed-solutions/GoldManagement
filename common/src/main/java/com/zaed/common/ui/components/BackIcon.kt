@@ -1,4 +1,4 @@
-package com.zaed.common.ui.component
+package com.zaed.common.ui.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos

@@ -1,14 +1,13 @@
-package com.zaed.cashier.ui.loss.display
+package com.zaed.cashier.ui.loss
 
 import androidx.annotation.StringRes
 import com.zaed.cashier.R
 import com.zaed.common.data.model.Loss
-import com.zaed.common.ui.util.LossError
 
 data class LossUiState(
     val losses: List<Loss> = emptyList(),
     val isLoading: Boolean = false,
-    val errorMessage: LossError? = null,
+    @StringRes val errorMessage: Int? = null,
     val fieldError: LossFieldsError = LossFieldsError.NONE,
     val successMessage: String? = null
 )

@@ -144,7 +144,7 @@ fun SaleDetailsPreview(
                     verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                 ) {
                     Text(
-                        text = sale.id.substring(0..7),
+                        text = sale.id,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                     )
@@ -179,7 +179,7 @@ fun SaleDetailsPreview(
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
-                        text = sale.createdAt.toString().substring(0..10),
+                        text = sale.createdAt.toString().take(10),
                         style = MaterialTheme.typography.titleMedium,
                     )
                 }

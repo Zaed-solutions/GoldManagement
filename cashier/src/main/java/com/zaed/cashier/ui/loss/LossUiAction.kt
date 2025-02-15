@@ -1,4 +1,4 @@
-package com.zaed.cashier.ui.loss.display
+package com.zaed.cashier.ui.loss
 
 sealed interface LossUiAction {
     data class OnCreateNewLoss(

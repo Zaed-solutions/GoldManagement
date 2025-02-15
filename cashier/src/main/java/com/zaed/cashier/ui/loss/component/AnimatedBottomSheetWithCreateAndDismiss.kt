@@ -1,4 +1,4 @@
-package com.zaed.cashier.ui.loss.display.component
+package com.zaed.cashier.ui.loss.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.material3.ExperimentalMaterial3Api

@@ -2,7 +2,6 @@ package com.zaed.cashier.app.navigation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -10,8 +9,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.zaed.cashier.ui.loss.display.component.LossScreen
 import com.zaed.cashier.ui.addsale.AddSaleScreen
+import com.zaed.cashier.ui.loss.LossScreen
 import com.zaed.cashier.ui.sales.SalesScreen
 import com.zaed.cashier.ui.sales.details.SaleDetailsScreen
 import com.zaed.common.data.model.UserRole
@@ -21,12 +20,12 @@ import kotlinx.serialization.Serializable
 
 @Composable
 fun NavigationHost(
-    startDestination: Any
+    startDestination: Route
 ) {
     val navController = rememberNavController()
     NavHost (
         navController = navController,
-        startDestination =Route.SaleDetailsRoute("saleId"),
+        startDestination =Route.Loss,
     ){
         composable<Route.SignUpRoute> {
             SignUpScreen(

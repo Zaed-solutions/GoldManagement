@@ -1,4 +1,4 @@
-package com.zaed.cashier.ui.loss.display
+package com.zaed.cashier.ui.loss
 
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
@@ -7,7 +7,6 @@ import com.zaed.common.data.model.request.CreateNewLossRequest
 import com.zaed.common.data.model.request.GetAllLossesRequest
 import com.zaed.common.domain.CreateNewLossUseCase
 import com.zaed.common.domain.GetAllLossesUseCase
-import com.zaed.common.ui.util.LossError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,7 +30,7 @@ class LossViewModel(
                 result.onSuccess { data ->
                     _uiState.update { it.copy(losses = data) }
                 }.onFailure { error ->
-                        _uiState.update { it.copy(errorMessage = error as? LossError) }
+                        _uiState.update { it.copy(errorMessage = 0) }
                 }
             }
         }
@@ -74,7 +73,7 @@ class LossViewModel(
                 _uiState.update { it.copy(isLoading = false, successMessage = "Loss created successfully") }
                 getAllLosses()
             }.onFailure { error ->
-                _uiState.update { it.copy(isLoading = false, errorMessage = error as? LossError) }
+                _uiState.update { it.copy(isLoading = false, errorMessage = 0) }
             }
         }
     }
