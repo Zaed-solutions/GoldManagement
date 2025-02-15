@@ -20,6 +20,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.zaed.common.data.model.StoreSale
 import com.zaed.common.ui.components.ListWithLoading
+import com.zaed.common.ui.components.SwipeToEditOrDeleteContainer
+import com.zaed.common.ui.util.DateFormat
+import com.zaed.common.ui.util.format
 import com.zaed.common.ui.util.formatMoney
 
 @Composable
@@ -28,6 +31,7 @@ fun SalesList(
     isLoading: Boolean,
     sales: List<StoreSale>,
     onSaleClicked: (String) -> Unit,
+    onDeleteSale: (StoreSale) -> Unit
 ) {
     ListWithLoading(
         isLoading = isLoading
@@ -41,11 +45,19 @@ fun SalesList(
                 items = sales,
                 key = { it.id }
             ) { sale ->
-                SaleItem(
+                SwipeToEditOrDeleteContainer(
                     modifier = Modifier.animateItem(),
-                    sale = sale,
-                    onSaleClicked = { onSaleClicked(sale.id) }
-                )
+                    onDelete = {
+                        onDeleteSale(sale)
+                    },
+                    isEditEnabled = false
+                ) {
+                    SaleItem(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        sale = sale,
+                        onSaleClicked = { onSaleClicked(sale.id) }
+                    )
+                }
             }
         }
     }
@@ -74,7 +86,7 @@ fun SaleItem(
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal)
                 )
                 Text(
-                    text = sale.createdAt.toString(),
+                    text = sale.createdAt.format(DateFormat.DATE_TIME),
                     style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
                 )
             }
