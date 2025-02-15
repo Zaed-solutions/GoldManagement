@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -20,10 +21,12 @@ import kotlinx.serialization.Serializable
 
 @Composable
 fun NavigationHost(
-    startDestination: Route
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    startDestination: Route,
 ) {
-    val navController = rememberNavController()
     NavHost (
+        modifier = modifier,
         navController = navController,
         startDestination = startDestination,
     ){

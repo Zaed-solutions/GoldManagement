@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
@@ -41,6 +42,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -106,12 +108,18 @@ fun LossScreenContent(
         },
         floatingActionButton = {
             FloatingActionButton(
+                modifier = Modifier.padding(bottom = 8.dp, end = 8.dp).rotate(45f),
+                shape = RoundedCornerShape(16.dp),
                 onClick = {
                     selectedLoss = Loss()
                     isSaveLossSheetOpen = true
                 }
             ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add")
+                Icon(
+                    modifier = Modifier.rotate(-45f),
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add"
+                )
             }
         },
         snackbarHost = {
@@ -125,9 +133,6 @@ fun LossScreenContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(
-                    MaterialTheme.colorScheme.primaryContainer.copy(0.3f)
-                )
                 .padding(16.dp)
         ) {
             AnimatedLoading(uiState.isLoading)
