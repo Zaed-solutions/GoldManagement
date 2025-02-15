@@ -1,0 +1,90 @@
+package com.zaed.common.ui.components
+
+import androidx.annotation.StringRes
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun NumberInputTextField(
+    modifier: Modifier = Modifier,
+    value: Double = 0.0,
+    onValueChange: (Double) -> Unit = {},
+    label: String = "",
+    placeHolder: String = "",
+    supportingText: String = "",
+    imageVector: ImageVector? = null,
+    @StringRes
+    errorMessage: Int =0,
+    isError: Boolean = false,
+    withBorder: Boolean = false,
+    containerColor: Color = MaterialTheme.colorScheme.background,
+) {
+    var textValue by remember { mutableStateOf(value.toString()) }
+    OutlinedTextField(
+        modifier = modifier,
+        value = if(value == 0.0) "" else textValue,
+        onValueChange = { newText ->
+            val formattedText = newText.replace(',', '.') // Allow comma as decimal
+            if (formattedText.isEmpty()) {
+                textValue = ""
+                onValueChange(0.0)
+            } else if (formattedText.matches(Regex("^\\d*\\.?\\d*\$"))) {
+                textValue = formattedText
+                onValueChange(formattedText.toDoubleOrNull() ?: 0.0)
+            }
+        },
+        label = if(label.isBlank()) null else { { Text(text = label) } },
+        placeholder = if (placeHolder.isNotBlank()) {
+            {
+                Text(text = placeHolder)
+            }
+        } else null,
+        colors = OutlinedTextFieldDefaults.colors(
+            unfocusedBorderColor = if(withBorder) MaterialTheme.colorScheme.outline else Color.Transparent,
+            focusedBorderColor =  if(withBorder) MaterialTheme.colorScheme.outline else Color.Transparent,
+            unfocusedContainerColor = containerColor,
+            focusedContainerColor = containerColor,
+        ),
+        leadingIcon = if (imageVector != null) {
+            {
+                Icon(
+                    imageVector = imageVector,
+                    contentDescription = null,
+                )
+            }
+        } else null,
+        shape = RoundedCornerShape(32.dp),
+        isError = isError,
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+        supportingText = {
+            if (isError) {
+                Text(
+                    text = stringResource(errorMessage),
+                    color = MaterialTheme.colorScheme.error
+                )
+            } else if (supportingText.isNotBlank()) {
+                Text(
+                    text = supportingText,
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
+        }
+    )
+}

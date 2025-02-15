@@ -25,7 +25,7 @@ fun NavigationHost(
     val navController = rememberNavController()
     NavHost (
         navController = navController,
-        startDestination = startDestination,
+        startDestination = Route.LossRoute,
     ){
         composable<Route.SignUpRoute> {
             SignUpScreen(
@@ -92,7 +92,7 @@ fun NavigationHost(
             }
         }
 
-        composable<Route.Loss> {
+        composable<Route.LossRoute> {
             LossScreen(
                 onBack = {
                     navController.popBackStack()
@@ -116,9 +116,7 @@ sealed interface Route{
     @Serializable
     data object SalesRoute: Route
     @Serializable
-    data object Home: Route
-    @Serializable
-    data object Loss: Route
+    data object LossRoute: Route
     @Serializable
     data class SaleDetailsRoute(val saleId: String): Route
     @Serializable

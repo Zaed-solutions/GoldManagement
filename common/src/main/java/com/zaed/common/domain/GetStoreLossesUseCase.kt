@@ -1,7 +1,7 @@
 package com.zaed.common.domain
 
 import com.zaed.common.data.model.Loss
-import com.zaed.common.data.model.request.GetAllLossesRequest
+import com.zaed.common.data.model.request.GetStoreLossesRequest
 import com.zaed.common.data.repository.LossRepository
 import com.zaed.common.ui.util.DateFormat
 import kotlinx.coroutines.flow.Flow
@@ -9,11 +9,11 @@ import kotlinx.coroutines.flow.map
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class GetAllLossesUseCase(
+class GetStoreLossesUseCase(
     private val lossRepository: LossRepository
 ) {
-    operator fun invoke(request: GetAllLossesRequest): Flow<Result<Map<String, List<Loss>>>>{
-        return lossRepository.getAllLosses(request).map {
+    operator fun invoke(request: GetStoreLossesRequest): Flow<Result<Map<String, List<Loss>>>>{
+        return lossRepository.getStoreLosses(request).map {
             it.map { it.toLossesGroups() }
         }
     }

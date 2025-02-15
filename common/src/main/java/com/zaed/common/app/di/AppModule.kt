@@ -1,6 +1,5 @@
 package com.zaed.common.app.di
 
-import android.system.Os.bind
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.firestore.FirebaseFirestore
@@ -32,16 +31,18 @@ import com.zaed.common.data.source.remote.SaleRemoteSource
 import com.zaed.common.data.source.remote.SaleRemoteSourceImpl
 import com.zaed.common.domain.AddStoreSaleUseCase
 import com.zaed.common.domain.CreateNewLossUseCase
+import com.zaed.common.domain.DeleteLossUseCase
 import com.zaed.common.domain.DeleteUserUseCase
 import com.zaed.common.domain.FetchAllCategoriesUseCase
 import com.zaed.common.domain.FetchStoreSalesUseCase
 import com.zaed.common.domain.FetchUsersUseCase
-import com.zaed.common.domain.GetAllLossesUseCase
+import com.zaed.common.domain.GetStoreLossesUseCase
 import com.zaed.common.domain.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.GetStoresUseCase
 import com.zaed.common.domain.LoginUserUseCase
 import com.zaed.common.domain.LogoutUserUseCase
 import com.zaed.common.domain.SignUpUserUseCase
+import com.zaed.common.domain.UpdateLossUseCase
 import com.zaed.common.ui.auth.MainViewModel
 import com.zaed.common.domain.UpdateUserUseCase
 import com.zaed.common.ui.auth.login.LoginViewModel
@@ -67,14 +68,17 @@ val useCaseModule = module {
     singleOf(::FetchStoreSalesUseCase)
     singleOf(::AddStoreSaleUseCase)
     singleOf(::FetchAllCategoriesUseCase)
-    singleOf(::GetAllLossesUseCase)
+    singleOf(::GetStoreLossesUseCase)
     singleOf(::CreateNewLossUseCase)
     singleOf(::GetStoresUseCase)
+    singleOf(::UpdateLossUseCase)
+    singleOf(::DeleteLossUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }
     singleOf(::SaleRepositoryImpl) { bind<SaleRepository>() }
     singleOf(::LossRepositoryImpl) { bind<LossRepository>()}
+    singleOf(::StoreRepositoryImpl) { bind<StoreRepository>() }
     singleOf(::CategoryRepositoryImpl) { bind<CategoryRepository>() }
 }
 val viewModelModule = module {

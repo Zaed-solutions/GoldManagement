@@ -3,9 +3,11 @@ package com.zaed.cashier.ui.loss
 import androidx.annotation.StringRes
 import com.zaed.cashier.R
 import com.zaed.common.data.model.Loss
+import com.zaed.common.data.model.User
 
 data class LossUiState(
     val losses: Map<String, List<Loss>> = emptyMap(),
+    val currentUser: User = User(),
     val isLoading: Boolean = false,
     @StringRes val errorMessage: Int? = null,
     val fieldError: LossFieldsError = LossFieldsError.NONE,
