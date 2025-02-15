@@ -28,4 +28,5 @@ enum class FieldsError(@StringRes val message: Int) {
     INVALID_USER_NAME(R.string.invalid_user_name),
     EMPTY_PASSWORD(R.string.empty_password),
     INVALID_PASSWORD(R.string.invalid_password),
+    EMPTY_STORE(R.string.empty_store)
 }

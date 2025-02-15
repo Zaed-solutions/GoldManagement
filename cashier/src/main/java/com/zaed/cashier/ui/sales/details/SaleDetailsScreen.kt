@@ -75,7 +75,7 @@ fun SaleDetailsScreenContent(
     Scaffold(
 
     ) {
-        Column {
+        Column(Modifier.padding(it)) {
             PrimaryTabRow(selectedTabIndex = state) {
                 titles.forEachIndexed { index, title ->
                     Tab(

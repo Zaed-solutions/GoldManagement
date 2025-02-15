@@ -3,9 +3,7 @@ package com.zaed.cashier.ui.loss
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.tooling.preview.Preview
-import com.zaed.cashier.ui.theme.CashierAppTheme
-import com.zaed.common.data.model.Loss
+import com.zaed.cashier.ui.loss.component.LossScreenContent
 import org.koin.androidx.compose.koinViewModel
 
 @Composable

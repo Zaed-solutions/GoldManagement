@@ -59,4 +59,6 @@
     <string name="today">Today</string>
     <string name="tomorrow">Tomorrow</string>
     <string name="from_today_onwards">From today onward</string>
+    <string name="store">Store</string>
+    <string name="empty_store">Empty Store</string>
 </resources>

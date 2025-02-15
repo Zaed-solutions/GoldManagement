@@ -1,4 +1,4 @@
-package com.zaed.cashier.ui.loss
+package com.zaed.cashier.ui.loss.component
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
@@ -47,8 +47,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.cashier.R
-import com.zaed.cashier.ui.loss.component.AnimatedBottomSheetWithCreateAndDismiss
-import com.zaed.cashier.ui.loss.component.MainContent
+import com.zaed.cashier.ui.loss.LossFieldsError
+import com.zaed.cashier.ui.loss.LossUiAction
+import com.zaed.cashier.ui.loss.LossUiState
 import com.zaed.cashier.ui.theme.CashierAppTheme
 import com.zaed.common.ui.components.AnimatedLoading
 import com.zaed.common.ui.components.BackIcon

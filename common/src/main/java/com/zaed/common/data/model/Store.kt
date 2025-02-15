@@ -2,5 +2,9 @@ package com.zaed.common.data.model
 
 data class Store(
     val id: String = "",
-    val name: String = ""
-)
+    override val name: String = ""
+): DropdownMenuItem {
+    override fun toString(): String {
+        return name
+    }
+}

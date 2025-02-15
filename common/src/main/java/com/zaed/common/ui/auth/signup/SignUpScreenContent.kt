@@ -1,6 +1,7 @@
 package com.zaed.common.ui.auth.signup
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AlternateEmail
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -30,20 +32,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.UserRole
+import com.zaed.common.ui.auth.AuthenticationUiAction
+import com.zaed.common.ui.auth.AuthenticationUiState
+import com.zaed.common.ui.auth.FieldsError
 import com.zaed.common.ui.components.AlreadyHaveAccountTextButton
 import com.zaed.common.ui.components.AnimatedLoading
 import com.zaed.common.ui.components.CustomSnackbar
 import com.zaed.common.ui.components.PasswordTextField
 import com.zaed.common.ui.components.TextInputTextField
-import com.zaed.common.ui.auth.AuthenticationUiAction
-import com.zaed.common.ui.auth.AuthenticationUiState
-import com.zaed.common.ui.auth.FieldsError
+import com.zaed.common.ui.components.TitledDropDownTextField2
 import com.zaed.common.ui.theme.GoldManagementTheme
 
 @Composable
 fun SignUpScreenContent(
     role: UserRole = UserRole.NONE,
     uiState: AuthenticationUiState,
+    storesUiState : SelectStoreUiState = SelectStoreUiState(),
     onAction: (AuthenticationUiAction) -> Unit = {}
 ) {
     LaunchedEffect(role){
@@ -149,6 +153,22 @@ fun SignUpScreenContent(
                     FieldsError.INVALID_PASSWORD
                 )
             )
+            //store
+            AnimatedVisibility(role == UserRole.CASHIER) {
+                TitledDropDownTextField2(
+                    modifier = Modifier
+                        .padding(top = 32.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .align(Alignment.CenterHorizontally),
+                    selectedValue = storesUiState.selectedStore,
+                    options = storesUiState.stores,
+                    onValueChanged = { onAction(AuthenticationUiAction.OnUpdateStore(it)) },
+                    label = stringResource(R.string.store),
+                    imageVector = Icons.Default.Storefront
+
+                )
+            }
             //signup button
             Button(
                 modifier = Modifier

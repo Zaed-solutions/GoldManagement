@@ -150,7 +150,9 @@ class AuthenticationRemoteSourceImpl(
                     userName = request.userName,
                     password = request.password,
                     approvementStatusType = UserApprovementStatusType.PENDING,
-                    role = request.role
+                    role = request.role,
+                    storeName = request.store.name,
+                    storeId = request.store.id
                 )
 
                 document.set(user).await()
