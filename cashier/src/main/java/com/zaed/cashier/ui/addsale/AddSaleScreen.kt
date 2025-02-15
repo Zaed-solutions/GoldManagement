@@ -63,7 +63,7 @@ private fun AddSaleScreenContent(
     onAction: (AddSaleUiAction) -> Unit,
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
-    val pagerState = rememberPagerState { 2 }
+    val pagerState = rememberPagerState { 3 }
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -75,12 +75,12 @@ private fun AddSaleScreenContent(
                 customerName = state.sale.customerName,
                 onPreviousClicked = {
                     scope.launch {
-                        pagerState.animateScrollToPage(0)
+                        pagerState.animateScrollToPage(pagerState.currentPage - 1)
                     }
                 },
                 onContinueClicked = {
                     scope.launch {
-                        pagerState.animateScrollToPage(1)
+                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
                     }
                 },
                 onAddClicked = {
@@ -135,11 +135,8 @@ private fun AddSaleScreenContent(
 
                     1 -> {
                         SelectProductsContent(
-                            allProducts = state.allProducts,
+                            categories = state.categories,
                             sale = state.sale,
-                            onUpdateProductPrice = { id, price ->
-                                onAction(AddSaleUiAction.OnUpdateProductPrice(id, price))
-                            },
                             onAddProduct = {
                                 onAction(AddSaleUiAction.OnAddProduct(it))
                             },
@@ -152,10 +149,13 @@ private fun AddSaleScreenContent(
                             onUpdateDiscountValue = {
                                 onAction(AddSaleUiAction.OnUpdateDiscountValue(it))
                             },
-                            onUpdateProductCount = { id, count ->
-                                onAction(AddSaleUiAction.OnUpdateProductQuantity(id, count))
+                            onEditProduct = {
+                                onAction(AddSaleUiAction.OnEditProduct(it))
                             }
                         )
+                    }
+                    2 -> {
+                        // todo order summary
                     }
                 }
             }

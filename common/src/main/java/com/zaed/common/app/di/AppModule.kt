@@ -4,8 +4,6 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
-import com.google.firebase.firestore.LocalCacheSettings
-import com.google.firebase.firestore.MemoryCacheSettings
 import com.google.firebase.firestore.PersistentCacheSettings
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -13,8 +11,8 @@ import com.zaed.common.data.repository.AuthenticationRepository
 import com.zaed.common.data.repository.AuthenticationRepositoryImpl
 import com.zaed.common.data.repository.LossRepository
 import com.zaed.common.data.repository.LossRepositoryImpl
-import com.zaed.common.data.repository.ProductRepository
-import com.zaed.common.data.repository.ProductRepositoryImpl
+import com.zaed.common.data.repository.CategoryRepository
+import com.zaed.common.data.repository.CategoryRepositoryImpl
 import com.zaed.common.data.repository.SaleRepository
 import com.zaed.common.data.repository.SaleRepositoryImpl
 import com.zaed.common.data.source.local.LocalStorage
@@ -23,14 +21,14 @@ import com.zaed.common.data.source.remote.AuthenticationRemoteSource
 import com.zaed.common.data.source.remote.AuthenticationRemoteSourceImpl
 import com.zaed.common.data.source.remote.LossRemoteDataSource
 import com.zaed.common.data.source.remote.LossRemoteDataSourceImpl
-import com.zaed.common.data.source.remote.ProductRemoteSource
-import com.zaed.common.data.source.remote.ProductRemoteSourceImpl
+import com.zaed.common.data.source.remote.CategoryRemoteSource
+import com.zaed.common.data.source.remote.CategoryRemoteSourceImpl
 import com.zaed.common.data.source.remote.SaleRemoteSource
 import com.zaed.common.data.source.remote.SaleRemoteSourceImpl
 import com.zaed.common.domain.AddStoreSaleUseCase
 import com.zaed.common.domain.CreateNewLossUseCase
 import com.zaed.common.domain.DeleteUserUseCase
-import com.zaed.common.domain.FetchAllProductsUseCase
+import com.zaed.common.domain.FetchAllCategoriesUseCase
 import com.zaed.common.domain.FetchStoreSalesUseCase
 import com.zaed.common.domain.FetchUsersUseCase
 import com.zaed.common.domain.GetAllLossesUseCase
@@ -62,7 +60,7 @@ val useCaseModule = module {
     singleOf(::DeleteUserUseCase)
     singleOf(::FetchStoreSalesUseCase)
     singleOf(::AddStoreSaleUseCase)
-    singleOf(::FetchAllProductsUseCase)
+    singleOf(::FetchAllCategoriesUseCase)
     singleOf(::GetAllLossesUseCase)
     singleOf(::CreateNewLossUseCase)
 }
@@ -70,7 +68,7 @@ val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }
     singleOf(::SaleRepositoryImpl) { bind<SaleRepository>() }
     singleOf(::LossRepositoryImpl) { bind<LossRepository>()}
-    singleOf(::ProductRepositoryImpl) { bind<ProductRepository>() }
+    singleOf(::CategoryRepositoryImpl) { bind<CategoryRepository>() }
 }
 val viewModelModule = module {
     viewModelOf(::SignUpViewModel)
@@ -80,7 +78,7 @@ val viewModelModule = module {
 val remoteSourceModule = module {
     singleOf(::AuthenticationRemoteSourceImpl) {bind<AuthenticationRemoteSource>()}
     singleOf(::SaleRemoteSourceImpl) { bind<SaleRemoteSource>() }
-    singleOf(::ProductRemoteSourceImpl) { bind<ProductRemoteSource>() }
+    singleOf(::CategoryRemoteSourceImpl) { bind<CategoryRemoteSource>() }
     singleOf(::LossRemoteDataSourceImpl) { bind<LossRemoteDataSource>() }
     single<FirebaseFirestore> {
         val db = Firebase.firestore

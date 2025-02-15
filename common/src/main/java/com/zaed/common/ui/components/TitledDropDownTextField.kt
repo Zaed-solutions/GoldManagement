@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun TitledDropDownTextField(
     modifier: Modifier = Modifier,
+    label: String = "",
     title: String = "",
     selectedValue: String,
     options: List<String>,
@@ -53,6 +54,7 @@ fun TitledDropDownTextField(
                 readOnly = true,
                 value = selectedValue,
                 onValueChange = {},
+                label = { Text(text = label) },
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                 },
