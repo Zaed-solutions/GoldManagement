@@ -37,8 +37,8 @@ fun LossItem(
             ) {
                 Text(
                     text = loss.value.toMoneyFormat(),
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    style = MaterialTheme.typography.displayMedium.copy(
+                    modifier = Modifier.padding(bottom = 4.dp),
+                    style = MaterialTheme.typography.titleLarge.copy(
                         color = MaterialTheme.colorScheme.primary
                     )
                 )

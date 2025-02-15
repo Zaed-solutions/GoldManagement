@@ -55,4 +55,8 @@
     <string name="amount_discount">Amount Discount</string>
     <string name="unknown_error">Unknown Error</string>
     <string name="network_failure">Network failure</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="today">Today</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="from_today_onwards">From today onward</string>
 </resources>

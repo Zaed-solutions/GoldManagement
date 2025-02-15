@@ -18,10 +18,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.overscroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -114,10 +117,17 @@ fun SwipeToRevealItem(
                 exit = slideOutHorizontally(animationSpec = tween()) { it }
             ) {
                 if (secondActionIcon != null) {
-                    Icon(
-                        imageVector = secondActionIcon,
-                        contentDescription = "secondAction"
-                    )
+                    Surface (
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shape = MaterialTheme.shapes.medium
+                    ) {
+                        Icon(
+                            modifier = Modifier.padding(8.dp),
+                            imageVector = secondActionIcon,
+                            contentDescription = "secondAction"
+
+                        )
+                    }
                 }
             }
 
@@ -128,10 +138,16 @@ fun SwipeToRevealItem(
                 enter = slideInHorizontally(animationSpec = tween()) { -it },
                 exit = slideOutHorizontally(animationSpec = tween()) { -it }
             ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "delete"
-                )
+                Surface (
+                    color = MaterialTheme.colorScheme.errorContainer,
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Icon(
+                        modifier = Modifier.padding(8.dp),
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "delete"
+                    )
+                }
             }
         }
 
