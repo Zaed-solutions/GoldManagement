@@ -1,5 +1,6 @@
 package com.zaed.common.app.di
 
+import android.system.Os.bind
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.firestore.FirebaseFirestore
@@ -17,6 +18,10 @@ import com.zaed.common.data.repository.ProductRepository
 import com.zaed.common.data.repository.ProductRepositoryImpl
 import com.zaed.common.data.repository.SaleRepository
 import com.zaed.common.data.repository.SaleRepositoryImpl
+import com.zaed.common.data.repository.StoreRemoteDataSource
+import com.zaed.common.data.repository.StoreRemoteDataSourceImpl
+import com.zaed.common.data.repository.StoreRepository
+import com.zaed.common.data.repository.StoreRepositoryImpl
 import com.zaed.common.data.source.local.LocalStorage
 import com.zaed.common.data.source.local.LocalStorageImpl
 import com.zaed.common.data.source.remote.AuthenticationRemoteSource
@@ -35,6 +40,7 @@ import com.zaed.common.domain.FetchStoreSalesUseCase
 import com.zaed.common.domain.FetchUsersUseCase
 import com.zaed.common.domain.GetAllLossesUseCase
 import com.zaed.common.domain.GetCurrentUserLoggedInUseCase
+import com.zaed.common.domain.GetStoresUseCase
 import com.zaed.common.domain.LoginUserUseCase
 import com.zaed.common.domain.LogoutUserUseCase
 import com.zaed.common.domain.SignUpUserUseCase
@@ -42,9 +48,9 @@ import com.zaed.common.ui.auth.MainViewModel
 import com.zaed.common.domain.UpdateUserUseCase
 import com.zaed.common.ui.auth.login.LoginViewModel
 import com.zaed.common.ui.auth.signup.SignUpViewModel
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
-import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 
@@ -65,12 +71,14 @@ val useCaseModule = module {
     singleOf(::FetchAllProductsUseCase)
     singleOf(::GetAllLossesUseCase)
     singleOf(::CreateNewLossUseCase)
+    singleOf(::GetStoresUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }
     singleOf(::SaleRepositoryImpl) { bind<SaleRepository>() }
     singleOf(::LossRepositoryImpl) { bind<LossRepository>()}
     singleOf(::ProductRepositoryImpl) { bind<ProductRepository>() }
+    singleOf(::StoreRepositoryImpl) { bind<StoreRepository>() }
 }
 val viewModelModule = module {
     viewModelOf(::SignUpViewModel)
@@ -82,6 +90,7 @@ val remoteSourceModule = module {
     singleOf(::SaleRemoteSourceImpl) { bind<SaleRemoteSource>() }
     singleOf(::ProductRemoteSourceImpl) { bind<ProductRemoteSource>() }
     singleOf(::LossRemoteDataSourceImpl) { bind<LossRemoteDataSource>() }
+    singleOf(::StoreRemoteDataSourceImpl) { bind<StoreRemoteDataSource>() }
     single<FirebaseFirestore> {
         val db = Firebase.firestore
         val settings = FirebaseFirestoreSettings.Builder()

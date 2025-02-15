@@ -1,4 +1,4 @@
-package com.zaed.cashier.ui.loss
+package com.zaed.cashier.ui.loss.component
 
 import LossItem
 import androidx.compose.foundation.layout.Column
@@ -8,7 +8,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zaed.cashier.ui.loss.component.LossItemTopRow
 import com.zaed.common.data.model.Loss
 
 @Composable

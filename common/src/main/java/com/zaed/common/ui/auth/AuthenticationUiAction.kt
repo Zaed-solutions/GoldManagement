@@ -1,5 +1,6 @@
 package com.zaed.common.ui.auth
 
+import com.zaed.common.data.model.Store
 import com.zaed.common.data.model.UserRole
 
 sealed interface AuthenticationUiAction {
@@ -7,6 +8,7 @@ sealed interface AuthenticationUiAction {
     data class OnUpdateUserName(val userName: String) : AuthenticationUiAction
     data class OnUpdatePassword(val password: String) : AuthenticationUiAction
     data class OnUpdateRole(val role: UserRole) : AuthenticationUiAction
+    data class OnUpdateStore(val store: Store) : AuthenticationUiAction
     data object OnNavigateToHomeScreen : AuthenticationUiAction
     data object OnSignUp : AuthenticationUiAction
     data object OnSignIn : AuthenticationUiAction

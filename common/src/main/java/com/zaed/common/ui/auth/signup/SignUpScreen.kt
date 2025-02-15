@@ -15,9 +15,11 @@ fun SignUpScreen(
     navigateToLogIn: () -> Unit={},
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val storesUiState by viewModel.stores.collectAsStateWithLifecycle()
     SignUpScreenContent(
         role = role,
         uiState = uiState,
+        storesUiState = storesUiState,
         onAction = { action ->
             when (action) {
                 AuthenticationUiAction.OnBack -> onBack()

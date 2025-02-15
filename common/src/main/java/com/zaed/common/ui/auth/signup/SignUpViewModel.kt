@@ -2,8 +2,10 @@ package com.zaed.common.ui.auth.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zaed.common.data.model.Store
 import com.zaed.common.data.model.UserRole
 import com.zaed.common.data.model.request.SignUpUserRequest
+import com.zaed.common.domain.GetStoresUseCase
 import com.zaed.common.domain.SignUpUserUseCase
 import com.zaed.common.ui.auth.AuthenticationUiAction
 import com.zaed.common.ui.auth.AuthenticationUiState
@@ -15,10 +17,31 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SignUpViewModel(
-    private val signUpUserUseCase: SignUpUserUseCase
+    private val signUpUserUseCase: SignUpUserUseCase,
+    private val getStoresUseCase: GetStoresUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(AuthenticationUiState())
     val uiState = _uiState.asStateFlow()
+    init {
+        getStores()
+    }
+    val stores = MutableStateFlow(SelectStoreUiState())
+
+    private fun getStores() {
+        viewModelScope.launch(Dispatchers.IO) {
+            getStoresUseCase().onSuccess { data ->
+                stores.update {
+                    it.copy(
+                        stores = data
+                    )
+                }
+            }.onFailure { error ->
+                _uiState.update {
+                    it.copy(errorMessage = Exception(error.message))
+                }
+            }
+        }
+    }
 
     fun handleAction(action: AuthenticationUiAction) {
         when (action) {
@@ -26,11 +49,17 @@ class SignUpViewModel(
             is AuthenticationUiAction.OnUpdateFullName -> updateFullName(action.fullName)
             is AuthenticationUiAction.OnUpdatePassword -> updatePassword(action.password)
             is AuthenticationUiAction.OnUpdateUserName -> updateUserName(action.userName)
+            is AuthenticationUiAction.OnUpdateStore -> updateStore(action.store)
             AuthenticationUiAction.ResetError -> resetError()
             is AuthenticationUiAction.OnUpdateRole -> updateRole(action.role)
             else -> {}
         }
+    }
 
+    private fun updateStore(store: Store) {
+        stores.update {
+            it.copy(selectedStore = store)
+        }
     }
 
     private fun resetError() {
@@ -63,6 +92,7 @@ class SignUpViewModel(
                 userName = uiState.value.userName,
                 password = uiState.value.password,
                 role = uiState.value.role,
+                store = stores.value.selectedStore!!
             )
             signUpUserUseCase(signUpUserRequest).onSuccess { user ->
                 _uiState.update {
@@ -117,7 +147,12 @@ class SignUpViewModel(
                     it.copy(fieldsError = FieldsError.INVALID_PASSWORD)
                 }
                 return false
-            } else {
+            } else if (stores.value.selectedStore.name.isEmpty() && uiState.value.role == UserRole.CASHIER){
+                _uiState.update {
+                    it.copy(fieldsError = FieldsError.EMPTY_STORE)
+                }
+                return false
+            }else {
                 _uiState.update {
                     it.copy(fieldsError = FieldsError.NONE)
                 }
