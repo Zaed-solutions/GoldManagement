@@ -15,7 +15,7 @@ fun DetailsContent(
     onBack: () -> Unit,
     date: String,
     losses: List<Loss>,
-    onEdit: (id: String) -> Unit = {},
+    onEdit: (loss: Loss) -> Unit = {},
     onDelete: (id: String) -> Unit = {}
 ) {
     Surface(
@@ -30,7 +30,7 @@ fun DetailsContent(
             losses.forEach {
                 LossItem(
                     loss = it,
-                    onClickEdit = { onEdit(it.id) },
+                    onClickEdit = { onEdit(it) },
                     onClickDelete = { onDelete(it.id) }
                 )
             }

@@ -20,6 +20,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.zaed.cashier.R
 import com.zaed.common.data.model.Product
+import com.zaed.common.ui.components.NumberInputTextField
 import com.zaed.common.ui.components.TextInputTextField
 import com.zaed.common.ui.util.formatMoney
 
@@ -50,29 +51,20 @@ fun SaveProductSheetContent(
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
             modifier = Modifier.fillMaxWidth()
         )
-        TextInputTextField(
+        NumberInputTextField(
             modifier = Modifier.fillMaxWidth(),
-            value = if (product.grams == 0.0) "" else product.grams.toString(),
-            onValueChange = {
-                if (it.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
-                    product = product.copy(grams = it.toDouble())
-                } else {
-                    product = product.copy(grams = 0.0)
-                }
+            value = product.grams,
+            onValueChange = { value ->
+                product = product.copy(grams = value)
             },
             label = stringResource(R.string.grams),
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
-            keyboardType = KeyboardType.Decimal,
         )
-        TextInputTextField(
+        NumberInputTextField(
             modifier = Modifier.fillMaxWidth(),
-            value = if (product.gramPrice == 0.0) "" else product.gramPrice.toString(),
-            onValueChange = {
-                if (it.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
-                    product = product.copy(gramPrice = it.toDouble())
-                } else {
-                    product = product.copy(gramPrice = 0.0)
-                }
+            value = product.gramPrice,
+            onValueChange = { value ->
+                product = product.copy(gramPrice = value)
             },
             label = stringResource(R.string.gram_price),
             supportingText = stringResource(
@@ -80,7 +72,6 @@ fun SaveProductSheetContent(
                 product.minPrice.formatMoney()
             ),
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
-            keyboardType = KeyboardType.Decimal
         )
         Button(
             modifier = Modifier

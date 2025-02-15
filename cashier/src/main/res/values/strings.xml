@@ -49,4 +49,7 @@
     <string name="discount">Discount</string>
     <string name="save">Save</string>
     <string name="select_products">Select Products</string>
+    <string name="losses">Losses</string>
+    <string name="sale">Sale</string>
+    <string name="sales">Sales</string>
 </resources>

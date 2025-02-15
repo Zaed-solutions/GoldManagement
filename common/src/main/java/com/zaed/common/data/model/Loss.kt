@@ -10,6 +10,8 @@ data class Loss(
     val userId: String = "",
     val userName: String = "",
     val storeId: String = "",
-    val storeName: String = ""
+    val storeName: String = "",
+    val deleted: Boolean = false,
+    val logs: List<ChangeLog> = emptyList()
 )
 

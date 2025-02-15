@@ -4,9 +4,27 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.zaed.cashier.app.navigation.BottomNavigationBar
+import com.zaed.cashier.app.navigation.BottomNavigationItem
 import com.zaed.cashier.app.navigation.NavigationHost
 import com.zaed.cashier.app.navigation.Route
 import com.zaed.cashier.ui.theme.CashierAppTheme
@@ -15,6 +33,7 @@ import com.zaed.common.data.model.UserApprovementStatusType
 import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.auth.MainViewModel
 import org.koin.androidx.viewmodel.ext.android.getViewModel
+import androidx.compose.ui.Modifier
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +42,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val mainViewModel = getViewModel<MainViewModel>()
             val state by mainViewModel.uiState.collectAsStateWithLifecycle()
-            if(!state.loading) {
+            if (!state.loading) {
                 CashierAppTheme {
                     App(
                         localUser = state.currentUser
@@ -42,9 +61,38 @@ fun App(localUser: User?) {
         localUser.approvementStatusType == UserApprovementStatusType.APPROVED -> Route.SalesRoute
         else -> Route.LoginRoute
     }
-    NavigationHost(
-        startDestination = startDestination
-    )
+    val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = (navBackStackEntry?.destination?.route
+        ?: Route.SalesRoute::class.qualifiedName.orEmpty()).substringBefore("?")
+    val visibleRoutes = BottomNavigationItem.entries.map { it.route::class.qualifiedName.orEmpty() }
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .imePadding(),
+        contentWindowInsets = WindowInsets(0),
+        bottomBar = {
+            AnimatedVisibility(
+                visible = visibleRoutes.contains(currentRoute),
+                enter = slideInVertically(initialOffsetY = { it }),
+                exit = slideOutVertically(targetOffsetY = { it }),
+            ) {
+                BottomNavigationBar(
+                    currentRoute = currentRoute,
+                    onNavigate = { route ->
+                        navController.navigate(route)
+                    }
+                )
+
+            }
+        }
+    ) { innerPadding ->
+        NavigationHost(
+            modifier = Modifier.padding(innerPadding),
+            navController = navController,
+            startDestination = startDestination
+        )
+    }
 }
 
 
