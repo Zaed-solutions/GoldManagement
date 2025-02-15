@@ -36,6 +36,7 @@ class LossViewModel(
         }
     }
 
+
     fun handleAction(action: LossUiAction) {
         when (action) {
             is LossUiAction.OnCreateNewLoss -> submit(

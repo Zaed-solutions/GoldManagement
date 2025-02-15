@@ -1,6 +1,5 @@
 package com.zaed.cashier.ui.loss
 
-import LossItem
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -13,7 +12,6 @@ import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -31,7 +29,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -51,17 +48,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.cashier.R
 import com.zaed.cashier.ui.loss.component.AnimatedBottomSheetWithCreateAndDismiss
+import com.zaed.cashier.ui.loss.component.MainContent
 import com.zaed.cashier.ui.theme.CashierAppTheme
-import com.zaed.common.data.model.Loss
 import com.zaed.common.ui.components.AnimatedLoading
 import com.zaed.common.ui.components.BackIcon
 import com.zaed.common.ui.components.ConfirmDeleteDialog
 import com.zaed.common.ui.components.CustomSnackbar
 import com.zaed.common.ui.components.TextInputTextField
-import com.zaed.common.ui.util.DateFormat
-import com.zaed.common.ui.util.toMoneyFormat
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class,
@@ -134,18 +127,15 @@ fun LossScreenContent(
                 .padding(16.dp)
         ) {
 
-            val dateFormatter = SimpleDateFormat(DateFormat.DATE.pattern, Locale.getDefault())
-            val lossesGroups = uiState.losses.groupBy { loss ->
-                dateFormatter.format(loss.date)
-            }
+
             AnimatedLoading(uiState.isLoading)
             var selectedLoss by remember { mutableStateOf<String?>(null) }
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(300.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(lossesGroups.keys.toList()) { date ->
-                    val losses = lossesGroups[date] ?: emptyList()
+                items(uiState.losses.keys.toList()) { date ->
+                    val losses = uiState.losses[date] ?: emptyList()
                     key(date) {
                         AnimatedContent(
                             targetState = selectedLoss,
@@ -174,6 +164,7 @@ fun LossScreenContent(
                                     date = date,
                                     losses = losses,
                                     onEdit = {
+                                        //TODO
                                         Toast.makeText(context, "Edit", Toast.LENGTH_SHORT).show()
                                     },
                                     onDelete = {
@@ -287,111 +278,13 @@ fun LossScreenContent(
     }
 }
 
-@Composable
-fun DetailsContent(
-    onBack: () -> Unit,
-    date: String,
-    losses: List<Loss>,
-    onEdit: (id: String) -> Unit = {},
-    onDelete: (id: String) -> Unit = {}
-) {
-    Surface(
-        modifier = Modifier.padding(4.dp),
-        onClick = onBack,
-        shape =  MaterialTheme.shapes.medium
-    ) {
-        Column (
-            modifier = Modifier.padding(8.dp)
-        ){
-            LossItemTopRow(date, losses)
-            losses.forEach {
-                LossItem(
-                    loss = it,
-                    onClickEdit = {onEdit(it.id)},
-                    onClickDelete = {onDelete(it.id)}
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun MainContent(
-    date: String,
-    onShowDetails: () -> Unit,
-    losses: List<Loss> = emptyList()
-) {
-    Surface(
-        shadowElevation = 5.dp,
-        tonalElevation = 5.dp,
-        modifier = Modifier.padding(4.dp),
-        shape = MaterialTheme.shapes.medium,
-        onClick = onShowDetails,
-    ) {
-        LossItemTopRow(date, losses)
-    }
-}
-
-@Composable
-fun LossItemTopRow(
-    date: String,
-    losses: List<Loss>
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = date.format(DateFormat.DATE),
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier
-                .padding(bottom = 8.dp, top = 8.dp)
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        Text(
-            text = losses.sumOf { it.value }.toMoneyFormat(),
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier
-                .padding(bottom = 8.dp, top = 8.dp)
-        )
-    }
-}
-
 @Preview
 @Composable
 private fun LossScreenPreview() {
     CashierAppTheme {
         LossScreenContent(
             uiState = LossUiState(
-                losses = listOf(
-                    Loss(
-                        id = "1",
-                        value = 100.0,
-                        reason = "fijnfinrifnrifnr"
-                    ),
-                    Loss(
-                        id = "1",
-                        value = 100.0,
-                        reason = "fijnfinrifnrifnr"
-                    ),
-                    Loss(
-                        id = "1",
-                        value = 100.0,
-                        reason = "fijnfinrifnrifnr"
-                    ),
-                    Loss(
-                        id = "1",
-                        value = 100.0,
-                        reason = "fijnfinrifnrifnr"
-                    ),
-                    Loss(
-                        id = "1",
-                        value = 10000.0,
-                        reason = "fijnfinrifnrifnr"
-                    ),
-                )
+                losses = emptyMap()
             ),
             {}
         )
