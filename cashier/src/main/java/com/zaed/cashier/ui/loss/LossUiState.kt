@@ -5,7 +5,7 @@ import com.zaed.cashier.R
 import com.zaed.common.data.model.Loss
 
 data class LossUiState(
-    val losses: List<Loss> = emptyList(),
+    val losses: Map<String, List<Loss>> = emptyMap(),
     val isLoading: Boolean = false,
     @StringRes val errorMessage: Int? = null,
     val fieldError: LossFieldsError = LossFieldsError.NONE,
