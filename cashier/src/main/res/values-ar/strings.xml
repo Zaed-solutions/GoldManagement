@@ -49,7 +49,7 @@
     <string name="date">التاريخ:</string>
     <string name="to">"إلى: "</string>
     <string name="phone_number">"رقم الهاتف: "</string>
-    <string name="email">"البريد الإلكتروني: "</string>
+    <string name="email">"البريد "</string>
     <string name="employee">"الموظف: "</string>
     <string name="product">المنتج</string>
     <string name="grams">غرامات</string>

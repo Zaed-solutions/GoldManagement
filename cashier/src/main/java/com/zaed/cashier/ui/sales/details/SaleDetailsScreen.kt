@@ -1,5 +1,7 @@
 package com.zaed.cashier.ui.sales.details
 
+import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -10,10 +12,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Whatsapp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -22,11 +28,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -35,15 +43,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.cashier.R
 import com.zaed.cashier.ui.theme.CashierAppTheme
-import com.zaed.common.data.model.Category
+import com.zaed.common.data.model.DiscountType
 import com.zaed.common.data.model.Product
 import com.zaed.common.data.model.StoreSale
+import com.zaed.common.ui.util.FileUtil
+import com.zaed.common.ui.util.ReceiptUtil
 import com.zaed.common.ui.util.toMoneyFormat
 import org.koin.androidx.compose.koinViewModel
 import java.util.Date
@@ -55,6 +67,7 @@ fun SaleDetailsScreen(
     onBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
     LaunchedEffect(true) {
         viewModel.setSaleId(saleId)
     }
@@ -63,6 +76,22 @@ fun SaleDetailsScreen(
         onAction = { action ->
             when (action) {
                 SaleDetailsUiAction.OnBack -> onBack()
+                is SaleDetailsUiAction.Print ->{
+                    ReceiptUtil.generateStoreSaleReceipt(
+                        context = context,
+                        logoMipmapId = com.zaed.common.R.mipmap.cashier_logo_round,
+                        storeSale = action.storeSale
+                    ).let {
+                        Toast.makeText(context, it.absolutePath, Toast.LENGTH_SHORT).show()
+                        FileUtil.shareFile(
+                            context = context,
+                            file = it,
+                            type = "application/pdf"
+                        ){
+                            Toast.makeText(context, "error", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
                 else -> viewModel.handleAction(action)
             }
         }
@@ -79,7 +108,9 @@ fun SaleDetailsScreenContent(
     val titles = listOf(stringResource(R.string.preview), stringResource(R.string.history))
     Scaffold(
     ) {
-        Column(Modifier.padding(it)) {
+        Column(Modifier
+            .padding(it)
+            .verticalScroll(rememberScrollState())) {
             PrimaryTabRow(selectedTabIndex = state) {
                 titles.forEachIndexed { index, title ->
                     Tab(
@@ -97,12 +128,13 @@ fun SaleDetailsScreenContent(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SaleDetailsPreview(
     uiState: SaleDetailsUiState,
     onAction: (SaleDetailsUiAction) -> Unit
 ) {
-
+    var isShareBottomSheetIsVisible by remember { mutableStateOf(false) }
     val sale = uiState.storeSale
     Column(
         modifier = Modifier
@@ -150,7 +182,7 @@ fun SaleDetailsPreview(
                     verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                 ) {
                     Text(
-                        text = sale.id,
+                        text = if(sale.id.isEmpty()) "" else sale.id.take(7),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                     )
@@ -356,19 +388,20 @@ fun SaleDetailsPreview(
                 }
             }
         }
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = 16.dp, vertical = 8.dp
-                ),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.background
-            )
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
+        AnimatedVisibility(sale.discount.type != DiscountType.NONE) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 16.dp, vertical = 8.dp
+                    ),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
                     Row(
                         modifier = Modifier.padding(vertical = 4.dp),
                         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
@@ -380,32 +413,36 @@ fun SaleDetailsPreview(
                         )
                         Spacer(modifier = Modifier.weight(1f))
                         Text(
-                            text = sale.discount.value.toString(),
+                            text = when (sale.discount.type) {
+                                DiscountType.PERCENTAGE -> "${sale.discount.value}%"
+                                else -> sale.discount.value.toMoneyFormat()
+                            },
                             style = MaterialTheme.typography.titleMedium,
                         )
                     }
 
 
-                FilledTonalButton(
-                    colors = ButtonDefaults.filledTonalButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f),
-                        contentColor = MaterialTheme.colorScheme.primary
-                    ),
-                    onClick = {},
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Row(
-                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                    FilledTonalButton(
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f),
+                            contentColor = MaterialTheme.colorScheme.primary
+                        ),
+                        onClick = {},
+                        shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text(
-                            text = stringResource(R.string.total),
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        Spacer(modifier = Modifier.weight(1f))
-                        Text(
-                            text = sale.totalPrice.toMoneyFormat(),
-                            style = MaterialTheme.typography.titleMedium,
-                        )
+                        Row(
+                            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(R.string.total),
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
+                            Text(
+                                text = sale.totalPrice.toMoneyFormat(),
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                        }
                     }
                 }
             }
@@ -415,7 +452,9 @@ fun SaleDetailsPreview(
         ){
             Button(
                 shape = RoundedCornerShape(8.dp),
-                onClick = {},
+                onClick = {
+                    isShareBottomSheetIsVisible = true
+                },
                 modifier = Modifier.weight(1f)
                 ){
                 Text(stringResource(R.string.share))
@@ -428,7 +467,9 @@ fun SaleDetailsPreview(
             Spacer(modifier = Modifier.width(8.dp))
             OutlinedButton(
                 shape = RoundedCornerShape(8.dp),
-                onClick = {},
+                onClick = {
+                    onAction(SaleDetailsUiAction.Print(sale))
+                },
                 modifier = Modifier.weight(1f)
                 ) {
                 Text(stringResource(R.string.print))
@@ -437,9 +478,72 @@ fun SaleDetailsPreview(
                     imageVector = Icons.Default.Print,
                     contentDescription = null
                 )
-
             }
         }
+        AnimatedVisibility(isShareBottomSheetIsVisible) {
+            ModalBottomSheet(
+                sheetState = rememberModalBottomSheetState(
+                    skipPartiallyExpanded = true
+                ),
+                onDismissRequest = { isShareBottomSheetIsVisible = false },
+            ) {
+                Column (
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth(),
+                    horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+                ){
+                    Text(
+                        text = stringResource(R.string.share_receipt_via),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+                    )
+                    Row(
+                        modifier = Modifier.padding(vertical = 4.dp),
+                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                    ){
+                        Button(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = 8.dp),
+                            onClick = {}
+                        ) {
+                            Row (
+                                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                            ){
+                                Icon(
+                                    imageVector = Icons.Default.Whatsapp,
+                                    contentDescription = null
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(text = stringResource(R.string.whatsapp))
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        FilledTonalButton (
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(start = 8.dp),
+                            onClick = {}
+                        ) {
+                            Row (
+                                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                            ){
+                                Icon(
+                                    imageVector = Icons.Default.Email,
+                                    contentDescription = null
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(text = stringResource(R.string.email))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
 }

@@ -46,7 +46,6 @@ import com.zaed.common.domain.LogoutUserUseCase
 import com.zaed.common.domain.SignUpUserUseCase
 import com.zaed.common.domain.UpdateLossUseCase
 import com.zaed.common.domain.UpdateStoreSaleUseCase
-import com.zaed.common.ui.auth.MainViewModel
 import com.zaed.common.domain.UpdateUserUseCase
 import com.zaed.common.ui.auth.MainViewModel
 import com.zaed.common.ui.auth.login.LoginViewModel
