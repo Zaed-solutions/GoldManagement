@@ -48,6 +48,7 @@ fun SelectProductsContent(
     var isAddProductSheetVisible by remember { mutableStateOf(false) }
     var isSaveProductBottomSheetVisible by remember { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val bottomSheetState2 = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var selectedProduct by remember {
         mutableStateOf(Product())
     }
@@ -116,7 +117,7 @@ fun SelectProductsContent(
         }
         AnimatedVisibility(isSaveProductBottomSheetVisible) {
             ModalBottomSheet(
-                sheetState = bottomSheetState,
+                sheetState = bottomSheetState2,
                 onDismissRequest = { isSaveProductBottomSheetVisible = false },
             ) {
                 SaveProductSheetContent(

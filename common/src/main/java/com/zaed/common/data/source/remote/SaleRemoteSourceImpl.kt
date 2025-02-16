@@ -134,6 +134,23 @@ class SaleRemoteSourceImpl(
             Result.failure(e)
         }
     }
+
+    override suspend fun getStoreSale(saleId: String): Result<StoreSale> {
+        return try {
+            val docRef = storeSalesCollection.document(saleId)
+            val snapshot = docRef.get().await()
+            val storeSale = snapshot.toObject(StoreSale::class.java)
+            if (storeSale != null) {
+                Result.success(storeSale)
+            } else {
+                Result.failure(Exception("Store sale not found"))
+            }
+
+        }catch (e: Exception) {
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
     private companion object{
         fun isCustomerDifferent(sale1: StoreSale, sale2: StoreSale): Boolean{
             return sale1.customerName != sale2.customerName || sale1.customerEmail != sale2.customerEmail || sale1.customerPhoneNumber != sale2.customerPhoneNumber

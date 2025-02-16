@@ -72,10 +72,12 @@ fun NavigationHost(
         composable<Route.SaleDetailsRoute> { backstackEntry ->
             val saleId = backstackEntry.toRoute<Route.SaleDetailsRoute>().saleId
             SaleDetailsScreen(
+                saleId = saleId,
                 onBack = {
                     navController.popBackStack()
-                }
-            ) { }
+                },
+
+            )
         }
         composable<Route.AddSaleRoute> { backstackEntry ->
             val saleId = backstackEntry.toRoute<Route.AddSaleRoute>().saleId

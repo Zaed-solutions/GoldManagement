@@ -39,14 +39,15 @@ import com.zaed.common.domain.FetchStoreSalesUseCase
 import com.zaed.common.domain.FetchUsersUseCase
 import com.zaed.common.domain.GetStoreLossesUseCase
 import com.zaed.common.domain.GetCurrentUserLoggedInUseCase
+import com.zaed.common.domain.GetStoreSaleUseCase
 import com.zaed.common.domain.GetStoresUseCase
 import com.zaed.common.domain.LoginUserUseCase
 import com.zaed.common.domain.LogoutUserUseCase
 import com.zaed.common.domain.SignUpUserUseCase
 import com.zaed.common.domain.UpdateLossUseCase
 import com.zaed.common.domain.UpdateStoreSaleUseCase
-import com.zaed.common.ui.auth.MainViewModel
 import com.zaed.common.domain.UpdateUserUseCase
+import com.zaed.common.ui.auth.MainViewModel
 import com.zaed.common.ui.auth.login.LoginViewModel
 import com.zaed.common.ui.auth.signup.SignUpViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
@@ -73,6 +74,7 @@ val useCaseModule = module {
     singleOf(::GetStoreLossesUseCase)
     singleOf(::CreateNewLossUseCase)
     singleOf(::GetStoresUseCase)
+    singleOf(::GetStoreSaleUseCase)
     singleOf(::UpdateLossUseCase)
     singleOf(::DeleteLossUseCase)
     singleOf(::DeleteStoreSaleUseCase)
