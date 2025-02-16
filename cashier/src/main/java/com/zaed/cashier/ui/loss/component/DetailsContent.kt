@@ -25,7 +25,7 @@ fun DetailsContent(
         shape = MaterialTheme.shapes.medium
     ) {
         Column(
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier.padding(horizontal = 8.dp)
         ) {
             Log.d("LossItem", "losses: ${losses.map { it.value }}")
             LossItemTopRow(date, losses)
