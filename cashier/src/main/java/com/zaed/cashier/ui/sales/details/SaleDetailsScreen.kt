@@ -28,15 +28,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.zaed.cashier.R
 import com.zaed.cashier.ui.theme.CashierAppTheme
 import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.Product
@@ -48,11 +51,13 @@ import java.util.Date
 @Composable
 fun SaleDetailsScreen(
     viewModel: SaleDetailsViewModel = koinViewModel(),
-    onBack: () -> Unit,
-    onNavigate: () -> Unit
+    saleId: String,
+    onBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
+    LaunchedEffect(true) {
+        viewModel.setSaleId(saleId)
+    }
     SaleDetailsScreenContent(
         uiState = uiState,
         onAction = { action ->
@@ -71,9 +76,8 @@ fun SaleDetailsScreenContent(
     onAction: (SaleDetailsUiAction) -> Unit
 ) {
     var state by remember { mutableStateOf(0) }
-    val titles = listOf("Preview", "History")
+    val titles = listOf(stringResource(R.string.preview), stringResource(R.string.history))
     Scaffold(
-
     ) {
         Column(Modifier.padding(it)) {
             PrimaryTabRow(selectedTabIndex = state) {
@@ -87,7 +91,7 @@ fun SaleDetailsScreenContent(
             }
             when (state) {
                 0 -> SaleDetailsPreview(uiState = uiState, onAction = onAction)
-                1 -> Text(text = "History")
+                1 -> Text(text = stringResource(R.string.history))
             }
         }
     }
@@ -101,9 +105,11 @@ fun SaleDetailsPreview(
 
     val sale = uiState.storeSale
     Column(
-        modifier = Modifier.fillMaxSize().background(
-            color = MaterialTheme.colorScheme.surfaceContainerHighest
-        )
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                color = MaterialTheme.colorScheme.surfaceContainerHighest
+            )
     ) {
         Card(
             colors = CardDefaults.cardColors(
@@ -117,7 +123,7 @@ fun SaleDetailsPreview(
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text(
-                    text = "Store: ",
+                    text = stringResource(R.string.store),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                 )
@@ -164,7 +170,7 @@ fun SaleDetailsPreview(
                         shape = MaterialTheme.shapes.small
                     ) {
                         Text(
-                            text = "Cash",
+                            text = stringResource(R.string.cash),
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
@@ -174,7 +180,7 @@ fun SaleDetailsPreview(
                     verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Date:",
+                        text = stringResource(R.string.date),
                         style = MaterialTheme.typography.titleMedium,
                     )
                     Spacer(modifier = Modifier.weight(1f))
@@ -194,10 +200,10 @@ fun SaleDetailsPreview(
                 .fillMaxWidth(),
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 Text(
-                    text = "To: ",
+                    text = stringResource(R.string.to),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                 )
@@ -213,7 +219,7 @@ fun SaleDetailsPreview(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                 ) {
                     Text(
-                        text = "Phone Number: ",
+                        text = stringResource(R.string.phone_number),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -230,7 +236,7 @@ fun SaleDetailsPreview(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                 ) {
                     Text(
-                        text = "Email: ",
+                        text = stringResource(R.string.email),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -256,7 +262,7 @@ fun SaleDetailsPreview(
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text(
-                    text = "Employee: ",
+                    text = stringResource(R.string.employee),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                 )
@@ -287,19 +293,19 @@ fun SaleDetailsPreview(
                     modifier = Modifier.padding(vertical = 4.dp)
                 ){
                     Text(
-                        text = "Product",
+                        text = stringResource(R.string.product),
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleMedium,
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
-                        text = "Grams",
+                        text = stringResource(R.string.grams),
                         style = MaterialTheme.typography.titleMedium,
                     )
 
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
-                        text = "Price",
+                        text = stringResource(R.string.price),
                         style = MaterialTheme.typography.titleMedium,
                     )
                 }
@@ -338,7 +344,7 @@ fun SaleDetailsPreview(
                         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Subtotal: ",
+                            text = stringResource(R.string.subtotal),
                             style = MaterialTheme.typography.titleMedium,
                         )
                         Spacer(modifier = Modifier.weight(1f))
@@ -368,7 +374,7 @@ fun SaleDetailsPreview(
                         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Discount: ",
+                            text = stringResource(R.string.discount),
                             color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.titleMedium,
                         )
@@ -392,7 +398,7 @@ fun SaleDetailsPreview(
                         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Total: ",
+                            text = stringResource(R.string.total),
                             style = MaterialTheme.typography.titleMedium,
                         )
                         Spacer(modifier = Modifier.weight(1f))
@@ -412,7 +418,7 @@ fun SaleDetailsPreview(
                 onClick = {},
                 modifier = Modifier.weight(1f)
                 ){
-                Text("Share")
+                Text(stringResource(R.string.share))
                 Spacer(modifier = Modifier.width(4.dp))
                 Icon(
                     imageVector = Icons.Default.Share,
@@ -425,7 +431,7 @@ fun SaleDetailsPreview(
                 onClick = {},
                 modifier = Modifier.weight(1f)
                 ) {
-                Text("Print")
+                Text(stringResource(R.string.print))
                 Spacer(modifier = Modifier.width(4.dp))
                 Icon(
                     imageVector = Icons.Default.Print,

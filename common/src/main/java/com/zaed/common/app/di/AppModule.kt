@@ -1,12 +1,9 @@
 package com.zaed.common.app.di
 
-import android.system.Os.bind
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
-import com.google.firebase.firestore.LocalCacheSettings
-import com.google.firebase.firestore.MemoryCacheSettings
 import com.google.firebase.firestore.PersistentCacheSettings
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -40,12 +37,13 @@ import com.zaed.common.domain.FetchStoreSalesUseCase
 import com.zaed.common.domain.FetchUsersUseCase
 import com.zaed.common.domain.GetAllLossesUseCase
 import com.zaed.common.domain.GetCurrentUserLoggedInUseCase
+import com.zaed.common.domain.GetStoreSaleUseCase
 import com.zaed.common.domain.GetStoresUseCase
 import com.zaed.common.domain.LoginUserUseCase
 import com.zaed.common.domain.LogoutUserUseCase
 import com.zaed.common.domain.SignUpUserUseCase
-import com.zaed.common.ui.auth.MainViewModel
 import com.zaed.common.domain.UpdateUserUseCase
+import com.zaed.common.ui.auth.MainViewModel
 import com.zaed.common.ui.auth.login.LoginViewModel
 import com.zaed.common.ui.auth.signup.SignUpViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
@@ -72,6 +70,7 @@ val useCaseModule = module {
     singleOf(::GetAllLossesUseCase)
     singleOf(::CreateNewLossUseCase)
     singleOf(::GetStoresUseCase)
+    singleOf(::GetStoreSaleUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }
