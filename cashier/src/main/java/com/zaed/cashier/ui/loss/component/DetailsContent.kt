@@ -1,6 +1,7 @@
 package com.zaed.cashier.ui.loss.component
 
 import LossItem
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -16,7 +17,7 @@ fun DetailsContent(
     date: String,
     losses: List<Loss>,
     onEdit: (loss: Loss) -> Unit = {},
-    onDelete: (id: String) -> Unit = {}
+    onDelete: (loss:Loss) -> Unit = {}
 ) {
     Surface(
         modifier = Modifier.padding(4.dp),
@@ -27,11 +28,16 @@ fun DetailsContent(
             modifier = Modifier.padding(8.dp)
         ) {
             LossItemTopRow(date, losses)
-            losses.forEach {
+            losses.forEachIndexed { index, _ ->
+                val loss = losses[index]
                 LossItem(
-                    loss = it,
-                    onClickEdit = { onEdit(it) },
-                    onClickDelete = { onDelete(it.id) }
+                    loss = loss,
+                    onClickEdit = { onEdit(loss) },
+                    onClickDelete = {
+                        Log.d("LossItem", "onClickDelete: $loss")
+                        Log.d("LossItem", "losses: ${losses.map { it.id }}")
+                        onDelete(loss)
+                    }
                 )
             }
         }

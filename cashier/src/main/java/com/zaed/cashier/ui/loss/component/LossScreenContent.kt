@@ -8,7 +8,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -74,7 +73,7 @@ fun LossScreenContent(
     val snackbarHostState = remember { SnackbarHostState() }
     var selectedLoss by remember { mutableStateOf<Loss>(Loss()) }
     var isSaveLossSheetOpen by remember { mutableStateOf(false) }
-    var isDeleteLossSheetOpen by remember { mutableStateOf(false to "") }
+    var isDeleteLossSheetOpen by remember { mutableStateOf(false) }
     LaunchedEffect(uiState.errorMessage, uiState.successMessage) {
         if (uiState.errorMessage != null) {
             snackbarHostState.showSnackbar(
@@ -142,7 +141,6 @@ fun LossScreenContent(
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(uiState.losses.keys.toList()) { date ->
-                    val losses = uiState.losses[date] ?: emptyList()
                     key(date) {
                         AnimatedContent(
                             targetState = selectedDate,
@@ -158,7 +156,7 @@ fun LossScreenContent(
                             if (targetDate != date) {
                                 MainContent(
                                     date = date,
-                                    losses = losses,
+                                    losses = uiState.losses[date] ?: emptyList(),
                                     onShowDetails = {
                                         selectedDate = date
                                     },
@@ -169,13 +167,14 @@ fun LossScreenContent(
                                         selectedDate = null
                                     },
                                     date = date,
-                                    losses = losses,
+                                    losses = uiState.losses[date] ?: emptyList(),
                                     onEdit = { loss ->
                                         selectedLoss = loss
                                         isSaveLossSheetOpen = true
                                     },
-                                    onDelete = { lossId ->
-                                        isDeleteLossSheetOpen = true to lossId
+                                    onDelete = { loss ->
+                                        selectedLoss = loss
+                                        isDeleteLossSheetOpen = true
                                     }
                                 )
                             }
@@ -213,19 +212,22 @@ fun LossScreenContent(
                 }
             )
         }
-        AnimatedVisibility(isDeleteLossSheetOpen.first) {
+        AnimatedVisibility(isDeleteLossSheetOpen) {
             ModalBottomSheet(
                 onDismissRequest = {
-                    isDeleteLossSheetOpen = false to ""
+                    selectedLoss = Loss()
+                    isDeleteLossSheetOpen = false
                 },
             ) {
                 ConfirmDeleteDialog(
                     onDismiss = {
-                        isDeleteLossSheetOpen = false to ""
+                        selectedLoss = Loss()
+                        isDeleteLossSheetOpen = false
                     },
                     onConfirm = {
-                        onAction(LossUiAction.OnDeleteLoss(isDeleteLossSheetOpen.second))
-                        isDeleteLossSheetOpen = false to ""
+                        onAction(LossUiAction.OnDeleteLoss(selectedLoss.id))
+                        isDeleteLossSheetOpen = false
+                        selectedLoss = Loss()
                     }
                 )
             }

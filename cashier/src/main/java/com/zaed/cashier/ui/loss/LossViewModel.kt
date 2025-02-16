@@ -59,6 +59,7 @@ class LossViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             getStoreLossesUseCase(GetStoreLossesRequest(storeId = uiState.value.currentUser.storeId)).collect { result ->
                 result.onSuccess { data ->
+                    Log.d(TAG, "getAllLosses: ${data.map { it.value.map { it.id } }}")
                     _uiState.update { it.copy(losses = data) }
                 }.onFailure { error ->
                     _uiState.update { it.copy(errorMessage = 0) }
@@ -124,6 +125,7 @@ class LossViewModel(
     }
 
     private fun deleteLoss(id: String) {
+        Log.d(TAG, "deleteLoss: $id")
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update { it.copy(isLoading = true) }
             deleteLossUseCase(
