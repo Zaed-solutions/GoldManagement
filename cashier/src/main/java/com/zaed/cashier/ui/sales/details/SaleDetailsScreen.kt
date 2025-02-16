@@ -327,7 +327,7 @@ fun SaleDetailsPreview(
 
                         Spacer(modifier = Modifier.weight(1f))
                         Text(
-                            text = product.price.toString(),
+                            text = product.gramPrice.toString(),
                             style = MaterialTheme.typography.titleMedium,
                         )
                     }
@@ -349,7 +349,7 @@ fun SaleDetailsPreview(
                         )
                         Spacer(modifier = Modifier.weight(1f))
                         Text(
-                            text = sale.products.sumOf {it.grams* it.price }.toMoneyFormat(),
+                            text = sale.products.sumOf {it.grams* it.gramPrice }.toMoneyFormat(),
                             style = MaterialTheme.typography.titleMedium,
                         )
                     }
@@ -465,22 +465,14 @@ private fun SaleDetailsScreenContentPreview() {
                         Product(
                             id = "123456789",
                             name = "Product 1",
-                            price = 100.0,
-                            category = Category(
-                                id = "123456789",
-                                name = "Category Name",
-                            ),
-                            grams = 5,
+                            gramPrice = 100.0,
+                            grams = 5.0,
                         ),
                         Product(
                             id = "123456789",
                             name = "Product 2",
-                            price = 200.0,
-                            category = Category(
-                                id = "123456789",
-                                name = "Category Name",
-                            ),
-                            grams = 10,
+                            gramPrice = 200.0,
+                            grams = 10.0,
                         )
                     ),
                     discount = com.zaed.common.data.model.Discount(

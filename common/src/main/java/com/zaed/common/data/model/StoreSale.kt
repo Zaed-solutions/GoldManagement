@@ -15,11 +15,13 @@ data class StoreSale(
     val customerEmail: String = "",
     val products: List<Product> = emptyList(),
     val discount: Discount = Discount(),
+    val deleted: Boolean = false,
+    val logs: List<ChangeLog> = emptyList()
 ) {
     val totalPrice
-        get() = products.sumOf { it.price * it.quantity } - when(discount.type){
+        get() = products.sumOf { it.gramPrice * it.grams } - when(discount.type){
         DiscountType.NONE -> 0.0
-        DiscountType.PERCENTAGE -> products.sumOf { it.price * it.quantity } * discount.value
+        DiscountType.PERCENTAGE -> products.sumOf { it.grams * it.gramPrice } * (discount.value/100.0)
         DiscountType.AMOUNT -> discount.value
     }
 }

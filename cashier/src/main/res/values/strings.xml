@@ -24,7 +24,7 @@
     <string name="discount_value">Discount Value</string>
     <string name="products">Products</string>
     <string name="minimum_price">Minimum Price</string>
-    <string name="qty_placeholder">QTY: %1$s</string>
+    <string name="grams_placeholder">Grams: %1$s</string>
     <string name="minimum_price_placeholder">Minimum price: %1$s</string>
     <string name="price">Price</string>
     <string name="search">Search</string>
@@ -57,4 +57,15 @@
     <string name="total">"Total: "</string>
     <string name="share">Share</string>
     <string name="print">Print</string>
+    <string name="select_category">Select Category</string>
+    <string name="product_name">Name</string>
+    <string name="name">Name</string>
+    <string name="grams">Grams</string>
+    <string name="gram_price">Price per gram</string>
+    <string name="discount">Discount</string>
+    <string name="save">Save</string>
+    <string name="select_products">Select Products</string>
+    <string name="losses">Losses</string>
+    <string name="sale">Sale</string>
+    <string name="sales">Sales</string>
 </resources>

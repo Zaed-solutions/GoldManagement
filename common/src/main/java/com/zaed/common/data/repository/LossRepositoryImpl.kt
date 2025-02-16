@@ -2,7 +2,9 @@ package com.zaed.common.data.repository
 
 import com.zaed.common.data.model.Loss
 import com.zaed.common.data.model.request.CreateNewLossRequest
-import com.zaed.common.data.model.request.GetAllLossesRequest
+import com.zaed.common.data.model.request.DeleteLossRequest
+import com.zaed.common.data.model.request.GetStoreLossesRequest
+import com.zaed.common.data.model.request.UpdateLossRequest
 import com.zaed.common.data.source.remote.LossRemoteDataSource
 import kotlinx.coroutines.flow.Flow
 
@@ -13,7 +15,15 @@ class LossRepositoryImpl(
         return lossRemoteDataSource.createNewLoss(request)
     }
 
-    override fun getAllLosses(request: GetAllLossesRequest): Flow<Result<List<Loss>>> {
-        return lossRemoteDataSource.getAllLosses(request)
+    override suspend fun updateLoss(request: UpdateLossRequest): Result<Unit> {
+        return lossRemoteDataSource.updateLoss(request)
+    }
+
+    override suspend fun deleteLoss(request: DeleteLossRequest): Result<Unit> {
+        return lossRemoteDataSource.deleteLoss(request)
+    }
+
+    override fun getStoreLosses(request: GetStoreLossesRequest): Flow<Result<List<Loss>>> {
+        return lossRemoteDataSource.getStoreLosses(request)
     }
 }

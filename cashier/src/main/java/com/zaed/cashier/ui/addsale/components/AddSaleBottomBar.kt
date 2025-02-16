@@ -48,7 +48,7 @@ fun AddSaleBottomBar(
                 modifier = Modifier.weight(1f).padding(start = 8.dp),
                 enabled = customerName.isNotBlank(),
                 onClick = {
-                    if (currentPage == 0) {
+                    if (currentPage != 2) {
                         onContinueClicked()
                     } else {
                         onAddClicked()
@@ -56,7 +56,7 @@ fun AddSaleBottomBar(
                 }
             ) {
                 Text(
-                    text = if (currentPage == 0) {
+                    text = if (currentPage != 2) {
                         stringResource(R.string.continue_)
                     } else {
                         stringResource(R.string.add)

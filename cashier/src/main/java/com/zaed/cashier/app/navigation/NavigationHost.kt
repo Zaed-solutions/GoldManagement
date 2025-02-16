@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -20,12 +21,14 @@ import kotlinx.serialization.Serializable
 
 @Composable
 fun NavigationHost(
-    startDestination: Route
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    startDestination: Route,
 ) {
-    val navController = rememberNavController()
     NavHost (
+        modifier = modifier,
         navController = navController,
-        startDestination =startDestination,
+        startDestination = startDestination,
     ){
         composable<Route.SignUpRoute> {
             SignUpScreen(
@@ -94,7 +97,7 @@ fun NavigationHost(
             }
         }
 
-        composable<Route.Loss> {
+        composable<Route.LossRoute> {
             LossScreen(
                 onBack = {
                     navController.popBackStack()
@@ -118,9 +121,7 @@ sealed interface Route{
     @Serializable
     data object SalesRoute: Route
     @Serializable
-    data object Home: Route
-    @Serializable
-    data object Loss: Route
+    data object LossRoute: Route
     @Serializable
     data class SaleDetailsRoute(val saleId: String): Route
     @Serializable

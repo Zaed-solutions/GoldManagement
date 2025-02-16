@@ -3,8 +3,11 @@ package com.zaed.cashier.ui.sales
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zaed.common.data.model.request.DeleteStoreSaleRequest
 import com.zaed.common.data.model.request.FetchStoreSalesRequest
+import com.zaed.common.domain.DeleteStoreSaleUseCase
 import com.zaed.common.domain.FetchStoreSalesUseCase
+import com.zaed.common.domain.GetCurrentUserLoggedInUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,14 +15,32 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SalesViewModel(
-    private val fetchStoreSalesUseCase: FetchStoreSalesUseCase
+    private val fetchStoreSalesUseCase: FetchStoreSalesUseCase,
+    private val deleteStoreSaleUseCase: DeleteStoreSaleUseCase,
+    private val getCurrentUserUseCase: GetCurrentUserLoggedInUseCase
 ) : ViewModel() {
     private val TAG: String = "SalesViewModel"
     private val _uiState = MutableStateFlow(SalesUiState())
     val uiState = _uiState.asStateFlow()
 
     init {
-        fetchSales()
+        fetchCurrentUser()
+    }
+
+    private fun fetchCurrentUser() {
+        viewModelScope.launch(Dispatchers.IO) {
+            getCurrentUserUseCase().collect { result ->
+                result.onSuccess { data ->
+                    _uiState.update { oldState ->
+                        oldState.copy(currentUser = data)
+                    }
+                    fetchSales()
+                }.onFailure { e ->
+                    Log.e(TAG, "fetchCurrentUser: ${e.message}", e)
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 
     private fun fetchSales() {
@@ -27,7 +48,7 @@ class SalesViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             fetchStoreSalesUseCase(
                 FetchStoreSalesRequest(
-                    storeId = uiState.value.storeId
+                    storeId = uiState.value.currentUser.storeId
                 )
             ).collect { result ->
                 result.onSuccess { data ->
@@ -44,7 +65,25 @@ class SalesViewModel(
     fun handleAction(action: SalesUiAction) {
         when (action) {
             is SalesUiAction.UpdateSearchQuery -> updateSearchQuery(action.query)
+            is SalesUiAction.OnDeleteSale -> deleteSale(action.saleId)
             else -> Unit
+        }
+    }
+
+    private fun deleteSale(saleId: String) {
+        viewModelScope.launch (Dispatchers.IO){
+            deleteStoreSaleUseCase(
+                DeleteStoreSaleRequest(
+                    saleId = saleId,
+                    employeeId = uiState.value.currentUser.id,
+                    employeeName = uiState.value.currentUser.fullName
+                )
+            ).onSuccess {
+                Log.d(TAG, "deleteSale: success")
+            }.onFailure {e->
+                Log.e(TAG, "deleteSale: ${e.message}",e )
+                e.printStackTrace()
+            }
         }
     }
 

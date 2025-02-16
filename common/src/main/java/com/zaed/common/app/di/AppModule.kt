@@ -11,8 +11,8 @@ import com.zaed.common.data.repository.AuthenticationRepository
 import com.zaed.common.data.repository.AuthenticationRepositoryImpl
 import com.zaed.common.data.repository.LossRepository
 import com.zaed.common.data.repository.LossRepositoryImpl
-import com.zaed.common.data.repository.ProductRepository
-import com.zaed.common.data.repository.ProductRepositoryImpl
+import com.zaed.common.data.repository.CategoryRepository
+import com.zaed.common.data.repository.CategoryRepositoryImpl
 import com.zaed.common.data.repository.SaleRepository
 import com.zaed.common.data.repository.SaleRepositoryImpl
 import com.zaed.common.data.repository.StoreRemoteDataSource
@@ -25,23 +25,28 @@ import com.zaed.common.data.source.remote.AuthenticationRemoteSource
 import com.zaed.common.data.source.remote.AuthenticationRemoteSourceImpl
 import com.zaed.common.data.source.remote.LossRemoteDataSource
 import com.zaed.common.data.source.remote.LossRemoteDataSourceImpl
-import com.zaed.common.data.source.remote.ProductRemoteSource
-import com.zaed.common.data.source.remote.ProductRemoteSourceImpl
+import com.zaed.common.data.source.remote.CategoryRemoteSource
+import com.zaed.common.data.source.remote.CategoryRemoteSourceImpl
 import com.zaed.common.data.source.remote.SaleRemoteSource
 import com.zaed.common.data.source.remote.SaleRemoteSourceImpl
 import com.zaed.common.domain.AddStoreSaleUseCase
 import com.zaed.common.domain.CreateNewLossUseCase
+import com.zaed.common.domain.DeleteLossUseCase
+import com.zaed.common.domain.DeleteStoreSaleUseCase
 import com.zaed.common.domain.DeleteUserUseCase
-import com.zaed.common.domain.FetchAllProductsUseCase
+import com.zaed.common.domain.FetchAllCategoriesUseCase
 import com.zaed.common.domain.FetchStoreSalesUseCase
 import com.zaed.common.domain.FetchUsersUseCase
-import com.zaed.common.domain.GetAllLossesUseCase
+import com.zaed.common.domain.GetStoreLossesUseCase
 import com.zaed.common.domain.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.GetStoreSaleUseCase
 import com.zaed.common.domain.GetStoresUseCase
 import com.zaed.common.domain.LoginUserUseCase
 import com.zaed.common.domain.LogoutUserUseCase
 import com.zaed.common.domain.SignUpUserUseCase
+import com.zaed.common.domain.UpdateLossUseCase
+import com.zaed.common.domain.UpdateStoreSaleUseCase
+import com.zaed.common.ui.auth.MainViewModel
 import com.zaed.common.domain.UpdateUserUseCase
 import com.zaed.common.ui.auth.MainViewModel
 import com.zaed.common.ui.auth.login.LoginViewModel
@@ -66,18 +71,22 @@ val useCaseModule = module {
     singleOf(::DeleteUserUseCase)
     singleOf(::FetchStoreSalesUseCase)
     singleOf(::AddStoreSaleUseCase)
-    singleOf(::FetchAllProductsUseCase)
-    singleOf(::GetAllLossesUseCase)
+    singleOf(::FetchAllCategoriesUseCase)
+    singleOf(::GetStoreLossesUseCase)
     singleOf(::CreateNewLossUseCase)
     singleOf(::GetStoresUseCase)
     singleOf(::GetStoreSaleUseCase)
+    singleOf(::UpdateLossUseCase)
+    singleOf(::DeleteLossUseCase)
+    singleOf(::DeleteStoreSaleUseCase)
+    singleOf(::UpdateStoreSaleUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }
     singleOf(::SaleRepositoryImpl) { bind<SaleRepository>() }
     singleOf(::LossRepositoryImpl) { bind<LossRepository>()}
-    singleOf(::ProductRepositoryImpl) { bind<ProductRepository>() }
     singleOf(::StoreRepositoryImpl) { bind<StoreRepository>() }
+    singleOf(::CategoryRepositoryImpl) { bind<CategoryRepository>() }
 }
 val viewModelModule = module {
     viewModelOf(::SignUpViewModel)
@@ -87,7 +96,7 @@ val viewModelModule = module {
 val remoteSourceModule = module {
     singleOf(::AuthenticationRemoteSourceImpl) {bind<AuthenticationRemoteSource>()}
     singleOf(::SaleRemoteSourceImpl) { bind<SaleRemoteSource>() }
-    singleOf(::ProductRemoteSourceImpl) { bind<ProductRemoteSource>() }
+    singleOf(::CategoryRemoteSourceImpl) { bind<CategoryRemoteSource>() }
     singleOf(::LossRemoteDataSourceImpl) { bind<LossRemoteDataSource>() }
     singleOf(::StoreRemoteDataSourceImpl) { bind<StoreRemoteDataSource>() }
     single<FirebaseFirestore> {

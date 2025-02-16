@@ -1,14 +1,20 @@
 package com.zaed.common.data.source.remote
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
+import com.zaed.common.data.model.ChangeLog
+import com.zaed.common.data.model.Loss
 import com.zaed.common.data.model.StoreSale
 import com.zaed.common.data.model.request.AddStoreSaleRequest
+import com.zaed.common.data.model.request.DeleteStoreSaleRequest
 import com.zaed.common.data.model.request.FetchStoreSalesRequest
+import com.zaed.common.data.model.request.UpdateStoreSaleRequest
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+import java.util.Date
 
 class SaleRemoteSourceImpl(
     private val firestore: FirebaseFirestore,
@@ -17,7 +23,12 @@ class SaleRemoteSourceImpl(
     private val storeSalesCollection = firestore.collection("store_sales")
     override fun fetchStoreSales(request: FetchStoreSalesRequest): Flow<Result<List<StoreSale>>> = callbackFlow {
         try{
-            storeSalesCollection.whereEqualTo("storeId", request.storeId).addSnapshotListener{ snapshot, e ->
+            storeSalesCollection.where(
+                Filter.and(
+                    Filter.equalTo("storeId", request.storeId),
+                    Filter.equalTo("deleted", false)
+                )
+            ).addSnapshotListener{ snapshot, e ->
                 if (e != null) {
                     crashlytics.recordException(e)
                     trySend(Result.failure(e))
@@ -39,6 +50,36 @@ class SaleRemoteSourceImpl(
             val docRef = storeSalesCollection.document()
             docRef.set(request.sale.copy(id = docRef.id)).await()
             Result.success(docRef.id)
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun deleteStoreSale(request: DeleteStoreSaleRequest): Result<Unit> {
+        return try {
+            val sale = storeSalesCollection.document(request.saleId).get().await().toObject(StoreSale::class.java) ?: StoreSale()
+            val logs = sale.logs.toMutableList()
+            logs.add(
+                ChangeLog(
+                    date = Date(),
+                    employeeId = request.employeeId,
+                    employeeName = request.employeeName,
+                    action = "${request.employeeName} Deleted this sale"
+                )
+            )
+            storeSalesCollection.document(request.saleId).set(sale.copy(logs = logs, deleted = true)).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun updateStoreSale(request: UpdateStoreSaleRequest): Result<Unit> {
+        return try {
+            storeSalesCollection.document(request.sale.id).set(request.sale).await()
+            Result.success(Unit)
         } catch (e: Exception) {
             crashlytics.recordException(e)
             Result.failure(e)
