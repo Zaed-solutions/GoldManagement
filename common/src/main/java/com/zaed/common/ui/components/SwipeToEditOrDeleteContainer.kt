@@ -34,6 +34,7 @@ fun SwipeToEditOrDeleteContainer(
 ) {
     val state = rememberSwipeToDismissBoxState()
     val layoutDirection = LocalLayoutDirection.current
+    val isRtl = layoutDirection == LayoutDirection.Rtl
     SwipeToDismissBox(
         modifier = modifier.animateContentSize(),
         state = state,
@@ -47,8 +48,11 @@ fun SwipeToEditOrDeleteContainer(
         content = {
             content()
         },
-        enableDismissFromEndToStart = true,
-        enableDismissFromStartToEnd = isEditEnabled
+//        enableDismissFromEndToStart = true,
+//        enableDismissFromStartToEnd = isEditEnabled
+
+        enableDismissFromEndToStart = if (isRtl) isEditEnabled else true,
+        enableDismissFromStartToEnd = if (isRtl) true else isEditEnabled
     )
     when (state.currentValue) {
         SwipeToDismissBoxValue.EndToStart -> {
@@ -60,10 +64,8 @@ fun SwipeToEditOrDeleteContainer(
 
         SwipeToDismissBoxValue.StartToEnd -> {
             LaunchedEffect(key1 = state) {
-                if (isEditEnabled) {
-                    onEdit()
-                    state.snapTo(SwipeToDismissBoxValue.Settled)
-                }
+                onEdit()
+                state.snapTo(SwipeToDismissBoxValue.Settled)
             }
         }
 
@@ -80,41 +82,71 @@ private fun SwipeBackground(
     layoutDirection: LayoutDirection,
 ) {
     val isRtl = layoutDirection == LayoutDirection.Rtl
-
-    // Determine background color and icon based on swipe direction
-    val (backgroundColor, icon, contentAlignment) = when (swipeDismissState.dismissDirection) {
+    val (backgroundColor, icon, contentAlignment, iconTint) = when (swipeDismissState.dismissDirection) {
         SwipeToDismissBoxValue.EndToStart -> {
-            Triple(
-                MaterialTheme.colorScheme.error, // Red for delete
-                Icons.Default.Delete,
-                if (isRtl) Alignment.CenterStart else Alignment.CenterEnd
-            )
-        }
-
-        SwipeToDismissBoxValue.StartToEnd -> {
-            if(isEditEnabled) {
-                Triple(
-                    MaterialTheme.colorScheme.primary, // Blue for edit
-                    Icons.Default.Edit,
-                    if (isRtl) Alignment.CenterEnd else Alignment.CenterStart
-                )
+            if (isRtl) {
+                if (isEditEnabled) {
+                    FourTuple(
+                        MaterialTheme.colorScheme.primary,
+                        Icons.Default.Edit,
+                        Alignment.CenterStart,
+                        MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    FourTuple(
+                        MaterialTheme.colorScheme.error,
+                        Icons.Default.Delete,
+                        Alignment.CenterStart,
+                        MaterialTheme.colorScheme.onError
+                    )
+                }
             } else {
-                Triple(
-                    Color.Transparent,
+                FourTuple(
+                    MaterialTheme.colorScheme.error,
                     Icons.Default.Delete,
-                    Alignment.CenterEnd
+                    Alignment.CenterEnd,
+                    MaterialTheme.colorScheme.onError
                 )
             }
         }
 
+        SwipeToDismissBoxValue.StartToEnd -> {
+            if (isRtl) {
+                FourTuple(
+                    MaterialTheme.colorScheme.error,
+                    Icons.Default.Delete,
+                    Alignment.CenterEnd,
+                    MaterialTheme.colorScheme.onError
+                )
+            } else {
+                if (isEditEnabled) {
+                    FourTuple(
+                        MaterialTheme.colorScheme.primary,
+                        Icons.Default.Edit,
+                        Alignment.CenterStart,
+                        MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    FourTuple(
+                        Color.Transparent,
+                        Icons.Default.Delete,
+                        Alignment.CenterStart,
+                        MaterialTheme.colorScheme.onError
+                    )
+                }
+            }
+        }
+
         else -> {
-            Triple(
+            FourTuple(
                 Color.Transparent,
                 Icons.Default.Delete,
-                Alignment.CenterEnd
+                if (isRtl) Alignment.CenterEnd else Alignment.CenterStart,
+                MaterialTheme.colorScheme.onError
             )
         }
     }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -125,11 +157,14 @@ private fun SwipeBackground(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = if (swipeDismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
-                MaterialTheme.colorScheme.onError
-            } else {
-                MaterialTheme.colorScheme.onPrimary
-            }
+            tint = iconTint
         )
     }
 }
+
+private data class FourTuple<A, B, C, D>(
+    val first: A,
+    val second: B,
+    val third: C,
+    val fourth: D
+)

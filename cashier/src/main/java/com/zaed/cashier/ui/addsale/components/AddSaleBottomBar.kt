@@ -59,7 +59,7 @@ fun AddSaleBottomBar(
                     text = if (currentPage != 2) {
                         stringResource(R.string.continue_)
                     } else {
-                        stringResource(R.string.add)
+                        stringResource(R.string.save)
                     }
                 )
             }

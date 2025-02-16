@@ -6,9 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.DiscountType
 import com.zaed.common.data.model.Product
 import com.zaed.common.data.model.request.AddStoreSaleRequest
+import com.zaed.common.data.model.request.UpdateStoreSaleRequest
 import com.zaed.common.domain.AddStoreSaleUseCase
 import com.zaed.common.domain.FetchAllCategoriesUseCase
 import com.zaed.common.domain.GetCurrentUserLoggedInUseCase
+import com.zaed.common.domain.GetStoreSaleUseCase
+import com.zaed.common.domain.UpdateStoreSaleUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,15 +22,33 @@ import java.util.Date
 class AddSaleViewModel(
     private val fetchAllCategoriesUseCase: FetchAllCategoriesUseCase,
     private val addSaleUseCase: AddStoreSaleUseCase,
-    private val getCurrentUserUseCase: GetCurrentUserLoggedInUseCase
+    private val getCurrentUserUseCase: GetCurrentUserLoggedInUseCase,
+    private val updateSaleUseCase: UpdateStoreSaleUseCase,
+    private val getSaleUseCase: GetStoreSaleUseCase
 ) : ViewModel() {
     private val TAG: String = "AddSaleViewModel"
     private val _uiState = MutableStateFlow(AddSaleUiState())
     val uiState = _uiState.asStateFlow()
 
-    init {
+    fun init(saleId: String) {
+        if (saleId.isNotBlank()) {
+            fetchSale(saleId)
+        }
         fetchAllCategories()
         fetchCurrentUser()
+    }
+
+    private fun fetchSale(saleId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getSaleUseCase(saleId).onSuccess { data ->
+                _uiState.update { oldState ->
+                    oldState.copy(sale = data)
+                }
+            }.onFailure { e ->
+                Log.e(TAG, "fetchSale: ${e.message}", e)
+                e.printStackTrace()
+            }
+        }
     }
 
     private fun fetchCurrentUser() {
@@ -62,7 +83,7 @@ class AddSaleViewModel(
 
     fun handleAction(action: AddSaleUiAction) {
         when (action) {
-            AddSaleUiAction.OnAddClicked -> addSale()
+            AddSaleUiAction.OnSubmitClicked -> onSubmit()
             is AddSaleUiAction.OnUpdateCustomerName -> updateCustomerName(action.customerName)
             is AddSaleUiAction.OnUpdateCustomerEmail -> updateCustomerEmail(action.customerEmail)
             is AddSaleUiAction.OnUpdateCustomerPhone -> updateCustomerPhone(action.customerPhoneNumber)
@@ -72,6 +93,35 @@ class AddSaleViewModel(
             is AddSaleUiAction.OnUpdateDiscountType -> updateDiscountType(action.discountType)
             is AddSaleUiAction.OnUpdateDiscountValue -> updateDiscountValue(action.discountValue)
             else -> Unit
+        }
+    }
+
+    private fun onSubmit() {
+        if (uiState.value.sale.id.isNotBlank()) {
+            updateSale()
+        } else {
+            addSale()
+        }
+    }
+
+    private fun updateSale() {
+        viewModelScope.launch(Dispatchers.IO) {
+            updateSaleUseCase(
+                UpdateStoreSaleRequest(
+                    sale = uiState.value.sale,
+                    employeeId = uiState.value.currentUser.id,
+                    employeeName = uiState.value.currentUser.fullName
+                )
+            ).onSuccess {
+                _uiState.update { oldState ->
+                    oldState.copy(
+                        isFinished = true
+                    )
+                }
+            }.onFailure { e ->
+                Log.e(TAG, "updateSale: ${e.message}", e)
+                e.printStackTrace()
+            }
         }
     }
 

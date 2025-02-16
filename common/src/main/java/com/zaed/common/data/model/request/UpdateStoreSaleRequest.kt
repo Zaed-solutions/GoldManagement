@@ -3,5 +3,7 @@ package com.zaed.common.data.model.request
 import com.zaed.common.data.model.StoreSale
 
 data class UpdateStoreSaleRequest(
-    val sale: StoreSale
+    val sale: StoreSale,
+    val employeeId: String,
+    val employeeName: String,
 )

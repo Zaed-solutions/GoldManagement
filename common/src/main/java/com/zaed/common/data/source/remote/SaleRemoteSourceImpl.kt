@@ -1,8 +1,10 @@
 package com.zaed.common.data.source.remote
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
+import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.ChangeLog
 import com.zaed.common.data.model.Loss
 import com.zaed.common.data.model.StoreSale
@@ -21,6 +23,7 @@ class SaleRemoteSourceImpl(
     private val crashlytics: FirebaseCrashlytics
 ) : SaleRemoteSource {
     private val storeSalesCollection = firestore.collection("store_sales")
+    private val categoriesCollection = firestore.collection("categories")
     override fun fetchStoreSales(request: FetchStoreSalesRequest): Flow<Result<List<StoreSale>>> = callbackFlow {
         try{
             storeSalesCollection.where(
@@ -47,8 +50,32 @@ class SaleRemoteSourceImpl(
 
     override suspend fun addStoreSale(request: AddStoreSaleRequest): Result<String> {
         return try {
+            val batch = firestore.batch()
             val docRef = storeSalesCollection.document()
-            docRef.set(request.sale.copy(id = docRef.id)).await()
+            batch.set(docRef, request.sale.copy(id = docRef.id))
+            val categoryIds = request.sale.products.map { it.categoryId }.distinct()
+            val categorySnapshots = categoriesCollection
+                .whereIn(FieldPath.documentId(), categoryIds)
+                .get()
+                .await()
+
+
+            val categoryMap = categorySnapshots.documents.associate { snapshot ->
+                snapshot.id to (snapshot.toObject(Category::class.java) ?: Category())
+            }
+            val categoryUpdates = request.sale.products
+                .groupBy { it.categoryId }
+                .mapValues { (_, products) -> products.sumOf { it.grams } }
+
+            categoryUpdates.forEach { (categoryId, totalGrams) ->
+                val categoryRef = categoriesCollection.document(categoryId)
+                val currentGrams = categoryMap[categoryId]?.availableGrams ?: 0.0
+                batch.update(
+                    categoryRef,
+                    mapOf("availableGrams" to (currentGrams - totalGrams))
+                )
+            }
+            batch.commit().await()
             Result.success(docRef.id)
         } catch (e: Exception) {
             crashlytics.recordException(e)
@@ -78,7 +105,29 @@ class SaleRemoteSourceImpl(
 
     override suspend fun updateStoreSale(request: UpdateStoreSaleRequest): Result<Unit> {
         return try {
-            storeSalesCollection.document(request.sale.id).set(request.sale).await()
+            val oldSale = storeSalesCollection.document(request.sale.id).get().await().toObject(StoreSale::class.java) ?: StoreSale()
+            val logs = oldSale.logs.toMutableList()
+            if(isCustomerDifferent(oldSale, request.sale)){
+                logs.add(
+                    ChangeLog(
+                        date = Date(),
+                        employeeId = request.employeeId,
+                        employeeName = request.employeeName,
+                        action = "${request.employeeName} Changed the customer from ${oldSale.customerName}-${oldSale.customerEmail}-${oldSale.customerPhoneNumber} to ${request.sale.customerName}-${request.sale.customerEmail}-${request.sale.customerPhoneNumber}"
+                    )
+                )
+            }
+            if(isProductsDifferent(oldSale, request.sale)){
+                logs.add(
+                    ChangeLog(
+                        date = Date(),
+                        employeeId = request.employeeId,
+                        employeeName = request.employeeName,
+                        action = "${request.employeeName} Changed the products with total from ${oldSale.totalPrice} to ${request.sale.totalPrice}"
+                    )
+                )
+            }
+            storeSalesCollection.document(request.sale.id).set(request.sale.copy(logs = logs)).await()
             Result.success(Unit)
         } catch (e: Exception) {
             crashlytics.recordException(e)
@@ -100,6 +149,14 @@ class SaleRemoteSourceImpl(
         }catch (e: Exception) {
             crashlytics.recordException(e)
             Result.failure(e)
+        }
+    }
+    private companion object{
+        fun isCustomerDifferent(sale1: StoreSale, sale2: StoreSale): Boolean{
+            return sale1.customerName != sale2.customerName || sale1.customerEmail != sale2.customerEmail || sale1.customerPhoneNumber != sale2.customerPhoneNumber
+        }
+        fun isProductsDifferent(sale1: StoreSale, sale2: StoreSale): Boolean{
+            return sale1.products != sale2.products
         }
     }
 }

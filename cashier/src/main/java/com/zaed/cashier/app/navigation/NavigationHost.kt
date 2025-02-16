@@ -65,7 +65,7 @@ fun NavigationHost(
                     navController.navigate(Route.SaleDetailsRoute(it))
                 },
                 onNavigateToAddSale = {
-                    navController.navigate(Route.AddSaleRoute)
+                    navController.navigate(Route.AddSaleRoute(it))
                 }
             )
         }
@@ -79,13 +79,15 @@ fun NavigationHost(
 
             )
         }
-        composable<Route.AddSaleRoute> {
+        composable<Route.AddSaleRoute> { backstackEntry ->
+            val saleId = backstackEntry.toRoute<Route.AddSaleRoute>().saleId
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ){
                 AddSaleScreen(
                     onBackClicked = { navController.popBackStack() },
+                    saleId = saleId,
                     onNavigateToSaleDetails = { saleId ->
                         navController.navigate(Route.SaleDetailsRoute(saleId)){
                             popUpTo(Route.SalesRoute){
@@ -125,5 +127,5 @@ sealed interface Route{
     @Serializable
     data class SaleDetailsRoute(val saleId: String): Route
     @Serializable
-    data object AddSaleRoute: Route
+    data class AddSaleRoute(val saleId: String = ""): Route
 }
