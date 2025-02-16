@@ -6,7 +6,6 @@ import com.zaed.common.data.model.request.DeleteStoreSaleRequest
 import com.zaed.common.data.model.request.FetchStoreSalesRequest
 import com.zaed.common.data.model.request.UpdateStoreSaleRequest
 import com.zaed.common.data.source.remote.SaleRemoteSource
-import kotlinx.coroutines.flow.Flow
 
 class SaleRepositoryImpl(
     private val saleRemoteSource: SaleRemoteSource
@@ -22,5 +21,9 @@ class SaleRepositoryImpl(
 
     override suspend fun updateStoreSale(request: UpdateStoreSaleRequest): Result<Unit> {
         return saleRemoteSource.updateStoreSale(request)
+    }
+
+    override suspend fun getStoreSale(saleId: String): Result<StoreSale> {
+        return saleRemoteSource.getStoreSale(saleId)
     }
 }

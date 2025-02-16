@@ -69,7 +69,7 @@ private fun AddSaleScreenContent(
 ) {
     val pagerState = rememberPagerState { 3 }
     val progress by animateFloatAsState(
-        targetValue = pagerState.currentPage.toFloat() / (pagerState.pageCount - 1),
+        targetValue = (pagerState.currentPage+1).toFloat() / (pagerState.pageCount + 1),
         animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
         label = "linear progress inicator"
     )

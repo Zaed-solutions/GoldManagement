@@ -12,4 +12,5 @@ interface SaleRemoteSource {
     suspend fun addStoreSale(request: AddStoreSaleRequest): Result<String>
     suspend fun deleteStoreSale(request: DeleteStoreSaleRequest): Result<Unit>
     suspend fun updateStoreSale(request: UpdateStoreSaleRequest): Result<Unit>
+    suspend fun getStoreSale(saleId: String): Result<StoreSale>
 }
