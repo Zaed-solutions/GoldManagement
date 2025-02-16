@@ -1,5 +1,6 @@
 package com.zaed.cashier.ui.addsale
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,6 +10,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.cashier.ui.addsale.components.AddSaleBottomBar
 import com.zaed.cashier.ui.addsale.components.AddSaleTopBar
+import com.zaed.cashier.ui.addsale.components.SaleSummaryContent
 import com.zaed.cashier.ui.addsale.components.SelectCustomerContent
 import com.zaed.cashier.ui.addsale.components.SelectProductsContent
 import com.zaed.cashier.ui.theme.CashierAppTheme
@@ -64,6 +68,11 @@ private fun AddSaleScreenContent(
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
     val pagerState = rememberPagerState { 3 }
+    val progress by animateFloatAsState(
+        targetValue = pagerState.currentPage.toFloat() / (pagerState.pageCount - 1),
+        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+        label = "linear progress inicator"
+    )
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -95,7 +104,8 @@ private fun AddSaleScreenContent(
                 .padding(innerPadding)
         ) {
             LinearProgressIndicator(
-                progress = { pagerState.currentPage.toFloat() / pagerState.pageCount },
+                trackColor = MaterialTheme.colorScheme.background,
+                progress = { progress },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(8.dp)
@@ -155,7 +165,9 @@ private fun AddSaleScreenContent(
                         )
                     }
                     2 -> {
-                        // todo order summary
+                        SaleSummaryContent(
+                            sale = state.sale
+                        )
                     }
                 }
             }

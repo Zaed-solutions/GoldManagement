@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,9 +18,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.cashier.R
+import com.zaed.cashier.ui.theme.CashierAppTheme
 import com.zaed.common.data.model.Product
 import com.zaed.common.ui.components.NumberInputTextField
 import com.zaed.common.ui.components.TextInputTextField
@@ -36,7 +39,7 @@ fun SaveProductSheetContent(
             .fillMaxWidth()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
             text = stringResource(R.string.add_product),
@@ -49,7 +52,7 @@ fun SaveProductSheetContent(
                 product = product.copy(name = it)
             },
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
         )
         NumberInputTextField(
             modifier = Modifier.fillMaxWidth(),
@@ -76,7 +79,8 @@ fun SaveProductSheetContent(
         Button(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 64.dp),
+                .padding(vertical = 16.dp)
+                .heightIn(min = 48.dp),
             shape = MaterialTheme.shapes.medium,
             onClick = {
                 onSaveProduct(product)
@@ -86,6 +90,22 @@ fun SaveProductSheetContent(
             Text(
                 text = stringResource(R.string.save)
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showSystemUi = true, showBackground = true, device = "id:pixel_9_pro")
+@Composable
+private fun Preview() {
+    CashierAppTheme {
+        ModalBottomSheet(
+            onDismissRequest = {},
+//            sheetState = rememberModalBottomSheetState()
+        ) {
+            SaveProductSheetContent(
+                initialProduct = Product(),
+            ) { }
         }
     }
 }

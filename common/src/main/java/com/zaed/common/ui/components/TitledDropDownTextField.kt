@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.dp
 fun TitledDropDownTextField(
     modifier: Modifier = Modifier,
     label: String = "",
-    title: String = "",
     selectedValue: String,
     options: List<String>,
     onValueChanged: (Int) -> Unit = {},
@@ -44,10 +43,6 @@ fun TitledDropDownTextField(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-        )
         ExposedDropdownMenuBox(
             modifier = Modifier.fillMaxWidth(),
             expanded = expanded,
