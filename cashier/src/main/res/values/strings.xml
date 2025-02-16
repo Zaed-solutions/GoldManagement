@@ -52,4 +52,11 @@
     <string name="losses">Losses</string>
     <string name="sale">Sale</string>
     <string name="sales">Sales</string>
+    <string name="customer_information">Customer Information</string>
+    <string name="sale_summary">Sale Summary</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="email">Email</string>
+    <string name="created_at">Created at</string>
+    <string name="total">Total</string>
+    <string name="subtotal">Subtotal</string>
 </resources>

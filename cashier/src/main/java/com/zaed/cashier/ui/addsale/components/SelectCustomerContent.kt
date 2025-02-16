@@ -2,6 +2,7 @@ package com.zaed.cashier.ui.addsale.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -10,6 +11,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,12 +30,16 @@ fun SelectCustomerContent(
     onUpdateCustomerEmail: (String) -> Unit,
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier.fillMaxSize().padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.Start
     ) {
+        Text(
+            text = stringResource(R.string.customer_information),
+            style = MaterialTheme.typography.headlineMedium,
+        )
         TextInputTextField(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(top = 24.dp),
             value = sale.customerName,
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
             onValueChange = onUpdateCustomerName,

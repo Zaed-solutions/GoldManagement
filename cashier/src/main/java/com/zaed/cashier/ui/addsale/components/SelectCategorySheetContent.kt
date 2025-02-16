@@ -16,6 +16,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import com.zaed.common.ui.components.SearchBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,8 +28,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.cashier.R
+import com.zaed.cashier.ui.theme.CashierAppTheme
 import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.Product
 import java.util.UUID
@@ -47,8 +50,7 @@ fun SelectCategorySheetContent(
 
     Column(
         modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -56,33 +58,16 @@ fun SelectCategorySheetContent(
             text = stringResource(R.string.select_category),
             style = MaterialTheme.typography.headlineMedium
         )
-        OutlinedTextField(
-            value = query,
-            onValueChange = {
+        SearchBar(
+            modifier = Modifier.padding(horizontal = 16.dp).padding(top = 16.dp),
+            query = query,
+            onQueryChanged = {
                 query = it
-            },
-            label = {
-                Text(
-                    text = stringResource(R.string.search)
-                )
-            },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "search"
-                )
-            },
-            shape = MaterialTheme.shapes.small,
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
+            }
         )
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(filteredCategories) { category ->
                 CategoryItem(
@@ -113,19 +98,50 @@ private fun CategoryItem(
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
         color = Color.Transparent,
         onClick = onClick
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 24.dp, vertical = 16.dp),
         ) {
             Text(
                 text = category.name,
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleLarge
             )
         }
+    }
+}
+
+@Preview(showSystemUi = true, showBackground = true, device = "id:pixel_9_pro")
+@Composable
+private fun Preview() {
+    CashierAppTheme {
+        SelectCategorySheetContent(
+            categories = listOf(
+                Category(
+                    id = "1",
+                    name = "Category 1",
+                    minimumPrice = 10.0
+                ),
+                Category(
+                    id = "2",
+                    name = "Category 2",
+                    minimumPrice = 10.0
+                ),
+                Category(
+                    id = "3",
+                    name = "Category 3",
+                    minimumPrice = 10.0
+                ),
+                Category(
+                    id = "4",
+                    name = "Category 4",
+                    minimumPrice = 10.0
+                )
+
+            )
+        ) { }
     }
 }
