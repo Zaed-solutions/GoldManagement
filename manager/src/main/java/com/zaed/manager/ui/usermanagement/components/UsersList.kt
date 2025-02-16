@@ -39,6 +39,8 @@ import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.components.ExpandableItem
 import com.zaed.common.ui.components.ListWithLoading
+import com.zaed.common.ui.components.MoreDropDownMenu
+import com.zaed.common.ui.components.MoreDropdownItem
 import com.zaed.manager.ui.theme.ManagerTheme
 
 @Composable
@@ -108,99 +110,28 @@ private fun UserItem(
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(start = 8.dp)
                 )
-                Box(
-                    modifier = Modifier
-                        .wrapContentSize(Alignment.TopEnd)
-                ) {
-                    IconButton(
-                        onClick = { isOptionMenuVisible = !isOptionMenuVisible },
-                        modifier = Modifier
-                            .padding(start = 4.dp)
-                            .size(24.dp)
-
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = null,
+                MoreDropDownMenu(
+                    items = listOf(
+                        MoreDropdownItem(
+                            title = stringResource(R.string.edit),
+                            onClick = onEditClicked,
+                            icon = Icons.Default.Edit,
+                            tint = MaterialTheme.colorScheme.primary
+                        ),
+                        MoreDropdownItem(
+                            title = stringResource(R.string.revoke_access),
+                            onClick = onRevokeAccessClicked,
+                            icon = Icons.Default.LockPerson,
+                            tint = MaterialTheme.colorScheme.error
+                        ),
+                        MoreDropdownItem(
+                            title = stringResource(R.string.delete),
+                            onClick = onDeleteClicked,
+                            icon = Icons.Default.DeleteForever,
+                            tint = MaterialTheme.colorScheme.error
                         )
-                    }
-
-                    DropdownMenu(
-                        expanded = isOptionMenuVisible,
-                        shadowElevation = 8.dp,
-                        shape = MaterialTheme.shapes.medium,
-                        onDismissRequest = { isOptionMenuVisible = false }
-                    ) {
-                        DropdownMenuItem(
-                            onClick = {
-                                onEditClicked()
-                            },
-                            text = {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.edit),
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                    Icon(
-                                        modifier = Modifier.padding(start = 16.dp),
-                                        imageVector = Icons.Default.Edit,
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-                        )
-                        DropdownMenuItem(
-                            onClick = {
-                                onRevokeAccessClicked()
-                            },
-                            text = {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.revoke_access),
-                                        color = MaterialTheme.colorScheme.error
-                                    )
-                                    Icon(
-                                        modifier = Modifier.padding(start = 16.dp),
-                                        imageVector = Icons.Default.LockPerson,
-                                        tint = MaterialTheme.colorScheme.error,
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-                        )
-                        DropdownMenuItem(
-                            onClick = {
-                                onDeleteClicked()
-                            },
-                            text = {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.delete),
-                                        color = MaterialTheme.colorScheme.error
-                                    )
-                                    Icon(
-                                        imageVector = Icons.Default.DeleteForever,
-                                        tint = MaterialTheme.colorScheme.error,
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-                        )
-                    }
-                }
+                    )
+                )
             }
         },
         expandedContent = {

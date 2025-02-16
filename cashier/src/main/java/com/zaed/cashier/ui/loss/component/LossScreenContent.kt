@@ -18,7 +18,9 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -56,6 +58,8 @@ import com.zaed.common.ui.components.AnimatedLoading
 import com.zaed.common.ui.components.BackIcon
 import com.zaed.common.ui.components.ConfirmDeleteDialog
 import com.zaed.common.ui.components.CustomSnackbar
+import com.zaed.common.ui.components.MoreDropDownMenu
+import com.zaed.common.ui.components.MoreDropdownItem
 import com.zaed.common.ui.components.NumberInputTextField
 import com.zaed.common.ui.components.TextInputTextField
 
@@ -100,14 +104,25 @@ fun LossScreenContent(
                 title = {
                     Text(text = stringResource(R.string.losses))
                 },
-                navigationIcon = {
-                    BackIcon(onBack = { onAction(LossUiAction.OnBack) })
+                actions = {
+                    MoreDropDownMenu(
+                        items = listOf(
+                            MoreDropdownItem(
+                                onClick = { onAction(LossUiAction.OnSignOut) },
+                                title = stringResource(R.string.sign_out),
+                                icon = Icons.AutoMirrored.Filled.Logout,
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        )
+                    )
                 }
             )
         },
         floatingActionButton = {
             FloatingActionButton(
-                modifier = Modifier.padding(bottom = 8.dp, end = 8.dp).rotate(45f),
+                modifier = Modifier
+                    .padding(bottom = 8.dp, end = 8.dp)
+                    .rotate(45f),
                 shape = RoundedCornerShape(16.dp),
                 onClick = {
                     selectedLoss = Loss()

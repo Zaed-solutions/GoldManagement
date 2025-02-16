@@ -66,6 +66,13 @@ fun NavigationHost(
                 },
                 onNavigateToAddSale = {
                     navController.navigate(Route.AddSaleRoute(it))
+                },
+                onNavigateToLogin = {
+                    navController.navigate(Route.LoginRoute){
+                        popUpTo(Route.LoginRoute){
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
@@ -101,8 +108,12 @@ fun NavigationHost(
 
         composable<Route.LossRoute> {
             LossScreen(
-                onBack = {
-                    navController.popBackStack()
+                onNavigateToLogin = {
+                    navController.navigate(Route.LoginRoute){
+                        popUpTo(Route.LoginRoute){
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }

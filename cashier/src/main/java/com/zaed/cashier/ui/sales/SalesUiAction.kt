@@ -4,6 +4,7 @@ import com.zaed.common.data.model.StoreSale
 
 sealed interface SalesUiAction {
     data object AddSaleClicked: SalesUiAction
+    data object OnSignOut: SalesUiAction
     data class UpdateSearchQuery(val query: String): SalesUiAction
     data class OnSaleClicked(val saleId: String): SalesUiAction
     data class OnDeleteSale(val saleId: String): SalesUiAction

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,9 +30,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.cashier.R
+import com.zaed.cashier.ui.loss.LossUiAction
 import com.zaed.cashier.ui.sales.components.SalesList
 import com.zaed.common.data.model.StoreSale
 import com.zaed.common.ui.components.ConfirmDeleteDialog
+import com.zaed.common.ui.components.MoreDropDownMenu
+import com.zaed.common.ui.components.MoreDropdownItem
 import com.zaed.common.ui.components.SearchBar
 import org.koin.androidx.compose.koinViewModel
 
@@ -39,9 +44,15 @@ fun SalesScreen(
     modifier: Modifier = Modifier,
     viewModel: SalesViewModel = koinViewModel(),
     onNavigateToSaleDetails: (String) -> Unit,
-    onNavigateToAddSale: (saleId: String) -> Unit
+    onNavigateToAddSale: (saleId: String) -> Unit,
+    onNavigateToLogin: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect (state.isSignedOut){
+        if(state.isSignedOut){
+            onNavigateToLogin()
+        }
+    }
     SalesScreenContent(
         modifier = modifier,
         state = state,
@@ -78,6 +89,18 @@ private fun SalesScreenContent(
                     Text(
                         text = stringResource(R.string.app_name),
                         style = MaterialTheme.typography.titleLarge
+                    )
+                },
+                actions = {
+                    MoreDropDownMenu(
+                        items = listOf(
+                            MoreDropdownItem(
+                                onClick = { onAction(SalesUiAction.OnSignOut) },
+                                title = stringResource(R.string.sign_out),
+                                icon = Icons.AutoMirrored.Filled.Logout,
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        )
                     )
                 }
             )

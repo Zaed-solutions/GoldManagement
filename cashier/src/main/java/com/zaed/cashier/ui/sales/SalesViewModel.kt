@@ -8,6 +8,7 @@ import com.zaed.common.data.model.request.FetchStoreSalesRequest
 import com.zaed.common.domain.DeleteStoreSaleUseCase
 import com.zaed.common.domain.FetchStoreSalesUseCase
 import com.zaed.common.domain.GetCurrentUserLoggedInUseCase
+import com.zaed.common.domain.LogoutUserUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,7 +18,8 @@ import kotlinx.coroutines.launch
 class SalesViewModel(
     private val fetchStoreSalesUseCase: FetchStoreSalesUseCase,
     private val deleteStoreSaleUseCase: DeleteStoreSaleUseCase,
-    private val getCurrentUserUseCase: GetCurrentUserLoggedInUseCase
+    private val getCurrentUserUseCase: GetCurrentUserLoggedInUseCase,
+    private val logOutUseCase: LogoutUserUseCase
 ) : ViewModel() {
     private val TAG: String = "SalesViewModel"
     private val _uiState = MutableStateFlow(SalesUiState())
@@ -44,7 +46,6 @@ class SalesViewModel(
     }
 
     private fun fetchSales() {
-        //todo: initialize storeId
         viewModelScope.launch(Dispatchers.IO) {
             fetchStoreSalesUseCase(
                 FetchStoreSalesRequest(
@@ -66,6 +67,7 @@ class SalesViewModel(
         when (action) {
             is SalesUiAction.UpdateSearchQuery -> updateSearchQuery(action.query)
             is SalesUiAction.OnDeleteSale -> deleteSale(action.saleId)
+            SalesUiAction.OnSignOut -> signOut()
             else -> Unit
         }
     }
@@ -83,6 +85,18 @@ class SalesViewModel(
             }.onFailure {e->
                 Log.e(TAG, "deleteSale: ${e.message}",e )
                 e.printStackTrace()
+            }
+        }
+    }
+
+    private fun signOut() {
+        viewModelScope.launch (Dispatchers.IO){
+            logOutUseCase().onSuccess {
+                _uiState.update { it.copy(isSignedOut = true) }
+                Log.d(TAG, "signOut: success")
+            }.onFailure {
+                Log.e(TAG, "signOut: ${it.message}", it)
+                it.printStackTrace()
             }
         }
     }

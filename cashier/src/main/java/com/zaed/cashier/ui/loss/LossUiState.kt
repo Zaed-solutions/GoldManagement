@@ -6,6 +6,7 @@ import com.zaed.common.data.model.Loss
 import com.zaed.common.data.model.User
 
 data class LossUiState(
+    val isSignedOut: Boolean = false,
     val losses: Map<String, List<Loss>> = emptyMap(),
     val currentUser: User = User(),
     val isLoading: Boolean = false,

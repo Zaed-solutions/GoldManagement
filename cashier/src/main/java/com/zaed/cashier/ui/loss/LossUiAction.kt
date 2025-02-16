@@ -12,8 +12,7 @@ sealed interface LossUiAction {
     data class OnDeleteLoss(
         val id : String = ""
     ) : LossUiAction
-    data object OnAddNewLoss : LossUiAction
     data object ResetError : LossUiAction
     data object ResetSuccess : LossUiAction
-    data object OnBack : LossUiAction
+    data object OnSignOut : LossUiAction
 }

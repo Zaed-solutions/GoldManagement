@@ -62,18 +62,12 @@ fun SelectProductsContent(
             text = stringResource(R.string.select_products),
             style = MaterialTheme.typography.headlineMedium
         )
-        //discount
-        TitledDropDownTextField(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .padding(top = 16.dp),
-            label = stringResource(R.string.discount),
+        //discount type
+        DiscountTypeDropDownMenu(
             selectedValue = stringResource(sale.discount.type.titleRes),
-            options = DiscountType.entries.map { stringResource(it.titleRes) },
-            onValueChanged = { index ->
-                onUpdateDiscountType(DiscountType.entries[index])
-            }
+            onUpdateDiscountType = onUpdateDiscountType
         )
+
         AnimatedVisibility(visible = sale.discount.type != DiscountType.NONE) {
             NumberInputTextField(
                 modifier = Modifier
