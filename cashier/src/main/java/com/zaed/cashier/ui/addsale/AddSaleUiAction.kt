@@ -5,7 +5,7 @@ import com.zaed.common.data.model.Product
 
 sealed interface AddSaleUiAction {
     data object OnBackClicked : AddSaleUiAction
-    data object OnAddClicked : AddSaleUiAction
+    data object OnSubmitClicked : AddSaleUiAction
     data class OnUpdateCustomerName(val customerName: String) : AddSaleUiAction
     data class OnUpdateCustomerPhone(val customerPhoneNumber: String) : AddSaleUiAction
     data class OnUpdateCustomerEmail(val customerEmail: String) : AddSaleUiAction

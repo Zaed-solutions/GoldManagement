@@ -31,7 +31,8 @@ fun SalesList(
     isLoading: Boolean,
     sales: List<StoreSale>,
     onSaleClicked: (String) -> Unit,
-    onDeleteSale: (StoreSale) -> Unit
+    onDeleteSale: (StoreSale) -> Unit,
+    onEditSale: (StoreSale) -> Unit
 ) {
     ListWithLoading(
         isLoading = isLoading
@@ -50,7 +51,10 @@ fun SalesList(
                     onDelete = {
                         onDeleteSale(sale)
                     },
-                    isEditEnabled = false
+                    isEditEnabled = true,
+                    onEdit = {
+                        onEditSale(sale)
+                    }
                 ) {
                     SaleItem(
                         modifier = Modifier.padding(horizontal = 16.dp),

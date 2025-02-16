@@ -3,14 +3,10 @@ package com.zaed.cashier.ui.addsale
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -35,10 +31,14 @@ import org.koin.androidx.compose.koinViewModel
 fun AddSaleScreen(
     modifier: Modifier = Modifier,
     viewModel: AddSaleViewModel = koinViewModel(),
+    saleId: String = "",
     onBackClicked: () -> Unit,
     onNavigateToSaleDetails: (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect (true) {
+        viewModel.init(saleId)
+    }
     LaunchedEffect (state.isFinished){
         if(state.isFinished){
             onNavigateToSaleDetails(state.sale.id)
@@ -69,14 +69,16 @@ private fun AddSaleScreenContent(
 ) {
     val pagerState = rememberPagerState { 3 }
     val progress by animateFloatAsState(
-        targetValue = pagerState.currentPage.toFloat() / (pagerState.pageCount - 1),
+        targetValue = (pagerState.currentPage + 1).toFloat() /(pagerState.pageCount + 1),
         animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
         label = "linear progress inicator"
     )
     Scaffold(
         modifier = modifier,
         topBar = {
-            AddSaleTopBar { onAction(AddSaleUiAction.OnBackClicked) }
+            AddSaleTopBar(
+                progress = progress
+            ) { onAction(AddSaleUiAction.OnBackClicked) }
         },
         bottomBar = {
             AddSaleBottomBar(
@@ -93,7 +95,7 @@ private fun AddSaleScreenContent(
                     }
                 },
                 onAddClicked = {
-                    onAction(AddSaleUiAction.OnAddClicked)
+                    onAction(AddSaleUiAction.OnSubmitClicked)
                 }
             )
         }
@@ -103,13 +105,13 @@ private fun AddSaleScreenContent(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            LinearProgressIndicator(
-                trackColor = MaterialTheme.colorScheme.background,
-                progress = { progress },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(8.dp)
-            )
+//            LinearProgressIndicator(
+//                trackColor = MaterialTheme.colorScheme.background,
+//                progress = { progress },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(8.dp)
+//            )
             HorizontalPager(
                 modifier = Modifier.padding(top = 16.dp),
                 state = pagerState,

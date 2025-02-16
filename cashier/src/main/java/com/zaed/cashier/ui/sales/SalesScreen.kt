@@ -39,7 +39,7 @@ fun SalesScreen(
     modifier: Modifier = Modifier,
     viewModel: SalesViewModel = koinViewModel(),
     onNavigateToSaleDetails: (String) -> Unit,
-    onNavigateToAddSale: () -> Unit
+    onNavigateToAddSale: (saleId: String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     SalesScreenContent(
@@ -48,7 +48,8 @@ fun SalesScreen(
         onAction = { action ->
             when(action){
                 is SalesUiAction.OnSaleClicked -> onNavigateToSaleDetails(action.saleId)
-                is SalesUiAction.AddSaleClicked -> onNavigateToAddSale()
+                is SalesUiAction.AddSaleClicked -> onNavigateToAddSale("")
+                is SalesUiAction.OnEditSale -> onNavigateToAddSale(action.sale.id)
                 else -> viewModel.handleAction(action)
             }
         }
@@ -114,6 +115,9 @@ private fun SalesScreenContent(
                 onDeleteSale = {
                     selectedSale = it
                     isConfirmDeleteSaleSheetVisible = true
+                },
+                onEditSale = {
+                    onAction(SalesUiAction.OnEditSale(it))
                 }
             )
             AnimatedVisibility(isConfirmDeleteSaleSheetVisible) {
