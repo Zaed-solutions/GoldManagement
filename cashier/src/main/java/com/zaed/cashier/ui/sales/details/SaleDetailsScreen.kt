@@ -122,6 +122,7 @@ fun SaleDetailsScreen(
                         storeSale = action.storeSale
                     ).let {
                         PhoneUtil.shareReceiptViaEmail(
+                            email = action.storeSale.customerEmail,
                             context = context,
                             file = it,
                         ) {}
