@@ -53,6 +53,7 @@ object PhoneUtil {
         onSuccess: () -> Unit = {},
         onFailure: () -> Unit
     ) {
+        val  phoneNumber1 = phoneNumber.replace("+", "")
         try {
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 val fileUri: Uri = FileProvider.getUriForFile(
@@ -60,7 +61,7 @@ object PhoneUtil {
                     "${context.packageName}.fileprovider",
                     file
                 )
-                putExtra("jid", "$phoneNumber@s.whatsapp.net")
+                putExtra("jid", "$phoneNumber1@s.whatsapp.net")
                 putExtra(Intent.EXTRA_STREAM, fileUri)
                 setPackage("com.whatsapp")
                 type = "application/pdf"
@@ -104,11 +105,10 @@ object PhoneUtil {
                     it.activityInfo.packageName.contains("com.google.android.gm") ||  // Gmail
                             it.activityInfo.packageName.contains("com.microsoft.office.outlook")  // Outlook
                 }
-                .map { it.activityInfo.packageName }
 
             if (emailApps.isNotEmpty()) {
-                emailIntent.setPackage(emailApps.first())  // Open the first matching email app
-                context.startActivity(emailIntent)
+                val chooserIntent = Intent.createChooser(emailIntent, "Send Email")
+                context.startActivity(chooserIntent)
             } else {
                 onFailure()
             }
