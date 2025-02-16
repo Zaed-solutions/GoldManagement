@@ -41,6 +41,8 @@ import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.components.ExpandableItem
 import com.zaed.common.R
 import com.zaed.common.ui.components.ListWithLoading
+import com.zaed.common.ui.components.MoreDropDownMenu
+import com.zaed.common.ui.components.MoreDropdownItem
 
 @Composable
 fun RejectsList(
@@ -104,77 +106,22 @@ fun RejectItem(
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(start = 8.dp)
                 )
-                Box(
-                    modifier = Modifier
-                        .wrapContentSize(Alignment.TopEnd)
-                ) {
-                    IconButton(
-                        onClick = { isOptionMenuVisible = !isOptionMenuVisible },
-                        modifier = Modifier
-                            .padding(start = 4.dp)
-                            .size(24.dp)
-
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = null,
+                MoreDropDownMenu(
+                    items = listOf(
+                        MoreDropdownItem(
+                            title = stringResource(R.string.grant_access),
+                            icon = Icons.Default.LockPerson,
+                            tint = MaterialTheme.colorScheme.error,
+                            onClick = onGrantAccessClicked
+                        ),
+                        MoreDropdownItem(
+                            title = stringResource(R.string.delete),
+                            icon = Icons.Default.DeleteForever,
+                            tint = MaterialTheme.colorScheme.error,
+                            onClick = onDeleteClicked
                         )
-                    }
-
-                    DropdownMenu(
-                        shadowElevation = 8.dp,
-                        shape = MaterialTheme.shapes.medium,
-                        expanded = isOptionMenuVisible,
-                        onDismissRequest = { isOptionMenuVisible = false }
-                    ) {
-                        DropdownMenuItem(
-                            onClick = {
-                                onGrantAccessClicked()
-                            },
-                            text = {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ){
-                                    Text(
-                                        text = stringResource(R.string.grant_access),
-                                        color = MaterialTheme.colorScheme.error
-                                    )
-                                    Icon(
-                                        modifier = Modifier.padding(start = 16.dp),
-                                        imageVector = Icons.Default.LockPerson,
-                                        tint = MaterialTheme.colorScheme.error,
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-                        )
-                        DropdownMenuItem(
-                            onClick = {
-                                onDeleteClicked()
-                            },
-                            text = {
-                                Row (
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.delete),
-                                        color = MaterialTheme.colorScheme.error
-                                    )
-                                    Icon(
-                                        modifier = Modifier.padding(start = 16.dp),
-                                        imageVector = Icons.Default.DeleteForever,
-                                        tint = MaterialTheme.colorScheme.error,
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-                        )
-                    }
-                }
+                    )
+                )
             }
         },
         expandedContent = {

@@ -4,6 +4,7 @@ import com.zaed.common.data.model.StoreSale
 import com.zaed.common.data.model.User
 
 data class SalesUiState(
+    val isSignedOut: Boolean = false,
     val isLoading: Boolean = true,
     val sales: List<StoreSale> = emptyList(),
     val searchQuery: String = "",

@@ -13,6 +13,7 @@ import com.zaed.common.domain.CreateNewLossUseCase
 import com.zaed.common.domain.DeleteLossUseCase
 import com.zaed.common.domain.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.GetStoreLossesUseCase
+import com.zaed.common.domain.LogoutUserUseCase
 import com.zaed.common.domain.UpdateLossUseCase
 import com.zaed.common.ui.util.DateFormat
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +30,8 @@ class LossViewModel(
     private val updateLossUseCase: UpdateLossUseCase,
     private val deleteLossUseCase: DeleteLossUseCase,
     private val getStoreLossesUseCase: GetStoreLossesUseCase,
-    private val getCurrentUserUseCase: GetCurrentUserLoggedInUseCase
+    private val getCurrentUserUseCase: GetCurrentUserLoggedInUseCase,
+    private val logOutUseCase: LogoutUserUseCase
 ) : ViewModel() {
     private val TAG: String = "LossViewModel"
     private val _uiState = MutableStateFlow(LossUiState())
@@ -79,7 +81,22 @@ class LossViewModel(
             is LossUiAction.OnDeleteLoss -> deleteLoss(action.id)
             LossUiAction.ResetError -> resetError()
             LossUiAction.ResetSuccess -> resetSuccessState()
+            LossUiAction.OnSignOut -> signOut()
             else -> {}
+        }
+    }
+
+    private fun signOut() {
+        viewModelScope.launch (Dispatchers.IO){
+            logOutUseCase().onSuccess {
+                _uiState.update { oldState ->
+                    oldState.copy(isSignedOut = true)
+                }
+                Log.d(TAG, "signOut: success")
+            }.onFailure {
+                Log.e(TAG, "signOut: ${it.message}", it)
+                it.printStackTrace()
+            }
         }
     }
 

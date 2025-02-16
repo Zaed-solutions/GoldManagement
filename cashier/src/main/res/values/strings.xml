@@ -71,4 +71,5 @@
     <string name="subtotal">Subtotal</string>
     <string name="whatsapp">Whatsapp</string>
     <string name="share_receipt_via">Share Receipt via</string>
+    <string name="sign_out">Sign out</string>
 </resources>

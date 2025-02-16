@@ -105,13 +105,6 @@ private fun AddSaleScreenContent(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-//            LinearProgressIndicator(
-//                trackColor = MaterialTheme.colorScheme.background,
-//                progress = { progress },
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .height(8.dp)
-//            )
             HorizontalPager(
                 modifier = Modifier.padding(top = 16.dp),
                 state = pagerState,
@@ -173,8 +166,11 @@ private fun AddSaleScreenContent(
                     }
                 }
             }
+
+
         }
     }
+
 }
 
 @Preview(showSystemUi = true, showBackground = true, device = "id:pixel_9_pro")
