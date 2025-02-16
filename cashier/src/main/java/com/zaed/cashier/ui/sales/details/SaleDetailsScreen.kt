@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Whatsapp
@@ -54,9 +55,12 @@ import com.zaed.cashier.ui.theme.CashierAppTheme
 import com.zaed.common.data.model.DiscountType
 import com.zaed.common.data.model.Product
 import com.zaed.common.data.model.StoreSale
+import com.zaed.common.ui.components.TextInputTextField
 import com.zaed.common.ui.util.FileUtil
 import com.zaed.common.ui.util.PhoneUtil
 import com.zaed.common.ui.util.ReceiptUtil
+import com.zaed.common.ui.util.isValidEmail
+import com.zaed.common.ui.util.isValidPhoneNumber
 import com.zaed.common.ui.util.toMoneyFormat
 import org.koin.androidx.compose.koinViewModel
 import java.util.Date
@@ -83,7 +87,7 @@ fun SaleDetailsScreen(
                         logoMipmapId = com.zaed.common.R.mipmap.cashier_logo_round,
                         storeSale = action.storeSale
                     ).let {
-                        Toast.makeText(context, it.absolutePath, Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(context, it.absolutePath, Toast.LENGTH_SHORT).show()
                         FileUtil.openFile(
                             context = context,
                             file = it,
@@ -100,7 +104,7 @@ fun SaleDetailsScreen(
                         logoMipmapId = com.zaed.common.R.mipmap.cashier_logo_round,
                         storeSale = action.storeSale
                     ).let {
-                        Toast.makeText(context, it.absolutePath, Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(context, it.absolutePath, Toast.LENGTH_SHORT).show()
                         PhoneUtil.sendReceiptViaWhatsapp(
                             context = context,
                             phoneNumber = action.storeSale.customerPhoneNumber,
@@ -111,7 +115,19 @@ fun SaleDetailsScreen(
                     }
                 }
 
-                is SaleDetailsUiAction.ShareViaEmail -> {}
+                is SaleDetailsUiAction.ShareViaEmail -> {
+                    ReceiptUtil.generateStoreSaleReceipt(
+                        context = context,
+                        logoMipmapId = com.zaed.common.R.mipmap.cashier_logo_round,
+                        storeSale = action.storeSale
+                    ).let {
+                        PhoneUtil.shareReceiptViaEmail(
+                            email = action.storeSale.customerEmail,
+                            context = context,
+                            file = it,
+                        ) {}
+                    }
+                }
                 else -> viewModel.handleAction(action)
             }
         }
@@ -325,7 +341,6 @@ fun SaleDetailsPreview(
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.titleMedium,
                 )
-
             }
         }
 
@@ -515,6 +530,10 @@ fun SaleDetailsPreview(
                         .fillMaxWidth(),
                     horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
                 ) {
+                    var emailFieldVisible by remember { mutableStateOf(false) }
+                    var phoneFieldVisible by remember { mutableStateOf(false) }
+                    var emailError by remember { mutableStateOf(false) }
+                    var phoneError by remember { mutableStateOf(false) }
                     Text(
                         text = stringResource(R.string.share_receipt_via),
                         style = MaterialTheme.typography.titleLarge,
@@ -524,6 +543,38 @@ fun SaleDetailsPreview(
                             .fillMaxWidth()
                             .padding(bottom = 16.dp)
                     )
+                    AnimatedVisibility(
+                        visible = emailFieldVisible,
+                        enter = androidx.compose.animation.slideInVertically(),
+                        exit = androidx.compose.animation.slideOutVertically()
+                    ) {
+                        TextInputTextField(
+                            value = uiState.storeSale.customerEmail,
+                            label = stringResource(R.string.email),
+                            onValueChange = {
+                                onAction(SaleDetailsUiAction.UpdateCustomerEmail(it))
+                            },
+                            imageVector = Icons.Default.Email,
+                            isError = emailError,
+                            errorMessage = R.string.not_a_valid_email
+                        )
+                    }
+                    AnimatedVisibility(
+                        visible = phoneFieldVisible,
+                        enter = androidx.compose.animation.slideInVertically(),
+                        exit = androidx.compose.animation.slideOutVertically()
+                    ) {
+                        TextInputTextField(
+                            value = uiState.storeSale.customerPhoneNumber,
+                            label = stringResource(R.string.phone_number),
+                            onValueChange = {
+                                onAction(SaleDetailsUiAction.UpdateCustomerPhoneNumber(it))
+                            },
+                            imageVector = Icons.Default.Phone,
+                            isError = phoneError,
+                            errorMessage = R.string.not_a_valid_phone_number
+                        )
+                    }
                     Row(
                         modifier = Modifier.padding(vertical = 4.dp),
                         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
@@ -533,7 +584,17 @@ fun SaleDetailsPreview(
                                 .weight(1f)
                                 .padding(end = 8.dp),
                             onClick = {
-                                onAction(SaleDetailsUiAction.ShareViaWhatsapp(sale))
+                                if (uiState.storeSale.customerPhoneNumber.isEmpty()) {
+                                    emailFieldVisible = false
+                                    phoneFieldVisible = true
+                                } else {
+                                    if(uiState.storeSale.customerPhoneNumber.isValidPhoneNumber()){
+                                        phoneError = false
+                                        onAction(SaleDetailsUiAction.ShareViaWhatsapp(sale))
+                                    }else{
+                                        phoneError = true
+                                    }
+                                }
                             }
                         ) {
                             Row(
@@ -553,7 +614,17 @@ fun SaleDetailsPreview(
                                 .weight(1f)
                                 .padding(start = 8.dp),
                             onClick = {
-                                onAction(SaleDetailsUiAction.ShareViaEmail(sale))
+                                if (uiState.storeSale.customerEmail.isEmpty()) {
+                                    phoneFieldVisible = false
+                                    emailFieldVisible = true
+                                } else {
+                                    if(uiState.storeSale.customerEmail.isValidEmail()){
+                                        emailError = false
+                                        onAction(SaleDetailsUiAction.ShareViaEmail(sale))
+                                    }else{
+                                        emailError = true
+                                    }
+                                }
                             }
                         ) {
                             Row(
@@ -608,7 +679,7 @@ private fun SaleDetailsScreenContentPreview() {
                         )
                     ),
                     discount = com.zaed.common.data.model.Discount(
-                        type = com.zaed.common.data.model.DiscountType.AMOUNT,
+                        type = DiscountType.AMOUNT,
                         value = 10.0,
                     ),
                 ),

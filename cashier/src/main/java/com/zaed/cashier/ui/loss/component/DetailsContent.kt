@@ -17,7 +17,7 @@ fun DetailsContent(
     date: String,
     losses: List<Loss>,
     onEdit: (loss: Loss) -> Unit = {},
-    onDelete: (loss:Loss) -> Unit = {}
+    onDelete: (loss: Loss) -> Unit = {}
 ) {
     Surface(
         modifier = Modifier.padding(4.dp),
@@ -27,15 +27,18 @@ fun DetailsContent(
         Column(
             modifier = Modifier.padding(8.dp)
         ) {
+            Log.d("LossItem", "losses: ${losses.map { it.value }}")
             LossItemTopRow(date, losses)
             losses.forEachIndexed { index, _ ->
                 val loss = losses[index]
                 LossItem(
                     loss = loss,
-                    onClickEdit = { onEdit(loss) },
+                    onClickEdit = {
+                        Log.d("LossItem", "onClickEdit: ${loss.value}")
+                        onEdit(loss)
+                    },
                     onClickDelete = {
-                        Log.d("LossItem", "onClickDelete: $loss")
-                        Log.d("LossItem", "losses: ${losses.map { it.id }}")
+                        Log.d("LossItem", "onClickDelete: ${loss.value}")
                         onDelete(loss)
                     }
                 )

@@ -71,5 +71,7 @@
     <string name="subtotal">Subtotal</string>
     <string name="whatsapp">Whatsapp</string>
     <string name="share_receipt_via">Share Receipt via</string>
+    <string name="not_a_valid_email">Not a valid email</string>
+    <string name="not_a_valid_phone_number">Not a Valid Phone Number</string>
     <string name="sign_out">Sign out</string>
 </resources>
