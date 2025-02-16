@@ -14,14 +14,14 @@ val provider = GoogleFont.Provider(
 
 val bodyFontFamily = FontFamily(
     Font(
-        googleFont = GoogleFont("Poppins"),
+        googleFont = GoogleFont("Roboto"),
         fontProvider = provider,
     )
 )
 
 val displayFontFamily = FontFamily(
     Font(
-        googleFont = GoogleFont("Playfair Display SC"),
+        googleFont = GoogleFont("Lato"),
         fontProvider = provider,
     )
 )
@@ -46,4 +46,3 @@ val AppTypography = Typography(
     labelMedium = baseline.labelMedium.copy(fontFamily = bodyFontFamily),
     labelSmall = baseline.labelSmall.copy(fontFamily = bodyFontFamily),
 )
-
