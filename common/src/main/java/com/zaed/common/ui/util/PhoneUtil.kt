@@ -46,12 +46,10 @@ object PhoneUtil {
     }
 
 
-
     fun sendReceiptViaWhatsapp(
         context: Context,
         phoneNumber: String,
         file: File,
-        message: String="ooooooooooo",
         onSuccess: () -> Unit = {},
         onFailure: () -> Unit
     ) {
@@ -62,16 +60,61 @@ object PhoneUtil {
                     "${context.packageName}.fileprovider",
                     file
                 )
-                putExtra("jid", "201050737549"+"@s.whatsapp.net")
+                putExtra("jid", "$phoneNumber@s.whatsapp.net")
                 putExtra(Intent.EXTRA_STREAM, fileUri)
                 setPackage("com.whatsapp")
                 type = "application/pdf"
                 flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
             }
-                context.startActivity(shareIntent)
+            context.startActivity(shareIntent)
 
         } catch (e: Exception) {
             e.printStackTrace()
+        }
+    }
+
+
+    fun shareReceiptViaEmail(
+        context: Context,
+        file: File,
+        email: String ="mohamed.zarea01@gmail.com",
+        subject: String = "Your Receipt",
+        body: String = "Dear Customer,\n\nPlease find your receipt attached.\n\nBest regards,\nYour Company",
+        onFailure: () -> Unit
+    ) {
+        try {
+            val fileUri: Uri = FileProvider.getUriForFile(
+                context,
+                "${context.packageName}.fileprovider",
+                file
+            )
+
+            val emailIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "application/pdf"
+                putExtra(Intent.EXTRA_EMAIL, arrayOf(email)) // Replace with actual recipient if needed
+                putExtra(Intent.EXTRA_SUBJECT, subject)
+                putExtra(Intent.EXTRA_TEXT, body)
+                putExtra(Intent.EXTRA_STREAM, fileUri)
+                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+
+            val packageManager = context.packageManager
+            val emailApps = packageManager.queryIntentActivities(emailIntent, 0)
+                .filter {
+                    it.activityInfo.packageName.contains("com.google.android.gm") ||  // Gmail
+                            it.activityInfo.packageName.contains("com.microsoft.office.outlook")  // Outlook
+                }
+                .map { it.activityInfo.packageName }
+
+            if (emailApps.isNotEmpty()) {
+                emailIntent.setPackage(emailApps.first())  // Open the first matching email app
+                context.startActivity(emailIntent)
+            } else {
+                onFailure()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            onFailure()
         }
     }
 

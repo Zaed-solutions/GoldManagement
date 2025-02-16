@@ -83,7 +83,7 @@ fun SaleDetailsScreen(
                         logoMipmapId = com.zaed.common.R.mipmap.cashier_logo_round,
                         storeSale = action.storeSale
                     ).let {
-                        Toast.makeText(context, it.absolutePath, Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(context, it.absolutePath, Toast.LENGTH_SHORT).show()
                         FileUtil.openFile(
                             context = context,
                             file = it,
@@ -100,7 +100,7 @@ fun SaleDetailsScreen(
                         logoMipmapId = com.zaed.common.R.mipmap.cashier_logo_round,
                         storeSale = action.storeSale
                     ).let {
-                        Toast.makeText(context, it.absolutePath, Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(context, it.absolutePath, Toast.LENGTH_SHORT).show()
                         PhoneUtil.sendReceiptViaWhatsapp(
                             context = context,
                             phoneNumber = action.storeSale.customerPhoneNumber,
@@ -111,7 +111,18 @@ fun SaleDetailsScreen(
                     }
                 }
 
-                is SaleDetailsUiAction.ShareViaEmail -> {}
+                is SaleDetailsUiAction.ShareViaEmail -> {
+                    ReceiptUtil.generateStoreSaleReceipt(
+                        context = context,
+                        logoMipmapId = com.zaed.common.R.mipmap.cashier_logo_round,
+                        storeSale = action.storeSale
+                    ).let {
+                        PhoneUtil.shareReceiptViaEmail(
+                            context = context,
+                            file = it,
+                        ) {}
+                    }
+                }
                 else -> viewModel.handleAction(action)
             }
         }
