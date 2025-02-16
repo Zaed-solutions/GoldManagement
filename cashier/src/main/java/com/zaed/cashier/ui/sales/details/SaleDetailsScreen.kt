@@ -55,6 +55,7 @@ import com.zaed.common.data.model.DiscountType
 import com.zaed.common.data.model.Product
 import com.zaed.common.data.model.StoreSale
 import com.zaed.common.ui.util.FileUtil
+import com.zaed.common.ui.util.PhoneUtil
 import com.zaed.common.ui.util.ReceiptUtil
 import com.zaed.common.ui.util.toMoneyFormat
 import org.koin.androidx.compose.koinViewModel
@@ -76,22 +77,41 @@ fun SaleDetailsScreen(
         onAction = { action ->
             when (action) {
                 SaleDetailsUiAction.OnBack -> onBack()
-                is SaleDetailsUiAction.Print ->{
+                is SaleDetailsUiAction.Print -> {
                     ReceiptUtil.generateStoreSaleReceipt(
                         context = context,
                         logoMipmapId = com.zaed.common.R.mipmap.cashier_logo_round,
                         storeSale = action.storeSale
                     ).let {
                         Toast.makeText(context, it.absolutePath, Toast.LENGTH_SHORT).show()
-                        FileUtil.shareFile(
+                        FileUtil.openFile(
                             context = context,
                             file = it,
                             type = "application/pdf"
-                        ){
+                        ) {
                             Toast.makeText(context, "error", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
+
+                is SaleDetailsUiAction.ShareViaWhatsapp -> {
+                    ReceiptUtil.generateStoreSaleReceipt(
+                        context = context,
+                        logoMipmapId = com.zaed.common.R.mipmap.cashier_logo_round,
+                        storeSale = action.storeSale
+                    ).let {
+                        Toast.makeText(context, it.absolutePath, Toast.LENGTH_SHORT).show()
+                        PhoneUtil.sendReceiptViaWhatsapp(
+                            context = context,
+                            phoneNumber = action.storeSale.customerPhoneNumber,
+                            file = it,
+                        ) {
+                            Toast.makeText(context, "error", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+
+                is SaleDetailsUiAction.ShareViaEmail -> {}
                 else -> viewModel.handleAction(action)
             }
         }
@@ -108,9 +128,11 @@ fun SaleDetailsScreenContent(
     val titles = listOf(stringResource(R.string.preview), stringResource(R.string.history))
     Scaffold(
     ) {
-        Column(Modifier
-            .padding(it)
-            .verticalScroll(rememberScrollState())) {
+        Column(
+            Modifier
+                .padding(it)
+                .verticalScroll(rememberScrollState())
+        ) {
             PrimaryTabRow(selectedTabIndex = state) {
                 titles.forEachIndexed { index, title ->
                     Tab(
@@ -182,7 +204,7 @@ fun SaleDetailsPreview(
                     verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                 ) {
                     Text(
-                        text = if(sale.id.isEmpty()) "" else sale.id.take(7),
+                        text = if (sale.id.isEmpty()) "" else sale.id.take(7),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                     )
@@ -320,10 +342,10 @@ fun SaleDetailsPreview(
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
-                Row (
+                Row(
                     verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
                     modifier = Modifier.padding(vertical = 4.dp)
-                ){
+                ) {
                     Text(
                         text = stringResource(R.string.product),
                         color = MaterialTheme.colorScheme.primary,
@@ -381,7 +403,7 @@ fun SaleDetailsPreview(
                         )
                         Spacer(modifier = Modifier.weight(1f))
                         Text(
-                            text = sale.products.sumOf {it.grams* it.gramPrice }.toMoneyFormat(),
+                            text = sale.products.sumOf { it.grams * it.gramPrice }.toMoneyFormat(),
                             style = MaterialTheme.typography.titleMedium,
                         )
                     }
@@ -449,14 +471,14 @@ fun SaleDetailsPreview(
         }
         Row(
             modifier = Modifier.padding(16.dp)
-        ){
+        ) {
             Button(
                 shape = RoundedCornerShape(8.dp),
                 onClick = {
                     isShareBottomSheetIsVisible = true
                 },
                 modifier = Modifier.weight(1f)
-                ){
+            ) {
                 Text(stringResource(R.string.share))
                 Spacer(modifier = Modifier.width(4.dp))
                 Icon(
@@ -471,7 +493,7 @@ fun SaleDetailsPreview(
                     onAction(SaleDetailsUiAction.Print(sale))
                 },
                 modifier = Modifier.weight(1f)
-                ) {
+            ) {
                 Text(stringResource(R.string.print))
                 Spacer(modifier = Modifier.width(4.dp))
                 Icon(
@@ -487,32 +509,36 @@ fun SaleDetailsPreview(
                 ),
                 onDismissRequest = { isShareBottomSheetIsVisible = false },
             ) {
-                Column (
+                Column(
                     modifier = Modifier
                         .padding(16.dp)
                         .fillMaxWidth(),
                     horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
-                ){
+                ) {
                     Text(
                         text = stringResource(R.string.share_receipt_via),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp)
                     )
                     Row(
                         modifier = Modifier.padding(vertical = 4.dp),
                         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-                    ){
+                    ) {
                         Button(
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(end = 8.dp),
-                            onClick = {}
+                            onClick = {
+                                onAction(SaleDetailsUiAction.ShareViaWhatsapp(sale))
+                            }
                         ) {
-                            Row (
+                            Row(
                                 verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-                            ){
+                            ) {
                                 Icon(
                                     imageVector = Icons.Default.Whatsapp,
                                     contentDescription = null
@@ -522,15 +548,17 @@ fun SaleDetailsPreview(
                             }
                         }
                         Spacer(modifier = Modifier.width(8.dp))
-                        FilledTonalButton (
+                        FilledTonalButton(
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(start = 8.dp),
-                            onClick = {}
+                            onClick = {
+                                onAction(SaleDetailsUiAction.ShareViaEmail(sale))
+                            }
                         ) {
-                            Row (
+                            Row(
                                 verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-                            ){
+                            ) {
                                 Icon(
                                     imageVector = Icons.Default.Email,
                                     contentDescription = null

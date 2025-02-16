@@ -125,8 +125,10 @@ object ReceiptUtil {
             }
 
             // Create bitmap with intrinsic width and height if available
-            val width = if (drawable.intrinsicWidth > 0) drawable.intrinsicWidth else PdfConfig.logoWidth.toInt()
-            val height = if (drawable.intrinsicHeight > 0) drawable.intrinsicHeight else PdfConfig.logoHeight.toInt()
+            val width =
+                if (drawable.intrinsicWidth > 0) drawable.intrinsicWidth else PdfConfig.logoWidth.toInt()
+            val height =
+                if (drawable.intrinsicHeight > 0) drawable.intrinsicHeight else PdfConfig.logoHeight.toInt()
 
             val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
             val canvas = Canvas(bitmap)
@@ -139,6 +141,7 @@ object ReceiptUtil {
             return null
         }
     }
+
     /**
      * Generates a modern PDF receipt for a StoreSale in Arabic with professional design.
      */
@@ -152,12 +155,19 @@ object ReceiptUtil {
         val logo = logoMipmapId?.let { mipmapResourceToBitmap(context, it) }
         // Initialize PDF document
         val pdfDocument = PdfDocument()
-        val pageInfo = PdfDocument.PageInfo.Builder(PdfConfig.pageWidth, PdfConfig.pageHeight, 1).create()
+        val pageInfo =
+            PdfDocument.PageInfo.Builder(PdfConfig.pageWidth, PdfConfig.pageHeight, 1).create()
         val page = pdfDocument.startPage(pageInfo)
         val canvas = page.canvas
 
         // Fill background
-        canvas.drawRect(0f, 0f, PdfConfig.pageWidth.toFloat(), PdfConfig.pageHeight.toFloat(), PdfConfig.backgroundPaint)
+        canvas.drawRect(
+            0f,
+            0f,
+            PdfConfig.pageWidth.toFloat(),
+            PdfConfig.pageHeight.toFloat(),
+            PdfConfig.backgroundPaint
+        )
 
         // Header section with gradient
         val headerGradient = LinearGradient(
@@ -195,7 +205,12 @@ object ReceiptUtil {
         currentY += PdfConfig.paragraphSpacing + 20f
 
         // Store name
-        canvas.drawText(storeSale.storeName, PdfConfig.pageWidth / 2f, currentY, PdfConfig.headerPaint)
+        canvas.drawText(
+            storeSale.storeName,
+            PdfConfig.pageWidth / 2f,
+            currentY,
+            PdfConfig.headerPaint
+        )
         currentY += PdfConfig.paragraphSpacing + 25f
 
         // Receipt details box
@@ -222,23 +237,38 @@ object ReceiptUtil {
         drawLabelValuePair(canvas, "العميل:", storeSale.customerName, leftCol, currentY, rightCol)
         currentY += PdfConfig.lineSpacing + 5f
 
-        if (storeSale.customerPhoneNumber.isNotEmpty()) {
-            drawLabelValuePair(canvas, "رقم الهاتف:", storeSale.customerPhoneNumber, leftCol, currentY, rightCol)
-            currentY += PdfConfig.lineSpacing + 5f
-        }
+//        if (storeSale.customerPhoneNumber.isNotEmpty()) {
+//            drawLabelValuePair(
+//                canvas,
+//                "رقم الهاتف:",
+//                storeSale.customerPhoneNumber,
+//                leftCol,
+//                currentY,
+//                rightCol
+//            )
+//            currentY += PdfConfig.lineSpacing + 5f
+//        }
 
         // Right column - Date and Receipt Number
         currentY = detailsStartY + 25f
-        val dateStr = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(storeSale.createdAt)
+        val dateStr =
+            SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(storeSale.createdAt)
         val rightColumnX = PdfConfig.margin + detailsWidth / 2 - 20f
-        val rightValueX = rightColumnX -155
+        val rightValueX = rightColumnX - 155
 
         drawLabelValuePair(canvas, "التاريخ:", dateStr, rightColumnX, currentY, rightValueX)
         currentY += PdfConfig.lineSpacing + 5f
 
         // Generate receipt number (you might want to use a real one from your data)
         val receiptNumber = "R-${storeSale.id.take(7)}"
-        drawLabelValuePair(canvas, "رقم الإيصال:", receiptNumber, rightColumnX, currentY, rightValueX)
+        drawLabelValuePair(
+            canvas,
+            "رقم الإيصال:",
+            receiptNumber,
+            rightColumnX,
+            currentY,
+            rightValueX
+        )
 
         // Move to products table
         currentY = detailsStartY + 70f
@@ -263,12 +293,14 @@ object ReceiptUtil {
         // Create a list of all rows including products
         val allRows = mutableListOf<List<String>>()
         storeSale.products.forEach { product ->
-            allRows.add(listOf(
-                product.name,
-                "${product.grams}g",
-                "${product.gramPrice} ر.س",
-                "${product.grams * product.gramPrice} ر.س"
-            ))
+            allRows.add(
+                listOf(
+                    product.name,
+                    "${product.grams}g",
+                    "${product.gramPrice} ر.س",
+                    "${product.grams * product.gramPrice} ر.س"
+                )
+            )
         }
 
         // Calculate optimal column widths
@@ -281,7 +313,14 @@ object ReceiptUtil {
         )
 
         // Use the calculated columnWidths for the header
-        drawTableRow(canvas, tableHeader, columnWidths, PdfConfig.margin + tableWidth, currentY + 25f, PdfConfig.tableHeaderPaint)
+        drawTableRow(
+            canvas,
+            tableHeader,
+            columnWidths,
+            PdfConfig.margin + tableWidth,
+            currentY + 25f,
+            PdfConfig.tableHeaderPaint
+        )
         currentY += 40f
 
         // Product rows with subtle alternating background
@@ -306,7 +345,14 @@ object ReceiptUtil {
                 "${product.gramPrice.toMoneyFormat(2)} ",
                 (product.grams * product.gramPrice).toMoneyFormat(2)
             )
-            drawTableRow(canvas, rowData, columnWidths, PdfConfig.margin + tableWidth, currentY + PdfConfig.lineSpacing, PdfConfig.bodyPaint)
+            drawTableRow(
+                canvas,
+                rowData,
+                columnWidths,
+                PdfConfig.margin + tableWidth,
+                currentY + PdfConfig.lineSpacing,
+                PdfConfig.bodyPaint
+            )
             currentY += rowHeight
         }
 
@@ -410,11 +456,10 @@ object ReceiptUtil {
             listOf("الإجمالي النهائي:", "${storeSale.totalPrice.toMoneyFormat(2)}"),
             summaryColumnWidths,
             summaryStartX + summaryTableWidth,
-            currentY + PdfConfig.lineSpacing+5,
+            currentY + PdfConfig.lineSpacing + 5,
             grandTotalPaint
         )
         currentY += summaryRowHeight + 20f
-
 
 
         // Footer section
@@ -426,11 +471,26 @@ object ReceiptUtil {
         val footerPaint = Paint().apply {
             shader = footerGradient
         }
-        canvas.drawRect(0f, footerStartY, PdfConfig.pageWidth.toFloat(), PdfConfig.pageHeight.toFloat(), footerPaint)
+        canvas.drawRect(
+            0f,
+            footerStartY,
+            PdfConfig.pageWidth.toFloat(),
+            PdfConfig.pageHeight.toFloat(),
+            footerPaint
+        )
 
         // Footer text
-        canvas.drawText("شكرًا لاختيارك متجرنا!", PdfConfig.pageWidth / 2f, footerStartY + 30f, PdfConfig.headerPaint)
-        canvas.drawText("للتواصل: ${storeSale.storeName}", PdfConfig.pageWidth / 2f, footerStartY + 55f, PdfConfig.footerPaint.apply { color = PdfConfig.textLightColor })
+        canvas.drawText(
+            "شكرًا لاختيارك متجرنا!",
+            PdfConfig.pageWidth / 2f,
+            footerStartY + 30f,
+            PdfConfig.headerPaint
+        )
+        canvas.drawText(
+            "للتواصل: ${storeSale.storeName}",
+            PdfConfig.pageWidth / 2f,
+            footerStartY + 55f,
+            PdfConfig.footerPaint.apply { color = PdfConfig.textLightColor })
 
 
         // Finish the page
