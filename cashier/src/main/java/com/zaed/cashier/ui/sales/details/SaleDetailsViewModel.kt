@@ -20,10 +20,19 @@ class SaleDetailsViewModel(
     fun handleAction(action: SaleDetailsUiAction) {
         when (action) {
             is SaleDetailsUiAction.OnUpdateStoreSale -> updateStoreSale(action.storeSale)
+            is SaleDetailsUiAction.UpdateCustomerEmail -> updateCustomerEmail(action.email)
+            is SaleDetailsUiAction.UpdateCustomerPhoneNumber -> updateCustomerPhoneNumber(action.phoneNumber)
             SaleDetailsUiAction.OnSubmit -> submit()
             SaleDetailsUiAction.ResetError -> resetError()
             else -> {}
         }
+    }
+
+    private fun updateCustomerEmail(email: String) {
+        _uiState.update { it.copy(storeSale = it.storeSale.copy(customerEmail = email)) }
+    }
+    private fun updateCustomerPhoneNumber(phoneNumber: String) {
+        _uiState.update { it.copy(storeSale = it.storeSale.copy(customerPhoneNumber = phoneNumber)) }
     }
 
     private fun updateStoreSale(storeSale: StoreSale) {
