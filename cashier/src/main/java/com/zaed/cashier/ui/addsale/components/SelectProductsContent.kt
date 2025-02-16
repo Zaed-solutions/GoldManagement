@@ -22,8 +22,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.cashier.R
+import com.zaed.cashier.ui.theme.CashierAppTheme
 import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.DiscountType
 import com.zaed.common.data.model.Product
@@ -52,16 +54,18 @@ fun SelectProductsContent(
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.Start
     ) {
         Text(
+            modifier = Modifier.padding(horizontal = 16.dp),
             text = stringResource(R.string.select_products),
-            modifier = Modifier.padding(vertical = 16.dp),
             style = MaterialTheme.typography.headlineMedium
         )
         //discount
         TitledDropDownTextField(
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(top = 16.dp),
             label = stringResource(R.string.discount),
             selectedValue = stringResource(sale.discount.type.titleRes),
             options = DiscountType.entries.map { stringResource(it.titleRes) },
@@ -73,8 +77,7 @@ fun SelectProductsContent(
             NumberInputTextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 8.dp),
+                    .padding(horizontal = 16.dp) ,
                 value = sale.discount.value,
                 onValueChange = onUpdateDiscountValue,
                 label = stringResource(R.string.discount_value),
@@ -125,5 +128,21 @@ fun SelectProductsContent(
                 )
             }
         }
+    }
+}
+
+@Preview(showSystemUi = true, showBackground = true, device = "id:pixel_9_pro")
+@Composable
+private fun Preview() {
+    CashierAppTheme {
+        SelectProductsContent(
+            categories = listOf(),
+            sale = StoreSale(),
+            onEditProduct = {},
+            onAddProduct = {},
+            onUpdateDiscountValue = {},
+            onRemoveProduct = {},
+            onUpdateDiscountType = {}
+        )
     }
 }
