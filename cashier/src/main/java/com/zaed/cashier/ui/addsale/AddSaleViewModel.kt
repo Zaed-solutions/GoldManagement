@@ -10,6 +10,7 @@ import com.zaed.common.data.model.request.UpdateStoreSaleRequest
 import com.zaed.common.domain.AddStoreSaleUseCase
 import com.zaed.common.domain.FetchAllCategoriesUseCase
 import com.zaed.common.domain.GetCurrentUserLoggedInUseCase
+import com.zaed.common.domain.GetStoreSaleUseCase
 import com.zaed.common.domain.UpdateStoreSaleUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,14 +23,15 @@ class AddSaleViewModel(
     private val fetchAllCategoriesUseCase: FetchAllCategoriesUseCase,
     private val addSaleUseCase: AddStoreSaleUseCase,
     private val getCurrentUserUseCase: GetCurrentUserLoggedInUseCase,
-    private val updateSaleUseCase: UpdateStoreSaleUseCase
+    private val updateSaleUseCase: UpdateStoreSaleUseCase,
+    private val getSaleUseCase: GetStoreSaleUseCase
 ) : ViewModel() {
     private val TAG: String = "AddSaleViewModel"
     private val _uiState = MutableStateFlow(AddSaleUiState())
     val uiState = _uiState.asStateFlow()
 
     fun init(saleId: String) {
-        if(saleId.isNotBlank()){
+        if (saleId.isNotBlank()) {
             fetchSale(saleId)
         }
         fetchAllCategories()
@@ -37,8 +39,15 @@ class AddSaleViewModel(
     }
 
     private fun fetchSale(saleId: String) {
-        viewModelScope.launch (Dispatchers.IO){
-            TODO()
+        viewModelScope.launch(Dispatchers.IO) {
+            getSaleUseCase(saleId).onSuccess { data ->
+                _uiState.update { oldState ->
+                    oldState.copy(sale = data)
+                }
+            }.onFailure { e ->
+                Log.e(TAG, "fetchSale: ${e.message}", e)
+                e.printStackTrace()
+            }
         }
     }
 
@@ -88,7 +97,7 @@ class AddSaleViewModel(
     }
 
     private fun onSubmit() {
-        if(uiState.value.sale.id.isNotBlank()){
+        if (uiState.value.sale.id.isNotBlank()) {
             updateSale()
         } else {
             addSale()
@@ -96,7 +105,7 @@ class AddSaleViewModel(
     }
 
     private fun updateSale() {
-        viewModelScope.launch (Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             updateSaleUseCase(
                 UpdateStoreSaleRequest(
                     sale = uiState.value.sale,

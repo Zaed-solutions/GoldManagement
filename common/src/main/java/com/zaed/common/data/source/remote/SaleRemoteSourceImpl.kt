@@ -113,7 +113,7 @@ class SaleRemoteSourceImpl(
                         date = Date(),
                         employeeId = request.employeeId,
                         employeeName = request.employeeName,
-                        action = "${request.employeeName} Changed the customer from ${oldSale.customerName}, ${oldSale.customerEmail} , ${oldSale.customerPhoneNumber} to ${request.sale.customerName}, ${request.sale.customerEmail} to ${request.sale.customerPhoneNumber}"
+                        action = "${request.employeeName} Changed the customer from ${oldSale.customerName}-${oldSale.customerEmail}-${oldSale.customerPhoneNumber} to ${request.sale.customerName}-${request.sale.customerEmail}-${request.sale.customerPhoneNumber}"
                     )
                 )
             }

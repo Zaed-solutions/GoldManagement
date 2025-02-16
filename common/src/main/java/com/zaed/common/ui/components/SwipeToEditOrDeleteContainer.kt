@@ -57,24 +57,18 @@ fun SwipeToEditOrDeleteContainer(
     when (state.currentValue) {
         SwipeToDismissBoxValue.EndToStart -> {
             LaunchedEffect(key1 = state) {
-                if (isRtl) {
-                    if (isEditEnabled) onEdit()
-                } else {
-                    onDelete()
-                }
+                onDelete()
                 state.snapTo(SwipeToDismissBoxValue.Settled)
             }
         }
+
         SwipeToDismissBoxValue.StartToEnd -> {
             LaunchedEffect(key1 = state) {
-                if (isRtl) {
-                    onDelete()
-                } else if (isEditEnabled) {
-                    onEdit()
-                }
+                onEdit()
                 state.snapTo(SwipeToDismissBoxValue.Settled)
             }
         }
+
         else -> Unit
     }
 }
@@ -88,12 +82,9 @@ private fun SwipeBackground(
     layoutDirection: LayoutDirection,
 ) {
     val isRtl = layoutDirection == LayoutDirection.Rtl
-
-    // Determine background color and icon based on swipe direction
     val (backgroundColor, icon, contentAlignment, iconTint) = when (swipeDismissState.dismissDirection) {
         SwipeToDismissBoxValue.EndToStart -> {
             if (isRtl) {
-                // In RTL, EndToStart is for edit
                 if (isEditEnabled) {
                     FourTuple(
                         MaterialTheme.colorScheme.primary,
@@ -110,7 +101,6 @@ private fun SwipeBackground(
                     )
                 }
             } else {
-                // In LTR, EndToStart is for delete
                 FourTuple(
                     MaterialTheme.colorScheme.error,
                     Icons.Default.Delete,
@@ -119,9 +109,9 @@ private fun SwipeBackground(
                 )
             }
         }
+
         SwipeToDismissBoxValue.StartToEnd -> {
             if (isRtl) {
-                // In RTL, StartToEnd is for delete
                 FourTuple(
                     MaterialTheme.colorScheme.error,
                     Icons.Default.Delete,
@@ -129,7 +119,6 @@ private fun SwipeBackground(
                     MaterialTheme.colorScheme.onError
                 )
             } else {
-                // In LTR, StartToEnd is for edit
                 if (isEditEnabled) {
                     FourTuple(
                         MaterialTheme.colorScheme.primary,
@@ -147,6 +136,7 @@ private fun SwipeBackground(
                 }
             }
         }
+
         else -> {
             FourTuple(
                 Color.Transparent,
