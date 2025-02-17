@@ -25,7 +25,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.zaed.cashier.R
+import com.zaed.common.R
 import com.zaed.common.data.model.Product
 import com.zaed.common.ui.components.ExpandableItem
 import com.zaed.common.ui.components.ItemQuantityController

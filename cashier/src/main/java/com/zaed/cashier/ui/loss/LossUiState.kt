@@ -1,7 +1,7 @@
 package com.zaed.cashier.ui.loss
 
 import androidx.annotation.StringRes
-import com.zaed.cashier.R
+import com.zaed.common.R
 import com.zaed.common.data.model.Loss
 import com.zaed.common.data.model.User
 

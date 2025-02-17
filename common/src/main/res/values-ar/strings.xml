@@ -12,7 +12,7 @@
     <string name="login_success">تم تسجيل الدخول بنجاح</string>
     <string name="sign_up_success">تم التسجيل بنجاح</string>
     <string name="sign_up_success_wait_for_manager_approval">تم التسجيل بنجاح، انتظر موافقة المدير</string>
-    <string name="cashier">أمين الصندوق</string>
+    <string name="cashier">كاشير</string>
     <string name="manager">المدير</string>
     <string name="accountant">المحاسب</string>
     <string name="distributor">الموزع</string>
@@ -44,6 +44,7 @@
     <string name="tomorrow">غدًا</string>
     <string name="from_today_onwards">من اليوم فصاعدًا</string>
     <string name="store">المتجر</string>
+    <string name="store_colon">المتجر: </string>
     <string name="empty_store">المتجر فارغ</string>
     <string name="welcome">مرحبًا!</string>
     <string name="fill_in_your_details_to_create_your_account">املأ بياناتك لإنشاء حسابك</string>
@@ -116,4 +117,8 @@
     <string name="not_a_valid_email">البريد الإلكتروني غير صالح</string>
     <string name="not_a_valid_phone_number">رقم الهاتف غير صالح</string>
     <string name="sign_out">تسجيل الخروج</string>
+    <string name="sale_details">تفاصيل الفاتورة</string>
+    <string name="phone_number_colon">"رقم الهاتف: "</string>
+    <string name="email_colon">"البريد الالكتروني: "</string>
+    <string name="loss">الخسارة</string>
 </resources>

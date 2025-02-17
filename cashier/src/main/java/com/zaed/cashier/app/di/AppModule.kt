@@ -3,7 +3,7 @@ package com.zaed.cashier.app.di
 import com.zaed.cashier.ui.addsale.AddSaleViewModel
 import com.zaed.cashier.ui.loss.LossViewModel
 import com.zaed.cashier.ui.sales.SalesViewModel
-import com.zaed.cashier.ui.sales.details.SaleDetailsViewModel
+import com.zaed.cashier.ui.saledetails.SaleDetailsViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 

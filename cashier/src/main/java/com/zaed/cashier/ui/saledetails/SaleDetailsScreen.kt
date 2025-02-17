@@ -1,4 +1,4 @@
-package com.zaed.cashier.ui.sales.details
+package com.zaed.cashier.ui.saledetails
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
@@ -25,9 +25,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
@@ -52,9 +54,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.cashier.ui.theme.CashierAppTheme
+import com.zaed.common.data.model.Discount
 import com.zaed.common.data.model.DiscountType
 import com.zaed.common.data.model.Product
 import com.zaed.common.data.model.StoreSale
+import com.zaed.common.ui.components.BackIcon
 import com.zaed.common.ui.components.TextInputTextField
 import com.zaed.common.ui.util.FileUtil
 import com.zaed.common.ui.util.PhoneUtil
@@ -84,7 +88,7 @@ fun SaleDetailsScreen(
                 is SaleDetailsUiAction.Print -> {
                     ReceiptUtil.generateStoreSaleReceipt(
                         context = context,
-                        logoMipmapId = com.zaed.common.R.mipmap.cashier_logo_round,
+                        logoMipmapId = R.mipmap.bg_receipt_header,
                         storeSale = action.storeSale
                     ).let {
 //                        Toast.makeText(context, it.absolutePath, Toast.LENGTH_SHORT).show()
@@ -101,7 +105,7 @@ fun SaleDetailsScreen(
                 is SaleDetailsUiAction.ShareViaWhatsapp -> {
                     ReceiptUtil.generateStoreSaleReceipt(
                         context = context,
-                        logoMipmapId = com.zaed.common.R.mipmap.cashier_logo_round,
+                        logoMipmapId = R.mipmap.bg_receipt_header,
                         storeSale = action.storeSale
                     ).let {
 //                        Toast.makeText(context, it.absolutePath, Toast.LENGTH_SHORT).show()
@@ -118,7 +122,7 @@ fun SaleDetailsScreen(
                 is SaleDetailsUiAction.ShareViaEmail -> {
                     ReceiptUtil.generateStoreSaleReceipt(
                         context = context,
-                        logoMipmapId = com.zaed.common.R.mipmap.cashier_logo_round,
+                        logoMipmapId = R.mipmap.bg_receipt_header,
                         storeSale = action.storeSale
                     ).let {
                         PhoneUtil.shareReceiptViaEmail(
@@ -140,28 +144,29 @@ fun SaleDetailsScreenContent(
     uiState: SaleDetailsUiState,
     onAction: (SaleDetailsUiAction) -> Unit
 ) {
-    var state by remember { mutableStateOf(0) }
-    val titles = listOf(stringResource(R.string.preview), stringResource(R.string.history))
     Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(R.string.sale_details)
+                    )
+                },
+                navigationIcon = {
+                    BackIcon {
+                        onAction(SaleDetailsUiAction.OnBack)
+                    }
+                }
+            )
+        }
     ) {
         Column(
             Modifier
                 .padding(it)
+                .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            PrimaryTabRow(selectedTabIndex = state) {
-                titles.forEachIndexed { index, title ->
-                    Tab(
-                        selected = state == index,
-                        onClick = { state = index },
-                        text = { Text(text = title) }
-                    )
-                }
-            }
-            when (state) {
-                0 -> SaleDetailsPreview(uiState = uiState, onAction = onAction)
-                1 -> Text(text = stringResource(R.string.history))
-            }
+            SaleDetailsPreview(uiState = uiState, onAction = onAction)
         }
     }
 }
@@ -193,7 +198,7 @@ fun SaleDetailsPreview(
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.store),
+                    text = stringResource(R.string.store_colon),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                 )
@@ -289,7 +294,7 @@ fun SaleDetailsPreview(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                 ) {
                     Text(
-                        text = stringResource(R.string.phone_number),
+                        text = stringResource(R.string.phone_number_colon),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -306,7 +311,7 @@ fun SaleDetailsPreview(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                 ) {
                     Text(
-                        text = stringResource(R.string.email),
+                        text = stringResource(R.string.email_colon),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -648,7 +653,7 @@ fun SaleDetailsPreview(
 }
 
 
-@Preview
+@Preview(locale = "ar")
 @Composable
 private fun SaleDetailsScreenContentPreview() {
     CashierAppTheme {
@@ -678,7 +683,7 @@ private fun SaleDetailsScreenContentPreview() {
                             grams = 10.0,
                         )
                     ),
-                    discount = com.zaed.common.data.model.Discount(
+                    discount = Discount(
                         type = DiscountType.AMOUNT,
                         value = 10.0,
                     ),

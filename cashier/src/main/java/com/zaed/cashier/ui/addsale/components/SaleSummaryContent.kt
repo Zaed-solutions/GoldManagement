@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.zaed.cashier.R
+import com.zaed.common.R
 import com.zaed.cashier.ui.theme.CashierAppTheme
 import com.zaed.common.data.model.Discount
 import com.zaed.common.data.model.DiscountType

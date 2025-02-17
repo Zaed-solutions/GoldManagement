@@ -21,15 +21,15 @@ fun LossItem(
     onClickDelete: () -> Unit = {}
 ) {
     SwipeToEditOrDeleteContainer(
+        modifier = Modifier.padding(8.dp),
         onDelete = {
             Log.d("LossItemInner", "onClickDelete: ${loss.value}")
             onClickDelete()
         },
+        isEditEnabled = true,
         onEdit = onClickEdit
     ){
-        Card(
-            modifier = Modifier.padding(8.dp),
-        ) {
+        Card{
             Column(
                 modifier = Modifier
                     .fillMaxSize()

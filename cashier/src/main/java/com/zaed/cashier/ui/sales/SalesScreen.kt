@@ -128,7 +128,7 @@ private fun SalesScreenContent(
             //sales list
             SalesList(
                 isLoading = state.isLoading,
-                sales = state.sales,
+                sales = state.displaySales,
                 onSaleClicked = {
                     onAction(SalesUiAction.OnSaleClicked(it))
                 },

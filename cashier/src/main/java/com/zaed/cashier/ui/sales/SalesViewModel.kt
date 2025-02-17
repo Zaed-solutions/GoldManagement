@@ -53,7 +53,7 @@ class SalesViewModel(
                 )
             ).collect { result ->
                 result.onSuccess { data ->
-                    _uiState.update { it.copy(isLoading = false, sales = data) }
+                    _uiState.update { it.copy(isLoading = false, sales = data.sortedByDescending { date -> date.createdAt }) }
                     filterData()
                 }.onFailure { e ->
                     Log.e(TAG, "fetchSales: ${e.message}", e)

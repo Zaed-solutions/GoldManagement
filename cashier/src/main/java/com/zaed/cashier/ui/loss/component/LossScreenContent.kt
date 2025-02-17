@@ -48,7 +48,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.zaed.cashier.R
+import com.zaed.common.R
 import com.zaed.cashier.ui.loss.LossFieldsError
 import com.zaed.cashier.ui.loss.LossUiAction
 import com.zaed.cashier.ui.loss.LossUiState
@@ -239,6 +239,7 @@ fun LossScreenContent(
                         selectedLoss = Loss()
                         isDeleteLossSheetOpen = false
                     },
+                    label = stringResource(R.string.loss),
                     onConfirm = {
                         onAction(LossUiAction.OnDeleteLoss(selectedLoss.id))
                         isDeleteLossSheetOpen = false
