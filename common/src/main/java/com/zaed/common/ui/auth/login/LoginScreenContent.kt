@@ -72,7 +72,6 @@ fun LoginScreenContent(
                         context.getString(R.string.login_success),
                         withDismissAction = true
                     )
-                    delay(1000)
                     onAction(AuthenticationUiAction.OnNavigateToHomeScreen)
                 }
                 UserApprovementStatusType.REJECTED -> {

@@ -1,4 +1,4 @@
-package com.zaed.cashier.ui.sales.details
+package com.zaed.cashier.ui.saledetails
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

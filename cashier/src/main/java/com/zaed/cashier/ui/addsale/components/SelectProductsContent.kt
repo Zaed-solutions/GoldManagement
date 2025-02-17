@@ -74,6 +74,7 @@ fun SelectProductsContent(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp) ,
                 value = sale.discount.value,
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
                 onValueChange = onUpdateDiscountValue,
                 label = stringResource(R.string.discount_value),
                 imageVector = if (sale.discount.type == DiscountType.PERCENTAGE) {

@@ -239,6 +239,7 @@ fun LossScreenContent(
                         selectedLoss = Loss()
                         isDeleteLossSheetOpen = false
                     },
+                    label = stringResource(R.string.loss),
                     onConfirm = {
                         onAction(LossUiAction.OnDeleteLoss(selectedLoss.id))
                         isDeleteLossSheetOpen = false
