@@ -18,7 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.zaed.cashier.R
+import com.zaed.common.R
 
 @Composable
 fun BottomNavigationBar(
@@ -61,6 +61,6 @@ enum class BottomNavigationItem(
     @StringRes
     val title: Int
 ) {
-    SALES(Route.SalesRoute, R.drawable.ic_money_plus, R.string.sales),
-    LOSSES(Route.LossRoute, R.drawable.ic_money_minus, R.string.losses),
+    SALES(Route.SalesRoute, com.zaed.cashier.R.drawable.ic_money_plus, R.string.sales),
+    LOSSES(Route.LossRoute, com.zaed.cashier.R.drawable.ic_money_minus, R.string.losses),
 }
