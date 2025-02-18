@@ -1,7 +1,10 @@
 package com.zaed.distributor.ui.sales
 
+import android.content.Context
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
@@ -11,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.GridGoldenratio
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -23,25 +27,31 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
+import com.zaed.common.data.model.Permission
+import com.zaed.common.ui.components.FabItem
 import com.zaed.common.ui.components.MoreDropDownMenu
 import com.zaed.common.ui.components.MoreDropdownItem
+import com.zaed.common.ui.components.MultiFloatingActionButton
 import com.zaed.common.ui.components.SearchBar
 import com.zaed.distributor.ui.sales.components.SalesList
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SalesScreen(
-    modifier: Modifier = Modifier,
     viewModel: SalesViewModel = koinViewModel(),
     onNavigateToLogin: () -> Unit,
-    onNavigateToAddSale: (String) -> Unit,
-    onNavigateToSaleDetails: (String) -> Unit
+    onNavigateToAddProductSale: (String) -> Unit,
+    onNavigateToAddGoldSale: (String) -> Unit,
+    onNavigateToProductSaleDetails: (String) -> Unit,
+    onNavigateToGoldSaleDetails: (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(state.isSignedOut) {
@@ -53,9 +63,12 @@ fun SalesScreen(
         state = state,
         onAction = { action ->
             when(action){
-                SalesUiAction.AddSaleClicked -> onNavigateToAddSale("")
-                is SalesUiAction.OnEditSale -> onNavigateToAddSale(action.saleId)
-                is SalesUiAction.OnSaleClicked -> onNavigateToSaleDetails(action.saleId)
+                SalesUiAction.AddProductSaleClicked -> onNavigateToAddProductSale("")
+                SalesUiAction.AddGoldSaleClicked -> onNavigateToAddGoldSale("")
+                is SalesUiAction.OnEditProductSale -> onNavigateToProductSaleDetails(action.saleId)
+                is SalesUiAction.OnEditGoldSale -> onNavigateToGoldSaleDetails(action.saleId)
+                is SalesUiAction.OnProductSaleClicked -> onNavigateToProductSaleDetails(action.saleId)
+                is SalesUiAction.OnGoldSaleClicked -> onNavigateToGoldSaleDetails(action.saleId)
                 else -> viewModel.handleAction(action)
             }
         }
@@ -68,6 +81,7 @@ fun SalesScreenContent(
     modifier: Modifier = Modifier,
     state: SalesUiState,
     onAction: (SalesUiAction) -> Unit,
+    context: Context = LocalContext.current
 ) {
     Scaffold(
         modifier = modifier,
@@ -94,16 +108,35 @@ fun SalesScreenContent(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                modifier = Modifier.padding(bottom = 8.dp, end = 8.dp).rotate(45f),
-                shape = RoundedCornerShape(16.dp),
-                onClick = { onAction(SalesUiAction.AddSaleClicked) },
-            ) {
-                Icon(
-                    modifier = Modifier.rotate(-45f),
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add Sale"
+            if(state.currentUser.permissions.contains(Permission.SELL_GOLD)){
+                val fabItems = remember {
+                    listOf(
+                        FabItem(
+                            icon = Icons.Default.GridGoldenratio,
+                            label = context.getString(R.string.add_sale),
+                            onFabItemClicked = {
+                                onAction(SalesUiAction.AddProductSaleClicked)
+                            }
+                        )
+                    )
+                }
+                MultiFloatingActionButton(
+                    fabIcon = Icons.Default.Add,
+                    items = emptyList(),
+                    backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
                 )
+            } else {
+                FloatingActionButton(
+                    modifier = Modifier.padding(bottom = 8.dp, end = 8.dp).rotate(45f),
+                    shape = RoundedCornerShape(16.dp),
+                    onClick = { onAction(SalesUiAction.AddProductSaleClicked) },
+                ) {
+                    Icon(
+                        modifier = Modifier.rotate(-45f),
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add Sale"
+                    )
+                }
             }
         }
     ) { innerPadding ->
@@ -117,16 +150,19 @@ fun SalesScreenContent(
                 onQueryChanged = { onAction(SalesUiAction.UpdateSearchQuery(it)) }
             )
             //paid/unpaid tabs
-            LazyRow {
+            LazyRow (
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp)
+            ){
                 items(PaymentStatus.entries) { status ->
                     FilterChip(
-                        modifier = Modifier.padding(end = 8.dp),
                         onClick = {
                             onAction(SalesUiAction.UpdatePaymentStatusFilter(status))
                         },
                         label = {
                             Text(stringResource(status.label))
                         },
+                        shape = MaterialTheme.shapes.large,
                         selected = state.selectedPaymentStatus == status,
                         leadingIcon = {
                             if (state.selectedPaymentStatus == status) {
@@ -144,9 +180,33 @@ fun SalesScreenContent(
             SalesList(
                 sales = state.displayedSales,
                 isLoading = state.isLoading,
-                onDeleteSale = { onAction(SalesUiAction.OnDeleteSale(it)) },
-                onEditSale = { onAction(SalesUiAction.OnEditSale(it)) },
-                onSaleClicked = { onAction(SalesUiAction.OnSaleClicked(it)) }
+                onDeleteSale = { saleId, isProduct ->
+                    onAction(
+                        if(isProduct){
+                            SalesUiAction.OnDeleteProductSale(saleId)
+                        } else {
+                            SalesUiAction.OnDeleteGoldSale(saleId)
+                        }
+                    )
+                               },
+                onEditSale = { saleId, isProduct ->
+                    onAction(
+                        if(isProduct){
+                            SalesUiAction.OnEditProductSale(saleId)
+                        } else {
+                            SalesUiAction.OnEditGoldSale(saleId)
+                        }
+                    )
+                },
+                onSaleClicked = { saleId, isProduct ->
+                    onAction(
+                        if(isProduct){
+                            SalesUiAction.OnProductSaleClicked(saleId)
+                        } else {
+                            SalesUiAction.OnGoldSaleClicked(saleId)
+                        }
+                    )
+                }
             )
         }
     }

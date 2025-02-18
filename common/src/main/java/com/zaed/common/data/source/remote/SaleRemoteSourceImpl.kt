@@ -8,8 +8,14 @@ import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.ChangeLog
 import com.zaed.common.data.model.Loss
 import com.zaed.common.data.model.StoreSale
+import com.zaed.common.data.model.WholesaleGoldSale
+import com.zaed.common.data.model.WholesaleProductSale
+import com.zaed.common.data.model.WholesaleSale
 import com.zaed.common.data.model.request.AddStoreSaleRequest
 import com.zaed.common.data.model.request.DeleteStoreSaleRequest
+import com.zaed.common.data.model.request.DeleteWholesaleGoldSaleRequest
+import com.zaed.common.data.model.request.DeleteWholesaleProductSaleRequest
+import com.zaed.common.data.model.request.FetchDistributorSalesRequest
 import com.zaed.common.data.model.request.FetchStoreSalesRequest
 import com.zaed.common.data.model.request.UpdateStoreSaleRequest
 import kotlinx.coroutines.channels.awaitClose
@@ -24,6 +30,8 @@ class SaleRemoteSourceImpl(
 ) : SaleRemoteSource {
     private val storeSalesCollection = firestore.collection("store_sales")
     private val categoriesCollection = firestore.collection("categories")
+    private val wholesaleProductSalesCollection = firestore.collection("wholesale_product_sales")
+    private val wholesaleGoldSalesCollection = firestore.collection("wholesale_gold_sales")
     override fun fetchStoreSales(request: FetchStoreSalesRequest): Flow<Result<List<StoreSale>>> = callbackFlow {
         try{
             storeSalesCollection.where(
@@ -151,6 +159,93 @@ class SaleRemoteSourceImpl(
             Result.failure(e)
         }
     }
+
+    override fun fetchWholesaleDistributorSales(request: FetchDistributorSalesRequest): Flow<Result<List<WholesaleSale>>> = callbackFlow {
+        try {
+            var latestGoldSales: List<WholesaleGoldSale> = emptyList()
+            var latestProductSales: List<WholesaleProductSale> = emptyList()
+            val updateAndSend = {
+                val combinedSales = (latestGoldSales + latestProductSales)
+                    .sortedByDescending { it.createdAt } // Sort by date
+                trySend(Result.success(combinedSales))
+            }
+
+            val goldSalesListener = wholesaleGoldSalesCollection
+                .addSnapshotListener { snapshot, error ->
+                    if (error != null) {
+                        close(error)
+                        return@addSnapshotListener
+                    }
+                    latestGoldSales = snapshot?.documents?.mapNotNull { doc ->
+                        doc.toObject(WholesaleGoldSale::class.java)?.copy(id = doc.id)
+                    } ?: emptyList()
+                    updateAndSend()
+                }
+
+            val productSalesListener = wholesaleProductSalesCollection
+                .addSnapshotListener { snapshot, error ->
+                    if (error != null) {
+                        close(error)
+                        return@addSnapshotListener
+                    }
+                    latestProductSales = snapshot?.documents?.mapNotNull { doc ->
+                        doc.toObject(WholesaleProductSale::class.java)?.copy(id = doc.id)
+                    } ?: emptyList()
+                    updateAndSend()
+                }
+
+            awaitClose {
+                goldSalesListener.remove()
+                productSalesListener.remove()
+            }
+        } catch(e: Exception){
+            crashlytics.recordException(e)
+            trySend(Result.failure(e))
+        }
+    }
+
+    override suspend fun deleteWholesaleProductSale(request: DeleteWholesaleProductSaleRequest): Result<Unit> {
+        return try{
+            //todo delete payment
+            val sale = wholesaleProductSalesCollection.document(request.saleId).get().await().toObject(WholesaleProductSale::class.java) ?: WholesaleProductSale()
+            val logs = sale.logs.toMutableList()
+            logs.add(
+                ChangeLog(
+                    date = Date(),
+                    employeeId = request.distributorId,
+                    employeeName = request.distributorName,
+                    action = "${request.distributorName} Deleted this sale"
+                )
+            )
+            wholesaleProductSalesCollection.document(request.saleId).set(sale.copy(logs = logs, deleted = true)).await()
+            Result.success(Unit)
+        } catch(e: Exception){
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun deleteWholesaleGoldSale(request: DeleteWholesaleGoldSaleRequest): Result<Unit> {
+        return try{
+            //todo delete payment
+            val sale = wholesaleProductSalesCollection.document(request.saleId).get().await().toObject(WholesaleGoldSale::class.java) ?: WholesaleGoldSale()
+            val logs = sale.logs.toMutableList()
+            logs.add(
+                ChangeLog(
+                    date = Date(),
+                    employeeId = request.distributorId,
+                    employeeName = request.distributorName,
+                    action = "${request.distributorName} Deleted this sale"
+                )
+            )
+            wholesaleProductSalesCollection.document(request.saleId).set(sale.copy(logs = logs, deleted = true)).await()
+            Result.success(Unit)
+        } catch(e: Exception){
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
+
     private companion object{
         fun isCustomerDifferent(sale1: StoreSale, sale2: StoreSale): Boolean{
             return sale1.customerName != sale2.customerName || sale1.customerEmail != sale2.customerEmail || sale1.customerPhoneNumber != sale2.customerPhoneNumber

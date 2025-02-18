@@ -1,6 +1,6 @@
 package com.zaed.common.data.model
 
-enum class UserApprovementStatusType {
+enum class UserApprovalStatus {
     PENDING,
     APPROVED,
     REJECTED

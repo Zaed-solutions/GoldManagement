@@ -4,7 +4,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Source
 import com.zaed.common.data.model.User
-import com.zaed.common.data.model.UserApprovementStatusType
+import com.zaed.common.data.model.UserApprovalStatus
 import com.zaed.common.data.model.request.DeleteUserRequest
 import com.zaed.common.data.model.request.LoginUserRequest
 import com.zaed.common.data.model.request.SignUpUserRequest
@@ -149,7 +149,7 @@ class AuthenticationRemoteSourceImpl(
                     fullName = request.fullName,
                     userName = request.userName,
                     password = request.password,
-                    approvementStatusType = UserApprovementStatusType.PENDING,
+                    approvalStatusType = UserApprovalStatus.PENDING,
                     role = request.role,
                     storeName = request.store.name,
                     storeId = request.store.id

@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.User
-import com.zaed.common.data.model.UserApprovementStatusType
+import com.zaed.common.data.model.UserApprovalStatus
 import com.zaed.common.data.model.request.DeleteUserRequest
 import com.zaed.common.data.model.request.UpdateUserRequest
 import com.zaed.common.domain.DeleteUserUseCase
@@ -88,7 +88,7 @@ class UserManagementViewModel(
     private fun updateApprovedStatus(userId: String, accepted: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             val updates = mapOf(
-                "approvementStatusType" to if(accepted) UserApprovementStatusType.APPROVED else UserApprovementStatusType.REJECTED
+                "approvalStatusType" to if(accepted) UserApprovalStatus.APPROVED else UserApprovalStatus.REJECTED
             )
             updateUserUseCase(
                 UpdateUserRequest(
@@ -116,9 +116,9 @@ class UserManagementViewModel(
         viewModelScope.launch (Dispatchers.Default){
             with(uiState.value.allUsers){
                 if(searchQuery.isBlank()){
-                    val displayedUsers = filter { it.approvementStatusType == UserApprovementStatusType.APPROVED }
-                    val displayedRequests = filter { it.approvementStatusType == UserApprovementStatusType.PENDING }
-                    val displayedRejects = filter { it.approvementStatusType == UserApprovementStatusType.REJECTED }
+                    val displayedUsers = filter { it.approvalStatusType == UserApprovalStatus.APPROVED }
+                    val displayedRequests = filter { it.approvalStatusType == UserApprovalStatus.PENDING }
+                    val displayedRejects = filter { it.approvalStatusType == UserApprovalStatus.REJECTED }
                     _uiState.update {
                         it.copy(
                             displayedUsers = displayedUsers,
@@ -128,9 +128,9 @@ class UserManagementViewModel(
                     }
                 } else {
                     val filteredUsers = filter { it.fullName.contains(searchQuery, ignoreCase = true) }
-                    val displayedUsers = filteredUsers.filter { it.approvementStatusType == UserApprovementStatusType.APPROVED }
-                    val displayedRequests = filteredUsers.filter { it.approvementStatusType == UserApprovementStatusType.PENDING }
-                    val displayedRejects = filteredUsers.filter { it.approvementStatusType == UserApprovementStatusType.REJECTED }
+                    val displayedUsers = filteredUsers.filter { it.approvalStatusType == UserApprovalStatus.APPROVED }
+                    val displayedRequests = filteredUsers.filter { it.approvalStatusType == UserApprovalStatus.PENDING }
+                    val displayedRejects = filteredUsers.filter { it.approvalStatusType == UserApprovalStatus.REJECTED }
                     _uiState.update {
                         it.copy(
                             displayedUsers = displayedUsers,
