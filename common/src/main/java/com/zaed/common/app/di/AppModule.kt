@@ -9,27 +9,32 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.zaed.common.data.repository.AuthenticationRepository
 import com.zaed.common.data.repository.AuthenticationRepositoryImpl
-import com.zaed.common.data.repository.LossRepository
-import com.zaed.common.data.repository.LossRepositoryImpl
 import com.zaed.common.data.repository.CategoryRepository
 import com.zaed.common.data.repository.CategoryRepositoryImpl
+import com.zaed.common.data.repository.LossRepository
+import com.zaed.common.data.repository.LossRepositoryImpl
 import com.zaed.common.data.repository.SaleRepository
 import com.zaed.common.data.repository.SaleRepositoryImpl
 import com.zaed.common.data.repository.StoreRemoteDataSource
 import com.zaed.common.data.repository.StoreRemoteDataSourceImpl
 import com.zaed.common.data.repository.StoreRepository
 import com.zaed.common.data.repository.StoreRepositoryImpl
+import com.zaed.common.data.repository.WholeSalesCustomerRepository
+import com.zaed.common.data.repository.WholeSalesCustomerRepositoryImpl
 import com.zaed.common.data.source.local.LocalStorage
 import com.zaed.common.data.source.local.LocalStorageImpl
 import com.zaed.common.data.source.remote.AuthenticationRemoteSource
 import com.zaed.common.data.source.remote.AuthenticationRemoteSourceImpl
-import com.zaed.common.data.source.remote.LossRemoteDataSource
-import com.zaed.common.data.source.remote.LossRemoteDataSourceImpl
 import com.zaed.common.data.source.remote.CategoryRemoteSource
 import com.zaed.common.data.source.remote.CategoryRemoteSourceImpl
+import com.zaed.common.data.source.remote.LossRemoteDataSource
+import com.zaed.common.data.source.remote.LossRemoteDataSourceImpl
 import com.zaed.common.data.source.remote.SaleRemoteSource
 import com.zaed.common.data.source.remote.SaleRemoteSourceImpl
+import com.zaed.common.data.source.remote.WholeSalesCustomerRemoteDataSource
+import com.zaed.common.data.source.remote.WholeSalesCustomerRemoteDataSourceImpl
 import com.zaed.common.domain.AddStoreSaleUseCase
+import com.zaed.common.domain.AddWholeSaleCustomerUseCase
 import com.zaed.common.domain.CreateNewLossUseCase
 import com.zaed.common.domain.DeleteLossUseCase
 import com.zaed.common.domain.DeleteStoreSaleUseCase
@@ -37,10 +42,11 @@ import com.zaed.common.domain.DeleteUserUseCase
 import com.zaed.common.domain.FetchAllCategoriesUseCase
 import com.zaed.common.domain.FetchStoreSalesUseCase
 import com.zaed.common.domain.FetchUsersUseCase
-import com.zaed.common.domain.GetStoreLossesUseCase
 import com.zaed.common.domain.GetCurrentUserLoggedInUseCase
+import com.zaed.common.domain.GetStoreLossesUseCase
 import com.zaed.common.domain.GetStoreSaleUseCase
 import com.zaed.common.domain.GetStoresUseCase
+import com.zaed.common.domain.GetWholeSalesCustomersUseCase
 import com.zaed.common.domain.LoginUserUseCase
 import com.zaed.common.domain.LogoutUserUseCase
 import com.zaed.common.domain.SignUpUserUseCase
@@ -79,6 +85,8 @@ val useCaseModule = module {
     singleOf(::DeleteLossUseCase)
     singleOf(::DeleteStoreSaleUseCase)
     singleOf(::UpdateStoreSaleUseCase)
+    singleOf(::AddWholeSaleCustomerUseCase)
+    singleOf(::GetWholeSalesCustomersUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }
@@ -86,6 +94,7 @@ val repositoryModule = module {
     singleOf(::LossRepositoryImpl) { bind<LossRepository>()}
     singleOf(::StoreRepositoryImpl) { bind<StoreRepository>() }
     singleOf(::CategoryRepositoryImpl) { bind<CategoryRepository>() }
+    singleOf(::WholeSalesCustomerRepositoryImpl) { bind<WholeSalesCustomerRepository>() }
 }
 val viewModelModule = module {
     viewModelOf(::SignUpViewModel)
@@ -98,6 +107,7 @@ val remoteSourceModule = module {
     singleOf(::CategoryRemoteSourceImpl) { bind<CategoryRemoteSource>() }
     singleOf(::LossRemoteDataSourceImpl) { bind<LossRemoteDataSource>() }
     singleOf(::StoreRemoteDataSourceImpl) { bind<StoreRemoteDataSource>() }
+    singleOf(::WholeSalesCustomerRemoteDataSourceImpl) { bind<WholeSalesCustomerRemoteDataSource>() }
     single<FirebaseFirestore> {
         val db = Firebase.firestore
         val settings = FirebaseFirestoreSettings.Builder()

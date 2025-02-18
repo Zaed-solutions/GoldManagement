@@ -39,7 +39,7 @@ fun App(localUser: User?) {
     val startDestination = when {
         localUser == null -> Route.Login
         localUser.role != UserRole.DISTRIBUTOR -> Route.Login
-        localUser.approvementStatusType == UserApprovementStatusType.APPROVED -> Route.Home
+        localUser.approvementStatusType == UserApprovementStatusType.APPROVED -> Route.WholeSaleCustomers
         else -> Route.Login
     }
     NavigationHost(

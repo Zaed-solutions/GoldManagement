@@ -173,7 +173,9 @@ private fun AddSaleScreenContent(
 
 }
 
-@Preview(showSystemUi = true, showBackground = true, device = "id:pixel_9_pro")
+@Preview(showSystemUi = true, showBackground = true,
+    device = "spec:parent=pixel_9_pro,navigation=buttons"
+)
 @Composable
 private fun Preview() {
     CashierAppTheme {
