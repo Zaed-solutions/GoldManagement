@@ -121,4 +121,7 @@
     <string name="phone_number_colon">"Phone Number: "</string>
     <string name="email_colon">"Email: "</string>
     <string name="loss">Loss</string>
+    <string name="all">All</string>
+    <string name="paid">Paid</string>
+    <string name="unpaid">Unpaid</string>
 </resources>
