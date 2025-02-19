@@ -4,6 +4,7 @@ import java.util.Date
 
 data class WholeSaleCustomer(
     val id: String = "",
+    val distributorId: String = "",
     val name: String = "",
     val phone: String = "",
     val email: String = "",

@@ -33,7 +33,7 @@ class DisplayCustomersViewModel(
                 searchQuery = query,
                 displayedCustomers = if(query.isNotEmpty()) it.customers.filter { customer ->
                     customer.name.contains(query, ignoreCase = true)
-                } else  emptyList()
+                } else  it.customers
             )
         }
     }
@@ -45,6 +45,7 @@ class DisplayCustomersViewModel(
                     _state.update {
                         it.copy(
                             customers = customers,
+                            displayedCustomers = customers.sortedByDescending { it.debtAmount },
                             isLoading = false,
                             error = null,
                         )

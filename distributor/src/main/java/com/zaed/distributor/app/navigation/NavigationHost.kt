@@ -12,10 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
 import com.zaed.distributor.ui.addcustomers.AddCustomersScreen
+import com.zaed.distributor.ui.customerdetails.CustomerDetailsScreen
 import com.zaed.distributor.ui.displaycustomers.DisplayCustomersScreen
 import kotlinx.serialization.Serializable
 
@@ -61,14 +63,21 @@ fun NavigationHost(
         composable<Route.Home> {
             HomeScreen()
         }
-        composable<Route.WholeSaleCustomers>{
+        composable<Route.WholeSaleCustomers> {
             DisplayCustomersScreen(
                 navigateToAddCustomer = {
                     navController.navigate(Route.AddCustomers)
+                },
+                navigateToCustomerDetails = { customerId ->
+                    navController.navigate(Route.CustomerDetails(customerId))
                 }
             )
         }
-        composable<Route.AddCustomers>{
+        composable<Route.CustomerDetails> {
+            val customerId = it.toRoute<Route.CustomerDetails>().customerId
+            CustomerDetailsScreen(customerId = customerId)
+        }
+        composable<Route.AddCustomers> {
             AddCustomersScreen(
                 onBack = {
                     navController.popBackStack()
@@ -94,8 +103,6 @@ fun HomeScreen() {
 }
 
 
-
-
 sealed interface Route {
     @Serializable
     data object SignUp : Route
@@ -105,11 +112,15 @@ sealed interface Route {
 
     @Serializable
     data object Home : Route
+
     @Serializable
     data object WholeSaleCustomers : Route
+
     @Serializable
     data object AddCustomers : Route
 
+    @Serializable
+    data class CustomerDetails(val customerId: String) : Route
 
 
 }
