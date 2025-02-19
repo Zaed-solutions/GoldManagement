@@ -40,6 +40,8 @@ import com.zaed.common.domain.FetchAllCategoriesUseCase
 import com.zaed.common.domain.FetchDistributorSalesUseCase
 import com.zaed.common.domain.FetchStoreSalesUseCase
 import com.zaed.common.domain.FetchUsersUseCase
+import com.zaed.common.domain.FetchWholesaleGoldSaleUseCase
+import com.zaed.common.domain.FetchWholesaleProductSaleUseCase
 import com.zaed.common.domain.GetStoreLossesUseCase
 import com.zaed.common.domain.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.GetStoreSaleUseCase
@@ -85,6 +87,8 @@ val useCaseModule = module {
     singleOf(::FetchDistributorSalesUseCase)
     singleOf(::DeleteWholesaleProductSaleUseCase)
     singleOf(::DeleteWholesaleGoldSaleUseCase)
+    singleOf(::FetchWholesaleGoldSaleUseCase)
+    singleOf(::FetchWholesaleProductSaleUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }

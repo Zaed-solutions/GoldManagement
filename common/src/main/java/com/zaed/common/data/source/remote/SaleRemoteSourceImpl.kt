@@ -6,7 +6,6 @@ import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.ChangeLog
-import com.zaed.common.data.model.Loss
 import com.zaed.common.data.model.StoreSale
 import com.zaed.common.data.model.WholesaleGoldSale
 import com.zaed.common.data.model.WholesaleProductSale
@@ -17,6 +16,8 @@ import com.zaed.common.data.model.request.DeleteWholesaleGoldSaleRequest
 import com.zaed.common.data.model.request.DeleteWholesaleProductSaleRequest
 import com.zaed.common.data.model.request.FetchDistributorSalesRequest
 import com.zaed.common.data.model.request.FetchStoreSalesRequest
+import com.zaed.common.data.model.request.FetchWholesaleGoldSaleRequest
+import com.zaed.common.data.model.request.FetchWholesaleProductSaleRequest
 import com.zaed.common.data.model.request.UpdateStoreSaleRequest
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -32,29 +33,30 @@ class SaleRemoteSourceImpl(
     private val categoriesCollection = firestore.collection("categories")
     private val wholesaleProductSalesCollection = firestore.collection("wholesale_product_sales")
     private val wholesaleGoldSalesCollection = firestore.collection("wholesale_gold_sales")
-    override fun fetchStoreSales(request: FetchStoreSalesRequest): Flow<Result<List<StoreSale>>> = callbackFlow {
-        try{
-            storeSalesCollection.where(
-                Filter.and(
-                    Filter.equalTo("storeId", request.storeId),
-                    Filter.equalTo("deleted", false)
-                )
-            ).addSnapshotListener{ snapshot, e ->
-                if (e != null) {
-                    crashlytics.recordException(e)
-                    trySend(Result.failure(e))
-                    return@addSnapshotListener
+    override fun fetchStoreSales(request: FetchStoreSalesRequest): Flow<Result<List<StoreSale>>> =
+        callbackFlow {
+            try {
+                storeSalesCollection.where(
+                    Filter.and(
+                        Filter.equalTo("storeId", request.storeId),
+                        Filter.equalTo("deleted", false)
+                    )
+                ).addSnapshotListener { snapshot, e ->
+                    if (e != null) {
+                        crashlytics.recordException(e)
+                        trySend(Result.failure(e))
+                        return@addSnapshotListener
+                    }
+                    val storeSales = snapshot?.toObjects(StoreSale::class.java) ?: emptyList()
+                    trySend(Result.success(storeSales))
                 }
-                val storeSales = snapshot?.toObjects(StoreSale::class.java) ?: emptyList()
-                trySend(Result.success(storeSales))
+            } catch (e: Exception) {
+                crashlytics.recordException(e)
+                trySend(Result.failure(e))
+            } finally {
+                awaitClose { }
             }
-        } catch (e: Exception) {
-            crashlytics.recordException(e)
-            trySend(Result.failure(e))
-        } finally {
-            awaitClose { }
         }
-    }
 
     override suspend fun addStoreSale(request: AddStoreSaleRequest): Result<String> {
         return try {
@@ -93,7 +95,8 @@ class SaleRemoteSourceImpl(
 
     override suspend fun deleteStoreSale(request: DeleteStoreSaleRequest): Result<Unit> {
         return try {
-            val sale = storeSalesCollection.document(request.saleId).get().await().toObject(StoreSale::class.java) ?: StoreSale()
+            val sale = storeSalesCollection.document(request.saleId).get().await()
+                .toObject(StoreSale::class.java) ?: StoreSale()
             val logs = sale.logs.toMutableList()
             logs.add(
                 ChangeLog(
@@ -103,7 +106,8 @@ class SaleRemoteSourceImpl(
                     action = "${request.employeeName} Deleted this sale"
                 )
             )
-            storeSalesCollection.document(request.saleId).set(sale.copy(logs = logs, deleted = true)).await()
+            storeSalesCollection.document(request.saleId)
+                .set(sale.copy(logs = logs, deleted = true)).await()
             Result.success(Unit)
         } catch (e: Exception) {
             crashlytics.recordException(e)
@@ -113,9 +117,10 @@ class SaleRemoteSourceImpl(
 
     override suspend fun updateStoreSale(request: UpdateStoreSaleRequest): Result<Unit> {
         return try {
-            val oldSale = storeSalesCollection.document(request.sale.id).get().await().toObject(StoreSale::class.java) ?: StoreSale()
+            val oldSale = storeSalesCollection.document(request.sale.id).get().await()
+                .toObject(StoreSale::class.java) ?: StoreSale()
             val logs = oldSale.logs.toMutableList()
-            if(isCustomerDifferent(oldSale, request.sale)){
+            if (isCustomerDifferent(oldSale, request.sale)) {
                 logs.add(
                     ChangeLog(
                         date = Date(),
@@ -125,7 +130,7 @@ class SaleRemoteSourceImpl(
                     )
                 )
             }
-            if(isProductsDifferent(oldSale, request.sale)){
+            if (isProductsDifferent(oldSale, request.sale)) {
                 logs.add(
                     ChangeLog(
                         date = Date(),
@@ -135,7 +140,8 @@ class SaleRemoteSourceImpl(
                     )
                 )
             }
-            storeSalesCollection.document(request.sale.id).set(request.sale.copy(logs = logs)).await()
+            storeSalesCollection.document(request.sale.id).set(request.sale.copy(logs = logs))
+                .await()
             Result.success(Unit)
         } catch (e: Exception) {
             crashlytics.recordException(e)
@@ -145,33 +151,36 @@ class SaleRemoteSourceImpl(
 
     override suspend fun getStoreSale(saleId: String): Result<StoreSale> {
         return try {
-            val docRef = storeSalesCollection.document(saleId)
-            val snapshot = docRef.get().await()
-            val storeSale = snapshot.toObject(StoreSale::class.java)
+            val storeSale =
+                storeSalesCollection.document(saleId).get().await().toObject(StoreSale::class.java)
             if (storeSale != null) {
                 Result.success(storeSale)
             } else {
                 Result.failure(Exception("Store sale not found"))
             }
-
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             crashlytics.recordException(e)
             Result.failure(e)
         }
     }
 
-    override fun fetchWholesaleDistributorSales(request: FetchDistributorSalesRequest): Flow<Result<List<WholesaleSale>>> = callbackFlow {
-        try {
-            var latestGoldSales: List<WholesaleGoldSale> = emptyList()
-            var latestProductSales: List<WholesaleProductSale> = emptyList()
-            val updateAndSend = {
-                val combinedSales = (latestGoldSales + latestProductSales)
-                    .sortedByDescending { it.createdAt } // Sort by date
-                trySend(Result.success(combinedSales))
-            }
+    override fun fetchWholesaleDistributorSales(request: FetchDistributorSalesRequest): Flow<Result<List<WholesaleSale>>> =
+        callbackFlow {
+            try {
+                var latestGoldSales: List<WholesaleGoldSale> = emptyList()
+                var latestProductSales: List<WholesaleProductSale> = emptyList()
+                val updateAndSend = {
+                    val combinedSales = (latestGoldSales + latestProductSales)
+                        .sortedByDescending { it.createdAt } // Sort by date
+                    trySend(Result.success(combinedSales))
+                }
 
-            val goldSalesListener = wholesaleGoldSalesCollection
-                .addSnapshotListener { snapshot, error ->
+                val goldSalesListener = wholesaleGoldSalesCollection.where(
+                    Filter.and(
+                        Filter.equalTo("distributorId", request.distributorId),
+                        Filter.equalTo("deleted", false)
+                    )
+                ).addSnapshotListener { snapshot, error ->
                     if (error != null) {
                         close(error)
                         return@addSnapshotListener
@@ -182,8 +191,12 @@ class SaleRemoteSourceImpl(
                     updateAndSend()
                 }
 
-            val productSalesListener = wholesaleProductSalesCollection
-                .addSnapshotListener { snapshot, error ->
+                val productSalesListener = wholesaleProductSalesCollection.where(
+                    Filter.and(
+                        Filter.equalTo("distributorId", request.distributorId),
+                        Filter.equalTo("deleted", false)
+                    )
+                ).addSnapshotListener { snapshot, error ->
                     if (error != null) {
                         close(error)
                         return@addSnapshotListener
@@ -194,20 +207,21 @@ class SaleRemoteSourceImpl(
                     updateAndSend()
                 }
 
-            awaitClose {
-                goldSalesListener.remove()
-                productSalesListener.remove()
+                awaitClose {
+                    goldSalesListener.remove()
+                    productSalesListener.remove()
+                }
+            } catch (e: Exception) {
+                crashlytics.recordException(e)
+                trySend(Result.failure(e))
             }
-        } catch(e: Exception){
-            crashlytics.recordException(e)
-            trySend(Result.failure(e))
         }
-    }
 
     override suspend fun deleteWholesaleProductSale(request: DeleteWholesaleProductSaleRequest): Result<Unit> {
-        return try{
+        return try {
             //todo delete payment
-            val sale = wholesaleProductSalesCollection.document(request.saleId).get().await().toObject(WholesaleProductSale::class.java) ?: WholesaleProductSale()
+            val sale = wholesaleProductSalesCollection.document(request.saleId).get().await()
+                .toObject(WholesaleProductSale::class.java) ?: WholesaleProductSale()
             val logs = sale.logs.toMutableList()
             logs.add(
                 ChangeLog(
@@ -217,18 +231,20 @@ class SaleRemoteSourceImpl(
                     action = "${request.distributorName} Deleted this sale"
                 )
             )
-            wholesaleProductSalesCollection.document(request.saleId).set(sale.copy(logs = logs, deleted = true)).await()
+            wholesaleProductSalesCollection.document(request.saleId)
+                .set(sale.copy(logs = logs, deleted = true)).await()
             Result.success(Unit)
-        } catch(e: Exception){
+        } catch (e: Exception) {
             crashlytics.recordException(e)
             Result.failure(e)
         }
     }
 
     override suspend fun deleteWholesaleGoldSale(request: DeleteWholesaleGoldSaleRequest): Result<Unit> {
-        return try{
+        return try {
             //todo delete payment
-            val sale = wholesaleProductSalesCollection.document(request.saleId).get().await().toObject(WholesaleGoldSale::class.java) ?: WholesaleGoldSale()
+            val sale = wholesaleProductSalesCollection.document(request.saleId).get().await()
+                .toObject(WholesaleGoldSale::class.java) ?: WholesaleGoldSale()
             val logs = sale.logs.toMutableList()
             logs.add(
                 ChangeLog(
@@ -238,19 +254,43 @@ class SaleRemoteSourceImpl(
                     action = "${request.distributorName} Deleted this sale"
                 )
             )
-            wholesaleProductSalesCollection.document(request.saleId).set(sale.copy(logs = logs, deleted = true)).await()
+            wholesaleProductSalesCollection.document(request.saleId)
+                .set(sale.copy(logs = logs, deleted = true)).await()
             Result.success(Unit)
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun fetchWholesaleProductSale(request: FetchWholesaleProductSaleRequest): Result<WholesaleProductSale> {
+        return try {
+            val sale = wholesaleProductSalesCollection.document(request.saleId).get().await()
+                .toObject(WholesaleProductSale::class.java) ?: WholesaleProductSale()
+            Result.success(sale)
         } catch(e: Exception){
             crashlytics.recordException(e)
             Result.failure(e)
         }
     }
 
-    private companion object{
-        fun isCustomerDifferent(sale1: StoreSale, sale2: StoreSale): Boolean{
+    override suspend fun fetchWholesaleGoldSale(request: FetchWholesaleGoldSaleRequest): Result<WholesaleGoldSale> {
+        return try {
+            val sale = wholesaleGoldSalesCollection.document(request.saleId).get().await()
+                .toObject(WholesaleGoldSale::class.java) ?: WholesaleGoldSale()
+            Result.success(sale)
+        } catch(e: Exception){
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
+
+    private companion object {
+        fun isCustomerDifferent(sale1: StoreSale, sale2: StoreSale): Boolean {
             return sale1.customerName != sale2.customerName || sale1.customerEmail != sale2.customerEmail || sale1.customerPhoneNumber != sale2.customerPhoneNumber
         }
-        fun isProductsDifferent(sale1: StoreSale, sale2: StoreSale): Boolean{
+
+        fun isProductsDifferent(sale1: StoreSale, sale2: StoreSale): Boolean {
             return sale1.products != sale2.products
         }
     }
