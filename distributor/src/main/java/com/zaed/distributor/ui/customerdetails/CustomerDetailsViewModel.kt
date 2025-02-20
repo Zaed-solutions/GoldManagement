@@ -8,6 +8,7 @@ import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.FetchCustomerPaymentsRequest
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
 import com.zaed.common.domain.payment.AddNewPaymentUseCase
+import com.zaed.common.domain.payment.DeletePaymentUseCase
 import com.zaed.common.domain.payment.FetchCustomerPaymentsUseCase
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
@@ -21,6 +22,7 @@ class CustomerDetailsViewModel(
     private val fetchCustomerPaymentsUseCase: FetchCustomerPaymentsUseCase,
     private val addPaymentUseCase: AddNewPaymentUseCase,
     private val getWholeSalesCustomerUseCase: GetWholeSalesCustomerUseCase,
+    private val deletePaymentUseCase: DeletePaymentUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CustomerDetailsUiState())
     val uiState = _uiState.asStateFlow()
@@ -35,11 +37,20 @@ class CustomerDetailsViewModel(
         when (action) {
             is CustomerDetailsUiAction.OnAmountChanged -> updateAmount(action.amount)
             is CustomerDetailsUiAction.OnChangeValueDirection -> updateAmountDirection(action.isGiven)
-            CustomerDetailsUiAction.OnDeletePaymentClicked -> TODO()
-            CustomerDetailsUiAction.OnEditPaymentClicked -> TODO()
+            is CustomerDetailsUiAction.DeletePayment -> deletePayment(action.payment)
+//            is CustomerDetailsUiAction.EditPayment -> editPayment(action.payment)
             CustomerDetailsUiAction.OnSaveClicked -> addPayment()
             is CustomerDetailsUiAction.OnTypeChanged -> updateType(action.type)
             else -> {}
+        }
+    }
+
+    private fun deletePayment(payment: Payment) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update {
+                it.copy(loading = true)
+            }
+
         }
     }
 

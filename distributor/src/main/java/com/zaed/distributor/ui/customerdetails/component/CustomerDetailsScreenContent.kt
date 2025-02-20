@@ -39,7 +39,10 @@ import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.ui.components.BackIcon
+import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
+import com.zaed.common.ui.util.toMoneyFormat
 import com.zaed.distributor.ui.customerdetails.CustomerDetailsUiAction
 import com.zaed.distributor.ui.customerdetails.CustomerDetailsUiState
 import com.zaed.distributor.ui.sales.components.SalesList
@@ -52,7 +55,9 @@ fun CustomerDetailsScreenContent(
     onAction: (CustomerDetailsUiAction) -> Unit = {}
 ) {
     var addPaymentBottomSheetVisible by remember { mutableStateOf(false) }
-    var listState = remember { LazyListState() }
+    val listState = remember { LazyListState() }
+    var selectedPayment by remember { mutableStateOf<Payment?>(null) }
+    var confirmDeletePayment by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -71,7 +76,7 @@ fun CustomerDetailsScreenContent(
                 },
                 actions = {
                     IconButton(
-                      onClick =   {}
+                        onClick = {}
                     ) {
                         Icon(
                             imageVector = Icons.Default.Person,
@@ -111,7 +116,10 @@ fun CustomerDetailsScreenContent(
 
         ) {
             var selectedTab by remember { mutableIntStateOf(0) }
-            val tabs = listOf(stringResource(com.zaed.common.R.string.payments),stringResource(com.zaed.common.R.string.sales))
+            val tabs = listOf(
+                stringResource(com.zaed.common.R.string.payments),
+                stringResource(com.zaed.common.R.string.sales)
+            )
             PrimaryTabRow(
                 selectedTabIndex = selectedTab,
                 indicator = {
@@ -141,7 +149,14 @@ fun CustomerDetailsScreenContent(
                     0 -> {
                         PaymentsList(
                             listState = listState,
-                            payments = uiState.payments
+                            payments = uiState.payments,
+                            onDeletePayment = { payment ->
+                                selectedPayment = payment
+                                confirmDeletePayment = true
+                            },
+                            onEditPayment = { payment ->
+                                onAction(CustomerDetailsUiAction.EditPayment(payment))
+                            }
                         )
                     }
 
@@ -165,6 +180,19 @@ fun CustomerDetailsScreenContent(
             uiState,
             onAction,
             onDismiss = { addPaymentBottomSheetVisible = false }
+        )
+        ConfirmDeleteBottomSheet(
+            visible = confirmDeletePayment,
+            label = selectedPayment?.amount?.toMoneyFormat(2) ?:"",
+            onDismiss = {
+                confirmDeletePayment = false
+                selectedPayment = null
+            },
+            onConfirm = {
+                selectedPayment?.let { onAction(CustomerDetailsUiAction.DeletePayment(it)) }
+                confirmDeletePayment = false
+                selectedPayment = null
+            }
         )
     }
 }
