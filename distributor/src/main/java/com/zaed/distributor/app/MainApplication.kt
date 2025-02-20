@@ -6,8 +6,8 @@ import com.zaed.common.app.di.remoteSourceModule
 import com.zaed.common.app.di.repositoryModule
 import com.zaed.common.app.di.useCaseModule
 import com.zaed.common.app.di.viewModelModule
-import com.zaed.distributor.app.di.distributorViewModelModule
 import com.zaed.distributor.app.di.appModule
+import com.zaed.distributor.app.di.distributorViewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -25,7 +25,7 @@ class MainApplication : Application() {
                 remoteSourceModule,
                 repositoryModule,
                 viewModelModule,
-                distributorViewModelModule
+                distributorViewModelModule,
                 appModule
             )
         }

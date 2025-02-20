@@ -55,7 +55,6 @@ import com.zaed.common.domain.FetchWholesaleGoldSaleUseCase
 import com.zaed.common.domain.FetchWholesaleProductSaleUseCase
 import com.zaed.common.domain.GetStoreLossesUseCase
 import com.zaed.common.domain.GetCurrentUserLoggedInUseCase
-import com.zaed.common.domain.GetStoreLossesUseCase
 import com.zaed.common.domain.GetStoreSaleUseCase
 import com.zaed.common.domain.GetStoresUseCase
 import com.zaed.common.domain.GetWholeSalesCustomerUseCase

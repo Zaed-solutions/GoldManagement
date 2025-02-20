@@ -2,8 +2,8 @@ package com.zaed.distributor.app.navigation
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.MaterialTheme
@@ -19,11 +19,11 @@ import androidx.navigation.toRoute
 import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
-import com.zaed.distributor.ui.addproductsale.AddProductSaleScreen
-import com.zaed.distributor.ui.sales.SalesScreen
 import com.zaed.distributor.ui.addcustomers.AddCustomersScreen
+import com.zaed.distributor.ui.addproductsale.AddProductSaleScreen
 import com.zaed.distributor.ui.customerdetails.CustomerDetailsScreen
 import com.zaed.distributor.ui.displaycustomers.DisplayCustomersScreen
+import com.zaed.distributor.ui.sales.SalesScreen
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -111,21 +111,6 @@ fun NavigationHost(
                 }
             )
         }
-
-    }
-}
-
-@Composable
-fun HomeScreen() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Home",
-            style = MaterialTheme.typography.titleLarge
-        )
         composable<Route.AddProductSaleRoute> { backstackEntry ->
             val saleId = backstackEntry.toRoute<Route.AddProductSaleRoute>().saleId
             AddProductSaleScreen(
@@ -158,8 +143,23 @@ fun HomeScreen() {
                 contentAlignment = Alignment.Center
             ){
                 Text("Gold Sale Details $saleId")
-            }  }
+            }
+        }
 
+    }
+}
+
+@Composable
+fun HomeScreen() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Home",
+            style = MaterialTheme.typography.titleLarge
+        )
     }
 }
 
