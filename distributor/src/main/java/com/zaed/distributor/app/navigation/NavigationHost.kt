@@ -82,7 +82,8 @@ fun NavigationHost(
             val saleId = backstackEntry.toRoute<Route.AddProductSaleRoute>().saleId
             AddProductSaleScreen(
                 onBackClicked = {},
-                onNavigateToProductSaleDetails = {}
+                onNavigateToProductSaleDetails = {},
+                onNavigateToAddCustomer = {}
             )
         }
         composable<Route.ProductSaleDetailsRoute> { backstackEntry ->
