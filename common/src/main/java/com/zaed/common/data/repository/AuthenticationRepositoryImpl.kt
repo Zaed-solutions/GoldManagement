@@ -17,7 +17,7 @@ class AuthenticationRepositoryImpl(
     private val localStorage: LocalStorage,
     private val remoteSource: AuthenticationRemoteSource
 ) : AuthenticationRepository {
-    override fun getUserApprovementStatus(): Flow<Result<LocalUser>> =
+    override fun getUserApprovalStatus(): Flow<Result<LocalUser>> =
         localStorage.getLocalUser()
 
     override suspend fun loginUser(request: LoginUserRequest): Result<User> {

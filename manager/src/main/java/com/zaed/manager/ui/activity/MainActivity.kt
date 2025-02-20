@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.zaed.common.data.model.User
-import com.zaed.common.data.model.UserApprovementStatusType
+import com.zaed.common.data.model.UserApprovalStatus
 import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.auth.MainViewModel
 import com.zaed.manager.app.navigation.NavigationHost
@@ -44,7 +44,7 @@ fun App(
     val startDestination = when {
         localUser == null -> Route.LoginRoute
         localUser.role != UserRole.MANAGER -> Route.LoginRoute
-        localUser.approvementStatusType == UserApprovementStatusType.APPROVED -> Route.HomeRoute
+        localUser.approvalStatusType == UserApprovalStatus.APPROVED -> Route.HomeRoute
         else -> Route.LoginRoute
     }
     val navController = rememberNavController()

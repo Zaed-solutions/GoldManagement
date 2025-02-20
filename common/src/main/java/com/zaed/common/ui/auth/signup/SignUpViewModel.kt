@@ -162,7 +162,7 @@ class SignUpViewModel(
     }
 
     private fun updateUserName(userName: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             _uiState.update {
                 it.copy(userName = userName)
             }
@@ -170,7 +170,7 @@ class SignUpViewModel(
     }
 
     private fun updatePassword(password: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             _uiState.update {
                 it.copy(password = password)
             }
@@ -178,7 +178,7 @@ class SignUpViewModel(
     }
 
     private fun updateFullName(fullName: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             _uiState.update {
                 it.copy(fullName = fullName)
             }

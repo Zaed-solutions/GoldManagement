@@ -25,7 +25,7 @@ import com.zaed.cashier.app.navigation.NavigationHost
 import com.zaed.cashier.app.navigation.Route
 import com.zaed.cashier.ui.theme.CashierAppTheme
 import com.zaed.common.data.model.User
-import com.zaed.common.data.model.UserApprovementStatusType
+import com.zaed.common.data.model.UserApprovalStatus
 import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.auth.MainViewModel
 import org.koin.androidx.viewmodel.ext.android.getViewModel
@@ -53,7 +53,7 @@ fun App(localUser: User?) {
     val startDestination = when {
         localUser == null -> Route.LoginRoute
         localUser.role != UserRole.CASHIER -> Route.LoginRoute
-        localUser.approvementStatusType == UserApprovementStatusType.APPROVED -> Route.SalesRoute
+        localUser.approvalStatusType == UserApprovalStatus.APPROVED -> Route.SalesRoute
         else -> Route.LoginRoute
     }
     val navController = rememberNavController()

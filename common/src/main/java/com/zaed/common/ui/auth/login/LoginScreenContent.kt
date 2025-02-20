@@ -27,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.UserApprovementStatusType
+import com.zaed.common.data.model.UserApprovalStatus
 import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.components.AlreadyHaveAccountTextButton
 import com.zaed.common.ui.components.AnimatedLoading
@@ -38,7 +38,6 @@ import com.zaed.common.ui.auth.AuthenticationUiAction
 import com.zaed.common.ui.auth.AuthenticationUiState
 import com.zaed.common.ui.auth.FieldsError
 import com.zaed.common.ui.theme.GoldManagementTheme
-import kotlinx.coroutines.delay
 
 @Composable
 fun LoginScreenContent(
@@ -60,21 +59,21 @@ fun LoginScreenContent(
             onAction(AuthenticationUiAction.ResetError)
         }
         if (uiState.successMessage != null) {
-            when(uiState.user?.approvementStatusType){
-                UserApprovementStatusType.PENDING -> {
+            when(uiState.user?.approvalStatusType){
+                UserApprovalStatus.PENDING -> {
                     snackbarHostState.showSnackbar(
                         context.getString(R.string.your_account_is_pending_for_approval),
                         withDismissAction = true
                     )
                 }
-                UserApprovementStatusType.APPROVED -> {
+                UserApprovalStatus.APPROVED -> {
                     snackbarHostState.showSnackbar(
                         context.getString(R.string.login_success),
                         withDismissAction = true
                     )
                     onAction(AuthenticationUiAction.OnNavigateToHomeScreen)
                 }
-                UserApprovementStatusType.REJECTED -> {
+                UserApprovalStatus.REJECTED -> {
                     snackbarHostState.showSnackbar(
                         context.getString(R.string.your_account_is_rejected_by_the_manager),
                         withDismissAction = true

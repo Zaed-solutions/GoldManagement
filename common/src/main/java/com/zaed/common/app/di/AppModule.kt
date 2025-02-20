@@ -44,10 +44,16 @@ import com.zaed.common.domain.CreateNewLossUseCase
 import com.zaed.common.domain.DeleteLossUseCase
 import com.zaed.common.domain.DeleteStoreSaleUseCase
 import com.zaed.common.domain.DeleteUserUseCase
+import com.zaed.common.domain.DeleteWholesaleGoldSaleUseCase
+import com.zaed.common.domain.DeleteWholesaleProductSaleUseCase
 import com.zaed.common.domain.FetchAllCategoriesUseCase
 import com.zaed.common.domain.FetchCustomerPaymentsUseCase
+import com.zaed.common.domain.FetchDistributorSalesUseCase
 import com.zaed.common.domain.FetchStoreSalesUseCase
 import com.zaed.common.domain.FetchUsersUseCase
+import com.zaed.common.domain.FetchWholesaleGoldSaleUseCase
+import com.zaed.common.domain.FetchWholesaleProductSaleUseCase
+import com.zaed.common.domain.GetStoreLossesUseCase
 import com.zaed.common.domain.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.GetStoreLossesUseCase
 import com.zaed.common.domain.GetStoreSaleUseCase
@@ -92,6 +98,11 @@ val useCaseModule = module {
     singleOf(::DeleteLossUseCase)
     singleOf(::DeleteStoreSaleUseCase)
     singleOf(::UpdateStoreSaleUseCase)
+    singleOf(::FetchDistributorSalesUseCase)
+    singleOf(::DeleteWholesaleProductSaleUseCase)
+    singleOf(::DeleteWholesaleGoldSaleUseCase)
+    singleOf(::FetchWholesaleGoldSaleUseCase)
+    singleOf(::FetchWholesaleProductSaleUseCase)
     singleOf(::AddWholeSaleCustomerUseCase)
     singleOf(::GetWholeSalesCustomersUseCase)
     singleOf(::FetchCustomerPaymentsUseCase)

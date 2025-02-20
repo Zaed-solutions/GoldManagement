@@ -1,4 +1,4 @@
-package com.zaed.cashier.ui.addsale.components
+package com.zaed.common.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,10 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.cashier.ui.theme.CashierAppTheme
 import com.zaed.common.data.model.Product
-import com.zaed.common.ui.components.NumberInputTextField
-import com.zaed.common.ui.components.TextInputTextField
 import com.zaed.common.ui.util.formatMoney
 
 @Composable
@@ -52,7 +49,9 @@ fun SaveProductSheetContent(
                 product = product.copy(name = it)
             },
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
-            modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
         )
         NumberInputTextField(
             modifier = Modifier.fillMaxWidth(),
@@ -98,14 +97,12 @@ fun SaveProductSheetContent(
 @Preview(showSystemUi = true, showBackground = true, device = "id:pixel_9_pro")
 @Composable
 private fun Preview() {
-    CashierAppTheme {
-        ModalBottomSheet(
-            onDismissRequest = {},
+    ModalBottomSheet(
+        onDismissRequest = {},
 //            sheetState = rememberModalBottomSheetState()
-        ) {
-            SaveProductSheetContent(
-                initialProduct = Product(),
-            ) { }
-        }
+    ) {
+        SaveProductSheetContent(
+            initialProduct = Product(),
+        ) { }
     }
 }

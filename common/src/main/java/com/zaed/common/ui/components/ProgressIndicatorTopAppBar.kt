@@ -1,4 +1,4 @@
-package com.zaed.cashier.ui.addsale.components
+package com.zaed.common.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -10,21 +10,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.zaed.common.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddSaleTopBar(
+fun ProgressIndicatorTopAppBar(
     modifier: Modifier = Modifier,
     progress: Float,
     onBackClicked: () -> Unit,
 ) {
-    CenterAlignedTopAppBar(
+    TopAppBar(
         modifier = modifier,
         title = {
             LinearProgressIndicator(

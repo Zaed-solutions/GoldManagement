@@ -3,6 +3,7 @@ package com.zaed.distributor.app.navigation
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +19,8 @@ import androidx.navigation.toRoute
 import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
+import com.zaed.distributor.ui.addproductsale.AddProductSaleScreen
+import com.zaed.distributor.ui.sales.SalesScreen
 import com.zaed.distributor.ui.addcustomers.AddCustomersScreen
 import com.zaed.distributor.ui.customerdetails.CustomerDetailsScreen
 import com.zaed.distributor.ui.displaycustomers.DisplayCustomersScreen
@@ -34,37 +37,57 @@ fun NavigationHost(
         navController = navController,
         startDestination = startDestination,
     ) {
-        composable<Route.SignUp> {
+        composable<Route.SignUpRoute> {
             SignUpScreen(
                 role = UserRole.DISTRIBUTOR,
                 onBack = {
                     navController.popBackStack()
                 },
                 navigateToLogIn = {
-                    navController.navigate(Route.Login)
+                    navController.navigate(Route.LoginRoute)
                 },
             )
         }
-        composable<Route.Login> {
+        composable<Route.LoginRoute> {
             LoginScreen(
                 role = UserRole.DISTRIBUTOR,
                 onBack = {
                     navController.popBackStack()
                 },
                 navigateToSignUp = {
-                    navController.navigate(Route.SignUp)
+                    navController.navigate(Route.SignUpRoute)
                 },
                 onNavigateToHomeScreen = {
-                    navController.navigate(Route.WholeSaleCustomers) {
-                        popUpTo(Route.Login) {
+                    navController.navigate(Route.SalesRoute) {
+                        popUpTo(Route.LoginRoute) {
                             inclusive = true
                         }
                     }
                 }
             )
         }
-        composable<Route.Home> {
-            HomeScreen()
+        composable<Route.SalesRoute> {
+            SalesScreen(
+                onNavigateToLogin = {
+                    navController.navigate(Route.LoginRoute) {
+                        popUpTo(Route.LoginRoute) {
+                            inclusive = true
+                        }
+                    }
+                },
+                onNavigateToAddProductSale = {
+                    navController.navigate(Route.AddProductSaleRoute(it))
+                },
+                onNavigateToProductSaleDetails = {
+                    navController.navigate(Route.ProductSaleDetailsRoute(it))
+                },
+                onNavigateToAddGoldSale = {
+                    navController.navigate(Route.AddGoldSaleRoute(it))
+                },
+                onNavigateToGoldSaleDetails = {
+                    navController.navigate(Route.GoldSaleDetailsRoute(it))
+                }
+            )
         }
         composable<Route.WholeSaleCustomers> {
             DisplayCustomersScreen(
@@ -103,19 +126,63 @@ fun HomeScreen() {
             text = "Home",
             style = MaterialTheme.typography.titleLarge
         )
+        composable<Route.AddProductSaleRoute> { backstackEntry ->
+            val saleId = backstackEntry.toRoute<Route.AddProductSaleRoute>().saleId
+            AddProductSaleScreen(
+                onBackClicked = {},
+                onNavigateToProductSaleDetails = {},
+                onNavigateToAddCustomer = {}
+            )
+        }
+        composable<Route.ProductSaleDetailsRoute> { backstackEntry ->
+            val saleId = backstackEntry.toRoute<Route.ProductSaleDetailsRoute>().saleId
+            Box (
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ){
+                Text("Product Sale Details $saleId")
+            }  }
+        composable<Route.AddGoldSaleRoute> { backstackEntry ->
+            val saleId = backstackEntry.toRoute<Route.AddGoldSaleRoute>().saleId
+            Box (
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ){
+                Text("Add Gold Sale $saleId")
+            }
+        }
+        composable<Route.GoldSaleDetailsRoute> { backstackEntry ->
+            val saleId = backstackEntry.toRoute<Route.GoldSaleDetailsRoute>().saleId
+            Box (
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ){
+                Text("Gold Sale Details $saleId")
+            }  }
+
     }
 }
 
 
+
 sealed interface Route {
     @Serializable
-    data object SignUp : Route
+    data object SignUpRoute : Route
 
     @Serializable
-    data object Login : Route
+    data object LoginRoute : Route
 
     @Serializable
-    data object Home : Route
+    data object SalesRoute : Route
+
+    @Serializable
+    data class AddProductSaleRoute(val saleId: String = "") : Route
+
+    @Serializable
+    data class AddGoldSaleRoute(val saleId: String = "") : Route
+
+    @Serializable
+    data class ProductSaleDetailsRoute(val saleId: String = "") : Route
 
     @Serializable
     data object WholeSaleCustomers : Route
@@ -127,4 +194,6 @@ sealed interface Route {
     data class CustomerDetails(val customerId: String) : Route
 
 
+    @Serializable
+    data class GoldSaleDetailsRoute(val saleId: String = "") : Route
 }

@@ -9,7 +9,7 @@ import com.zaed.common.data.model.request.UpdateUserRequest
 import kotlinx.coroutines.flow.Flow
 
 interface AuthenticationRepository {
-    fun getUserApprovementStatus(): Flow<Result<LocalUser>>
+    fun getUserApprovalStatus(): Flow<Result<LocalUser>>
     suspend fun loginUser(request: LoginUserRequest): Result<User>
     suspend fun logoutCurrentUser():Result<Unit>
     suspend fun signUpUser(request: SignUpUserRequest): Result<User>

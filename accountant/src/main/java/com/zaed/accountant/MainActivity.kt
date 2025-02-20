@@ -11,7 +11,7 @@ import com.example.compose.AccountantAppTheme
 import com.zaed.app.navigation.NavigationHost
 import com.zaed.app.navigation.Route
 import com.zaed.common.data.model.User
-import com.zaed.common.data.model.UserApprovementStatusType
+import com.zaed.common.data.model.UserApprovalStatus
 import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.auth.MainViewModel
 import org.koin.androidx.viewmodel.ext.android.getViewModel
@@ -39,7 +39,7 @@ fun App(localUser: User?) {
     val startDestination = when {
         localUser == null -> Route.Login
         localUser.role != UserRole.ACCOUNTANT -> Route.Login
-        localUser.approvementStatusType == UserApprovementStatusType.APPROVED -> Route.Home
+        localUser.approvalStatusType == UserApprovalStatus.APPROVED -> Route.Home
         else -> Route.Login
     }
     NavigationHost(
