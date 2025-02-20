@@ -1,6 +1,5 @@
 package com.zaed.distributor.app.navigation
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,7 +34,7 @@ fun NavigationHost(
     NavHost(
         modifier = Modifier.systemBarsPadding(),
         navController = navController,
-        startDestination = startDestination,
+        startDestination = Route.WholeSaleCustomers,
     ) {
         composable<Route.SignUpRoute> {
             SignUpScreen(
@@ -95,7 +94,6 @@ fun NavigationHost(
                     navController.navigate(Route.AddCustomers)
                 },
                 navigateToCustomerDetails = { customerId ->
-                    Toast.makeText(context, customerId, Toast.LENGTH_SHORT).show()
                     navController.navigate(Route.CustomerDetails(customerId))
                 }
             )
@@ -114,9 +112,13 @@ fun NavigationHost(
         composable<Route.AddProductSaleRoute> { backstackEntry ->
             val saleId = backstackEntry.toRoute<Route.AddProductSaleRoute>().saleId
             AddProductSaleScreen(
-                onBackClicked = {},
+                onBackClicked = {
+                    navController.popBackStack()
+                },
                 onNavigateToProductSaleDetails = {},
-                onNavigateToAddCustomer = {}
+                onNavigateToAddCustomer = {
+                    navController.navigate(Route.AddCustomers)
+                }
             )
         }
         composable<Route.ProductSaleDetailsRoute> { backstackEntry ->

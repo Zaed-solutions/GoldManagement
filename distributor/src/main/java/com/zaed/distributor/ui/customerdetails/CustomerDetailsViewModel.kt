@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.Payment
 import com.zaed.common.data.model.PaymentType
 import com.zaed.common.data.model.WholeSaleCustomer
+import com.zaed.common.data.model.WholesaleSale
 import com.zaed.common.data.model.request.AddNewPaymentRequest
 import com.zaed.common.data.model.request.FetchCustomerPaymentsRequest
 import com.zaed.common.domain.AddNewPaymentUseCase
@@ -21,10 +22,17 @@ import kotlinx.coroutines.launch
 class CustomerDetailsViewModel(
     private val fetchCustomerPaymentsUseCase: FetchCustomerPaymentsUseCase,
     private val addPaymentUseCase: AddNewPaymentUseCase,
-    private val getWholeSalesCustomerUseCase: GetWholeSalesCustomerUseCase
+    private val getWholeSalesCustomerUseCase: GetWholeSalesCustomerUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CustomerDetailsUiState())
     val uiState = _uiState.asStateFlow()
+
+    fun init(customerId: String) {
+        getCustomerDetails(customerId)
+        _uiState.update {
+            it.copy(customer = it.customer.copy(id = customerId))
+        }
+    }
     fun handleUiAction(action: CustomerDetailsUiAction) {
         when (action) {
             is CustomerDetailsUiAction.OnAmountChanged -> updateAmount(action.amount)
@@ -127,12 +135,7 @@ class CustomerDetailsViewModel(
         }
     }
 
-    fun updateCustomerId(customerId: String) {
-        getCustomerDetails(customerId)
-        _uiState.update {
-            it.copy(customer = it.customer.copy(id = customerId))
-        }
-    }
+
 
     private fun getCustomerDetails(customerId: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -161,6 +164,7 @@ class CustomerDetailsViewModel(
         val loading: Boolean = false,
         val customer: WholeSaleCustomer = WholeSaleCustomer(),
         val payments: Map<String, List<Payment>> = emptyMap(),
+        val sales : List<WholesaleSale> = emptyList(),
         val currentPayment: Payment = Payment()
     )
 

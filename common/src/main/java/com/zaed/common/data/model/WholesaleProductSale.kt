@@ -15,4 +15,5 @@ data class WholesaleProductSale(
     val products: List<Product> = emptyList(),
     val paymentsIds: List<String> = emptyList(),
     override val paid: Boolean = false,
+    override val receiptNumber: String = "",
 ) : WholesaleSale()

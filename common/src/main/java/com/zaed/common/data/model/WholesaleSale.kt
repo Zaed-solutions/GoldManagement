@@ -11,6 +11,7 @@ sealed class WholesaleSale {
     abstract val distributorName: String
     abstract val createdAt: Date
     abstract val logs: List<ChangeLog>
+    abstract val receiptNumber: String
     abstract val deleted: Boolean
     abstract val paid: Boolean
 }

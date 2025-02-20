@@ -20,7 +20,7 @@ fun SalesList(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
     sales: List<WholesaleSale>,
-    onSaleClicked: (id: String, isProduct: Boolean) -> Unit,
+    onSaleClicked: (id: String, isProduct: Boolean) -> Unit ,
     onDeleteSale: (id: String, isProduct: Boolean) -> Unit,
     onEditSale: (id: String, isProduct: Boolean) -> Unit
 ) {

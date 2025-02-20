@@ -12,5 +12,6 @@ data class WholesaleGoldSale(
     override val createdAt: Date = Date(),
     override val logs: List<ChangeLog> = emptyList(),
     override val deleted: Boolean = false,
-    override val paid: Boolean = false
+    override val paid: Boolean = false,
+    override val receiptNumber: String =""
 ): WholesaleSale()

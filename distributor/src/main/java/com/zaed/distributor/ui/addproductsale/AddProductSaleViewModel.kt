@@ -9,6 +9,8 @@ import com.zaed.common.data.model.request.FetchWholesaleProductSaleRequest
 import com.zaed.common.domain.FetchAllCategoriesUseCase
 import com.zaed.common.domain.FetchWholesaleProductSaleUseCase
 import com.zaed.common.domain.GetCurrentUserLoggedInUseCase
+import com.zaed.common.domain.GetWholeSalesCustomerUseCase
+import com.zaed.common.domain.GetWholeSalesCustomersUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,20 +21,38 @@ class AddProductSaleViewModel(
     private val fetchAllCategoriesUseCase: FetchAllCategoriesUseCase,
     private val fetchProductSaleUseCase: FetchWholesaleProductSaleUseCase,
     private val getCurrentUserUseCase: GetCurrentUserLoggedInUseCase,
-    ): ViewModel() {
+    private val getCurrentWholeSalesCustomerUseCase: GetWholeSalesCustomerUseCase,
+    private val getWholeSalesCustomersUseCase: GetWholeSalesCustomersUseCase,
+) : ViewModel() {
     private val TAG: String = "AddProductSaleVM"
     private val _uiState = MutableStateFlow(AddProductSaleUiState())
     val uiState = _uiState.asStateFlow()
-    fun init(saleId: String){
-        if(saleId.isNotBlank()){
+    fun init(saleId: String) {
+        if (saleId.isNotBlank()) {
             fetchSale(saleId)
         }
         fetchAllCategories()
         fetchCurrentUser()
+        fetchWholeSaleCustomers()
+    }
+
+    private fun fetchWholeSaleCustomers() {
+        viewModelScope.launch(Dispatchers.IO) {
+            getWholeSalesCustomersUseCase().collect { result ->
+                result.onSuccess { data ->
+                    _uiState.update { oldState ->
+                        oldState.copy(allCustomers = data)
+                    }
+                }.onFailure { e ->
+                    Log.e(TAG, "fetchWholeSaleCustomers: ${e.message}", e)
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 
     private fun fetchSale(saleId: String) {
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             fetchProductSaleUseCase(
                 FetchWholesaleProductSaleRequest(
                     saleId = saleId
@@ -57,7 +77,18 @@ class AddProductSaleViewModel(
     }
 
     private fun fetchCustomer(customerId: String) {
-        TODO("Not yet implemented")
+        viewModelScope.launch(Dispatchers.IO) {
+            getCurrentWholeSalesCustomerUseCase(customerId).onSuccess { data ->
+                _uiState.update { oldState ->
+                    oldState.copy(
+                        selectedCustomer = data
+                    )
+                }
+            }.onFailure {
+                Log.e(TAG, "fetchCustomer: ${it.message}", it)
+                it.printStackTrace()
+            }
+        }
     }
 
     private fun fetchAllCategories() {
@@ -90,8 +121,8 @@ class AddProductSaleViewModel(
         }
     }
 
-    fun handleAction(action: AddProductSaleUiAction){
-        when(action){
+    fun handleAction(action: AddProductSaleUiAction) {
+        when (action) {
             is AddProductSaleUiAction.OnAddProduct -> addProduct(action.product)
             is AddProductSaleUiAction.OnCustomerSearchQueryChanged -> updateSearchQuery(action.query)
             is AddProductSaleUiAction.OnCustomerSelected -> updateCustomer(action.customer)
@@ -119,19 +150,19 @@ class AddProductSaleViewModel(
     }
 
     private fun updateSearchQuery(query: String) {
-        viewModelScope.launch (Dispatchers.IO){
-            _uiState.update { oldState ->
-                oldState.copy(customerSearchQuery = query)
-            }
-            fetchCustomerSuggestions()
+        _uiState.update { oldState ->
+            oldState.copy(
+                customerSearchQuery = query,
+                suggestedCustomers = oldState.allCustomers.filter {
+                    it.name.contains(
+                        query,
+                        ignoreCase = true
+                    )
+                }
+            )
         }
     }
 
-    private fun fetchCustomerSuggestions() {
-        viewModelScope.launch (Dispatchers.IO){
-            // fetch customers based on search query
-        }
-    }
 
     private fun updateCustomer(customer: WholeSaleCustomer) {
         viewModelScope.launch {
@@ -148,6 +179,7 @@ class AddProductSaleViewModel(
             }
         }
     }
+
     private fun removeProduct(productId: String) {
         viewModelScope.launch {
             _uiState.update { oldState ->
@@ -155,6 +187,7 @@ class AddProductSaleViewModel(
             }
         }
     }
+
     private fun updateProduct(product: Product) {
         viewModelScope.launch {
             _uiState.update { oldState ->

@@ -23,7 +23,6 @@ fun DisplayCustomersScreen(
                 is DisplayWholeSalesCustomerUiAction.OnCustomerClicked -> {
                     navigateToCustomerDetails(action.customer.id)
                 }
-
                 else -> {
                     viewModel.handleAction(action)
                 }

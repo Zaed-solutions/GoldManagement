@@ -6,19 +6,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.Button
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.ui.components.ProgressIndicatorTopAppBar
 import com.zaed.distributor.ui.addproductsale.components.SelectCustomerContent
+import com.zaed.distributor.ui.addproductsale.components.SelectPaymentsContent
 import com.zaed.distributor.ui.addproductsale.components.SelectProductsContent
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -73,7 +76,14 @@ private fun AddProductSaleScreenContent(
             }
         },
         bottomBar = {
-//            TODO()
+            //todo
+            Button({
+                scope.launch {
+                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                }
+            }) {
+                Text("Next")
+            }
         }
     ){ innerPadding ->
         Column(
@@ -120,7 +130,10 @@ private fun AddProductSaleScreenContent(
                         )
                     }
                     2 -> {
-                        //add payments
+                        SelectPaymentsContent(
+                            totalAmount = state.sale.products.sumOf { it.grams*it.gramPrice },
+                            payments = state.payments,
+                        )
                     }
                     3 -> {
                         //order summary

@@ -55,6 +55,7 @@ import com.zaed.common.ui.components.NumberInputTextField
 import com.zaed.common.ui.components.SwipeToEditOrDeleteContainer
 import com.zaed.common.ui.components.TitledDropDownTextField2
 import com.zaed.common.ui.util.toMoneyFormat
+import com.zaed.distributor.ui.sales.components.SalesList
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -63,7 +64,7 @@ fun CustomerDetailsScreen(
     customerId: String
 ) {
     LaunchedEffect(Unit) {
-        viewModel.updateCustomerId(customerId)
+        viewModel.init(customerId)
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     CustomerDetailsScreenContent(
@@ -140,7 +141,13 @@ fun CustomerDetailsScreenContent(
                     }
 
                     1 -> {
-                        //TransactionsList()
+                        SalesList(
+                            isLoading = uiState.loading,
+                            sales = uiState.sales,
+                            onSaleClicked = { id, isProduct -> },
+                            onDeleteSale = { id, isProduct -> },
+                            onEditSale = { id, isProduct -> }
+                        )
                     }
                 }
 

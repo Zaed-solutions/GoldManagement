@@ -12,8 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AttachMoney
-import androidx.compose.material.icons.filled.Percent
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,10 +29,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.DiscountType
 import com.zaed.common.data.model.Payment
 import com.zaed.common.ui.components.DetailRow
-import com.zaed.common.ui.components.NumberInputTextField
 import com.zaed.common.ui.util.formatMoney
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,9 +39,9 @@ fun SelectPaymentsContent(
     modifier: Modifier = Modifier,
     totalAmount: Double,
     payments: List<Payment>,
-    onAddPayment: (Payment) -> Unit,
-    onRemovePayment: (Payment) -> Unit,
-    onEditPayment: (Payment) -> Unit,
+    onAddPayment: (Payment) -> Unit ={},
+    onRemovePayment: (Payment) -> Unit={},
+    onEditPayment: (Payment) -> Unit={},
 ) {
     val totalPaid = remember(payments) { payments.sumOf { it.amount }.formatMoney() }
     var isBottomSheetVisible by remember { mutableStateOf(false) }

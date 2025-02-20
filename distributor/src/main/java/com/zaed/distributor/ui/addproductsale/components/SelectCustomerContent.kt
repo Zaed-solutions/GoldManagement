@@ -27,6 +27,7 @@ import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,6 +60,11 @@ fun SelectCustomerContent(
     suggestedCustomers: List<WholeSaleCustomer>,
 ) {
     var expanded by remember { mutableStateOf(false) }
+    LaunchedEffect (selectedCustomer){
+        if(selectedCustomer.id.isNotBlank()){
+            expanded = false
+        }
+    }
     Column(
         modifier
             .fillMaxSize()
