@@ -29,17 +29,19 @@ import com.zaed.common.ui.components.NumberInputTextField
 import com.zaed.common.ui.components.TitledDropDownTextField2
 import com.zaed.distributor.ui.customerdetails.CustomerDetailsUiAction
 import com.zaed.distributor.ui.customerdetails.CustomerDetailsUiState
+import kotlin.math.absoluteValue
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun AddNewPaymentBottomSheet(
-    addPaymentBottomSheetVisible: Boolean,
+fun AddOrEditNewPaymentBottomSheet(
+    visible: Boolean,
+    isEditMode: Boolean,
     uiState: CustomerDetailsUiState,
     onAction: (CustomerDetailsUiAction) -> Unit,
     onDismiss: () -> Unit = {}
 ) {
     AnimatedVisibility(
-        visible = addPaymentBottomSheetVisible
+        visible = visible
     ) {
         ModalBottomSheet(
             onDismissRequest = onDismiss ,
@@ -55,7 +57,7 @@ fun AddNewPaymentBottomSheet(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = stringResource(R.string.add_payment),
+                    text = if(isEditMode) stringResource(R.string.edit_payment) else  stringResource(R.string.add_payment),
                     style = MaterialTheme.typography.titleLarge
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -64,7 +66,7 @@ fun AddNewPaymentBottomSheet(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
                     label = stringResource(R.string.amount),
-                    value = uiState.currentPayment.amount,
+                    value = uiState.currentPayment.amount.absoluteValue,
                     onValueChange = {
                         onAction(CustomerDetailsUiAction.OnAmountChanged(it))
                     },
@@ -114,7 +116,11 @@ fun AddNewPaymentBottomSheet(
                 ) {
                     Button(
                         onClick = {
-                            onAction(CustomerDetailsUiAction.OnSaveClicked)
+                            if(isEditMode){
+                                onAction(CustomerDetailsUiAction.OnConfirmEditPayment)
+                            }else {
+                                onAction(CustomerDetailsUiAction.OnSaveClicked)
+                            }
                             onDismiss()
                         },
                         modifier = Modifier

@@ -57,7 +57,8 @@ fun CustomerDetailsScreenContent(
     var addPaymentBottomSheetVisible by remember { mutableStateOf(false) }
     val listState = remember { LazyListState() }
     var selectedPayment by remember { mutableStateOf<Payment?>(null) }
-    var confirmDeletePayment by remember { mutableStateOf(false) }
+    var confirmDeletePaymentSheet by remember { mutableStateOf(false) }
+    var editPaymentSheet by remember { mutableStateOf(false)}
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -144,18 +145,21 @@ fun CustomerDetailsScreenContent(
                     )
                 }
             }
+
             AnimatedContent(selectedTab) { value ->
                 when (value) {
                     0 -> {
                         PaymentsList(
                             listState = listState,
+                            debtAmount = uiState.customer.debtAmount,
                             payments = uiState.payments,
                             onDeletePayment = { payment ->
                                 selectedPayment = payment
-                                confirmDeletePayment = true
+                                confirmDeletePaymentSheet = true
                             },
                             onEditPayment = { payment ->
                                 onAction(CustomerDetailsUiAction.EditPayment(payment))
+                                editPaymentSheet = true
                             }
                         )
                     }
@@ -175,22 +179,30 @@ fun CustomerDetailsScreenContent(
             }
 
         }
-        AddNewPaymentBottomSheet(
+        AddOrEditNewPaymentBottomSheet(
             addPaymentBottomSheetVisible,
+            isEditMode = false,
             uiState,
             onAction,
             onDismiss = { addPaymentBottomSheetVisible = false }
         )
+        AddOrEditNewPaymentBottomSheet(
+            editPaymentSheet,
+            isEditMode = true,
+            uiState,
+            onAction,
+            onDismiss = { editPaymentSheet = false }
+        )
         ConfirmDeleteBottomSheet(
-            visible = confirmDeletePayment,
+            visible = confirmDeletePaymentSheet,
             label = selectedPayment?.amount?.toMoneyFormat(2) ?:"",
             onDismiss = {
-                confirmDeletePayment = false
+                confirmDeletePaymentSheet = false
                 selectedPayment = null
             },
             onConfirm = {
                 selectedPayment?.let { onAction(CustomerDetailsUiAction.DeletePayment(it)) }
-                confirmDeletePayment = false
+                confirmDeletePaymentSheet = false
                 selectedPayment = null
             }
         )

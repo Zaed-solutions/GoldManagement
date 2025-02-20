@@ -1,14 +1,17 @@
 package com.zaed.distributor.ui.customerdetails
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
+import com.zaed.common.data.model.payment.request.DeletePaymentRequest
 import com.zaed.common.data.model.payment.request.FetchCustomerPaymentsRequest
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
 import com.zaed.common.domain.payment.AddNewPaymentUseCase
 import com.zaed.common.domain.payment.DeletePaymentUseCase
+import com.zaed.common.domain.payment.EditPaymentUseCase
 import com.zaed.common.domain.payment.FetchCustomerPaymentsUseCase
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
@@ -23,6 +26,7 @@ class CustomerDetailsViewModel(
     private val addPaymentUseCase: AddNewPaymentUseCase,
     private val getWholeSalesCustomerUseCase: GetWholeSalesCustomerUseCase,
     private val deletePaymentUseCase: DeletePaymentUseCase,
+    private val editPaymentUseCase: EditPaymentUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CustomerDetailsUiState())
     val uiState = _uiState.asStateFlow()
@@ -38,10 +42,47 @@ class CustomerDetailsViewModel(
             is CustomerDetailsUiAction.OnAmountChanged -> updateAmount(action.amount)
             is CustomerDetailsUiAction.OnChangeValueDirection -> updateAmountDirection(action.isGiven)
             is CustomerDetailsUiAction.DeletePayment -> deletePayment(action.payment)
-//            is CustomerDetailsUiAction.EditPayment -> editPayment(action.payment)
+            is CustomerDetailsUiAction.EditPayment -> updateCurrentPayment(action.payment)
+            CustomerDetailsUiAction.OnConfirmEditPayment -> confirmEditPayment()
             CustomerDetailsUiAction.OnSaveClicked -> addPayment()
             is CustomerDetailsUiAction.OnTypeChanged -> updateType(action.type)
             else -> {}
+        }
+    }
+
+    private fun confirmEditPayment() {
+        Log.d("TAG", "confirmEditPayment: ${uiState.value.currentPayment}")
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update {
+                it.copy(loading = true)
+            }
+            editPaymentUseCase(
+                request = com.zaed.common.data.model.payment.request.EditPaymentRequest(
+                    customerId = uiState.value.customer.id,
+                    payment = uiState.value.currentPayment
+                )
+            ).onSuccess {
+                _uiState.update {
+                    it.copy(
+                        loading = false
+                    )
+                }
+                getCustomerDetails(uiState.value.customer.id)
+            }.onFailure {
+                _uiState.update {
+                    it.copy(
+                        loading = false
+                    )
+                }
+            }
+        }
+    }
+
+    private fun updateCurrentPayment(payment: Payment) {
+        _uiState.update {
+            it.copy(
+                currentPayment = payment
+            )
         }
     }
 
@@ -49,6 +90,27 @@ class CustomerDetailsViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update {
                 it.copy(loading = true)
+            }
+            deletePaymentUseCase.invoke(
+                DeletePaymentRequest(
+                    paymentId = payment.id,
+                    customerId = uiState.value.customer.id,
+                    amount = payment.amount
+                )
+            ).onSuccess {
+                _uiState.update {
+                    it.copy(
+                        loading = false
+                    )
+                }
+                getCustomerDetails(uiState.value.customer.id)
+            }.onFailure {
+                it.printStackTrace()
+                _uiState.update {
+                    it.copy(
+                        loading = false
+                    )
+                }
             }
 
         }

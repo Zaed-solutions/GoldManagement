@@ -148,4 +148,5 @@
     <string name="given">Given</string>
     <string name="in_debt">In Debt</string>
     <string name="not_in_debt">Not In Debt</string>
+    <string name="edit_payment">Edit Payment</string>
 </resources>

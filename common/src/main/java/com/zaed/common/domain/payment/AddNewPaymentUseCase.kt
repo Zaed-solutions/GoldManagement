@@ -11,10 +11,9 @@ class AddNewPaymentUseCase(
     suspend operator fun invoke(request: AddNewPaymentRequest): Result<Unit> {
         val result = paymentRepository.addPayment(request)
         if (result.isSuccess) {
-            val result2 = wholeSalesCustomerRepository.updateCustomerDebt(
-                UpdateCustomerDebtRequest(
-                    customerId = request.customerId,
-                    amount = request.payment.amount
+            val result2 = wholeSalesCustomerRepository.addNewPayment(
+                request.copy(
+                    payment = request.payment.copy(id = result.getOrNull() ?: "")
                 )
             )
             if (result2.isSuccess) {
@@ -30,6 +29,7 @@ class AddNewPaymentUseCase(
 
 data class UpdateCustomerDebtRequest(
     val customerId: String,
+    val paymentId: String,
     val amount: Double
 )
 

@@ -27,6 +27,7 @@ import com.zaed.common.ui.util.format
 import com.zaed.common.ui.util.toMoneyFormat
 import com.zaed.distributor.ui.theme.DistributorAppTheme
 import java.util.Date
+import kotlin.math.absoluteValue
 
 @Composable
 fun PaymentItem(
@@ -80,7 +81,7 @@ fun PaymentItem(
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
-                        text = payment.amount.toMoneyFormat(2),
+                        text = payment.amount.absoluteValue.toMoneyFormat(2),
                         style = MaterialTheme.typography.titleLarge,
                         color = chipColor,
                         fontWeight = FontWeight.Bold

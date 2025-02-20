@@ -12,5 +12,7 @@ sealed interface CustomerDetailsUiAction {
     data class OnChangeValueDirection(val isGiven: Boolean) : CustomerDetailsUiAction
     data class DeletePayment(val payment: Payment) : CustomerDetailsUiAction
     data class EditPayment(val payment: Payment) : CustomerDetailsUiAction
+    data object OnConfirmEditPayment : CustomerDetailsUiAction
+
 
 }

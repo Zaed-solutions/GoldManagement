@@ -18,6 +18,7 @@ import com.zaed.common.data.model.payment.Payment
 fun PaymentsList(
     listState: LazyListState,
     payments: Map<String, List<Payment>>,
+    debtAmount: Double,
     onPaymentClicked: (Payment) -> Unit = {},
     onDeletePayment: (Payment) -> Unit = {},
     onEditPayment: (Payment) -> Unit = {}
@@ -26,6 +27,12 @@ fun PaymentsList(
         state = listState,
         modifier = Modifier.fillMaxSize().padding(vertical = 8.dp)
     ){
+        item {
+            BalanceSection(
+                modifier = Modifier.padding(vertical = 8.dp),
+                amount = debtAmount,
+            )
+        }
         payments.forEach { (date, payments) ->
             item {
                 Text(text = date)
