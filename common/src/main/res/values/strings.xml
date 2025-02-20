@@ -124,4 +124,15 @@
     <string name="all">All</string>
     <string name="paid">Paid</string>
     <string name="unpaid">Unpaid</string>
+    <string name="select_a_customer_or">Select a Customer or</string>
+    <string name="add_new_customer">Add new customer</string>
+    <string name="zone">Zone</string>
+    <string name="city">City</string>
+    <string name="address">Address</string>
+    <string name="debt_amount">Debt amount</string>
+    <string name="add_payments">Add Payments</string>
+    <string name="total_amount">Total amount</string>
+    <string name="total_paid">Total Paid</string>
+    <string name="all_unpaid_amount_will_be_considered_as_future_payment">All unpaid amount will be considered as future payment\n</string>
+    <string name="payments">Payments</string>
 </resources>

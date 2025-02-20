@@ -13,6 +13,7 @@ import androidx.navigation.toRoute
 import com.zaed.common.data.model.UserRole
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
+import com.zaed.distributor.ui.addproductsale.AddProductSaleScreen
 import com.zaed.distributor.ui.sales.SalesScreen
 import kotlinx.serialization.Serializable
 
@@ -79,12 +80,10 @@ fun NavigationHost(
         }
         composable<Route.AddProductSaleRoute> { backstackEntry ->
             val saleId = backstackEntry.toRoute<Route.AddProductSaleRoute>().saleId
-            Box (
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ){
-                Text("Add Product Sale $saleId")
-            }
+            AddProductSaleScreen(
+                onBackClicked = {},
+                onNavigateToProductSaleDetails = {}
+            )
         }
         composable<Route.ProductSaleDetailsRoute> { backstackEntry ->
             val saleId = backstackEntry.toRoute<Route.ProductSaleDetailsRoute>().saleId

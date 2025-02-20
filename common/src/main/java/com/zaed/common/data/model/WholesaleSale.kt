@@ -16,29 +16,3 @@ sealed class WholesaleSale {
 }
 
 
-data class WholesaleProductSale(
-    override val id: String = "",
-    override val customerId: String = "",
-    override val customerName: String = "",
-    override val customerPhone: String = "",
-    override val distributorId: String = "",
-    override val distributorName: String = "",
-    override val createdAt: Date = Date(),
-    override val logs: List<ChangeLog> = emptyList(),
-    override val deleted: Boolean = false,
-    val paymentId: String = "",
-    override val paid: Boolean = false,
-) : WholesaleSale()
-
-data class WholesaleGoldSale(
-    override val id: String = "",
-    override val customerId: String = "",
-    override val customerName: String = "",
-    override val customerPhone: String = "",
-    override val distributorId: String = "",
-    override val distributorName: String = "",
-    override val createdAt: Date = Date(),
-    override val logs: List<ChangeLog> = emptyList(),
-    override val deleted: Boolean = false,
-    override val paid: Boolean = false
-): WholesaleSale()

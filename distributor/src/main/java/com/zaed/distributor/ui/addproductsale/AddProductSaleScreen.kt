@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.ui.components.ProgressIndicatorTopAppBar
+import com.zaed.distributor.ui.addproductsale.components.SelectCustomerContent
+import com.zaed.distributor.ui.addproductsale.components.SelectProductsContent
 import kotlinx.coroutines.CoroutineScope
 import org.koin.androidx.compose.koinViewModel
 
@@ -25,7 +27,8 @@ fun AddProductSaleScreen(
     viewModel: AddProductSaleViewModel = koinViewModel(),
     saleId: String = "",
     onBackClicked: () -> Unit,
-    onNavigateToProductSaleDetails: (saleId: String) -> Unit
+    onNavigateToProductSaleDetails: (saleId: String) -> Unit,
+    onNavigateToAddCustomer: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect (true) {
@@ -36,6 +39,16 @@ fun AddProductSaleScreen(
             onNavigateToProductSaleDetails(state.sale.id)
         }
     }
+    AddProductSaleScreenContent(
+        state = state,
+        onAction = { action ->
+            when(action){
+                AddProductSaleUiAction.OnAddNewCustomerClicked -> onNavigateToAddCustomer()
+                AddProductSaleUiAction.OnBackClicked -> onBackClicked()
+                else -> viewModel.handleAction(action)
+            }
+        }
+    )
 }
 
 @Composable
@@ -60,7 +73,7 @@ private fun AddProductSaleScreenContent(
             }
         },
         bottomBar = {
-            TODO()
+//            TODO()
         }
     ){ innerPadding ->
         Column(
@@ -69,16 +82,42 @@ private fun AddProductSaleScreenContent(
                 .padding(innerPadding)
         ) {
             HorizontalPager(
-                modifier = Modifier.padding(top = 16.dp),
                 state = pagerState,
                 userScrollEnabled = false,
             ) { page ->
                 when(page){
                     0 -> {
                         //select customer
+                        SelectCustomerContent(
+                            query = state.customerSearchQuery,
+                            onQueryChanged = {
+                                onAction(AddProductSaleUiAction.OnCustomerSearchQueryChanged(it))
+                            },
+                            selectedCustomer = state.selectedCustomer,
+                            suggestedCustomers = state.suggestedCustomers,
+                            onAddNewCustomer = {
+                                onAction(AddProductSaleUiAction.OnAddNewCustomerClicked)
+                            },
+                            onCustomerSelected = {
+                                onAction(AddProductSaleUiAction.OnCustomerSelected(it))
+                            }
+                        )
                     }
                     1 -> {
                         //add products
+                        SelectProductsContent(
+                            categories = state.categories,
+                            sale = state.sale,
+                            onAddProduct = {
+                                onAction(AddProductSaleUiAction.OnAddProduct(it))
+                            },
+                            onRemoveProduct = {
+                                onAction(AddProductSaleUiAction.OnRemoveProduct(it))
+                            },
+                            onEditProduct = {
+                                onAction(AddProductSaleUiAction.OnEditProduct(it))
+                            }
+                        )
                     }
                     2 -> {
                         //add payments

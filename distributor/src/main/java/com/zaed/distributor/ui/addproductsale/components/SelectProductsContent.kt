@@ -1,14 +1,10 @@
-package com.zaed.cashier.ui.addsale.components
+package com.zaed.distributor.ui.addproductsale.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AttachMoney
-import androidx.compose.material.icons.filled.Percent
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -22,15 +18,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.cashier.ui.theme.CashierAppTheme
 import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.DiscountType
 import com.zaed.common.data.model.Product
 import com.zaed.common.data.model.StoreSale
-import com.zaed.common.ui.components.NumberInputTextField
+import com.zaed.common.data.model.WholesaleProductSale
 import com.zaed.common.ui.components.ProductsList
 import com.zaed.common.ui.components.SaveProductSheetContent
 import com.zaed.common.ui.components.SelectCategorySheetContent
@@ -40,12 +34,10 @@ import com.zaed.common.ui.components.SelectCategorySheetContent
 fun SelectProductsContent(
     modifier: Modifier = Modifier,
     categories: List<Category>,
-    sale: StoreSale,
+    sale: WholesaleProductSale,
     onAddProduct: (Product) -> Unit,
     onEditProduct: (Product) -> Unit,
     onRemoveProduct: (id: String) -> Unit,
-    onUpdateDiscountType: (DiscountType) -> Unit,
-    onUpdateDiscountValue: (Double) -> Unit,
 ) {
     var isAddProductSheetVisible by remember { mutableStateOf(false) }
     var isSaveProductBottomSheetVisible by remember { mutableStateOf(false) }
@@ -64,29 +56,6 @@ fun SelectProductsContent(
             text = stringResource(R.string.select_products),
             style = MaterialTheme.typography.headlineMedium
         )
-        //discount type
-        DiscountTypeDropDownMenu(
-            selectedValue = stringResource(sale.discount.type.titleRes),
-            onUpdateDiscountType = onUpdateDiscountType
-        )
-
-        AnimatedVisibility(visible = sale.discount.type != DiscountType.NONE) {
-            NumberInputTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp) ,
-                value = sale.discount.value,
-                containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                onValueChange = onUpdateDiscountValue,
-                label = stringResource(R.string.discount_value),
-                imageVector = if (sale.discount.type == DiscountType.PERCENTAGE) {
-                    Icons.Default.Percent
-                } else {
-                    Icons.Default.AttachMoney
-                },
-                )
-        }
-        //products
         ProductsList(
             products = sale.products,
             onAddProduct = { isAddProductSheetVisible = true },
@@ -126,21 +95,5 @@ fun SelectProductsContent(
                 )
             }
         }
-    }
-}
-
-@Preview(showSystemUi = true, showBackground = true, device = "id:pixel_9_pro")
-@Composable
-private fun Preview() {
-    CashierAppTheme {
-        SelectProductsContent(
-            categories = listOf(),
-            sale = StoreSale(),
-            onEditProduct = {},
-            onAddProduct = {},
-            onUpdateDiscountValue = {},
-            onRemoveProduct = {},
-            onUpdateDiscountType = {}
-        )
     }
 }
