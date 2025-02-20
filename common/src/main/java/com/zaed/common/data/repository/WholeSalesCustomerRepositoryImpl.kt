@@ -1,7 +1,8 @@
 package com.zaed.common.data.repository
 
-import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.customer.AddWholeSaleCustomerRequest
+import com.zaed.common.data.model.customer.WholeSaleCustomer
+import com.zaed.common.data.model.payment.request.DeletePaymentRequest
 import com.zaed.common.data.source.remote.WholeSalesCustomerRemoteDataSource
 import com.zaed.common.domain.payment.UpdateCustomerDebtRequest
 import kotlinx.coroutines.flow.Flow
@@ -22,5 +23,9 @@ class WholeSalesCustomerRepositoryImpl(
 
     override suspend fun updateCustomerDebt(updateCustomerDebtRequest: UpdateCustomerDebtRequest): Result<Unit> {
         return wholeSalesCustomerRemoteDataSource.updateCustomerDebt(updateCustomerDebtRequest)
+    }
+
+    override suspend fun deletePayment(request: DeletePaymentRequest): Result<Unit> {
+        return wholeSalesCustomerRemoteDataSource.deletePayment(request)
     }
 }

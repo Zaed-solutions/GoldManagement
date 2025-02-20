@@ -8,5 +8,6 @@ import kotlinx.coroutines.flow.Flow
 interface PaymentRemoteDataSource {
     suspend fun addPayment(request: AddNewPaymentRequest): Result<Unit>
     fun fetchCustomerPayments(request: FetchCustomerPaymentsRequest): Flow<Result<List<Payment>>>
+    suspend fun deletePayment(id: String): Result<Unit>
 
 }

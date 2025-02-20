@@ -54,4 +54,15 @@ class PaymentRemoteDataSourceImpl(
             }
             awaitClose { }
         }
+
+    override suspend fun deletePayment(id: String): Result<Unit> {
+        try {
+            paymentsCollection.document(id).delete().await()
+            return Result.success(Unit)
+        }catch (e: Exception){
+            crashlytics.recordException(e)
+            e.printStackTrace()
+            return Result.failure(e)
+        }
+    }
 }

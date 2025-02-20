@@ -17,7 +17,10 @@ import com.zaed.common.data.model.payment.Payment
 @Composable
 fun PaymentsList(
     listState: LazyListState,
-    payments: Map<String, List<Payment>>
+    payments: Map<String, List<Payment>>,
+    onPaymentClicked: (Payment) -> Unit = {},
+    onDeletePayment: (Payment) -> Unit = {},
+    onEditPayment: (Payment) -> Unit = {}
 ) {
     LazyColumn (
         state = listState,
@@ -28,7 +31,12 @@ fun PaymentsList(
                 Text(text = date)
             }
             items(payments) { payment ->
-                PaymentItem(payment = payment)
+                PaymentItem(
+                    payment = payment,
+                    onClick = { onPaymentClicked(payment) },
+                    onDelete = {  onDeletePayment(payment) },
+                    onEdit = {  onEditPayment(payment) }
+                )
             }
 
         }

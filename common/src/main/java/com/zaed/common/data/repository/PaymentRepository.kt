@@ -8,4 +8,5 @@ import kotlinx.coroutines.flow.Flow
 interface PaymentRepository {
     fun fetchCustomerPayments(request: FetchCustomerPaymentsRequest): Flow<Result<List<Payment>>>
     suspend fun addPayment(request: AddNewPaymentRequest): Result<Unit>
+    suspend fun deletePayment(id: String): Result<Unit>
 }

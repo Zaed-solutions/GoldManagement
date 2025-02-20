@@ -12,6 +12,11 @@ class PaymentRepositoryImpl(
     override suspend fun addPayment(request: AddNewPaymentRequest): Result<Unit> {
         return paymentDataSource.addPayment(request)
     }
+
+    override suspend fun deletePayment(id: String): Result<Unit> {
+        return paymentDataSource.deletePayment(id)
+    }
+
     override fun fetchCustomerPayments(request: FetchCustomerPaymentsRequest): Flow<Result<List<Payment>>> {
         return paymentDataSource.fetchCustomerPayments(request)
     }
