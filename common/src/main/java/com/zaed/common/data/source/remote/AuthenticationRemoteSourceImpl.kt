@@ -3,12 +3,12 @@ package com.zaed.common.data.source.remote
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Source
-import com.zaed.common.data.model.User
-import com.zaed.common.data.model.UserApprovementStatusType
-import com.zaed.common.data.model.request.DeleteUserRequest
-import com.zaed.common.data.model.request.LoginUserRequest
-import com.zaed.common.data.model.request.SignUpUserRequest
-import com.zaed.common.data.model.request.UpdateUserRequest
+import com.zaed.common.data.model.authentication.User
+import com.zaed.common.data.model.authentication.UserApprovalStatus
+import com.zaed.common.data.model.authentication.request.DeleteUserRequest
+import com.zaed.common.data.model.authentication.request.LoginUserRequest
+import com.zaed.common.data.model.authentication.request.SignUpUserRequest
+import com.zaed.common.data.model.authentication.request.UpdateUserRequest
 import com.zaed.common.ui.auth.login.LoginError
 import com.zaed.common.ui.auth.login.log
 import com.zaed.common.ui.auth.signup.SignUpError
@@ -149,7 +149,7 @@ class AuthenticationRemoteSourceImpl(
                     fullName = request.fullName,
                     userName = request.userName,
                     password = request.password,
-                    approvementStatusType = UserApprovementStatusType.PENDING,
+                    approvalStatusType = UserApprovalStatus.PENDING,
                     role = request.role,
                     storeName = request.store.name,
                     storeId = request.store.id

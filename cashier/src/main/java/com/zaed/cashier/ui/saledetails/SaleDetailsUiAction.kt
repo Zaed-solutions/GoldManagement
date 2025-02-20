@@ -1,6 +1,6 @@
 package com.zaed.cashier.ui.saledetails
 
-import com.zaed.common.data.model.StoreSale
+import com.zaed.common.data.model.sale.StoreSale
 
 sealed interface SaleDetailsUiAction {
     data class OnUpdateStoreSale(val storeSale: StoreSale) : SaleDetailsUiAction

@@ -13,3 +13,7 @@
 .externalNativeBuild
 .cxx
 local.properties
+/cashier/release/
+/distributor/release/
+/manager/release/
+/accountant/release/

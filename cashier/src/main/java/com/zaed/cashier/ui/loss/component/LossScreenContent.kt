@@ -20,7 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -53,9 +52,8 @@ import com.zaed.cashier.ui.loss.LossFieldsError
 import com.zaed.cashier.ui.loss.LossUiAction
 import com.zaed.cashier.ui.loss.LossUiState
 import com.zaed.cashier.ui.theme.CashierAppTheme
-import com.zaed.common.data.model.Loss
+import com.zaed.common.data.model.loss.Loss
 import com.zaed.common.ui.components.AnimatedLoading
-import com.zaed.common.ui.components.BackIcon
 import com.zaed.common.ui.components.ConfirmDeleteDialog
 import com.zaed.common.ui.components.CustomSnackbar
 import com.zaed.common.ui.components.MoreDropDownMenu

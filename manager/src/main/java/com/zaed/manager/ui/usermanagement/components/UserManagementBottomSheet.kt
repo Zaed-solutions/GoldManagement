@@ -8,7 +8,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.zaed.common.data.model.User
+import com.zaed.common.data.model.authentication.User
 import com.zaed.common.ui.components.ConfirmDeleteDialog
 import com.zaed.common.R
 
@@ -34,7 +34,7 @@ fun UserManagementBottomSheet(
                 when{
                     state.first -> {
                         EditUserSheetContent(
-                            selectedUser = selectedUser?:User(),
+                            selectedUser = selectedUser?: User(),
                             onDismissRequest = onDismissRequest,
                             onEditUser = onEditUser
                         )

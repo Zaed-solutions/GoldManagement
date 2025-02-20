@@ -3,9 +3,9 @@ package com.zaed.common.ui.auth.login
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zaed.common.data.model.UserRole
-import com.zaed.common.data.model.request.LoginUserRequest
-import com.zaed.common.domain.LoginUserUseCase
+import com.zaed.common.data.model.authentication.UserRole
+import com.zaed.common.data.model.authentication.request.LoginUserRequest
+import com.zaed.common.domain.authentication.LoginUserUseCase
 import com.zaed.common.ui.auth.AuthenticationUiAction
 import com.zaed.common.ui.auth.AuthenticationUiState
 import com.zaed.common.ui.auth.FieldsError

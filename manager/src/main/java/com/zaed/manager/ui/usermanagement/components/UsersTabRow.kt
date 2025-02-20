@@ -12,7 +12,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
-import com.zaed.common.data.model.User
 import com.zaed.common.R
 
 @OptIn(ExperimentalMaterial3Api::class)

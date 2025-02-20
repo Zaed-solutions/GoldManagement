@@ -3,9 +3,8 @@ package com.zaed.common.ui.auth
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zaed.common.data.model.User
-import com.zaed.common.domain.GetCurrentUserLoggedInUseCase
-import com.zaed.common.domain.LogoutUserUseCase
+import com.zaed.common.data.model.authentication.User
+import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

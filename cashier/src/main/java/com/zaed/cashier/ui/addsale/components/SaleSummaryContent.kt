@@ -20,10 +20,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zaed.common.R
 import com.zaed.cashier.ui.theme.CashierAppTheme
-import com.zaed.common.data.model.Discount
-import com.zaed.common.data.model.DiscountType
-import com.zaed.common.data.model.Product
-import com.zaed.common.data.model.StoreSale
+import com.zaed.common.data.model.sale.Discount
+import com.zaed.common.data.model.sale.DiscountType
+import com.zaed.common.data.model.sale.Product
+import com.zaed.common.data.model.sale.StoreSale
 import com.zaed.common.ui.components.DashedDivider
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.util.DateFormat

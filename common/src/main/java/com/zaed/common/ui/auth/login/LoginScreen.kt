@@ -3,7 +3,7 @@ package com.zaed.common.ui.auth.login
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.zaed.common.data.model.UserRole
+import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.ui.auth.AuthenticationUiAction
 import org.koin.androidx.compose.koinViewModel
 

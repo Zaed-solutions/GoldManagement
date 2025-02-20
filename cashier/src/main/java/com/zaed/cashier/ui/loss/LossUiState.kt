@@ -2,8 +2,8 @@ package com.zaed.cashier.ui.loss
 
 import androidx.annotation.StringRes
 import com.zaed.common.R
-import com.zaed.common.data.model.Loss
-import com.zaed.common.data.model.User
+import com.zaed.common.data.model.loss.Loss
+import com.zaed.common.data.model.authentication.User
 
 data class LossUiState(
     val isSignedOut: Boolean = false,

@@ -2,8 +2,8 @@ package com.zaed.cashier.ui.saledetails
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zaed.common.data.model.StoreSale
-import com.zaed.common.domain.GetStoreSaleUseCase
+import com.zaed.common.data.model.sale.StoreSale
+import com.zaed.common.domain.sale.GetStoreSaleUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

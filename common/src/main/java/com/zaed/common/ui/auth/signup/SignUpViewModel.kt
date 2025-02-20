@@ -3,10 +3,10 @@ package com.zaed.common.ui.auth.signup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.Store
-import com.zaed.common.data.model.UserRole
-import com.zaed.common.data.model.request.SignUpUserRequest
-import com.zaed.common.domain.GetStoresUseCase
-import com.zaed.common.domain.SignUpUserUseCase
+import com.zaed.common.data.model.authentication.UserRole
+import com.zaed.common.data.model.authentication.request.SignUpUserRequest
+import com.zaed.common.domain.store.GetStoresUseCase
+import com.zaed.common.domain.authentication.SignUpUserUseCase
 import com.zaed.common.ui.auth.AuthenticationUiAction
 import com.zaed.common.ui.auth.AuthenticationUiState
 import com.zaed.common.ui.auth.FieldsError
@@ -162,7 +162,7 @@ class SignUpViewModel(
     }
 
     private fun updateUserName(userName: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             _uiState.update {
                 it.copy(userName = userName)
             }
@@ -170,7 +170,7 @@ class SignUpViewModel(
     }
 
     private fun updatePassword(password: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             _uiState.update {
                 it.copy(password = password)
             }
@@ -178,7 +178,7 @@ class SignUpViewModel(
     }
 
     private fun updateFullName(fullName: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             _uiState.update {
                 it.copy(fullName = fullName)
             }

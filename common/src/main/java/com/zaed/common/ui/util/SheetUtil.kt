@@ -12,8 +12,8 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.pdf.PdfDocument
 import android.os.Environment
 import androidx.core.content.ContextCompat
-import com.zaed.common.data.model.DiscountType
-import com.zaed.common.data.model.StoreSale
+import com.zaed.common.data.model.sale.DiscountType
+import com.zaed.common.data.model.sale.StoreSale
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat

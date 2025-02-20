@@ -1,10 +1,10 @@
 package com.zaed.common.data.source.remote
 
-import com.zaed.common.data.model.Loss
-import com.zaed.common.data.model.request.CreateNewLossRequest
-import com.zaed.common.data.model.request.DeleteLossRequest
-import com.zaed.common.data.model.request.GetStoreLossesRequest
-import com.zaed.common.data.model.request.UpdateLossRequest
+import com.zaed.common.data.model.loss.Loss
+import com.zaed.common.data.model.loss.request.CreateNewLossRequest
+import com.zaed.common.data.model.loss.request.DeleteLossRequest
+import com.zaed.common.data.model.loss.request.GetStoreLossesRequest
+import com.zaed.common.data.model.loss.request.UpdateLossRequest
 import kotlinx.coroutines.flow.Flow
 
 interface LossRemoteDataSource {

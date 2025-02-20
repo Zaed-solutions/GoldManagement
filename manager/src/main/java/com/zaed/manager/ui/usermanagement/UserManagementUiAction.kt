@@ -1,6 +1,6 @@
 package com.zaed.manager.ui.usermanagement
 
-import com.zaed.common.data.model.User
+import com.zaed.common.data.model.authentication.User
 
 sealed interface UserManagementUiAction {
     data class UpdateSearchQuery(val searchQuery: String) : UserManagementUiAction

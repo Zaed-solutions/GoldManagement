@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.StoreSale
+import com.zaed.common.data.model.sale.StoreSale
 import com.zaed.common.ui.components.ListWithLoading
 import com.zaed.common.ui.components.SwipeToEditOrDeleteContainer
 import com.zaed.common.ui.util.DateFormat

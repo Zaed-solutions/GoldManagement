@@ -1,7 +1,7 @@
 package com.zaed.cashier.ui.sales
 
-import com.zaed.common.data.model.StoreSale
-import com.zaed.common.data.model.User
+import com.zaed.common.data.model.sale.StoreSale
+import com.zaed.common.data.model.authentication.User
 
 data class SalesUiState(
     val isSignedOut: Boolean = false,

@@ -27,11 +27,13 @@ import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.cashier.ui.theme.CashierAppTheme
 import com.zaed.common.data.model.Category
-import com.zaed.common.data.model.DiscountType
-import com.zaed.common.data.model.Product
-import com.zaed.common.data.model.StoreSale
+import com.zaed.common.data.model.sale.DiscountType
+import com.zaed.common.data.model.sale.Product
+import com.zaed.common.data.model.sale.StoreSale
 import com.zaed.common.ui.components.NumberInputTextField
-import com.zaed.common.ui.components.TitledDropDownTextField
+import com.zaed.common.ui.components.ProductsList
+import com.zaed.common.ui.components.SaveProductSheetContent
+import com.zaed.common.ui.components.SelectCategorySheetContent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

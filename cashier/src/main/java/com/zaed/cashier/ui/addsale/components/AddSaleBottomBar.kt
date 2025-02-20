@@ -46,7 +46,6 @@ fun AddSaleBottomBar(
             }
             Button(
                 modifier = Modifier.weight(1f).padding(start = 8.dp),
-                enabled = customerName.isNotBlank(),
                 onClick = {
                     if (currentPage != 2) {
                         onContinueClicked()

@@ -18,11 +18,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.cashier.ui.addsale.components.AddSaleBottomBar
-import com.zaed.cashier.ui.addsale.components.AddSaleTopBar
 import com.zaed.cashier.ui.addsale.components.SaleSummaryContent
 import com.zaed.cashier.ui.addsale.components.SelectCustomerContent
 import com.zaed.cashier.ui.addsale.components.SelectProductsContent
 import com.zaed.cashier.ui.theme.CashierAppTheme
+import com.zaed.common.ui.components.ProgressIndicatorTopAppBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -76,7 +76,7 @@ private fun AddSaleScreenContent(
     Scaffold(
         modifier = modifier,
         topBar = {
-            AddSaleTopBar(
+            ProgressIndicatorTopAppBar(
                 progress = progress
             ) { onAction(AddSaleUiAction.OnBackClicked) }
         },
@@ -173,7 +173,9 @@ private fun AddSaleScreenContent(
 
 }
 
-@Preview(showSystemUi = true, showBackground = true, device = "id:pixel_9_pro")
+@Preview(showSystemUi = true, showBackground = true,
+    device = "spec:parent=pixel_9_pro,navigation=buttons"
+)
 @Composable
 private fun Preview() {
     CashierAppTheme {
