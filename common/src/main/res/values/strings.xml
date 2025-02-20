@@ -127,4 +127,9 @@
     <string name="city">City</string>
     <string name="zone">Zone</string>
     <string name="customer_added">Customer Added</string>
+    <string name="add_payment">Add Payment</string>
+    <string name="amount">Amount</string>
+    <string name="type">Type</string>
+    <string name="select_type">Selected Type</string>
+    <string name="total_balance">Total Balance</string>
 </resources>

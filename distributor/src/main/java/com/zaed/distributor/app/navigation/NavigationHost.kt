@@ -1,5 +1,6 @@
 package com.zaed.distributor.app.navigation
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -26,6 +28,7 @@ fun NavigationHost(
     startDestination: Any
 ) {
     val navController = rememberNavController()
+    val context = LocalContext.current
     NavHost(
         modifier = Modifier.systemBarsPadding(),
         navController = navController,
@@ -69,6 +72,7 @@ fun NavigationHost(
                     navController.navigate(Route.AddCustomers)
                 },
                 navigateToCustomerDetails = { customerId ->
+                    Toast.makeText(context, customerId, Toast.LENGTH_SHORT).show()
                     navController.navigate(Route.CustomerDetails(customerId))
                 }
             )

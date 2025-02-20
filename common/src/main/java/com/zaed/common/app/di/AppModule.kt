@@ -13,6 +13,8 @@ import com.zaed.common.data.repository.CategoryRepository
 import com.zaed.common.data.repository.CategoryRepositoryImpl
 import com.zaed.common.data.repository.LossRepository
 import com.zaed.common.data.repository.LossRepositoryImpl
+import com.zaed.common.data.repository.PaymentRepository
+import com.zaed.common.data.repository.PaymentRepositoryImpl
 import com.zaed.common.data.repository.SaleRepository
 import com.zaed.common.data.repository.SaleRepositoryImpl
 import com.zaed.common.data.repository.StoreRemoteDataSource
@@ -29,10 +31,13 @@ import com.zaed.common.data.source.remote.CategoryRemoteSource
 import com.zaed.common.data.source.remote.CategoryRemoteSourceImpl
 import com.zaed.common.data.source.remote.LossRemoteDataSource
 import com.zaed.common.data.source.remote.LossRemoteDataSourceImpl
+import com.zaed.common.data.source.remote.PaymentRemoteDataSource
+import com.zaed.common.data.source.remote.PaymentRemoteDataSourceImpl
 import com.zaed.common.data.source.remote.SaleRemoteSource
 import com.zaed.common.data.source.remote.SaleRemoteSourceImpl
 import com.zaed.common.data.source.remote.WholeSalesCustomerRemoteDataSource
 import com.zaed.common.data.source.remote.WholeSalesCustomerRemoteDataSourceImpl
+import com.zaed.common.domain.AddNewPaymentUseCase
 import com.zaed.common.domain.AddStoreSaleUseCase
 import com.zaed.common.domain.AddWholeSaleCustomerUseCase
 import com.zaed.common.domain.CreateNewLossUseCase
@@ -47,6 +52,7 @@ import com.zaed.common.domain.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.GetStoreLossesUseCase
 import com.zaed.common.domain.GetStoreSaleUseCase
 import com.zaed.common.domain.GetStoresUseCase
+import com.zaed.common.domain.GetWholeSalesCustomerUseCase
 import com.zaed.common.domain.GetWholeSalesCustomersUseCase
 import com.zaed.common.domain.LoginUserUseCase
 import com.zaed.common.domain.LogoutUserUseCase
@@ -89,6 +95,8 @@ val useCaseModule = module {
     singleOf(::AddWholeSaleCustomerUseCase)
     singleOf(::GetWholeSalesCustomersUseCase)
     singleOf(::FetchCustomerPaymentsUseCase)
+    singleOf(::AddNewPaymentUseCase)
+    singleOf(::GetWholeSalesCustomerUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }
@@ -97,6 +105,7 @@ val repositoryModule = module {
     singleOf(::StoreRepositoryImpl) { bind<StoreRepository>() }
     singleOf(::CategoryRepositoryImpl) { bind<CategoryRepository>() }
     singleOf(::WholeSalesCustomerRepositoryImpl) { bind<WholeSalesCustomerRepository>() }
+    singleOf(::PaymentRepositoryImpl) { bind<PaymentRepository>() }
 }
 val viewModelModule = module {
     viewModelOf(::SignUpViewModel)
@@ -109,6 +118,7 @@ val remoteSourceModule = module {
     singleOf(::CategoryRemoteSourceImpl) { bind<CategoryRemoteSource>() }
     singleOf(::LossRemoteDataSourceImpl) { bind<LossRemoteDataSource>() }
     singleOf(::StoreRemoteDataSourceImpl) { bind<StoreRemoteDataSource>() }
+    singleOf(::PaymentRemoteDataSourceImpl) { bind<PaymentRemoteDataSource>() }
     singleOf(::WholeSalesCustomerRemoteDataSourceImpl) { bind<WholeSalesCustomerRemoteDataSource>() }
     single<FirebaseFirestore> {
         val db = Firebase.firestore

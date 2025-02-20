@@ -1,18 +1,19 @@
 package com.zaed.distributor.ui.displaycustomers.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -36,9 +37,10 @@ fun CustomerItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(4.dp),
-            shape = RoundedCornerShape(8.dp),
             shadowElevation = 4.dp,
-            onClick = onClick
+            onClick = onClick,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
+            shape = MaterialTheme.shapes.medium
         ) {
             Column(
                 modifier = Modifier
@@ -56,6 +58,7 @@ fun CustomerItem(
                 }
                 HorizontalDivider(Modifier.padding(vertical = 8.dp))
                 Row {
+                    val chipColor = if (customer.inDebt) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                     Text(
                         text = customer.debtAmount.toMoneyFormat(2),
                     )
@@ -65,7 +68,8 @@ fun CustomerItem(
                         selected = true,
                         onClick = { /*TODO*/ },
                         colors = FilterChipDefaults.filterChipColors(
-                            containerColor = if (customer.inDebt) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.primaryContainer,
+                            selectedContainerColor = chipColor,
+                            selectedLabelColor = contentColorFor(chipColor)
                         ),
                         label = {
                             Text(
