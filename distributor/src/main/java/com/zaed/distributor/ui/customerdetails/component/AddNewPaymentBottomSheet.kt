@@ -88,7 +88,7 @@ fun AddNewPaymentBottomSheet(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Given")
+                    Text(stringResource(R.string.given))
                     Switch(
                         modifier = Modifier.padding(horizontal = 8.dp),
                         checked = uiState.currentPayment.amount > 0,
@@ -103,7 +103,7 @@ fun AddNewPaymentBottomSheet(
                             uncheckedTrackColor = Color.Red.copy(alpha = 0.2f),
                         )
                     )
-                    Text("Taken")
+                    Text(stringResource(R.string.taken))
                 }
                 Row(
                     modifier = Modifier
@@ -122,7 +122,7 @@ fun AddNewPaymentBottomSheet(
                             .padding(horizontal = 8.dp),
                         shape = MaterialTheme.shapes.medium
                     ) {
-                        Text("Save")
+                        Text(stringResource(R.string.save))
                     }
                     OutlinedButton(
                         onClick = onDismiss,
@@ -131,7 +131,7 @@ fun AddNewPaymentBottomSheet(
                             .padding(horizontal = 8.dp),
                         shape = MaterialTheme.shapes.medium
                     ) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.cancel))
                     }
                 }
 

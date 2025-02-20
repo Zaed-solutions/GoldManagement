@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
@@ -110,15 +111,7 @@ fun CustomerDetailsScreenContent(
 
         ) {
             var selectedTab by remember { mutableIntStateOf(0) }
-            val tabs = listOf("Payments", "Transactions")
-//            CustomerDetailsHeader(
-//                modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp),
-//                customer = uiState.customer
-//            )
-//            BalanceSection(
-//                modifier = Modifier.padding(horizontal = 4.dp, vertical = 12.dp),
-//                amount = uiState.customer.debtAmount
-//            )
+            val tabs = listOf(stringResource(com.zaed.common.R.string.payments),stringResource(com.zaed.common.R.string.sales))
             PrimaryTabRow(
                 selectedTabIndex = selectedTab,
                 indicator = {

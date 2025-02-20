@@ -15,9 +15,11 @@ import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.zaed.common.R
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.ui.components.SwipeToEditOrDeleteContainer
 import com.zaed.common.ui.util.DateFormat
@@ -64,7 +66,7 @@ fun PaymentItem(
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
-                        text = if (payment.amount >= 0) "Received" else "Paid",
+                        text = if (payment.amount >= 0) stringResource(R.string.taken) else stringResource(R.string.given),
                         style = MaterialTheme.typography.titleMedium
                     )
                 }

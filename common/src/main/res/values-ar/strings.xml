@@ -121,4 +121,30 @@
     <string name="phone_number_colon">"رقم الهاتف: "</string>
     <string name="email_colon">"البريد الالكتروني: "</string>
     <string name="loss">الخسارة</string>
+    <string name="no_internet_connection">لا يوجد اتصال بالإنترنت</string>
+    <string name="add_customer">إضافة عميل</string>
+    <string name="customer_added">تمت إضافة العميل</string>
+    <string name="add_payment">إضافة دفعة</string>
+    <string name="amount">المبلغ</string>
+    <string name="type">النوع</string>
+    <string name="select_type">حدد النوع</string>
+    <string name="total_balance">إجمالي الرصيد</string>
+    <string name="all">الكل</string>
+    <string name="paid">مدفوع</string>
+    <string name="unpaid">غير مدفوع</string>
+    <string name="select_a_customer_or">اختر عميلًا أو</string>
+    <string name="add_new_customer">إضافة عميل جديد</string>
+    <string name="zone">المنطقة</string>
+    <string name="city">المدينة</string>
+    <string name="address">العنوان</string>
+    <string name="debt_amount">مبلغ الدين</string>
+    <string name="add_payments">إضافة دفعات</string>
+    <string name="total_amount">إجمالي المبلغ</string>
+    <string name="total_paid">إجمالي المدفوع</string>
+    <string name="all_unpaid_amount_will_be_considered_as_future_payment">سيتم اعتبار جميع المبالغ غير المدفوعة كدفعة مستقبلية\n</string>
+    <string name="payments">المدفوعات</string>
+    <string name="received">المستلم</string>
+    <string name="taken">المأخوذ</string>
+    <string name="given">المعطى</string>
+
 </resources>
