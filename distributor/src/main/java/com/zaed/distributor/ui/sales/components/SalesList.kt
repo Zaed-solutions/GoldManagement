@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,6 +19,7 @@ import com.zaed.common.ui.components.SwipeToEditOrDeleteContainer
 @Composable
 fun SalesList(
     modifier: Modifier = Modifier,
+    listState: LazyListState = LazyListState(),
     isLoading: Boolean,
     sales: List<WholesaleSale>,
     onSaleClicked: (id: String, isProduct: Boolean) -> Unit,
@@ -28,6 +30,7 @@ fun SalesList(
         isLoading = isLoading
     ) {
         LazyColumn(
+            state = listState,
             modifier = modifier.fillMaxSize(),
             contentPadding = PaddingValues(vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
