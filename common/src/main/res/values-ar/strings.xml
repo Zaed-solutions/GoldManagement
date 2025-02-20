@@ -146,5 +146,7 @@
     <string name="received">المستلم</string>
     <string name="taken">المأخوذ</string>
     <string name="given">المعطى</string>
+    <string name="in_debt">مديون</string>
+    <string name="not_in_debt">غير مديون</string>
 
 </resources>

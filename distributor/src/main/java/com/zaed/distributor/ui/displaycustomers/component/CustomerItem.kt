@@ -16,10 +16,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.ui.components.SwipeToEditOrDeleteContainer
 import com.zaed.common.ui.util.toMoneyFormat
+import com.zaed.distributor.ui.theme.DistributorAppTheme
 
 @Composable
 fun CustomerItem(
@@ -61,19 +65,22 @@ fun CustomerItem(
                     val chipColor = if (customer.inDebt) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                     Text(
                         text = customer.debtAmount.toMoneyFormat(2),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = chipColor
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     FilterChip(
                         modifier = Modifier.height(FilterChipDefaults.Height - 4.dp),
                         selected = true,
-                        onClick = { /*TODO*/ },
+                        onClick = {},
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = chipColor,
                             selectedLabelColor = contentColorFor(chipColor)
                         ),
                         label = {
                             Text(
-                                text = if (customer.inDebt) "In Debt" else "Not In Debt"
+                                text = if (customer.inDebt) stringResource(com.zaed.common.R.string.in_debt) else stringResource(com.zaed.common.R.string.not_in_debt)
                             )
                         }
                     )
@@ -81,4 +88,24 @@ fun CustomerItem(
             }
         }
     }
+}
+
+@Preview
+@Composable
+private fun CustomerItemPreview() {
+    DistributorAppTheme {
+        CustomerItem(
+            customer = WholeSaleCustomer(
+                id = "1",
+                name = "John Doe",
+                phone = "1234567890",
+                debtAmount = 100.0,
+                inDebt = true
+            ),
+            onClick = {},
+            onEdit = {},
+            onDelete = {}
+        )
+    }
+
 }
