@@ -1,18 +1,18 @@
 package com.zaed.common.data.repository
 
-import com.zaed.common.data.model.StoreSale
-import com.zaed.common.data.model.WholesaleGoldSale
-import com.zaed.common.data.model.WholesaleProductSale
-import com.zaed.common.data.model.WholesaleSale
-import com.zaed.common.data.model.request.AddStoreSaleRequest
-import com.zaed.common.data.model.request.DeleteStoreSaleRequest
-import com.zaed.common.data.model.request.DeleteWholesaleGoldSaleRequest
-import com.zaed.common.data.model.request.DeleteWholesaleProductSaleRequest
-import com.zaed.common.data.model.request.FetchDistributorSalesRequest
-import com.zaed.common.data.model.request.FetchStoreSalesRequest
-import com.zaed.common.data.model.request.FetchWholesaleGoldSaleRequest
-import com.zaed.common.data.model.request.FetchWholesaleProductSaleRequest
-import com.zaed.common.data.model.request.UpdateStoreSaleRequest
+import com.zaed.common.data.model.sale.StoreSale
+import com.zaed.common.data.model.sale.WholesaleGoldSale
+import com.zaed.common.data.model.sale.WholesaleProductSale
+import com.zaed.common.data.model.sale.WholesaleSale
+import com.zaed.common.data.model.sale.request.AddStoreSaleRequest
+import com.zaed.common.data.model.sale.request.DeleteStoreSaleRequest
+import com.zaed.common.data.model.sale.request.DeleteWholesaleGoldSaleRequest
+import com.zaed.common.data.model.sale.request.DeleteWholesaleProductSaleRequest
+import com.zaed.common.data.model.sale.request.FetchDistributorSalesRequest
+import com.zaed.common.data.model.sale.request.FetchStoreSalesRequest
+import com.zaed.common.data.model.sale.request.FetchWholesaleGoldSaleRequest
+import com.zaed.common.data.model.sale.request.FetchWholesaleProductSaleRequest
+import com.zaed.common.data.model.sale.request.UpdateStoreSaleRequest
 import kotlinx.coroutines.flow.Flow
 
 interface SaleRepository {

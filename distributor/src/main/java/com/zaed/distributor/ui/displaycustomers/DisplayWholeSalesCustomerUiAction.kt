@@ -1,6 +1,6 @@
 package com.zaed.distributor.ui.displaycustomers
 
-import com.zaed.common.data.model.WholeSaleCustomer
+import com.zaed.common.data.model.customer.WholeSaleCustomer
 
 sealed interface DisplayWholeSalesCustomerUiAction {
     data object OnBackClicked : DisplayWholeSalesCustomerUiAction

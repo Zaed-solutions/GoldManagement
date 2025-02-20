@@ -1,8 +1,7 @@
 package com.zaed.distributor.ui.addproductsale
 
-import com.zaed.common.data.model.DiscountType
-import com.zaed.common.data.model.Product
-import com.zaed.common.data.model.WholeSaleCustomer
+import com.zaed.common.data.model.sale.Product
+import com.zaed.common.data.model.customer.WholeSaleCustomer
 
 sealed interface AddProductSaleUiAction {
     data object OnBackClicked : AddProductSaleUiAction

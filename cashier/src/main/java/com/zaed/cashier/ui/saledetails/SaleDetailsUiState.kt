@@ -1,7 +1,7 @@
 package com.zaed.cashier.ui.saledetails
 
 import androidx.annotation.StringRes
-import com.zaed.common.data.model.StoreSale
+import com.zaed.common.data.model.sale.StoreSale
 
 data class SaleDetailsUiState(
     val storeSale: StoreSale = StoreSale(),

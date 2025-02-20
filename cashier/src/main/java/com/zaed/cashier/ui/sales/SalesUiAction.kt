@@ -1,6 +1,6 @@
 package com.zaed.cashier.ui.sales
 
-import com.zaed.common.data.model.StoreSale
+import com.zaed.common.data.model.sale.StoreSale
 
 sealed interface SalesUiAction {
     data object AddSaleClicked: SalesUiAction

@@ -17,7 +17,7 @@ import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.WholeSaleCustomer
+import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.ui.components.SwipeToEditOrDeleteContainer
 import com.zaed.common.ui.util.toMoneyFormat
 

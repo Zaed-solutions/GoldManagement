@@ -3,9 +3,9 @@ package com.zaed.distributor.ui.addcustomers
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zaed.common.data.model.Zone
-import com.zaed.common.data.model.request.AddWholeSaleCustomerRequest
-import com.zaed.common.domain.AddWholeSaleCustomerUseCase
+import com.zaed.common.data.model.customer.Zone
+import com.zaed.common.data.model.customer.AddWholeSaleCustomerRequest
+import com.zaed.common.domain.customer.AddWholeSaleCustomerUseCase
 import com.zaed.common.ui.auth.FieldsError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -86,7 +86,7 @@ data class AddCustomersState (
     val error: AddCustomersScreenError? = null,
     val fieldsError: FieldsError = FieldsError.NONE,
     val successStatus: Boolean = false,
-    val request :AddWholeSaleCustomerRequest = AddWholeSaleCustomerRequest()
+    val request : AddWholeSaleCustomerRequest = AddWholeSaleCustomerRequest()
 )
 enum class AddCustomersScreenError(@StringRes val message: Int) {
     NO_INTERNET(com.zaed.common.R.string.no_internet_connection),

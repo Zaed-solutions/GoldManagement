@@ -1,6 +1,5 @@
 package com.zaed.manager.app.navigation
 
-import androidx.compose.compiler.plugins.kotlin.EmptyFunctionMetrics.composable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
@@ -8,11 +7,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.zaed.common.data.model.UserRole
+import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
 import com.zaed.manager.ui.usermanagement.UserManagementScreen

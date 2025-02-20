@@ -47,9 +47,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.zaed.common.data.model.Payment
-import com.zaed.common.data.model.PaymentType
-import com.zaed.common.data.model.WholeSaleCustomer
+import com.zaed.common.data.model.customer.WholeSaleCustomer
+import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.components.NumberInputTextField
 import com.zaed.common.ui.components.SwipeToEditOrDeleteContainer

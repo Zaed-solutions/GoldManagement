@@ -2,9 +2,9 @@ package com.zaed.common.data.source.remote
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
-import com.zaed.common.data.model.Payment
-import com.zaed.common.data.model.request.AddNewPaymentRequest
-import com.zaed.common.data.model.request.FetchCustomerPaymentsRequest
+import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
+import com.zaed.common.data.model.payment.request.FetchCustomerPaymentsRequest
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow

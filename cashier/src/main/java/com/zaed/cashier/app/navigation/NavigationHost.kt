@@ -13,7 +13,7 @@ import com.zaed.cashier.ui.addsale.AddSaleScreen
 import com.zaed.cashier.ui.loss.LossScreen
 import com.zaed.cashier.ui.sales.SalesScreen
 import com.zaed.cashier.ui.saledetails.SaleDetailsScreen
-import com.zaed.common.data.model.UserRole
+import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
 import kotlinx.serialization.Serializable

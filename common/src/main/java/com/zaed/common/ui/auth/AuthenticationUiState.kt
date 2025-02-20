@@ -2,8 +2,8 @@ package com.zaed.common.ui.auth
 
 import androidx.annotation.StringRes
 import com.zaed.common.R
-import com.zaed.common.data.model.User
-import com.zaed.common.data.model.UserRole
+import com.zaed.common.data.model.authentication.User
+import com.zaed.common.data.model.authentication.UserRole
 
 data class AuthenticationUiState(
     val fullName: String = "",

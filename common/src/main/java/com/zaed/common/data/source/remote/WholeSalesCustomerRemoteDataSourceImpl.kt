@@ -4,9 +4,9 @@ import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.zaed.common.data.model.WholeSaleCustomer
-import com.zaed.common.data.model.request.AddWholeSaleCustomerRequest
-import com.zaed.common.domain.UpdateCustomerDebtRequest
+import com.zaed.common.data.model.customer.WholeSaleCustomer
+import com.zaed.common.data.model.customer.AddWholeSaleCustomerRequest
+import com.zaed.common.domain.payment.UpdateCustomerDebtRequest
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow

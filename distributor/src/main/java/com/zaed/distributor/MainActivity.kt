@@ -7,9 +7,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.zaed.common.data.model.User
-import com.zaed.common.data.model.UserApprovalStatus
-import com.zaed.common.data.model.UserRole
+import com.zaed.common.data.model.authentication.User
+import com.zaed.common.data.model.authentication.UserApprovalStatus
+import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.ui.auth.MainViewModel
 import com.zaed.distributor.app.navigation.NavigationHost
 import com.zaed.distributor.app.navigation.Route

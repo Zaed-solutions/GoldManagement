@@ -28,7 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.zaed.common.data.model.Zone
+import com.zaed.common.data.model.customer.Zone
 import com.zaed.common.ui.auth.FieldsError
 import com.zaed.common.ui.components.BackIcon
 import com.zaed.common.ui.components.CustomSnackbar

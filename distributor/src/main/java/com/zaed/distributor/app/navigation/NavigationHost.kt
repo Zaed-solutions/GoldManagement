@@ -15,7 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.zaed.common.data.model.UserRole
+import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
 import com.zaed.distributor.ui.addcustomers.AddCustomersScreen

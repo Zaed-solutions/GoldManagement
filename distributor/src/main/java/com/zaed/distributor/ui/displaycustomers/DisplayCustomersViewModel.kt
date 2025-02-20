@@ -3,8 +3,8 @@ package com.zaed.distributor.ui.displaycustomers
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zaed.common.data.model.WholeSaleCustomer
-import com.zaed.common.domain.GetWholeSalesCustomersUseCase
+import com.zaed.common.data.model.customer.WholeSaleCustomer
+import com.zaed.common.domain.customer.GetWholeSalesCustomersUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

@@ -44,7 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.WholeSaleCustomer
+import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.util.formatMoney
 

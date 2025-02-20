@@ -1,8 +1,8 @@
 package com.zaed.common.data.source.remote
 
-import com.zaed.common.data.model.Payment
-import com.zaed.common.data.model.request.AddNewPaymentRequest
-import com.zaed.common.data.model.request.FetchCustomerPaymentsRequest
+import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
+import com.zaed.common.data.model.payment.request.FetchCustomerPaymentsRequest
 import kotlinx.coroutines.flow.Flow
 
 interface PaymentRemoteDataSource {

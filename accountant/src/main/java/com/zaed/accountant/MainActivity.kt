@@ -10,9 +10,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.compose.AccountantAppTheme
 import com.zaed.app.navigation.NavigationHost
 import com.zaed.app.navigation.Route
-import com.zaed.common.data.model.User
-import com.zaed.common.data.model.UserApprovalStatus
-import com.zaed.common.data.model.UserRole
+import com.zaed.common.data.model.authentication.User
+import com.zaed.common.data.model.authentication.UserApprovalStatus
+import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.ui.auth.MainViewModel
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 

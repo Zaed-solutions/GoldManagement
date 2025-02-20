@@ -9,9 +9,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.WholesaleGoldSale
-import com.zaed.common.data.model.WholesaleProductSale
-import com.zaed.common.data.model.WholesaleSale
+import com.zaed.common.data.model.sale.WholesaleGoldSale
+import com.zaed.common.data.model.sale.WholesaleProductSale
+import com.zaed.common.data.model.sale.WholesaleSale
 import com.zaed.common.ui.components.ListWithLoading
 import com.zaed.common.ui.components.SwipeToEditOrDeleteContainer
 
@@ -20,7 +20,7 @@ fun SalesList(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
     sales: List<WholesaleSale>,
-    onSaleClicked: (id: String, isProduct: Boolean) -> Unit ,
+    onSaleClicked: (id: String, isProduct: Boolean) -> Unit,
     onDeleteSale: (id: String, isProduct: Boolean) -> Unit,
     onEditSale: (id: String, isProduct: Boolean) -> Unit
 ) {

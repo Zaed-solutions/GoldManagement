@@ -1,6 +1,6 @@
 package com.zaed.cashier.ui.loss
 
-import com.zaed.common.data.model.Loss
+import com.zaed.common.data.model.loss.Loss
 
 sealed interface LossUiAction {
     data class OnCreateLoss(

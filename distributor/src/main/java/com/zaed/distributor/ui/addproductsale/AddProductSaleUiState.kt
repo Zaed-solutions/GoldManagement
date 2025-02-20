@@ -1,10 +1,10 @@
 package com.zaed.distributor.ui.addproductsale
 
 import com.zaed.common.data.model.Category
-import com.zaed.common.data.model.Payment
-import com.zaed.common.data.model.User
-import com.zaed.common.data.model.WholeSaleCustomer
-import com.zaed.common.data.model.WholesaleProductSale
+import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.data.model.authentication.User
+import com.zaed.common.data.model.customer.WholeSaleCustomer
+import com.zaed.common.data.model.sale.WholesaleProductSale
 
 data class AddProductSaleUiState(
     val isFinished: Boolean = false,

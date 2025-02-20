@@ -24,9 +24,9 @@ import com.zaed.cashier.app.navigation.BottomNavigationItem
 import com.zaed.cashier.app.navigation.NavigationHost
 import com.zaed.cashier.app.navigation.Route
 import com.zaed.cashier.ui.theme.CashierAppTheme
-import com.zaed.common.data.model.User
-import com.zaed.common.data.model.UserApprovalStatus
-import com.zaed.common.data.model.UserRole
+import com.zaed.common.data.model.authentication.User
+import com.zaed.common.data.model.authentication.UserApprovalStatus
+import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.ui.auth.MainViewModel
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 

@@ -23,7 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.User
+import com.zaed.common.data.model.authentication.User
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.components.ExpandableItem
 import com.zaed.common.R

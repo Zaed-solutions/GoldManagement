@@ -17,11 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.WholesaleProductSale
+import com.zaed.common.data.model.sale.WholesaleProductSale
 import com.zaed.common.ui.components.FourTuple
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
-import com.zaed.distributor.R
 import com.zaed.distributor.ui.sales.PaymentStatus
 
 @Composable

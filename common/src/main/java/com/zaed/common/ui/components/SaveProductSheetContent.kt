@@ -21,7 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.Product
+import com.zaed.common.data.model.sale.Product
 import com.zaed.common.ui.util.formatMoney
 
 @Composable

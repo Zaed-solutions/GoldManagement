@@ -1,7 +1,7 @@
 package com.zaed.cashier.ui.addsale
 
-import com.zaed.common.data.model.DiscountType
-import com.zaed.common.data.model.Product
+import com.zaed.common.data.model.sale.DiscountType
+import com.zaed.common.data.model.sale.Product
 
 sealed interface AddSaleUiAction {
     data object OnBackClicked : AddSaleUiAction

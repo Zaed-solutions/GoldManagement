@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.cashier.ui.sales.components.SalesList
 import com.zaed.common.R
-import com.zaed.common.data.model.StoreSale
+import com.zaed.common.data.model.sale.StoreSale
 import com.zaed.common.ui.components.ConfirmDeleteDialog
 import com.zaed.common.ui.components.MoreDropDownMenu
 import com.zaed.common.ui.components.MoreDropdownItem

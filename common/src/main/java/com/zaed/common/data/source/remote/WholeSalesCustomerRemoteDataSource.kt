@@ -1,8 +1,8 @@
 package com.zaed.common.data.source.remote
 
-import com.zaed.common.data.model.WholeSaleCustomer
-import com.zaed.common.data.model.request.AddWholeSaleCustomerRequest
-import com.zaed.common.domain.UpdateCustomerDebtRequest
+import com.zaed.common.data.model.customer.WholeSaleCustomer
+import com.zaed.common.data.model.customer.AddWholeSaleCustomerRequest
+import com.zaed.common.domain.payment.UpdateCustomerDebtRequest
 import kotlinx.coroutines.flow.Flow
 
 interface WholeSalesCustomerRemoteDataSource {

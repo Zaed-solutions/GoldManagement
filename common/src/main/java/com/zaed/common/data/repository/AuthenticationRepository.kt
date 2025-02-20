@@ -1,11 +1,11 @@
 package com.zaed.common.data.repository
 
-import com.zaed.common.data.model.LocalUser
-import com.zaed.common.data.model.User
-import com.zaed.common.data.model.request.DeleteUserRequest
-import com.zaed.common.data.model.request.LoginUserRequest
-import com.zaed.common.data.model.request.SignUpUserRequest
-import com.zaed.common.data.model.request.UpdateUserRequest
+import com.zaed.common.data.model.authentication.LocalUser
+import com.zaed.common.data.model.authentication.User
+import com.zaed.common.data.model.authentication.request.DeleteUserRequest
+import com.zaed.common.data.model.authentication.request.LoginUserRequest
+import com.zaed.common.data.model.authentication.request.SignUpUserRequest
+import com.zaed.common.data.model.authentication.request.UpdateUserRequest
 import kotlinx.coroutines.flow.Flow
 
 interface AuthenticationRepository {

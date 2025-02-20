@@ -2,15 +2,15 @@ package com.zaed.distributor.ui.customerdetails
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zaed.common.data.model.Payment
-import com.zaed.common.data.model.PaymentType
-import com.zaed.common.data.model.WholeSaleCustomer
-import com.zaed.common.data.model.WholesaleSale
-import com.zaed.common.data.model.request.AddNewPaymentRequest
-import com.zaed.common.data.model.request.FetchCustomerPaymentsRequest
-import com.zaed.common.domain.AddNewPaymentUseCase
-import com.zaed.common.domain.FetchCustomerPaymentsUseCase
-import com.zaed.common.domain.GetWholeSalesCustomerUseCase
+import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.data.model.payment.PaymentType
+import com.zaed.common.data.model.customer.WholeSaleCustomer
+import com.zaed.common.data.model.sale.WholesaleSale
+import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
+import com.zaed.common.data.model.payment.request.FetchCustomerPaymentsRequest
+import com.zaed.common.domain.payment.AddNewPaymentUseCase
+import com.zaed.common.domain.payment.FetchCustomerPaymentsUseCase
+import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
 import kotlinx.coroutines.Dispatchers

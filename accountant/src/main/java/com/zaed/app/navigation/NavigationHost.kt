@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.zaed.common.data.model.UserRole
+import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
 import kotlinx.serialization.Serializable

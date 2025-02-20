@@ -35,7 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
-import com.zaed.common.data.model.Permission
+import com.zaed.common.data.model.authentication.Permission
 import com.zaed.common.ui.components.FabItem
 import com.zaed.common.ui.components.MoreDropDownMenu
 import com.zaed.common.ui.components.MoreDropdownItem

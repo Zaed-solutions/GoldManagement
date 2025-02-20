@@ -9,9 +9,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
-import com.zaed.common.data.model.User
-import com.zaed.common.data.model.UserApprovalStatus
-import com.zaed.common.data.model.UserRole
+import com.zaed.common.data.model.authentication.User
+import com.zaed.common.data.model.authentication.UserApprovalStatus
+import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.ui.auth.MainViewModel
 import com.zaed.manager.app.navigation.NavigationHost
 import com.zaed.manager.app.navigation.Route
