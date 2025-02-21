@@ -2,10 +2,8 @@ package com.zaed.cashier.ui.addsale.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -13,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,9 +23,9 @@ import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.StoreSale
 import com.zaed.common.ui.components.DashedDivider
 import com.zaed.common.ui.components.DetailRow
+import com.zaed.common.ui.components.PriceCalculationItem
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
-import com.zaed.common.ui.util.formatMoney
 import java.util.Date
 
 @Composable
@@ -93,29 +90,6 @@ fun SaleSummaryContent(
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold),
             title = stringResource(R.string.total),
             price = sale.totalPrice
-        )
-    }
-}
-@Composable
-private fun PriceCalculationItem(
-    modifier: Modifier = Modifier,
-    isNegative: Boolean = false,
-    style: TextStyle,
-    title: String,
-    price: Double
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = title,
-            style = style
-        )
-        Text(
-            text = "${if(isNegative) "-" else ""}${price.formatMoney()}",
-            style = style
         )
     }
 }

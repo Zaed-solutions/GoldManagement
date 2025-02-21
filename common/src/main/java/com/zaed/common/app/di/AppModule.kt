@@ -47,6 +47,7 @@ import com.zaed.common.domain.authentication.UpdateUserUseCase
 import com.zaed.common.domain.category.FetchAllCategoriesUseCase
 import com.zaed.common.domain.customer.AddWholeSaleCustomerUseCase
 import com.zaed.common.domain.customer.FetchWholesaleCustomerSalesUseCase
+import com.zaed.common.domain.customer.FetchWholesaleCustomersByNameUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomersUseCase
 import com.zaed.common.domain.loss.CreateNewLossUseCase
@@ -57,7 +58,9 @@ import com.zaed.common.domain.payment.AddNewPaymentUseCase
 import com.zaed.common.domain.payment.DeletePaymentUseCase
 import com.zaed.common.domain.payment.EditPaymentUseCase
 import com.zaed.common.domain.payment.FetchCustomerPaymentsUseCase
+import com.zaed.common.domain.payment.FetchPaymentsByIdsUseCase
 import com.zaed.common.domain.sale.AddStoreSaleUseCase
+import com.zaed.common.domain.sale.AddWholesaleProductSaleUseCase
 import com.zaed.common.domain.sale.DeleteStoreSaleUseCase
 import com.zaed.common.domain.sale.DeleteWholesaleGoldSaleUseCase
 import com.zaed.common.domain.sale.DeleteWholesaleProductSaleUseCase
@@ -67,6 +70,7 @@ import com.zaed.common.domain.sale.FetchWholesaleGoldSaleUseCase
 import com.zaed.common.domain.sale.FetchWholesaleProductSaleUseCase
 import com.zaed.common.domain.sale.GetStoreSaleUseCase
 import com.zaed.common.domain.sale.UpdateStoreSaleUseCase
+import com.zaed.common.domain.sale.UpdateWholesaleProductSaleUseCase
 import com.zaed.common.domain.store.GetStoresUseCase
 import com.zaed.common.ui.auth.MainViewModel
 import com.zaed.common.ui.auth.login.LoginViewModel
@@ -109,15 +113,20 @@ val useCaseModule = module {
     singleOf(::GetWholeSalesCustomersUseCase)
     singleOf(::FetchCustomerPaymentsUseCase)
     singleOf(::AddNewPaymentUseCase)
+    singleOf(::FetchPaymentsByIdsUseCase)
+    singleOf(::FetchWholesaleCustomersByNameUseCase)
     singleOf(::GetWholeSalesCustomerUseCase)
     singleOf(::DeletePaymentUseCase)
     singleOf(::EditPaymentUseCase)
     singleOf(::FetchWholesaleCustomerSalesUseCase)
+    singleOf(::AddWholeSaleCustomerUseCase)
+    singleOf(::UpdateWholesaleProductSaleUseCase)
+    singleOf(::AddWholesaleProductSaleUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }
     singleOf(::SaleRepositoryImpl) { bind<SaleRepository>() }
-    singleOf(::LossRepositoryImpl) { bind<LossRepository>()}
+    singleOf(::LossRepositoryImpl) { bind<LossRepository>() }
     singleOf(::StoreRepositoryImpl) { bind<StoreRepository>() }
     singleOf(::CategoryRepositoryImpl) { bind<CategoryRepository>() }
     singleOf(::WholeSalesCustomerRepositoryImpl) { bind<WholeSalesCustomerRepository>() }
@@ -129,7 +138,7 @@ val viewModelModule = module {
     viewModelOf(::MainViewModel)
 }
 val remoteSourceModule = module {
-    singleOf(::AuthenticationRemoteSourceImpl) {bind<AuthenticationRemoteSource>()}
+    singleOf(::AuthenticationRemoteSourceImpl) { bind<AuthenticationRemoteSource>() }
     singleOf(::SaleRemoteSourceImpl) { bind<SaleRemoteSource>() }
     singleOf(::CategoryRemoteSourceImpl) { bind<CategoryRemoteSource>() }
     singleOf(::LossRemoteDataSourceImpl) { bind<LossRemoteDataSource>() }

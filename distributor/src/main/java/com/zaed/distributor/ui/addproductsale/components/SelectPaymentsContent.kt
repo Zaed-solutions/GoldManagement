@@ -3,18 +3,9 @@ package com.zaed.distributor.ui.addproductsale.components
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -32,27 +23,28 @@ import com.zaed.common.R
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.util.formatMoney
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectPaymentsContent(
     modifier: Modifier = Modifier,
     totalAmount: Double,
+    totalPaid: Double,
     payments: List<Payment>,
     onAddPayment: (Payment) -> Unit ={},
     onRemovePayment: (Payment) -> Unit={},
     onEditPayment: (Payment) -> Unit={},
 ) {
-    val totalPaid = remember(payments) { payments.sumOf { it.amount }.formatMoney() }
     var isBottomSheetVisible by remember { mutableStateOf(false) }
+    var selectedPayment by remember { mutableStateOf(Payment()) }
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize().padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.Start
     ) {
         Text(
-            modifier = Modifier.padding(horizontal = 16.dp),
             text = stringResource(R.string.add_payments),
             style = MaterialTheme.typography.headlineMedium
         )
@@ -63,7 +55,7 @@ fun SelectPaymentsContent(
         )
         DetailRow(
             label = stringResource(R.string.total_paid),
-            value = totalPaid,
+            value = totalPaid.formatMoney(),
             isDividerVisible = false
         )
         Text(
@@ -71,58 +63,38 @@ fun SelectPaymentsContent(
             style = MaterialTheme.typography.bodySmall,
         )
         //payments list
+        PaymentsList(
+            payments = payments,
+            onAddPayment = {
+                selectedPayment = Payment()
+                isBottomSheetVisible = true
+            },
+            onEditPayment = {
+                selectedPayment = it
+                isBottomSheetVisible = true
+            },
+            onRemovePayment = onRemovePayment
+        )
         //add payment bottom sheet
         AnimatedVisibility(isBottomSheetVisible) {
             ModalBottomSheet(
+                sheetState = bottomSheetState,
                 onDismissRequest = { isBottomSheetVisible = false },
             ) {
-//                SavePaymentBottomSheetContent()
-            }
-        }
-    }
-}
-
-
-@Composable
-fun PaymentsList(
-    modifier: Modifier = Modifier,
-    payments: List<Payment>,
-    onAddPayment: () -> Unit,
-    onEditPayment: (Payment) -> Unit,
-    onRemovePayment: (Payment) -> Unit
-) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.payments),
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.weight(1f)
-            )
-            IconButton(onClick = { onAddPayment() }) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add Payment"
+                SavePaymentBottomSheetContent(
+                    initialPayment = selectedPayment,
+                    onSave = {
+                        if(selectedPayment.id.isBlank()){
+                            onAddPayment(it.copy(id = "distributor-"+ UUID.randomUUID().toString()))
+                        } else {
+                            onEditPayment(it)
+                        }
+                        isBottomSheetVisible = false
+                    }
                 )
             }
         }
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            items(
-                items = payments,
-                key = { it.id }
-            ) {
-                TODO()
-            }
-        }
     }
-
 }
+
+
