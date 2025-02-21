@@ -146,4 +146,10 @@
     <string name="save_payment">Save Payment</string>
     <string name="submit">Submit</string>
     <string name="future">Future</string>
+    <string name="received">Recieved</string>
+    <string name="taken">Taken</string>
+    <string name="given">Given</string>
+    <string name="in_debt">In Debt</string>
+    <string name="not_in_debt">Not In Debt</string>
+    <string name="edit_payment">Edit Payment</string>
 </resources>

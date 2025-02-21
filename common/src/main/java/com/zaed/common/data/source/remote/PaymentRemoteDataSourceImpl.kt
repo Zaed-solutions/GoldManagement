@@ -5,6 +5,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObjects
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
+import com.zaed.common.data.model.payment.request.EditPaymentRequest
 import com.zaed.common.data.model.payment.request.FetchCustomerPaymentsRequest
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
 import kotlinx.coroutines.channels.awaitClose
@@ -17,7 +18,7 @@ class PaymentRemoteDataSourceImpl(
     private val crashlytics: FirebaseCrashlytics
 ) : PaymentRemoteDataSource {
     private val paymentsCollection = firestore.collection("payments")
-    override suspend fun addPayment(request: AddNewPaymentRequest): Result<Unit> {
+    override suspend fun addPayment(request: AddNewPaymentRequest): Result<String> {
         try {
             val document = paymentsCollection.document()
             document.set(
@@ -28,7 +29,7 @@ class PaymentRemoteDataSourceImpl(
                     type = request.payment.type,
                 )
             ).await()
-            return Result.success(Unit)
+            return Result.success(document.id)
         }catch (e: Exception){
             crashlytics.recordException(e)
             return Result.failure(e)
@@ -48,7 +49,7 @@ class PaymentRemoteDataSourceImpl(
                             trySend(Result.success(payments))
                         }
                     }
-
+                paymentsCollection.whereEqualTo("customerId", request.customerId)
             } catch (e: Exception) {
                 crashlytics.recordException(e)
                 e.printStackTrace()
@@ -63,6 +64,28 @@ class PaymentRemoteDataSourceImpl(
             Result.success(payments)
         } catch (e: Exception){
             Result.failure(e)
+        }
+    }
+
+    override suspend fun editPayment(request: EditPaymentRequest): Result<Unit> {
+        try {
+            paymentsCollection.document(request.payment.id).set(request.payment).await()
+            return Result.success(Unit)
+        }catch (e: Exception){
+            crashlytics.recordException(e)
+            e.printStackTrace()
+            return Result.failure(e)
+        }
+    }
+
+    override suspend fun deletePayment(id: String): Result<Unit> {
+        try {
+            paymentsCollection.document(id).delete().await()
+            return Result.success(Unit)
+        }catch (e: Exception){
+            crashlytics.recordException(e)
+            e.printStackTrace()
+            return Result.failure(e)
         }
     }
 }

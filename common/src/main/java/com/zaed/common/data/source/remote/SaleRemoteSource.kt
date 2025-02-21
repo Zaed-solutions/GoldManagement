@@ -1,5 +1,6 @@
 package com.zaed.common.data.source.remote
 
+import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
 import com.zaed.common.data.model.sale.StoreSale
 import com.zaed.common.data.model.sale.WholesaleGoldSale
 import com.zaed.common.data.model.sale.WholesaleProductSale
@@ -30,4 +31,5 @@ interface SaleRemoteSource {
     suspend fun fetchWholesaleGoldSale(request: FetchWholesaleGoldSaleRequest): Result<WholesaleGoldSale>
     suspend fun addWholesaleProductSale(request: AddWholesaleProductSaleRequest): Result<String>
     suspend fun updateWholesaleProductSale(request: UpdateWholesaleProductSaleRequest): Result<Unit>
+    fun fetchWholesaleCustomerSales(request: FetchWholesaleCustomerSalesRequest): Flow<Result<List<WholesaleSale>>>
 }

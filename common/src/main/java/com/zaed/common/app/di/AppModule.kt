@@ -17,8 +17,6 @@ import com.zaed.common.data.repository.PaymentRepository
 import com.zaed.common.data.repository.PaymentRepositoryImpl
 import com.zaed.common.data.repository.SaleRepository
 import com.zaed.common.data.repository.SaleRepositoryImpl
-import com.zaed.common.data.source.remote.StoreRemoteDataSource
-import com.zaed.common.data.source.remote.StoreRemoteDataSourceImpl
 import com.zaed.common.data.repository.StoreRepository
 import com.zaed.common.data.repository.StoreRepositoryImpl
 import com.zaed.common.data.repository.WholeSalesCustomerRepository
@@ -35,27 +33,40 @@ import com.zaed.common.data.source.remote.PaymentRemoteDataSource
 import com.zaed.common.data.source.remote.PaymentRemoteDataSourceImpl
 import com.zaed.common.data.source.remote.SaleRemoteSource
 import com.zaed.common.data.source.remote.SaleRemoteSourceImpl
+import com.zaed.common.data.source.remote.StoreRemoteDataSource
+import com.zaed.common.data.source.remote.StoreRemoteDataSourceImpl
 import com.zaed.common.data.source.remote.WholeSalesCustomerRemoteDataSource
 import com.zaed.common.data.source.remote.WholeSalesCustomerRemoteDataSourceImpl
-import com.zaed.common.domain.payment.AddNewPaymentUseCase
-import com.zaed.common.domain.sale.AddStoreSaleUseCase
+import com.zaed.common.domain.authentication.DeleteUserUseCase
+import com.zaed.common.domain.authentication.FetchUsersUseCase
+import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
+import com.zaed.common.domain.authentication.LoginUserUseCase
+import com.zaed.common.domain.authentication.LogoutUserUseCase
+import com.zaed.common.domain.authentication.SignUpUserUseCase
+import com.zaed.common.domain.authentication.UpdateUserUseCase
+import com.zaed.common.domain.category.FetchAllCategoriesUseCase
 import com.zaed.common.domain.customer.AddWholeSaleCustomerUseCase
+import com.zaed.common.domain.customer.FetchWholesaleCustomerSalesUseCase
+import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
+import com.zaed.common.domain.customer.GetWholeSalesCustomersUseCase
 import com.zaed.common.domain.loss.CreateNewLossUseCase
 import com.zaed.common.domain.loss.DeleteLossUseCase
+import com.zaed.common.domain.loss.GetStoreLossesUseCase
+import com.zaed.common.domain.loss.UpdateLossUseCase
+import com.zaed.common.domain.payment.AddNewPaymentUseCase
+import com.zaed.common.domain.payment.DeletePaymentUseCase
+import com.zaed.common.domain.payment.EditPaymentUseCase
+import com.zaed.common.domain.payment.FetchCustomerPaymentsUseCase
+import com.zaed.common.domain.sale.AddStoreSaleUseCase
 import com.zaed.common.domain.sale.DeleteStoreSaleUseCase
-import com.zaed.common.domain.authentication.DeleteUserUseCase
 import com.zaed.common.domain.sale.DeleteWholesaleGoldSaleUseCase
 import com.zaed.common.domain.sale.DeleteWholesaleProductSaleUseCase
-import com.zaed.common.domain.category.FetchAllCategoriesUseCase
-import com.zaed.common.domain.payment.FetchCustomerPaymentsUseCase
 import com.zaed.common.domain.sale.FetchDistributorSalesUseCase
 import com.zaed.common.domain.sale.FetchStoreSalesUseCase
-import com.zaed.common.domain.authentication.FetchUsersUseCase
 import com.zaed.common.domain.sale.FetchWholesaleGoldSaleUseCase
 import com.zaed.common.domain.sale.FetchWholesaleProductSaleUseCase
-import com.zaed.common.domain.loss.GetStoreLossesUseCase
-import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.sale.GetStoreSaleUseCase
+import com.zaed.common.domain.sale.UpdateStoreSaleUseCase
 import com.zaed.common.domain.store.GetStoresUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomersUseCase
@@ -113,6 +124,9 @@ val useCaseModule = module {
     singleOf(::FetchPaymentsByIdsUseCase)
     singleOf(::FetchWholesaleCustomersByNameUseCase)
     singleOf(::GetWholeSalesCustomerUseCase)
+    singleOf(::DeletePaymentUseCase)
+    singleOf(::EditPaymentUseCase)
+    singleOf(::FetchWholesaleCustomerSalesUseCase)
     singleOf(::AddWholeSaleCustomerUseCase)
     singleOf(::UpdateWholesaleProductSaleUseCase)
     singleOf(::AddWholesaleProductSaleUseCase)

@@ -13,13 +13,19 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.ui.components.SwipeToEditOrDeleteContainer
 import com.zaed.common.ui.util.toMoneyFormat
+import com.zaed.distributor.ui.customerdetails.component.getContainerColor
+import com.zaed.distributor.ui.customerdetails.component.getContentColor
+import com.zaed.distributor.ui.customerdetails.component.getDebtTitle
+import com.zaed.distributor.ui.theme.DistributorAppTheme
+import kotlin.math.absoluteValue
 
 @Composable
 fun CustomerItem(
@@ -60,20 +66,23 @@ fun CustomerItem(
                 Row {
                     val chipColor = if (customer.inDebt) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                     Text(
-                        text = customer.debtAmount.toMoneyFormat(2),
+                        text = customer.debtAmount.absoluteValue.toMoneyFormat(2),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = customer.debtAmount.getContainerColor()
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     FilterChip(
                         modifier = Modifier.height(FilterChipDefaults.Height - 4.dp),
                         selected = true,
-                        onClick = { /*TODO*/ },
+                        onClick = {},
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = chipColor,
-                            selectedLabelColor = contentColorFor(chipColor)
+                            selectedContainerColor = customer.debtAmount.getContainerColor(),
+                            selectedLabelColor = customer.debtAmount.getContentColor()
                         ),
                         label = {
                             Text(
-                                text = if (customer.inDebt) "In Debt" else "Not In Debt"
+                                text = customer.debtAmount.getDebtTitle()
                             )
                         }
                     )
@@ -81,4 +90,22 @@ fun CustomerItem(
             }
         }
     }
+}
+
+@Preview
+@Composable
+private fun CustomerItemPreview() {
+    DistributorAppTheme {
+        CustomerItem(
+            customer = WholeSaleCustomer(
+                id = "1",
+                name = "John Doe",
+                phone = "1234567890",
+            ),
+            onClick = {},
+            onEdit = {},
+            onDelete = {}
+        )
+    }
+
 }

@@ -8,6 +8,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.authentication.ChangeLog
+import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
 import com.zaed.common.data.model.sale.StoreSale
 import com.zaed.common.data.model.sale.WholesaleGoldSale
 import com.zaed.common.data.model.sale.WholesaleProductSale
@@ -221,6 +222,59 @@ class SaleRemoteSourceImpl(
                 trySend(Result.failure(e))
             }
         }
+    override fun fetchWholesaleCustomerSales(request: FetchWholesaleCustomerSalesRequest): Flow<Result<List<WholesaleSale>>> =
+        callbackFlow {
+            try {
+                var latestGoldSales: List<WholesaleGoldSale> = emptyList()
+                var latestProductSales: List<WholesaleProductSale> = emptyList()
+                val updateAndSend = {
+                    val combinedSales = (latestGoldSales + latestProductSales)
+                        .sortedByDescending { it.createdAt } // Sort by date
+                    trySend(Result.success(combinedSales))
+                }
+
+                val goldSalesListener = wholesaleGoldSalesCollection.where(
+                    Filter.and(
+                        Filter.equalTo("customerId", request.customerId),
+                        Filter.equalTo("deleted", false)
+                    )
+                ).addSnapshotListener { snapshot, error ->
+                    if (error != null) {
+                        close(error)
+                        return@addSnapshotListener
+                    }
+                    latestGoldSales = snapshot?.documents?.mapNotNull { doc ->
+                        doc.toObject(WholesaleGoldSale::class.java)?.copy(id = doc.id)
+                    } ?: emptyList()
+                    updateAndSend()
+                }
+
+                val productSalesListener = wholesaleProductSalesCollection.where(
+                    Filter.and(
+                        Filter.equalTo("customerId", request.customerId),
+                        Filter.equalTo("deleted", false)
+                    )
+                ).addSnapshotListener { snapshot, error ->
+                    if (error != null) {
+                        close(error)
+                        return@addSnapshotListener
+                    }
+                    latestProductSales = snapshot?.documents?.mapNotNull { doc ->
+                        doc.toObject(WholesaleProductSale::class.java)?.copy(id = doc.id)
+                    } ?: emptyList()
+                    updateAndSend()
+                }
+
+                awaitClose {
+                    goldSalesListener.remove()
+                    productSalesListener.remove()
+                }
+            } catch (e: Exception) {
+                crashlytics.recordException(e)
+                trySend(Result.failure(e))
+            }
+        }
+
 
     override suspend fun deleteWholesaleProductSale(request: DeleteWholesaleProductSaleRequest): Result<Unit> {
         return try {
