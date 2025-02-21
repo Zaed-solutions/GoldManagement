@@ -1,6 +1,7 @@
 package com.zaed.common.data.model.sale
 
 import com.zaed.common.data.model.authentication.ChangeLog
+import kotlinx.serialization.Transient
 import java.util.Date
 
 data class WholesaleProductSale(
@@ -17,4 +18,8 @@ data class WholesaleProductSale(
     val paymentsIds: List<String> = emptyList(),
     override val paid: Boolean = false,
     override val receiptNumber: String = "",
-) : WholesaleSale()
+) : WholesaleSale(){
+    @Transient
+    val totalPrice
+        get() = products.sumOf { it.grams*it.gramPrice }
+}

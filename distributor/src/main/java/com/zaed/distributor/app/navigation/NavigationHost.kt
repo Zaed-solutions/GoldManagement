@@ -115,7 +115,10 @@ fun NavigationHost(
                 onBackClicked = {
                     navController.popBackStack()
                 },
-                onNavigateToProductSaleDetails = {},
+                saleId = saleId,
+                onNavigateToProductSaleDetails = {
+                    navController.navigate(Route.ProductSaleDetailsRoute(it))
+                },
                 onNavigateToAddCustomer = {
                     navController.navigate(Route.AddCustomers)
                 }

@@ -2,9 +2,12 @@ package com.zaed.common.data.source.remote
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObjects
 import com.zaed.common.data.model.customer.AddWholeSaleCustomerRequest
 import com.zaed.common.data.model.customer.CustomerPayment
+import com.zaed.common.data.model.customer.FetchWholesaleCustomersByNameRequest
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.DeletePaymentRequest
@@ -15,10 +18,10 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
 class WholeSalesCustomerRemoteDataSourceImpl(
-    firebaseFirestore: FirebaseFirestore,
+    firestore: FirebaseFirestore,
     private val crashlytics: FirebaseCrashlytics
 ) : WholeSalesCustomerRemoteDataSource {
-    private val customersCollection = firebaseFirestore.collection("whole_sale_customers")
+    private val customersCollection = firestore.collection("whole_sale_customers")
     override fun getWholeSalesCustomers(): Flow<Result<List<WholeSaleCustomer>>> = callbackFlow {
         try {
             customersCollection.addSnapshotListener { snapshot, error ->
@@ -66,7 +69,8 @@ class WholeSalesCustomerRemoteDataSourceImpl(
     override suspend fun addNewPayment(request: AddNewPaymentRequest): Result<Unit> {
         try {
             customersCollection.document(request.customerId).update(
-                "paymentArray", FieldValue.arrayUnion(CustomerPayment(request.payment.id, request.payment.amount)),
+                "paymentArray",
+                FieldValue.arrayUnion(CustomerPayment(request.payment.id, request.payment.amount)),
             ).await()
             return Result.success(Unit)
         } catch (e: Exception) {
@@ -79,13 +83,31 @@ class WholeSalesCustomerRemoteDataSourceImpl(
     override suspend fun deletePayment(request: DeletePaymentRequest): Result<Unit> {
         try {
             customersCollection.document(request.customerId).update(
-                "paymentArray", FieldValue.arrayRemove(CustomerPayment(request.paymentId, request.amount)),
+                "paymentArray",
+                FieldValue.arrayRemove(CustomerPayment(request.paymentId, request.amount)),
             ).await()
             return Result.success(Unit)
         } catch (e: Exception) {
             crashlytics.recordException(e)
             e.printStackTrace()
             return Result.failure(e)
+        }
+    }
+
+    override suspend fun fetchWholesaleCustomersByName(request: FetchWholesaleCustomersByNameRequest): Result<List<WholeSaleCustomer>> {
+        return try {
+            val customers = customersCollection
+                .where(
+                    Filter.and(
+                        Filter.greaterThanOrEqualTo("name", request.name),
+                        Filter.lessThanOrEqualTo("name", request.name + "\uf8ff")
+                    )
+                ).get()
+                .await()
+                .toObjects<WholeSaleCustomer>()
+            Result.success(customers)
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 

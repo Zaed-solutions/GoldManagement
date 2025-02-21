@@ -31,12 +31,14 @@ import kotlin.math.absoluteValue
 
 @Composable
 fun PaymentItem(
+    modifier: Modifier = Modifier,
     payment: Payment,
     onClick: () -> Unit = {},
     onDelete: () -> Unit = {},
     onEdit: () -> Unit = {}
 ) {
     SwipeToEditOrDeleteContainer(
+        modifier = modifier,
         onDelete = onDelete,
         onEdit = onEdit,
         isEditEnabled = true,
