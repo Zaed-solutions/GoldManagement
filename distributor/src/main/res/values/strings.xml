@@ -3,4 +3,9 @@
     <string name="add_new_customer">Add New Customer</string>
     <string name="select_a_customer_or">Select a Customer or</string>
     <string name="all_unpaid_amount_will_be_considered_as_future_payment">All unpaid amount will be considered as future payment</string>
+    <string name="search_customers">Search Customers</string>
+    <string name="grams_placeholder">%1$s g</string>
+    <string name="product">Product</string>
+    <string name="grams">Grams</string>
+    <string name="price">Price</string>
 </resources>

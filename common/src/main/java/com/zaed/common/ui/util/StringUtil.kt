@@ -3,7 +3,7 @@ package com.zaed.common.ui.util
 import java.text.NumberFormat
 import java.util.Locale
 
-fun Number.formatMoney(padding: Int = 0): String {
+fun Number.formatMoney(padding: Int = 1): String {
     val formatter = NumberFormat.getCurrencyInstance(Locale.getDefault()).apply {
         minimumFractionDigits = padding
         maximumFractionDigits = padding

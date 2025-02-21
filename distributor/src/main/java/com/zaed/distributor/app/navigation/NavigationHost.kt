@@ -27,14 +27,14 @@ import kotlinx.serialization.Serializable
 
 @Composable
 fun NavigationHost(
-    startDestination: Any
+    startDestination: Route
 ) {
     val navController = rememberNavController()
     val context = LocalContext.current
     NavHost(
         modifier = Modifier.systemBarsPadding(),
         navController = navController,
-        startDestination = Route.WholeSaleCustomers,
+        startDestination = startDestination,
     ) {
         composable<Route.SignUpRoute> {
             SignUpScreen(

@@ -15,13 +15,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
@@ -66,23 +69,22 @@ fun SelectCustomerContent(
         }
     }
     Column(
-        modifier
-            .fillMaxSize()
+        modifier.fillMaxSize()
     ) {
         SearchBar(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .fillMaxWidth(),
+            colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.surface),
             inputField = {
                 SearchBarDefaults.InputField(
+                    modifier = Modifier.padding(horizontal = 16.dp),
                     query = query,
                     onQueryChange = onQueryChanged,
                     onSearch = { expanded = false },
                     expanded = expanded,
                     onExpandedChange = { expanded = it },
-                    placeholder = { Text("Search Customers") },
+                    placeholder = { Text(stringResource(R.string.search_customers)) },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                    trailingIcon = { Icon(Icons.Default.MoreVert, contentDescription = null) },
                 )
             },
             expanded = expanded,
@@ -102,13 +104,13 @@ fun SelectCustomerContent(
                         ListItem(
                             headlineContent = { Text(customer.name) },
                             supportingContent = if (customer.phone.isNotBlank()) {
-                                { Text(customer.phone) }
+                                { Text(text = customer.phone, style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)) }
                             } else null,
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                             modifier =
                             Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
                         )
                     }
                 }
@@ -118,7 +120,9 @@ fun SelectCustomerContent(
             when {
                 isCustomerSelected -> {
                     Column(
-                        modifier = Modifier.fillMaxWidth().padding(start = 16.dp,end = 16.dp, top = 24.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, end = 16.dp, top = 24.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Row(
@@ -130,15 +134,15 @@ fun SelectCustomerContent(
                                 text = selectedCustomer.name,
                                 style = MaterialTheme.typography.titleLarge,
                             )
-                            IconButton(
+                            OutlinedIconButton(
                                 onClick = {
                                     onCustomerSelected(WholeSaleCustomer())
-                                }
+                                },
+                                colors = IconButtonDefaults.outlinedIconButtonColors(contentColor = MaterialTheme.colorScheme.error)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Clear,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.error
+                                    contentDescription = null
                                 )
                             }
                         }

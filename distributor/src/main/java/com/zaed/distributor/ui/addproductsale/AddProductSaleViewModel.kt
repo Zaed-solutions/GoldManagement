@@ -172,8 +172,9 @@ class AddProductSaleViewModel(
                             customerName = customer.name,
                             customerPhone = customer.phone,
                             paid = (uiState.value.totalAmount - uiState.value.totalPaid) == 0.0,
-                            logs = oldState.sale.logs+updateLog
-                        )
+                            logs = oldState.sale.logs + updateLog
+                        ),
+                        payments = oldState.payments.map { it.copy(customerId = oldState.selectedCustomer.id) }
                     )
                 }
             }
@@ -200,15 +201,27 @@ class AddProductSaleViewModel(
             val distributor = uiState.value.currentUser
             _uiState.update { oldState ->
                 oldState.copy(
-                    sale = uiState.value.sale.copy(
+                    sale = oldState.sale.copy(
                         customerId = customer.id,
                         customerName = customer.name,
                         customerPhone = customer.phone,
                         distributorId = distributor.id,
                         distributorName = distributor.fullName,
                         createdAt = Date(),
-                        paid = (uiState.value.totalAmount - uiState.value.totalPaid) == 0.0
+                        paid = (oldState.totalAmount - oldState.totalPaid) <= 0.0
                     )
+                )
+            }
+            _uiState.update { oldState ->
+                oldState.copy(
+                    sale = oldState.sale.copy(
+                        logs = oldState.sale.logs + ChangeLog(
+                            employeeId = distributor.id,
+                            employeeName = distributor.fullName,
+                            action = "created this sale"
+                        )
+                    ),
+                    payments = oldState.payments.map { it.copy(customerId = oldState.selectedCustomer.id) }
                 )
             }
             if (uiState.value.totalPaid != uiState.value.totalAmount) {
@@ -289,6 +302,7 @@ class AddProductSaleViewModel(
             _uiState.update {
                 it.copy(totalAmount = totalAmount, totalPaid = totalPaid)
             }
+            Log.d(TAG, "updateTotalAmounts: totalAmount: $totalAmount, totalPaid: $totalPaid")
         }
     }
 

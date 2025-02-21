@@ -153,4 +153,5 @@
     <string name="not_in_debt">Not In Debt</string>
     <string name="edit_payment">Edit Payment</string>
     <string name="customer_edited">Customer Edited Successfully</string>
+    <string name="search_customers">Search Customers</string>
 </resources>
