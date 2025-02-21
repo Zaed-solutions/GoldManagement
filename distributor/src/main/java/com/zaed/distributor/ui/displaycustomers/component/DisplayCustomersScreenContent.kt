@@ -65,7 +65,9 @@ fun DisplayCustomersScreenContent(
                         onClick = {
                             onAction(DisplayWholeSalesCustomerUiAction.OnCustomerClicked(customer))
                         },
-                        onEdit = {/*todo*/},
+                        onEdit = {
+                            onAction(DisplayWholeSalesCustomerUiAction.OnEditCustomerClicked(customer))
+                        },
                         onDelete = {
                             selectedCustomer = customer
                             confirmDeleteSheet = true
@@ -74,7 +76,6 @@ fun DisplayCustomersScreenContent(
                 }
             }
         }
-
         ConfirmDeleteBottomSheet(
             visible = confirmDeleteSheet,
             label = selectedCustomer?.name ?: "",
@@ -88,7 +89,6 @@ fun DisplayCustomersScreenContent(
                 confirmDeleteSheet = false
             }
         )
-
     }
 }
 

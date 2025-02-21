@@ -3,9 +3,12 @@ package com.zaed.distributor.ui.addcustomers
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zaed.common.data.model.customer.Zone
 import com.zaed.common.data.model.customer.AddWholeSaleCustomerRequest
+import com.zaed.common.data.model.customer.Zone
+import com.zaed.common.data.model.customer.request.EditWholeSalesCustomerRequest
 import com.zaed.common.domain.customer.AddWholeSaleCustomerUseCase
+import com.zaed.common.domain.customer.EditWholeSalesCustomerUseCase
+import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
 import com.zaed.common.ui.auth.FieldsError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +17,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class AddCustomersViewModel(
-    private val addWholeSaleCustomerUseCase: AddWholeSaleCustomerUseCase
+    private val addWholeSaleCustomerUseCase: AddWholeSaleCustomerUseCase,
+    private val getWholeSaleCustomerUseCase: GetWholeSalesCustomerUseCase,
+    private val editWholeSaleCustomerUseCase: EditWholeSalesCustomerUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(AddCustomersState())
     val state = _state.asStateFlow()
@@ -29,7 +34,25 @@ class AddCustomersViewModel(
             is AddCustomersUiAction.UpdateName -> _state.update { it.copy(fieldsError = FieldsError.NONE, request = it.request.copy(name = action.name)) }
             is AddCustomersUiAction.UpdatePhone -> _state.update { it.copy(request = it.request.copy(phone = action.phone)) }
             is AddCustomersUiAction.UpdateZone -> _state.update { it.copy(request = it.request.copy(zone = action.zone)) }
+            is AddCustomersUiAction.OnEdit-> {editCustomer()}
             else -> {}
+        }
+    }
+
+    private fun editCustomer() {
+        viewModelScope.launch(Dispatchers.IO) {
+            editWholeSaleCustomerUseCase(
+                EditWholeSalesCustomerRequest(
+                    id = state.value.customerId,
+                    updatedData = state.value.request
+                )
+            ).onSuccess {
+                _state.update {
+                    it.copy(
+                        successStatus = true
+                    )
+                }
+            }
         }
     }
 
@@ -68,11 +91,33 @@ class AddCustomersViewModel(
             }
         }
     }
+
+    fun getCustomer(customerId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getWholeSaleCustomerUseCase(customerId).onSuccess {data->
+                _state.update {
+                    it.copy(
+                        isEditMode = true,
+                        customerId = data.id,
+                        request = AddWholeSaleCustomerRequest(
+                            name = data.name,
+                            email = data.email,
+                            phone = data.phone,
+                            address = data.address,
+                            city = data.city,
+                            zone = data.zone
+                        )
+                    )
+                }
+            }
+        }
+    }
 }
 
 sealed interface AddCustomersUiAction {
     data object OnBack : AddCustomersUiAction
     data object OnSave : AddCustomersUiAction
+    data object OnEdit : AddCustomersUiAction
     data class UpdateName(val name: String) : AddCustomersUiAction
     data class UpdateEmail(val email: String) : AddCustomersUiAction
     data class UpdatePhone(val phone: String) : AddCustomersUiAction
@@ -86,6 +131,8 @@ data class AddCustomersState (
     val error: AddCustomersScreenError? = null,
     val fieldsError: FieldsError = FieldsError.NONE,
     val successStatus: Boolean = false,
+    val isEditMode: Boolean = false,
+    val customerId: String = "",
     val request : AddWholeSaleCustomerRequest = AddWholeSaleCustomerRequest()
 )
 enum class AddCustomersScreenError(@StringRes val message: Int) {

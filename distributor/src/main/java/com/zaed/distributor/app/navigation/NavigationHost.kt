@@ -91,10 +91,15 @@ fun NavigationHost(
         composable<Route.WholeSaleCustomers> {
             DisplayCustomersScreen(
                 navigateToAddCustomer = {
-                    navController.navigate(Route.AddCustomers)
+                    navController.navigate(Route.AddCustomers())
                 },
                 navigateToCustomerDetails = { customerId ->
                     navController.navigate(Route.CustomerDetails(customerId))
+                },
+                navigateToEditCustomer = { customerId ->
+                    navController.navigate(Route.AddCustomers(
+                        customerId = customerId
+                    ))
                 }
             )
         }
@@ -103,7 +108,9 @@ fun NavigationHost(
             CustomerDetailsScreen(customerId = customerId)
         }
         composable<Route.AddCustomers> {
+            val customerId = it.toRoute<Route.AddCustomers>().customerId
             AddCustomersScreen(
+                customerId = customerId,
                 onBack = {
                     navController.popBackStack()
                 }
@@ -120,7 +127,7 @@ fun NavigationHost(
                     navController.navigate(Route.ProductSaleDetailsRoute(it))
                 },
                 onNavigateToAddCustomer = {
-                    navController.navigate(Route.AddCustomers)
+                    navController.navigate(Route.AddCustomers())
                 }
             )
         }
@@ -193,7 +200,7 @@ sealed interface Route {
     data object WholeSaleCustomers : Route
 
     @Serializable
-    data object AddCustomers : Route
+    data class AddCustomers(val customerId: String = "") : Route
 
     @Serializable
     data class CustomerDetails(val customerId: String) : Route

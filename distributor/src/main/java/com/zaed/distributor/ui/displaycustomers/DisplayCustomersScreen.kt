@@ -10,7 +10,8 @@ import org.koin.androidx.compose.koinViewModel
 fun DisplayCustomersScreen(
     viewModel: DisplayCustomersViewModel = koinViewModel(),
     navigateToAddCustomer: () -> Unit,
-    navigateToCustomerDetails: (String) -> Unit
+    navigateToCustomerDetails: (String) -> Unit,
+    navigateToEditCustomer:(String) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     DisplayCustomersScreenContent(
@@ -19,6 +20,9 @@ fun DisplayCustomersScreen(
             when (action) {
                 is DisplayWholeSalesCustomerUiAction.OnAddWholeSaleCustomerClicked -> {
                     navigateToAddCustomer()
+                }
+                is DisplayWholeSalesCustomerUiAction.OnEditCustomerClicked -> {
+                    navigateToEditCustomer(action.customer.id)
                 }
                 is DisplayWholeSalesCustomerUiAction.OnCustomerClicked -> {
                     navigateToCustomerDetails(action.customer.id)

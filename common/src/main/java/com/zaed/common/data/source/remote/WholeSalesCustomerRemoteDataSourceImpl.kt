@@ -9,6 +9,7 @@ import com.zaed.common.data.model.customer.AddWholeSaleCustomerRequest
 import com.zaed.common.data.model.customer.CustomerPayment
 import com.zaed.common.data.model.customer.FetchWholesaleCustomersByNameRequest
 import com.zaed.common.data.model.customer.WholeSaleCustomer
+import com.zaed.common.data.model.customer.request.EditWholeSalesCustomerRequest
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.DeletePaymentRequest
 import com.zaed.common.domain.payment.UpdateCustomerDebtRequest
@@ -83,6 +84,26 @@ class WholeSalesCustomerRemoteDataSourceImpl(
     override suspend fun deleteCustomer(customerId: String): Result<Unit> {
         try {
             customersCollection.document(customerId).delete().await()
+            return Result.success(Unit)
+        }catch (e:Exception){
+            crashlytics.recordException(e)
+            e.printStackTrace()
+            return Result.failure(e)
+        }
+    }
+
+    override suspend fun editWholeSalesCustomer(request: EditWholeSalesCustomerRequest): Result<Unit> {
+        try {
+            customersCollection.document(request.id).update(
+                mapOf(
+                    "name" to request.updatedData.name,
+                    "email" to request.updatedData.email,
+                    "phone" to request.updatedData.phone,
+                    "address" to request.updatedData.address,
+                    "city" to request.updatedData.city,
+                    "zone" to request.updatedData.zone,
+                )
+            ).await()
             return Result.success(Unit)
         }catch (e:Exception){
             crashlytics.recordException(e)

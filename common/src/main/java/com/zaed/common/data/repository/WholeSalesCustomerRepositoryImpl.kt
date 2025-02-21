@@ -3,6 +3,7 @@ package com.zaed.common.data.repository
 import com.zaed.common.data.model.customer.AddWholeSaleCustomerRequest
 import com.zaed.common.data.model.customer.FetchWholesaleCustomersByNameRequest
 import com.zaed.common.data.model.customer.WholeSaleCustomer
+import com.zaed.common.data.model.customer.request.EditWholeSalesCustomerRequest
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.DeletePaymentRequest
 import com.zaed.common.data.source.remote.WholeSalesCustomerRemoteDataSource
@@ -37,6 +38,10 @@ class WholeSalesCustomerRepositoryImpl(
 
     override suspend fun deleteCustomer(customerId: String): Result<Unit> {
         return wholeSalesCustomerRemoteDataSource.deleteCustomer(customerId)
+    }
+
+    override suspend fun editWholeSalesCustomer(request: EditWholeSalesCustomerRequest): Result<Unit> {
+        return wholeSalesCustomerRemoteDataSource.editWholeSalesCustomer(request)
     }
 
     override suspend fun addNewPayment(request: AddNewPaymentRequest): Result<Unit> {
