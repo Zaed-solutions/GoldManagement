@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.Flow
 class WholeSalesCustomerRepositoryImpl(
     private val wholeSalesCustomerRemoteDataSource: WholeSalesCustomerRemoteDataSource
 ) : WholeSalesCustomerRepository {
-    override fun getWholeSalesCustomers(): Flow<Result<List<WholeSaleCustomer>>> =
-        wholeSalesCustomerRemoteDataSource.getWholeSalesCustomers()
+    override fun getWholeSalesCustomers(distributorId:String): Flow<Result<List<WholeSaleCustomer>>> =
+        wholeSalesCustomerRemoteDataSource.getWholeSalesCustomers(distributorId)
 
     override suspend fun addWholeSaleCustomer(request: AddWholeSaleCustomerRequest): Result<Unit> {
        return wholeSalesCustomerRemoteDataSource.addWholeSaleCustomer(request)

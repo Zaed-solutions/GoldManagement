@@ -34,7 +34,7 @@ fun NavigationHost(
     NavHost(
         modifier = Modifier.systemBarsPadding(),
         navController = navController,
-        startDestination = startDestination,
+        startDestination = Route.WholeSaleCustomers,
     ) {
         composable<Route.SignUpRoute> {
             SignUpScreen(
@@ -119,7 +119,13 @@ fun NavigationHost(
                 },
                 navigateToEditCustomer = {id->
                     navController.navigate(Route.AddCustomers(id))
-                }
+                },
+                onNavigateToAddGoldSale = {
+                    navController.navigate(Route.AddGoldSaleRoute(it))
+                },
+                onNavigateToAddProductSale = {
+                    navController.navigate(Route.AddProductSaleRoute(it))
+                },
             )
         }
         composable<Route.AddCustomers> {

@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.Flow
 class GetWholeSalesCustomersUseCase(
     private val wholeSalesCustomerRepository: WholeSalesCustomerRepository
 ) {
-    operator fun invoke(): Flow<Result<List<WholeSaleCustomer>>> {
-        return wholeSalesCustomerRepository.getWholeSalesCustomers()
+    operator fun invoke(distributorId:String): Flow<Result<List<WholeSaleCustomer>>> {
+        return wholeSalesCustomerRepository.getWholeSalesCustomers(distributorId)
     }
 
 }

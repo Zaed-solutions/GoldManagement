@@ -44,6 +44,7 @@ fun DisplayCustomersScreenContent(
                 modifier = Modifier.padding(12.dp)
             ){
                 SearchBar(
+                    modifier = Modifier.padding(top = 12.dp).padding(horizontal = 12.dp),
                     query = uiState.searchQuery,
                     onQueryChanged = {
                         onAction(DisplayWholeSalesCustomerUiAction.OnSearchQueryChanged(it))
@@ -58,7 +59,9 @@ fun DisplayCustomersScreenContent(
                 .fillMaxSize()
                 .padding(it)
         ) {
-            LazyColumn {
+            LazyColumn(
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
                 itemsIndexed(uiState.displayedCustomers) { index, customer ->
                     CustomerItem(
                         customer,

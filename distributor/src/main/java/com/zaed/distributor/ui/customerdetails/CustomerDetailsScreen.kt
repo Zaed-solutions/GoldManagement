@@ -14,6 +14,9 @@ fun CustomerDetailsScreen(
     navigateToEditCustomer: (String) -> Unit,
     onNavigateToProductSaleDetails: (String) -> Unit,
     onNavigateToGoldSaleDetails: (String) -> Unit,
+    onNavigateToAddProductSale: (String) -> Unit,
+    onNavigateToAddGoldSale: (String) -> Unit,
+
     onBack: () -> Unit
 ) {
     LaunchedEffect(Unit) {
@@ -25,8 +28,8 @@ fun CustomerDetailsScreen(
         onAction = { action ->
             when (action) {
                 CustomerDetailsUiAction.OnEditCustomer -> navigateToEditCustomer(uiState.customer.id)
-                is CustomerDetailsUiAction.OnEditProductSale -> onNavigateToProductSaleDetails(action.saleId)
-                is CustomerDetailsUiAction.OnEditGoldSale -> onNavigateToGoldSaleDetails(action.saleId)
+                is CustomerDetailsUiAction.OnEditProductSale -> onNavigateToAddProductSale(action.saleId)
+                is CustomerDetailsUiAction.OnEditGoldSale -> onNavigateToAddGoldSale(action.saleId)
                 is CustomerDetailsUiAction.OnProductSaleClicked -> onNavigateToProductSaleDetails(action.saleId)
                 is CustomerDetailsUiAction.OnGoldSaleClicked -> onNavigateToGoldSaleDetails(action.saleId)
                 CustomerDetailsUiAction.OnBackClicked -> onBack()

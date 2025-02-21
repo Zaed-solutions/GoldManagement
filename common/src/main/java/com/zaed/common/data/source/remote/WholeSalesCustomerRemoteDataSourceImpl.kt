@@ -22,9 +22,9 @@ class WholeSalesCustomerRemoteDataSourceImpl(
     private val crashlytics: FirebaseCrashlytics
 ) : WholeSalesCustomerRemoteDataSource {
     private val customersCollection = firestore.collection("whole_sale_customers")
-    override fun getWholeSalesCustomers(): Flow<Result<List<WholeSaleCustomer>>> = callbackFlow {
+    override fun getWholeSalesCustomers(distributorId:String): Flow<Result<List<WholeSaleCustomer>>> = callbackFlow {
         try {
-            customersCollection.addSnapshotListener { snapshot, error ->
+            customersCollection.whereEqualTo("distributorId",distributorId).addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     crashlytics.recordException(error)
                     trySend(Result.failure(error))
