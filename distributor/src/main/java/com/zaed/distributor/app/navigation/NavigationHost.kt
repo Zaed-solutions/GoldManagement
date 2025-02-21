@@ -34,7 +34,7 @@ fun NavigationHost(
     NavHost(
         modifier = Modifier.systemBarsPadding(),
         navController = navController,
-        startDestination = Route.WholeSaleCustomers,
+        startDestination = startDestination,
     ) {
         composable<Route.SignUpRoute> {
             SignUpScreen(

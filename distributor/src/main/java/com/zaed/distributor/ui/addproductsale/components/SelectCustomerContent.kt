@@ -118,8 +118,8 @@ fun SelectCustomerContent(
             when {
                 isCustomerSelected -> {
                     Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        modifier = Modifier.fillMaxWidth().padding(start = 16.dp,end = 16.dp, top = 24.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),

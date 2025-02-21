@@ -4,6 +4,8 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.SetOptions
 import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.sale.StoreSale
@@ -11,6 +13,7 @@ import com.zaed.common.data.model.sale.WholesaleGoldSale
 import com.zaed.common.data.model.sale.WholesaleProductSale
 import com.zaed.common.data.model.sale.WholesaleSale
 import com.zaed.common.data.model.sale.request.AddStoreSaleRequest
+import com.zaed.common.data.model.sale.request.AddWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.DeleteStoreSaleRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleGoldSaleRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleProductSaleRequest
@@ -19,6 +22,7 @@ import com.zaed.common.data.model.sale.request.FetchStoreSalesRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleGoldSaleRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.UpdateStoreSaleRequest
+import com.zaed.common.data.model.sale.request.UpdateWholesaleProductSaleRequest
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -33,6 +37,7 @@ class SaleRemoteSourceImpl(
     private val categoriesCollection = firestore.collection("categories")
     private val wholesaleProductSalesCollection = firestore.collection("wholesale_product_sales")
     private val wholesaleGoldSalesCollection = firestore.collection("wholesale_gold_sales")
+    private val paymentsCollection = firestore.collection("payments")
     override fun fetchStoreSales(request: FetchStoreSalesRequest): Flow<Result<List<StoreSale>>> =
         callbackFlow {
             try {
@@ -219,8 +224,9 @@ class SaleRemoteSourceImpl(
 
     override suspend fun deleteWholesaleProductSale(request: DeleteWholesaleProductSaleRequest): Result<Unit> {
         return try {
-            //todo delete payment
-            val sale = wholesaleProductSalesCollection.document(request.saleId).get().await()
+            val batch = firestore.batch()
+            val saleRef = wholesaleProductSalesCollection.document(request.saleId)
+            val sale = saleRef.get().await()
                 .toObject(WholesaleProductSale::class.java) ?: WholesaleProductSale()
             val logs = sale.logs.toMutableList()
             logs.add(
@@ -231,8 +237,12 @@ class SaleRemoteSourceImpl(
                     action = "${request.distributorName} Deleted this sale"
                 )
             )
-            wholesaleProductSalesCollection.document(request.saleId)
-                .set(sale.copy(logs = logs, deleted = true)).await()
+            batch.set(saleRef, sale.copy(logs = logs, deleted = true))
+            sale.paymentsIds.forEach {
+                val paymentRef = paymentsCollection.document(it)
+                batch.delete(paymentRef)
+            }
+            batch.commit().await()
             Result.success(Unit)
         } catch (e: Exception) {
             crashlytics.recordException(e)
@@ -268,7 +278,7 @@ class SaleRemoteSourceImpl(
             val sale = wholesaleProductSalesCollection.document(request.saleId).get().await()
                 .toObject(WholesaleProductSale::class.java) ?: WholesaleProductSale()
             Result.success(sale)
-        } catch(e: Exception){
+        } catch (e: Exception) {
             crashlytics.recordException(e)
             Result.failure(e)
         }
@@ -279,7 +289,64 @@ class SaleRemoteSourceImpl(
             val sale = wholesaleGoldSalesCollection.document(request.saleId).get().await()
                 .toObject(WholesaleGoldSale::class.java) ?: WholesaleGoldSale()
             Result.success(sale)
-        } catch(e: Exception){
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun addWholesaleProductSale(request: AddWholesaleProductSaleRequest): Result<String> {
+        return try {
+            val batch = firestore.batch()
+            val docRef = wholesaleProductSalesCollection.document()
+            val paymentsIds = mutableListOf<String>()
+            request.payments.forEach {
+                val ref = paymentsCollection.document()
+                paymentsIds.add(ref.id)
+                batch.set(ref, it.copy(id = ref.id))
+            }
+            val receiptNumber = wholesaleProductSalesCollection.orderBy(
+                "receiptNumber",
+                Query.Direction.DESCENDING
+            ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")?.toLongOrNull() ?: 0
+            batch.set(docRef, request.sale.copy(id = docRef.id, paymentsIds = paymentsIds, receiptNumber = (receiptNumber + 1).toString()))
+            Result.success(docRef.id)
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun updateWholesaleProductSale(request: UpdateWholesaleProductSaleRequest): Result<Unit> {
+        return try {
+            val batch = firestore.batch()
+            val saleDocRef = wholesaleProductSalesCollection.document(request.sale.id)
+            val existingSale = wholesaleProductSalesCollection.document(request.sale.id).get().await()
+                .toObject(WholesaleProductSale::class.java)
+                ?: return Result.failure(Exception("Sale not found"))
+            val existingPaymentIds = existingSale.paymentsIds
+            val updatedPaymentIds = mutableListOf<String>()
+            request.payments.forEach { payment ->
+                if (payment.id.isNotEmpty() && existingPaymentIds.contains(payment.id)) {
+                    val paymentRef = paymentsCollection.document(payment.id)
+                    batch.set(paymentRef, payment, SetOptions.merge())
+                    updatedPaymentIds.add(payment.id)
+                } else {
+                    val newPaymentRef = paymentsCollection.document()
+                    batch.set(newPaymentRef, payment.copy(id = newPaymentRef.id))
+                    updatedPaymentIds.add(newPaymentRef.id)
+                }
+            }
+            existingPaymentIds.forEach { paymentId ->
+                if (!updatedPaymentIds.contains(paymentId)) {
+                    batch.delete(paymentsCollection.document(paymentId))
+                }
+            }
+            batch.set(saleDocRef, request.sale.copy(paymentsIds = updatedPaymentIds),
+                SetOptions.merge())
+            batch.commit().await()
+            Result.success(Unit)
+        } catch (e: Exception) {
             crashlytics.recordException(e)
             Result.failure(e)
         }

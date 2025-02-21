@@ -2,9 +2,11 @@ package com.zaed.common.data.source.remote
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObjects
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.FetchCustomerPaymentsRequest
+import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -54,4 +56,13 @@ class PaymentRemoteDataSourceImpl(
             }
             awaitClose { }
         }
+
+    override suspend fun fetchPaymentsByIds(request: FetchPaymentsByIdsRequest): Result<List<Payment>> {
+        return try {
+            val payments = paymentsCollection.whereIn("id", request.paymentsIds).get().await().toObjects<Payment>()
+            Result.success(payments)
+        } catch (e: Exception){
+            Result.failure(e)
+        }
+    }
 }

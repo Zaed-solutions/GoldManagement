@@ -65,6 +65,10 @@ import com.zaed.common.domain.authentication.SignUpUserUseCase
 import com.zaed.common.domain.loss.UpdateLossUseCase
 import com.zaed.common.domain.sale.UpdateStoreSaleUseCase
 import com.zaed.common.domain.authentication.UpdateUserUseCase
+import com.zaed.common.domain.customer.FetchWholesaleCustomersByNameUseCase
+import com.zaed.common.domain.payment.FetchPaymentsByIdsUseCase
+import com.zaed.common.domain.sale.AddWholesaleProductSaleUseCase
+import com.zaed.common.domain.sale.UpdateWholesaleProductSaleUseCase
 import com.zaed.common.ui.auth.MainViewModel
 import com.zaed.common.ui.auth.login.LoginViewModel
 import com.zaed.common.ui.auth.signup.SignUpViewModel
@@ -106,7 +110,12 @@ val useCaseModule = module {
     singleOf(::GetWholeSalesCustomersUseCase)
     singleOf(::FetchCustomerPaymentsUseCase)
     singleOf(::AddNewPaymentUseCase)
+    singleOf(::FetchPaymentsByIdsUseCase)
+    singleOf(::FetchWholesaleCustomersByNameUseCase)
     singleOf(::GetWholeSalesCustomerUseCase)
+    singleOf(::AddWholeSaleCustomerUseCase)
+    singleOf(::UpdateWholesaleProductSaleUseCase)
+    singleOf(::AddWholesaleProductSaleUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }
