@@ -7,5 +7,5 @@ data class Product(
     val gramPrice: Double = 0.0,
     val minPrice: Double = 0.0,
     val categoryId: String = "",
-    val grams: Double = 1.0,
+    val grams: Double = 0.0,
 )

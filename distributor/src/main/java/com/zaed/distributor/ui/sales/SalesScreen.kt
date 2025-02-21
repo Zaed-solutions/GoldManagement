@@ -2,6 +2,7 @@ package com.zaed.distributor.ui.sales
 
 import android.content.Context
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,13 +22,16 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
@@ -36,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
 import com.zaed.common.data.model.authentication.Permission
+import com.zaed.common.ui.components.ConfirmDeleteDialog
 import com.zaed.common.ui.components.FabItem
 import com.zaed.common.ui.components.MoreDropDownMenu
 import com.zaed.common.ui.components.MoreDropdownItem
@@ -55,17 +60,17 @@ fun SalesScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(state.isSignedOut) {
-        if(state.isSignedOut){
+        if (state.isSignedOut) {
             onNavigateToLogin()
         }
     }
     SalesScreenContent(
         state = state,
         onAction = { action ->
-            when(action){
+            when (action) {
                 SalesUiAction.AddProductSaleClicked -> onNavigateToAddProductSale("")
                 SalesUiAction.AddGoldSaleClicked -> onNavigateToAddGoldSale("")
-                is SalesUiAction.OnEditProductSale -> onNavigateToProductSaleDetails(action.saleId)
+                is SalesUiAction.OnEditProductSale -> onNavigateToAddProductSale(action.saleId)
                 is SalesUiAction.OnEditGoldSale -> onNavigateToGoldSaleDetails(action.saleId)
                 is SalesUiAction.OnProductSaleClicked -> onNavigateToProductSaleDetails(action.saleId)
                 is SalesUiAction.OnGoldSaleClicked -> onNavigateToGoldSaleDetails(action.saleId)
@@ -83,11 +88,13 @@ fun SalesScreenContent(
     onAction: (SalesUiAction) -> Unit,
     context: Context = LocalContext.current
 ) {
+    var selectedSale by remember { mutableStateOf("" to false) }
+    var isConfirmDeleteVisible by remember { mutableStateOf(false) }
     Scaffold(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title= {
+                title = {
                     Text(
                         text = stringResource(com.zaed.distributor.R.string.app_name),
                         style = MaterialTheme.typography.titleLarge
@@ -108,7 +115,7 @@ fun SalesScreenContent(
             )
         },
         floatingActionButton = {
-            if(state.currentUser.permissions.contains(Permission.SELL_GOLD)){
+            if (state.currentUser.permissions.contains(Permission.SELL_GOLD)) {
                 val fabItems = remember {
                     listOf(
                         FabItem(
@@ -122,12 +129,14 @@ fun SalesScreenContent(
                 }
                 MultiFloatingActionButton(
                     fabIcon = Icons.Default.Add,
-                    items = emptyList(),
+                    items = fabItems,
                     backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
                 )
             } else {
                 FloatingActionButton(
-                    modifier = Modifier.padding(bottom = 8.dp, end = 8.dp).rotate(45f),
+                    modifier = Modifier
+                        .padding(bottom = 8.dp, end = 8.dp)
+                        .rotate(45f),
                     shape = RoundedCornerShape(16.dp),
                     onClick = { onAction(SalesUiAction.AddProductSaleClicked) },
                 ) {
@@ -150,10 +159,10 @@ fun SalesScreenContent(
                 onQueryChanged = { onAction(SalesUiAction.UpdateSearchQuery(it)) }
             )
             //paid/unpaid tabs
-            LazyRow (
+            LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp)
-            ){
+            ) {
                 items(PaymentStatus.entries) { status ->
                     FilterChip(
                         onClick = {
@@ -181,17 +190,12 @@ fun SalesScreenContent(
                 sales = state.displayedSales,
                 isLoading = state.isLoading,
                 onDeleteSale = { saleId, isProduct ->
-                    onAction(
-                        if(isProduct){
-                            SalesUiAction.OnDeleteProductSale(saleId)
-                        } else {
-                            SalesUiAction.OnDeleteGoldSale(saleId)
-                        }
-                    )
-                               },
+                    selectedSale = saleId to isProduct
+                    isConfirmDeleteVisible = true
+                },
                 onEditSale = { saleId, isProduct ->
                     onAction(
-                        if(isProduct){
+                        if (isProduct) {
                             SalesUiAction.OnEditProductSale(saleId)
                         } else {
                             SalesUiAction.OnEditGoldSale(saleId)
@@ -200,7 +204,7 @@ fun SalesScreenContent(
                 },
                 onSaleClicked = { saleId, isProduct ->
                     onAction(
-                        if(isProduct){
+                        if (isProduct) {
                             SalesUiAction.OnProductSaleClicked(saleId)
                         } else {
                             SalesUiAction.OnGoldSaleClicked(saleId)
@@ -208,6 +212,29 @@ fun SalesScreenContent(
                     )
                 }
             )
+            AnimatedVisibility(isConfirmDeleteVisible) {
+                ModalBottomSheet(
+                    onDismissRequest = {
+                        isConfirmDeleteVisible = false
+                    }
+                ) {
+                    ConfirmDeleteDialog(
+                        label = stringResource(R.string.sale),
+                        onDismiss = {
+                            isConfirmDeleteVisible = false
+                        },
+                        onConfirm = {
+                            onAction(
+                                if(selectedSale.second){
+                                    SalesUiAction.OnDeleteProductSale(selectedSale.first)
+                                } else {
+                                    SalesUiAction.OnDeleteGoldSale(selectedSale.first)
+                                }
+                            )
+                        }
+                    )
+                }
+            }
         }
     }
 

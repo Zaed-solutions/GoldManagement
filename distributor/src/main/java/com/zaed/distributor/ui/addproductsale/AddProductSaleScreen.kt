@@ -1,5 +1,6 @@
 package com.zaed.distributor.ui.addproductsale
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -79,6 +80,15 @@ private fun AddProductSaleScreenContent(
         animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
         label = "linear progress inicator"
     )
+    BackHandler { 
+        if(pagerState.currentPage > 0){
+            scope.launch {
+                pagerState.animateScrollToPage(pagerState.currentPage - 1)
+            }
+        } else {
+            onAction(AddProductSaleUiAction.OnBackClicked)
+        }
+    }
     Scaffold (
         topBar = {
             ProgressIndicatorTopAppBar(

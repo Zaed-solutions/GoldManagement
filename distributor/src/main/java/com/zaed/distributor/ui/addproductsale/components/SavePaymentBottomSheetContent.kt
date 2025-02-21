@@ -21,6 +21,7 @@ import com.zaed.common.R
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.ui.components.NumberInputTextField
+import com.zaed.common.ui.components.TitledDropDownTextField
 import com.zaed.common.ui.components.TitledDropDownTextField2
 
 @Composable
@@ -40,15 +41,14 @@ fun SavePaymentBottomSheetContent(
             text = stringResource(R.string.save_payment),
             style = MaterialTheme.typography.titleLarge
         )
-        TitledDropDownTextField2(
+        TitledDropDownTextField(
             modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
             label = stringResource(R.string.type),
-            options = PaymentType.entries,
-            selectedValue = payment.type,
-            onValueChanged = {
-                payment = payment.copy(type = it)
+            options = PaymentType.entries.map { it.name },
+            selectedValue = payment.type.name,
+            onValueChanged = { index->
+                payment = payment.copy(type = PaymentType.entries[index])
             },
-            placeHolder = stringResource(R.string.select_type)
         )
         NumberInputTextField(
             modifier = Modifier.fillMaxWidth(),
@@ -70,5 +70,21 @@ fun SavePaymentBottomSheetContent(
             )
         }
     }
+}
 
+@Composable
+private fun PaymentTypeDropDownMenu(
+    modifier: Modifier = Modifier,
+    payment: Payment,
+    onTypeChanged: (PaymentType) -> Unit
+) {
+    TitledDropDownTextField(
+        modifier = modifier,
+        label = stringResource(R.string.type),
+        options = PaymentType.entries.map { it.name },
+        selectedValue = payment.type.name,
+        onValueChanged = { index->
+            onTypeChanged(PaymentType.entries[index])
+        },
+    )
 }

@@ -17,11 +17,11 @@ import androidx.compose.ui.unit.sp
 import com.zaed.common.R
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.Payment
-import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.WholesaleProductSale
 import com.zaed.common.ui.components.DashedDivider
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.components.PriceCalculationItem
+import com.zaed.common.ui.components.ProductsTable
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
 import java.util.Date
@@ -59,6 +59,9 @@ fun SaleSummaryContent(
             label = stringResource(R.string.created_at),
             value = Date().format(DateFormat.DATE),
             isDividerVisible = false
+        )
+        ProductsTable(
+            products = sale.products
         )
         Spacer(modifier = Modifier.weight(1f))
         DashedDivider(
