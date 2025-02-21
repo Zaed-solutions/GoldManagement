@@ -1,11 +1,13 @@
 package com.zaed.common.data.source.remote
 
-import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.customer.AddWholeSaleCustomerRequest
+import com.zaed.common.data.model.customer.CustomerPayment
+import com.zaed.common.data.model.customer.WholeSaleCustomer
+import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
+import com.zaed.common.data.model.payment.request.DeletePaymentRequest
 import com.zaed.common.domain.payment.UpdateCustomerDebtRequest
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -39,17 +41,48 @@ class WholeSalesCustomerRemoteDataSourceImpl(
 
     override suspend fun updateCustomerDebt(updateCustomerDebtRequest: UpdateCustomerDebtRequest): Result<Unit> {
         try {
-            val result = customersCollection.document(updateCustomerDebtRequest.customerId).get().await()
-            val customer = result.toObject(WholeSaleCustomer::class.java) ?: return Result.failure(Exception("Customer not found"))
-            val newDebtAmount = customer.debtAmount - updateCustomerDebtRequest.amount
-            val inDebt = newDebtAmount>0
-              customersCollection.document(updateCustomerDebtRequest.customerId).update(
-                "debtAmount", FieldValue.increment(updateCustomerDebtRequest.amount*-1),
-                  "inDebt",inDebt
+            val result =
+                customersCollection.document(updateCustomerDebtRequest.customerId).get().await()
+            val customer = result.toObject(WholeSaleCustomer::class.java)
+            val paymentArray = customer?.paymentArray ?: emptyList()
+            val newPaymentArray = paymentArray.map {
+                if (it.paymentId == updateCustomerDebtRequest.paymentId) {
+                    it.copy(amount = updateCustomerDebtRequest.amount)
+                } else {
+                    it
+                }
+            }
+            customersCollection.document(updateCustomerDebtRequest.customerId).update(
+                "paymentArray", newPaymentArray
             ).await()
-            Log.d("WholeSalesCustomerRemoteDataSourceImpl", "updateCustomerDebt: $result")
             return Result.success(Unit)
-        }catch (e:Exception){
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            e.printStackTrace()
+            return Result.failure(e)
+        }
+    }
+
+    override suspend fun addNewPayment(request: AddNewPaymentRequest): Result<Unit> {
+        try {
+            customersCollection.document(request.customerId).update(
+                "paymentArray", FieldValue.arrayUnion(CustomerPayment(request.payment.id, request.payment.amount)),
+            ).await()
+            return Result.success(Unit)
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            e.printStackTrace()
+            return Result.failure(e)
+        }
+    }
+
+    override suspend fun deletePayment(request: DeletePaymentRequest): Result<Unit> {
+        try {
+            customersCollection.document(request.customerId).update(
+                "paymentArray", FieldValue.arrayRemove(CustomerPayment(request.paymentId, request.amount)),
+            ).await()
+            return Result.success(Unit)
+        } catch (e: Exception) {
             crashlytics.recordException(e)
             e.printStackTrace()
             return Result.failure(e)
@@ -58,7 +91,7 @@ class WholeSalesCustomerRemoteDataSourceImpl(
 
     override suspend fun getWholeSaleCustomer(customerId: String): Result<WholeSaleCustomer> {
         try {
-           val result =  customersCollection.document(customerId).get().await()
+            val result = customersCollection.document(customerId).get().await()
             val customer = result.toObject(WholeSaleCustomer::class.java)
             return if (customer != null) {
                 Result.success(customer)
@@ -66,7 +99,7 @@ class WholeSalesCustomerRemoteDataSourceImpl(
                 Result.failure(Exception("Customer not found"))
             }
 
-        }catch (e:Exception){
+        } catch (e: Exception) {
             crashlytics.recordException(e)
             e.printStackTrace()
             return Result.failure(e)

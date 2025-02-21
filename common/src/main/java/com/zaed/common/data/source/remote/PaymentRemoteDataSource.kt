@@ -2,11 +2,14 @@ package com.zaed.common.data.source.remote
 
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
+import com.zaed.common.data.model.payment.request.EditPaymentRequest
 import com.zaed.common.data.model.payment.request.FetchCustomerPaymentsRequest
 import kotlinx.coroutines.flow.Flow
 
 interface PaymentRemoteDataSource {
-    suspend fun addPayment(request: AddNewPaymentRequest): Result<Unit>
+    suspend fun addPayment(request: AddNewPaymentRequest): Result<String>
     fun fetchCustomerPayments(request: FetchCustomerPaymentsRequest): Flow<Result<List<Payment>>>
+    suspend fun deletePayment(id: String): Result<Unit>
+    suspend fun editPayment(request: EditPaymentRequest): Result<Unit>
 
 }

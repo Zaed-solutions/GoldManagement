@@ -143,4 +143,10 @@
     <string name="total_paid">Total Paid</string>
     <string name="all_unpaid_amount_will_be_considered_as_future_payment">All unpaid amount will be considered as future payment\n</string>
     <string name="payments">Payments</string>
+    <string name="received">Recieved</string>
+    <string name="taken">Taken</string>
+    <string name="given">Given</string>
+    <string name="in_debt">In Debt</string>
+    <string name="not_in_debt">Not In Debt</string>
+    <string name="edit_payment">Edit Payment</string>
 </resources>
