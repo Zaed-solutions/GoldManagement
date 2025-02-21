@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.customer.WholeSaleCustomer
+import com.zaed.common.domain.customer.DeleteWholeSaleCustomerUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomersUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,9 +15,10 @@ import kotlinx.coroutines.launch
 class DisplayCustomersViewModel(
     private val getWholeSalesCustomersUseCase: GetWholeSalesCustomersUseCase,
     private val deleteWholeSaleCustomerUseCase: DeleteWholeSaleCustomerUseCase,
-):ViewModel() {
+) : ViewModel() {
     private val _state = MutableStateFlow(DisplayCustomersState())
     val state = _state.asStateFlow()
+
     init {
         getWholeSalesCustomers()
     }
@@ -30,23 +32,46 @@ class DisplayCustomersViewModel(
     }
 
     private fun deleteCustomer(customer: WholeSaleCustomer) {
-
+        viewModelScope.launch(Dispatchers.IO) {
+            _state.update {
+                it.copy(
+                    isLoading = true,
+                    error = null,
+                )
+            }
+            deleteWholeSaleCustomerUseCase(customer.id)
+                .onSuccess {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = null,
+                        )
+                    }
+                }.onFailure { error ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = DisplayCustomersScreenError.UNKNOWN,
+                        )
+                    }
+                }
+        }
     }
 
     private fun updateSearchQuery(query: String) {
         _state.update {
             it.copy(
                 searchQuery = query,
-                displayedCustomers = if(query.isNotEmpty()) it.customers.filter { customer ->
+                displayedCustomers = if (query.isNotEmpty()) it.customers.filter { customer ->
                     customer.name.contains(query, ignoreCase = true)
-                } else  it.customers
+                } else it.customers
             )
         }
     }
 
     private fun getWholeSalesCustomers() {
-        viewModelScope.launch (Dispatchers.IO){
-            getWholeSalesCustomersUseCase().collect{result->
+        viewModelScope.launch(Dispatchers.IO) {
+            getWholeSalesCustomersUseCase().collect { result ->
                 result.onSuccess { customers ->
                     _state.update {
                         it.copy(
@@ -76,7 +101,8 @@ data class DisplayCustomersState(
     val isLoading: Boolean = false,
     val error: DisplayCustomersScreenError? = null
 )
-enum class DisplayCustomersScreenError(@StringRes val message: Int){
+
+enum class DisplayCustomersScreenError(@StringRes val message: Int) {
     NO_INTERNET(
         com.zaed.common.R.string.no_internet_connection
     ),

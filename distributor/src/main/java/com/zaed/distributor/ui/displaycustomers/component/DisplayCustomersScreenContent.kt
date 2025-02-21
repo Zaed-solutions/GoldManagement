@@ -28,7 +28,7 @@ fun DisplayCustomersScreenContent(
     uiState: DisplayCustomersState = DisplayCustomersState(),
     onAction: (DisplayWholeSalesCustomerUiAction) -> Unit = {},
 ) {
-    val selectedCustomer by remember { mutableStateOf<WholeSaleCustomer?>(null) }
+    var selectedCustomer by remember { mutableStateOf<WholeSaleCustomer?>(null) }
     var confirmDeleteSheet by remember { mutableStateOf(false) }
     Scaffold(
         floatingActionButton = {
@@ -66,7 +66,10 @@ fun DisplayCustomersScreenContent(
                             onAction(DisplayWholeSalesCustomerUiAction.OnCustomerClicked(customer))
                         },
                         onEdit = {/*todo*/},
-                        onDelete = {/*todo*/}
+                        onDelete = {
+                            selectedCustomer = customer
+                            confirmDeleteSheet = true
+                        }
                     )
                 }
             }
@@ -76,10 +79,12 @@ fun DisplayCustomersScreenContent(
             visible = confirmDeleteSheet,
             label = selectedCustomer?.name ?: "",
             onDismiss = {
+                selectedCustomer = null
                 confirmDeleteSheet = false
             },
             onConfirm = {
                 onAction(DisplayWholeSalesCustomerUiAction.OnCustomerDeleted(selectedCustomer!!))
+                selectedCustomer = null
                 confirmDeleteSheet = false
             }
         )

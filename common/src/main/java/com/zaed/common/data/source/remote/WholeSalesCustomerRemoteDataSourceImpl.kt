@@ -80,6 +80,17 @@ class WholeSalesCustomerRemoteDataSourceImpl(
         }
     }
 
+    override suspend fun deleteCustomer(customerId: String): Result<Unit> {
+        try {
+            customersCollection.document(customerId).delete().await()
+            return Result.success(Unit)
+        }catch (e:Exception){
+            crashlytics.recordException(e)
+            e.printStackTrace()
+            return Result.failure(e)
+        }
+    }
+
     override suspend fun deletePayment(request: DeletePaymentRequest): Result<Unit> {
         try {
             customersCollection.document(request.customerId).update(

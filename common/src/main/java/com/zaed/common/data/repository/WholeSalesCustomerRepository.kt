@@ -16,4 +16,5 @@ interface WholeSalesCustomerRepository {
     suspend fun deletePayment(request: DeletePaymentRequest): Result<Unit>
     suspend fun addNewPayment(request: AddNewPaymentRequest): Result<Unit>
     suspend fun fetchWholesaleCustomersByName(request: FetchWholesaleCustomersByNameRequest): Result<List<WholeSaleCustomer>>
+    suspend fun deleteCustomer(customerId: String): Result<Unit>
 }
