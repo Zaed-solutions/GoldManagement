@@ -7,6 +7,7 @@ import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.DeletePaymentRequest
+import com.zaed.common.data.model.payment.request.EditPaymentRequest
 import com.zaed.common.data.model.payment.request.FetchCustomerPaymentsRequest
 import com.zaed.common.domain.customer.FetchWholesaleCustomerSalesUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.math.absoluteValue
 
 class CustomerDetailsViewModel(
     private val fetchCustomerPaymentsUseCase: FetchCustomerPaymentsUseCase,
@@ -91,9 +93,12 @@ class CustomerDetailsViewModel(
                 it.copy(loading = true)
             }
             editPaymentUseCase(
-                request = com.zaed.common.data.model.payment.request.EditPaymentRequest(
+                request = EditPaymentRequest(
                     customerId = uiState.value.customer.id,
-                    payment = uiState.value.currentPayment
+                    newPayment = uiState.value.currentPayment.copy(
+                        amount = if (uiState.value.paymentDirection) uiState.value.currentPayment.amount else uiState.value.currentPayment.amount.unaryMinus()
+                    ),
+                    oldAmount = uiState.value.tempPayment.amount
                 )
             ).onSuccess {
                 _uiState.update {
@@ -115,7 +120,9 @@ class CustomerDetailsViewModel(
     private fun updateCurrentPayment(payment: Payment) {
         _uiState.update {
             it.copy(
-                currentPayment = payment
+                tempPayment = payment,
+                currentPayment = payment.copy(amount = payment.amount.absoluteValue),
+                paymentDirection = payment.amount > 0
             )
         }
     }
@@ -159,7 +166,9 @@ class CustomerDetailsViewModel(
             addPaymentUseCase(
                 request = AddNewPaymentRequest(
                     customerId = uiState.value.customer.id,
-                    payment = uiState.value.currentPayment
+                    payment = uiState.value.currentPayment.copy(
+                        amount = if (uiState.value.paymentDirection) uiState.value.currentPayment.amount else uiState.value.currentPayment.amount.unaryMinus()
+                    )
                 )
             ).onSuccess {
                 _uiState.update {
@@ -192,12 +201,11 @@ class CustomerDetailsViewModel(
         }
     }
 
-    private fun updateAmountDirection(given: Boolean) {
+    private fun updateAmountDirection(value: Boolean) {
+        Log.d("TAG", "updateAmountDirection: $value")
         _uiState.update {
             it.copy(
-                currentPayment = it.currentPayment.copy(
-                    amount = it.currentPayment.amount * -1
-                )
+                paymentDirection = value,
             )
         }
     }
