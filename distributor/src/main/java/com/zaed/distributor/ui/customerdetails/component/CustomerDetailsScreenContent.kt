@@ -77,7 +77,9 @@ fun CustomerDetailsScreenContent(
                 },
                 actions = {
                     IconButton(
-                        onClick = {}
+                        onClick = {
+                            onAction(CustomerDetailsUiAction.OnEditCustomer)
+                        }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Person,
@@ -169,9 +171,33 @@ fun CustomerDetailsScreenContent(
                             listState = listState,
                             isLoading = uiState.loading,
                             sales = uiState.sales,
-                            onSaleClicked = { id, isProduct -> },
-                            onDeleteSale = { id, isProduct -> },
-                            onEditSale = { id, isProduct -> }
+                            onDeleteSale = { saleId, isProduct ->
+                                onAction(
+                                    if(isProduct){
+                                        CustomerDetailsUiAction.OnDeleteProductSale(saleId)
+                                    } else {
+                                        CustomerDetailsUiAction.OnDeleteGoldSale(saleId)
+                                    }
+                                )
+                            },
+                            onEditSale = { saleId, isProduct ->
+                                onAction(
+                                    if(isProduct){
+                                        CustomerDetailsUiAction.OnEditProductSale(saleId)
+                                    } else {
+                                        CustomerDetailsUiAction.OnEditGoldSale(saleId)
+                                    }
+                                )
+                            },
+                            onSaleClicked = { saleId, isProduct ->
+                                onAction(
+                                    if(isProduct){
+                                        CustomerDetailsUiAction.OnProductSaleClicked(saleId)
+                                    } else {
+                                        CustomerDetailsUiAction.OnGoldSaleClicked(saleId)
+                                    }
+                                )
+                            }
                         )
                     }
                 }

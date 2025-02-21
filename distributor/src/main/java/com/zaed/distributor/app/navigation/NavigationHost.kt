@@ -97,7 +97,8 @@ fun NavigationHost(
                     navController.navigate(Route.CustomerDetails(customerId))
                 },
                 navigateToEditCustomer = { customerId ->
-                    navController.navigate(Route.AddCustomers(
+                    navController.navigate(
+                        Route.AddCustomers(
                         customerId = customerId
                     ))
                 }
@@ -105,7 +106,21 @@ fun NavigationHost(
         }
         composable<Route.CustomerDetails> {
             val customerId = it.toRoute<Route.CustomerDetails>().customerId
-            CustomerDetailsScreen(customerId = customerId)
+            CustomerDetailsScreen(
+                customerId = customerId,
+                onNavigateToProductSaleDetails = {
+                    navController.navigate(Route.ProductSaleDetailsRoute(it))
+                },
+                onNavigateToGoldSaleDetails = {
+                    navController.navigate(Route.GoldSaleDetailsRoute(it))
+                },
+                onBack = {
+                    navController.popBackStack()
+                },
+                navigateToEditCustomer = {id->
+                    navController.navigate(Route.AddCustomers(id))
+                }
+            )
         }
         composable<Route.AddCustomers> {
             val customerId = it.toRoute<Route.AddCustomers>().customerId

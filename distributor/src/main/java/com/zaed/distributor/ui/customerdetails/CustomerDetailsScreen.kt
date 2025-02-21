@@ -10,7 +10,11 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun CustomerDetailsScreen(
     viewModel: CustomerDetailsViewModel = koinViewModel(),
-    customerId: String
+    customerId: String,
+    navigateToEditCustomer: (String) -> Unit,
+    onNavigateToProductSaleDetails: (String) -> Unit,
+    onNavigateToGoldSaleDetails: (String) -> Unit,
+    onBack: () -> Unit
 ) {
     LaunchedEffect(Unit) {
         viewModel.init(customerId)
@@ -20,7 +24,12 @@ fun CustomerDetailsScreen(
         uiState = uiState,
         onAction = { action ->
             when (action) {
-                CustomerDetailsUiAction.OnBackClicked -> {}
+                CustomerDetailsUiAction.OnEditCustomer -> navigateToEditCustomer(uiState.customer.id)
+                is CustomerDetailsUiAction.OnEditProductSale -> onNavigateToProductSaleDetails(action.saleId)
+                is CustomerDetailsUiAction.OnEditGoldSale -> onNavigateToGoldSaleDetails(action.saleId)
+                is CustomerDetailsUiAction.OnProductSaleClicked -> onNavigateToProductSaleDetails(action.saleId)
+                is CustomerDetailsUiAction.OnGoldSaleClicked -> onNavigateToGoldSaleDetails(action.saleId)
+                CustomerDetailsUiAction.OnBackClicked -> onBack()
                 else -> {
                     viewModel.handleUiAction(action)
                 }
