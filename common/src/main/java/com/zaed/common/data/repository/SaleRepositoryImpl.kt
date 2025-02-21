@@ -1,5 +1,6 @@
 package com.zaed.common.data.repository
 
+import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
 import com.zaed.common.data.model.sale.StoreSale
 import com.zaed.common.data.model.sale.WholesaleGoldSale
 import com.zaed.common.data.model.sale.WholesaleProductSale
@@ -54,5 +55,9 @@ class SaleRepositoryImpl(
 
     override suspend fun fetchWholesaleGoldSale(request: FetchWholesaleGoldSaleRequest): Result<WholesaleGoldSale> {
         return saleRemoteSource.fetchWholesaleGoldSale(request)
+    }
+
+    override fun fetchWholesaleCustomerSales(request: FetchWholesaleCustomerSalesRequest): Flow<Result<List<WholesaleSale>>> {
+        return saleRemoteSource.fetchWholesaleCustomerSales(request)
     }
 }

@@ -46,6 +46,7 @@ import com.zaed.common.domain.authentication.SignUpUserUseCase
 import com.zaed.common.domain.authentication.UpdateUserUseCase
 import com.zaed.common.domain.category.FetchAllCategoriesUseCase
 import com.zaed.common.domain.customer.AddWholeSaleCustomerUseCase
+import com.zaed.common.domain.customer.FetchWholesaleCustomerSalesUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomersUseCase
 import com.zaed.common.domain.loss.CreateNewLossUseCase
@@ -111,6 +112,7 @@ val useCaseModule = module {
     singleOf(::GetWholeSalesCustomerUseCase)
     singleOf(::DeletePaymentUseCase)
     singleOf(::EditPaymentUseCase)
+    singleOf(::FetchWholesaleCustomerSalesUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }

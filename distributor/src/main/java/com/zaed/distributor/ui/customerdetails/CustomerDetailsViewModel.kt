@@ -8,6 +8,7 @@ import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.DeletePaymentRequest
 import com.zaed.common.data.model.payment.request.FetchCustomerPaymentsRequest
+import com.zaed.common.domain.customer.FetchWholesaleCustomerSalesUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
 import com.zaed.common.domain.payment.AddNewPaymentUseCase
 import com.zaed.common.domain.payment.DeletePaymentUseCase
@@ -23,6 +24,7 @@ import kotlinx.coroutines.launch
 
 class CustomerDetailsViewModel(
     private val fetchCustomerPaymentsUseCase: FetchCustomerPaymentsUseCase,
+    private val fetchWholeSalesCustomerSalesUseCase: FetchWholesaleCustomerSalesUseCase,
     private val addPaymentUseCase: AddNewPaymentUseCase,
     private val getWholeSalesCustomerUseCase: GetWholeSalesCustomerUseCase,
     private val deletePaymentUseCase: DeletePaymentUseCase,
@@ -36,7 +38,39 @@ class CustomerDetailsViewModel(
         _uiState.update {
             it.copy(customer = it.customer.copy(id = customerId))
         }
+        getCustomerPayments(customerId)
+        getCustomerTransactions(customerId)
     }
+
+    private fun getCustomerTransactions(customerId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update {
+                it.copy(loading = true)
+            }
+            fetchWholeSalesCustomerSalesUseCase(
+                request = com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest(
+                    customerId = customerId
+                )
+            ).collect{result->
+                result.onSuccess { data ->
+                    _uiState.update {
+                        it.copy(
+                            loading = false,
+                            sales = data
+                        )
+                    }
+                }.onFailure {
+                    _uiState.update {
+                        it.copy(
+                            loading = false
+                        )
+                    }
+                }
+            }
+
+        }
+    }
+
     fun handleUiAction(action: CustomerDetailsUiAction) {
         when (action) {
             is CustomerDetailsUiAction.OnAmountChanged -> updateAmount(action.amount)
@@ -178,14 +212,13 @@ class CustomerDetailsViewModel(
         }
     }
 
-    private fun getCustomerTransactions() {
+    private fun getCustomerPayments(customerId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update {
                 it.copy(loading = true)
             }
             fetchCustomerPaymentsUseCase(
-                /*todo*/
-                request = FetchCustomerPaymentsRequest(uiState.value.customer.id)
+                request = FetchCustomerPaymentsRequest(customerId)
             ).collect { result ->
                 result.onSuccess { data ->
                     _uiState.update {
@@ -220,7 +253,6 @@ class CustomerDetailsViewModel(
                         customer = data
                     )
                 }
-                getCustomerTransactions()
             }.onFailure {
                 _uiState.update {
                     it.copy(
