@@ -364,6 +364,7 @@ class SaleRemoteSourceImpl(
                 Query.Direction.DESCENDING
             ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")?.toLongOrNull() ?: 0
             batch.set(docRef, request.sale.copy(id = docRef.id, paymentsIds = paymentsIds, receiptNumber = (receiptNumber + 1).toString()))
+            batch.commit().await()
             Result.success(docRef.id)
         } catch (e: Exception) {
             crashlytics.recordException(e)

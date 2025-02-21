@@ -34,7 +34,7 @@ fun NavigationHost(
     NavHost(
         modifier = Modifier.systemBarsPadding(),
         navController = navController,
-        startDestination = startDestination,
+        startDestination = Route.WholeSaleCustomers,
     ) {
         composable<Route.SignUpRoute> {
             SignUpScreen(
@@ -115,7 +115,10 @@ fun NavigationHost(
                 onBackClicked = {
                     navController.popBackStack()
                 },
-                onNavigateToProductSaleDetails = {},
+                saleId = saleId,
+                onNavigateToProductSaleDetails = {
+                    navController.navigate(Route.ProductSaleDetailsRoute(it))
+                },
                 onNavigateToAddCustomer = {
                     navController.navigate(Route.AddCustomers)
                 }

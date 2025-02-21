@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -21,7 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.payment.Payment
-import com.zaed.distributor.ui.customerdetails.PaymentItem
+import com.zaed.distributor.ui.customerdetails.component.PaymentItem
 
 @Composable
 fun PaymentsList(
@@ -62,7 +61,6 @@ fun PaymentsList(
                 key = { it.id }
             ) { payment ->
                 PaymentItem(
-//                    modifier = Modifier.animateItem(),
                     payment = payment,
                     onEdit = {
                         onEditPayment(payment)

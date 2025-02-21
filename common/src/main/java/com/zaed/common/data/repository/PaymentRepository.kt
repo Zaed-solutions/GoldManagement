@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface PaymentRepository {
     fun fetchCustomerPayments(request: FetchCustomerPaymentsRequest): Flow<Result<List<Payment>>>
-    suspend fun addPayment(request: AddNewPaymentRequest): Result<Unit>
     suspend fun fetchPaymentsByIds(request: FetchPaymentsByIdsRequest): Result<List<Payment>>
     suspend fun addPayment(request: AddNewPaymentRequest): Result<String>
     suspend fun deletePayment(id: String): Result<Unit>

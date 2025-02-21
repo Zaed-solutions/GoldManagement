@@ -148,6 +148,7 @@ class AddProductSaleViewModel(
     }
 
     private fun onSubmit() {
+        Log.d(TAG, "onSubmit: ${uiState.value.sale}")
         if (uiState.value.sale.id.isNotBlank()) {
             updateSale()
         } else {
@@ -183,7 +184,7 @@ class AddProductSaleViewModel(
                     employeeName = uiState.value.currentUser.fullName,
                     employeeId = uiState.value.currentUser.id
                 )
-            ).onSuccess { id ->
+            ).onSuccess {
                 _uiState.update { oldState ->
                     oldState.copy(isFinished = true)
                 }
