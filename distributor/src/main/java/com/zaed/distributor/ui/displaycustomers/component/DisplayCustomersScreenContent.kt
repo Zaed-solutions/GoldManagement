@@ -9,9 +9,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.zaed.common.data.model.customer.WholeSaleCustomer
+import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
 import com.zaed.common.ui.components.SearchBar
 import com.zaed.distributor.ui.displaycustomers.DisplayCustomersState
 import com.zaed.distributor.ui.displaycustomers.DisplayWholeSalesCustomerUiAction
@@ -22,6 +28,8 @@ fun DisplayCustomersScreenContent(
     uiState: DisplayCustomersState = DisplayCustomersState(),
     onAction: (DisplayWholeSalesCustomerUiAction) -> Unit = {},
 ) {
+    val selectedCustomer by remember { mutableStateOf<WholeSaleCustomer?>(null) }
+    var confirmDeleteSheet by remember { mutableStateOf(false) }
     Scaffold(
         floatingActionButton = {
             AddCustomerFab(
@@ -63,6 +71,18 @@ fun DisplayCustomersScreenContent(
                 }
             }
         }
+
+        ConfirmDeleteBottomSheet(
+            visible = confirmDeleteSheet,
+            label = selectedCustomer?.name ?: "",
+            onDismiss = {
+                confirmDeleteSheet = false
+            },
+            onConfirm = {
+                onAction(DisplayWholeSalesCustomerUiAction.OnCustomerDeleted(selectedCustomer!!))
+                confirmDeleteSheet = false
+            }
+        )
 
     }
 }

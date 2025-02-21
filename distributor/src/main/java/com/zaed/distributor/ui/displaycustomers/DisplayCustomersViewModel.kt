@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 
 class DisplayCustomersViewModel(
     private val getWholeSalesCustomersUseCase: GetWholeSalesCustomersUseCase,
+    private val deleteWholeSaleCustomerUseCase: DeleteWholeSaleCustomerUseCase,
 ):ViewModel() {
     private val _state = MutableStateFlow(DisplayCustomersState())
     val state = _state.asStateFlow()
@@ -23,8 +24,13 @@ class DisplayCustomersViewModel(
     fun handleAction(action: DisplayWholeSalesCustomerUiAction) {
         when (action) {
             is DisplayWholeSalesCustomerUiAction.OnSearchQueryChanged -> updateSearchQuery(action.query)
+            is DisplayWholeSalesCustomerUiAction.OnCustomerDeleted -> deleteCustomer(action.customer)
             else -> {}
         }
+    }
+
+    private fun deleteCustomer(customer: WholeSaleCustomer) {
+
     }
 
     private fun updateSearchQuery(query: String) {
