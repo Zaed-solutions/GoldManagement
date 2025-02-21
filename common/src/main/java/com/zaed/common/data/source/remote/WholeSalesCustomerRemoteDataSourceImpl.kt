@@ -6,9 +6,8 @@ import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObjects
 import com.zaed.common.data.model.customer.AddWholeSaleCustomerRequest
-import com.zaed.common.data.model.customer.FetchWholesaleCustomersByNameRequest
-import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.customer.CustomerPayment
+import com.zaed.common.data.model.customer.FetchWholesaleCustomersByNameRequest
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.DeletePaymentRequest
@@ -58,16 +57,6 @@ class WholeSalesCustomerRemoteDataSourceImpl(
             }
             customersCollection.document(updateCustomerDebtRequest.customerId).update(
                 "paymentArray", newPaymentArray
-            val result =
-                customersCollection.document(updateCustomerDebtRequest.customerId).get().await()
-            val customer = result.toObject(WholeSaleCustomer::class.java) ?: return Result.failure(
-                Exception("Customer not found")
-            )
-            val newDebtAmount = customer.debtAmount - updateCustomerDebtRequest.amount
-            val inDebt = newDebtAmount > 0
-            customersCollection.document(updateCustomerDebtRequest.customerId).update(
-                "debtAmount", FieldValue.increment(updateCustomerDebtRequest.amount * -1),
-                "inDebt", inDebt
             ).await()
             return Result.success(Unit)
         } catch (e: Exception) {
@@ -80,7 +69,8 @@ class WholeSalesCustomerRemoteDataSourceImpl(
     override suspend fun addNewPayment(request: AddNewPaymentRequest): Result<Unit> {
         try {
             customersCollection.document(request.customerId).update(
-                "paymentArray", FieldValue.arrayUnion(CustomerPayment(request.payment.id, request.payment.amount)),
+                "paymentArray",
+                FieldValue.arrayUnion(CustomerPayment(request.payment.id, request.payment.amount)),
             ).await()
             return Result.success(Unit)
         } catch (e: Exception) {
@@ -93,7 +83,8 @@ class WholeSalesCustomerRemoteDataSourceImpl(
     override suspend fun deletePayment(request: DeletePaymentRequest): Result<Unit> {
         try {
             customersCollection.document(request.customerId).update(
-                "paymentArray", FieldValue.arrayRemove(CustomerPayment(request.paymentId, request.amount)),
+                "paymentArray",
+                FieldValue.arrayRemove(CustomerPayment(request.paymentId, request.amount)),
             ).await()
             return Result.success(Unit)
         } catch (e: Exception) {
