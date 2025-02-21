@@ -4,7 +4,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -21,7 +24,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.ui.components.DetailRow
+import com.zaed.common.ui.components.NumberInputTextField
+import com.zaed.common.ui.components.TitledDropDownTextField
 import com.zaed.common.ui.util.formatMoney
 import java.util.UUID
 
@@ -32,15 +38,17 @@ fun SelectPaymentsContent(
     totalAmount: Double,
     totalPaid: Double,
     payments: List<Payment>,
-    onAddPayment: (Payment) -> Unit ={},
-    onRemovePayment: (Payment) -> Unit={},
-    onEditPayment: (Payment) -> Unit={},
+    onAddPayment: (Payment) -> Unit = {},
+    onRemovePayment: (Payment) -> Unit = {},
+    onEditPayment: (Payment) -> Unit = {},
 ) {
     var isBottomSheetVisible by remember { mutableStateOf(false) }
     var selectedPayment by remember { mutableStateOf(Payment()) }
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     Column(
-        modifier = modifier.fillMaxSize().padding(horizontal = 16.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.Start
     ) {
