@@ -23,10 +23,7 @@ data class WholeSaleCustomer(
     val inDebt: Boolean
         get() = debtAmount > 0
 }
-data class CustomerPayment(
-    val paymentId: String = "",
-    val amount: Double = 0.0,
-)
+
 
 
 

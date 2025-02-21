@@ -3,6 +3,7 @@ package com.zaed.distributor.ui.customerdetails
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
@@ -50,7 +51,7 @@ class CustomerDetailsViewModel(
                 it.copy(loading = true)
             }
             fetchWholeSalesCustomerSalesUseCase(
-                request = com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest(
+                request = FetchWholesaleCustomerSalesRequest(
                     customerId = customerId
                 )
             ).collect{result->

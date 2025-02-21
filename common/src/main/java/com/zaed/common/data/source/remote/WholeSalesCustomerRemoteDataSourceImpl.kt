@@ -154,6 +154,7 @@ class WholeSalesCustomerRemoteDataSourceImpl(
             val document = customersCollection.document()
             document.set(
                 WholeSaleCustomer(
+                    distributorId = request.distributorId,
                     id = document.id,
                     name = request.name,
                     phone = request.phone,
