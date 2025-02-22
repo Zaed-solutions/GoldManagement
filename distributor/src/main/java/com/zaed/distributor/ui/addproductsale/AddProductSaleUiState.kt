@@ -8,6 +8,7 @@ import com.zaed.common.data.model.sale.WholesaleProductSale
 
 data class AddProductSaleUiState(
     val isFinished: Boolean = false,
+    val isLoading: Boolean = false,
     val initialSale: WholesaleProductSale = WholesaleProductSale(),
     val sale: WholesaleProductSale = WholesaleProductSale(),
     val selectedCustomer: WholeSaleCustomer = WholeSaleCustomer(),

@@ -35,20 +35,6 @@ fun ProductSaleItem(
         onClick = { onSaleClicked() },
         tonalElevation = 2.dp
     ) {
-        val (label, borderColor, backgroundColor, textColor) = when {
-            sale.paid -> FourTuple(
-                stringResource(PaymentStatus.PAID.label),
-                MaterialTheme.colorScheme.primary,
-                MaterialTheme.colorScheme.primaryContainer,
-                MaterialTheme.colorScheme.primary
-            )
-            else -> FourTuple(
-                stringResource(PaymentStatus.UNPAID.label),
-                MaterialTheme.colorScheme.tertiary,
-                MaterialTheme.colorScheme.tertiaryContainer,
-                MaterialTheme.colorScheme.tertiary
-            )
-        }
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -64,23 +50,48 @@ fun ProductSaleItem(
                     style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
                 )
             }
-            AssistChip(
-                onClick = {},
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = borderColor,
-                ),
-                colors = AssistChipDefaults.assistChipColors(
-                    containerColor = backgroundColor,
-                    labelColor = textColor
-                ),
-                shape = MaterialTheme.shapes.small,
-                label = {
-                    Text(
-                        text = label
-                    )
-                },
+            PaidStatusChip(
+                paid = sale.paid
             )
         }
     }
+}
+
+@Composable
+fun PaidStatusChip(
+    modifier: Modifier = Modifier,
+    paid: Boolean
+) {
+    val (label, borderColor, backgroundColor, textColor) = when {
+        paid -> FourTuple(
+            stringResource(PaymentStatus.PAID.label),
+            MaterialTheme.colorScheme.primary,
+            MaterialTheme.colorScheme.primaryContainer,
+            MaterialTheme.colorScheme.primary
+        )
+        else -> FourTuple(
+            stringResource(PaymentStatus.UNPAID.label),
+            MaterialTheme.colorScheme.tertiary,
+            MaterialTheme.colorScheme.tertiaryContainer,
+            MaterialTheme.colorScheme.tertiary
+        )
+    }
+    AssistChip(
+        modifier = modifier,
+        onClick = {},
+        border = BorderStroke(
+            width = 1.dp,
+            color = borderColor,
+        ),
+        colors = AssistChipDefaults.assistChipColors(
+            containerColor = backgroundColor,
+            labelColor = textColor
+        ),
+        shape = MaterialTheme.shapes.small,
+        label = {
+            Text(
+                text = label
+            )
+        },
+    )
 }

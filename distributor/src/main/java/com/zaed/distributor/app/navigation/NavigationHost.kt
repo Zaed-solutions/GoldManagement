@@ -22,6 +22,7 @@ import com.zaed.distributor.ui.addcustomers.AddCustomersScreen
 import com.zaed.distributor.ui.addproductsale.AddProductSaleScreen
 import com.zaed.distributor.ui.customerdetails.CustomerDetailsScreen
 import com.zaed.distributor.ui.displaycustomers.DisplayCustomersScreen
+import com.zaed.distributor.ui.productsaledetails.ProductSaleDetailsScreen
 import com.zaed.distributor.ui.sales.SalesScreen
 import kotlinx.serialization.Serializable
 
@@ -126,27 +127,31 @@ fun NavigationHost(
         }
         composable<Route.ProductSaleDetailsRoute> { backstackEntry ->
             val saleId = backstackEntry.toRoute<Route.ProductSaleDetailsRoute>().saleId
-            Box (
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ){
-                Text("Product Sale Details $saleId")
-            }  }
+            ProductSaleDetailsScreen(
+                saleId = saleId,
+                onBackClicked = {
+                    navController.popBackStack()
+                },
+                onNavigateToEditSale = {
+                    navController.navigate(Route.AddProductSaleRoute(it))
+                }
+            )
+        }
         composable<Route.AddGoldSaleRoute> { backstackEntry ->
             val saleId = backstackEntry.toRoute<Route.AddGoldSaleRoute>().saleId
-            Box (
+            Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
-            ){
+            ) {
                 Text("Add Gold Sale $saleId")
             }
         }
         composable<Route.GoldSaleDetailsRoute> { backstackEntry ->
             val saleId = backstackEntry.toRoute<Route.GoldSaleDetailsRoute>().saleId
-            Box (
+            Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
-            ){
+            ) {
                 Text("Gold Sale Details $saleId")
             }
         }
@@ -167,7 +172,6 @@ fun HomeScreen() {
         )
     }
 }
-
 
 
 sealed interface Route {
