@@ -69,7 +69,7 @@ class PaymentRemoteDataSourceImpl(
 
     override suspend fun editPayment(request: EditPaymentRequest): Result<Unit> {
         try {
-            paymentsCollection.document(request.payment.id).set(request.payment).await()
+            paymentsCollection.document(request.newPayment.id).set(request.newPayment).await()
             return Result.success(Unit)
         }catch (e: Exception){
             crashlytics.recordException(e)

@@ -7,4 +7,6 @@ sealed interface DisplayWholeSalesCustomerUiAction {
     data object OnAddWholeSaleCustomerClicked : DisplayWholeSalesCustomerUiAction
     data class OnSearchQueryChanged(val query: String) : DisplayWholeSalesCustomerUiAction
     data class OnCustomerClicked (val customer: WholeSaleCustomer) : DisplayWholeSalesCustomerUiAction
+    data class OnCustomerDeleted( val customer: WholeSaleCustomer) : DisplayWholeSalesCustomerUiAction
+    data class OnEditCustomerClicked( val customer: WholeSaleCustomer) : DisplayWholeSalesCustomerUiAction
 }

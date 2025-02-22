@@ -14,22 +14,16 @@ data class WholeSaleCustomer(
     val city: String = "",
     val zone: Zone = Zone.NOT_DEFINED,
     val createdAt: Date = Date(),
-    val paymentArray : List<CustomerPayment> = emptyList(),
+    val debtAmount: Double = 0.0,
     val deleted: Boolean = false,
     val logs: List<ChangeLog> = emptyList()
 ) {
-    @Transient
-    val debtAmount : Double
-        get() = paymentArray.sumOf { it.amount }
 
     @Transient
     val inDebt: Boolean
         get() = debtAmount > 0
 }
-data class CustomerPayment(
-    val paymentId: String = "",
-    val amount: Double = 0.0,
-)
+
 
 
 

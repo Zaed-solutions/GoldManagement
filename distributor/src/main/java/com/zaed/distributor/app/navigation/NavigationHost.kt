@@ -35,7 +35,7 @@ fun NavigationHost(
     NavHost(
         modifier = Modifier.systemBarsPadding(),
         navController = navController,
-        startDestination = startDestination,
+        startDestination = Route.WholeSaleCustomers,
     ) {
         composable<Route.SignUpRoute> {
             SignUpScreen(
@@ -92,19 +92,47 @@ fun NavigationHost(
         composable<Route.WholeSaleCustomers> {
             DisplayCustomersScreen(
                 navigateToAddCustomer = {
-                    navController.navigate(Route.AddCustomers)
+                    navController.navigate(Route.AddCustomers())
                 },
                 navigateToCustomerDetails = { customerId ->
                     navController.navigate(Route.CustomerDetails(customerId))
+                },
+                navigateToEditCustomer = { customerId ->
+                    navController.navigate(
+                        Route.AddCustomers(
+                        customerId = customerId
+                    ))
                 }
             )
         }
         composable<Route.CustomerDetails> {
             val customerId = it.toRoute<Route.CustomerDetails>().customerId
-            CustomerDetailsScreen(customerId = customerId)
+            CustomerDetailsScreen(
+                customerId = customerId,
+                onNavigateToProductSaleDetails = {
+                    navController.navigate(Route.ProductSaleDetailsRoute(it))
+                },
+                onNavigateToGoldSaleDetails = {
+                    navController.navigate(Route.GoldSaleDetailsRoute(it))
+                },
+                onBack = {
+                    navController.popBackStack()
+                },
+                navigateToEditCustomer = {id->
+                    navController.navigate(Route.AddCustomers(id))
+                },
+                onNavigateToAddGoldSale = {
+                    navController.navigate(Route.AddGoldSaleRoute(it))
+                },
+                onNavigateToAddProductSale = {
+                    navController.navigate(Route.AddProductSaleRoute(it))
+                },
+            )
         }
         composable<Route.AddCustomers> {
+            val customerId = it.toRoute<Route.AddCustomers>().customerId
             AddCustomersScreen(
+                customerId = customerId,
                 onBack = {
                     navController.popBackStack()
                 }
@@ -121,7 +149,7 @@ fun NavigationHost(
                     navController.navigate(Route.ProductSaleDetailsRoute(it))
                 },
                 onNavigateToAddCustomer = {
-                    navController.navigate(Route.AddCustomers)
+                    navController.navigate(Route.AddCustomers())
                 }
             )
         }
@@ -197,7 +225,7 @@ sealed interface Route {
     data object WholeSaleCustomers : Route
 
     @Serializable
-    data object AddCustomers : Route
+    data class AddCustomers(val customerId: String = "") : Route
 
     @Serializable
     data class CustomerDetails(val customerId: String) : Route
