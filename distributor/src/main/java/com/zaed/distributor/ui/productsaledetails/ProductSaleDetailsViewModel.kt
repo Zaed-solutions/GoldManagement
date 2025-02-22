@@ -3,15 +3,19 @@ package com.zaed.distributor.ui.productsaledetails
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
+import com.zaed.common.data.model.sale.ReceiptStatus
 import com.zaed.common.data.model.sale.request.DeleteWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleProductSaleRequest
+import com.zaed.common.data.model.sale.request.UpdateWholesaleProductSaleRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.customer.FetchWholesaleCustomerSalesUseCase
 import com.zaed.common.domain.payment.FetchPaymentsByIdsUseCase
 import com.zaed.common.domain.sale.DeleteWholesaleProductSaleUseCase
 import com.zaed.common.domain.sale.FetchWholesaleProductSaleUseCase
+import com.zaed.common.domain.sale.UpdateWholesaleProductSaleUseCase
 import com.zaed.distributor.ui.saledetails.SaleDetailsUiAction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +27,8 @@ class ProductSaleDetailsViewModel(
     private val fetchSaleUseCase: FetchWholesaleProductSaleUseCase,
     private val fetchSalePaymentsUseCase: FetchPaymentsByIdsUseCase,
     private val getCurrentUseUseCase: GetCurrentUserLoggedInUseCase,
-    private val deleteWholesaleProductSaleUseCase: DeleteWholesaleProductSaleUseCase
+    private val deleteWholesaleProductSaleUseCase: DeleteWholesaleProductSaleUseCase,
+    private val updateWholesaleProductSaleUseCase: UpdateWholesaleProductSaleUseCase
 ): ViewModel() {
     private val TAG = "ProductSaleDetailsViewModel"
     private val _uiState = MutableStateFlow(ProductSaleDetailsUiState())
@@ -82,7 +87,37 @@ class ProductSaleDetailsViewModel(
     fun handleAction(action: ProductSaleDetailsUiAction){
         when(action){
             is ProductSaleDetailsUiAction.OnDeleteSale -> deleteSale()
+            ProductSaleDetailsUiAction.OnRequestReceipt -> requestReceipt()
             else -> Unit
+        }
+    }
+
+    private fun requestReceipt() {
+        viewModelScope.launch (Dispatchers.IO){
+            val sale = uiState.value.sale.copy(receiptStatus = ReceiptStatus.PENDING)
+            val logs = sale.logs.toMutableList().apply {
+                add(
+                    ChangeLog(
+                        employeeName = uiState.value.currentUser.fullName,
+                        employeeId = uiState.value.currentUser.id,
+                        action = "Requested receipt",
+                    )
+                )
+            }
+            updateWholesaleProductSaleUseCase(
+                UpdateWholesaleProductSaleRequest(
+                    sale = sale.copy(logs = logs),
+                    payments = uiState.value.payments,
+                    employeeName = uiState.value.currentUser.fullName,
+                    employeeId = uiState.value.currentUser.id
+                )
+            ).onSuccess {
+                _uiState.update {
+                    it.copy(sale = sale)
+                }
+            }.onFailure {
+                Log.e(TAG, "requestReceipt: ${it.message}", it)
+            }
         }
     }
 

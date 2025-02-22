@@ -7,4 +7,5 @@ sealed interface ProductSaleDetailsUiAction {
     data object OnPrintReceipt: ProductSaleDetailsUiAction
     data object OnShareReceiptViaWhatsapp: ProductSaleDetailsUiAction
     data object OnShareReceiptViaEmail: ProductSaleDetailsUiAction
+    data object OnRequestReceipt: ProductSaleDetailsUiAction
 }

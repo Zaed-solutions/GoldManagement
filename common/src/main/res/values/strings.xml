@@ -3,7 +3,6 @@
     <string name="sign_up_failed">Sign Up Failed</string>
     <string name="login_failed">Login Failed</string>
     <string name="user_not_found">User Not Found</string>
-
     <string name="don_t_have_an_account">Don\'t have an account</string>
     <string name="your_account_is_rejected_by_the_manager">your account is rejected by the manager</string>
     <string name="your_account_is_pending_for_approval">your account is pending for approval</string>
@@ -158,4 +157,10 @@
     <string name="receipt_number">Receipt Number</string>
     <string name="status">Status</string>
     <string name="sale_must_be_paid_to_print_or_share_receipt">Sale must be fully paid to print or share receipt</string>
+    <string name="pending">Pending</string>
+    <string name="not_received">Not Received</string>
+    <string name="payment_status">Payment Status</string>
+    <string name="receipt_status">Receipt Status</string>
+    <string name="request_receipt">Request Receipt</string>
+    <string name="not_requested">Not Requested</string>
 </resources>
