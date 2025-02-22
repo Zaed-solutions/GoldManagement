@@ -1,6 +1,5 @@
 package com.zaed.distributor.ui.addproductsale.components
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -22,15 +21,14 @@ import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.ui.components.NumberInputTextField
 import com.zaed.common.ui.components.TitledDropDownTextField
-import com.zaed.common.ui.components.TitledDropDownTextField2
 
 @Composable
 fun SavePaymentBottomSheetContent(
     modifier: Modifier = Modifier,
-    initialPayment: Payment,
-    onSave: (Payment) -> Unit
+//    initialPayment: Payment,
+//    onSave: (Payment) -> Unit={}
 ) {
-    var payment by remember { mutableStateOf(initialPayment) }
+    var payment by remember { mutableStateOf(Payment()) }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -61,7 +59,7 @@ fun SavePaymentBottomSheetContent(
         Button(
             modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).padding(top = 24.dp),
             onClick = {
-                onSave(payment)
+//                onSave(payment)
             }
         ) {
             Text(

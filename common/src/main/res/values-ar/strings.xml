@@ -70,7 +70,7 @@
     <string name="discount_value">قيمة الخصم</string>
     <string name="products">المنتجات</string>
     <string name="minimum_price">أقل سعر</string>
-    <string name="grams_placeholder">الجرامات: %1$s</string>
+    <string name="grams_placeholder">%1$s جرام</string>
     <string name="minimum_price_placeholder">الحد الأدنى للسعر: %1$s</string>
     <string name="price">السعر</string>
     <string name="search">بحث</string>

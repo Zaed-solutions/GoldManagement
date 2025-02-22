@@ -1,5 +1,6 @@
 package com.zaed.distributor.ui.addproductsale
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +21,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,7 +36,6 @@ import com.zaed.distributor.ui.addproductsale.components.SaleSummaryContent
 import com.zaed.distributor.ui.addproductsale.components.SelectCustomerContent
 import com.zaed.distributor.ui.addproductsale.components.SelectPaymentsContent
 import com.zaed.distributor.ui.addproductsale.components.SelectProductsContent
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -72,14 +74,25 @@ private fun AddProductSaleScreenContent(
     modifier: Modifier = Modifier,
     state: AddProductSaleUiState,
     onAction: (AddProductSaleUiAction) -> Unit,
-    scope: CoroutineScope = rememberCoroutineScope()
 ) {
-    val pagerState = rememberPagerState { 4 }
-    val progress by animateFloatAsState(
-        targetValue = (pagerState.currentPage + 1).toFloat() /(pagerState.pageCount + 1),
-        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
-        label = "linear progress inicator"
+    val scope = rememberCoroutineScope()
+    Log.d(
+        "find the issue",
+        "fetchCurrentUser: screen"
     )
+    val pagerState = rememberPagerState { 4 }
+    val progress by remember {
+        derivedStateOf {
+            (pagerState.currentPage + 1).toFloat() / (pagerState.pageCount + 1)
+        }
+    }.let { progressState ->
+        animateFloatAsState(
+            targetValue = progressState.value,
+            animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+            label = "linear progress indicator"
+        )
+    }
+
     BackHandler { 
         if(pagerState.currentPage > 0){
             scope.launch {

@@ -113,6 +113,10 @@ class AddProductSaleViewModel(
                     Log.e(TAG, "fetchAllCategories: ${e.message}", e)
                     e.printStackTrace()
                 }
+                Log.d(
+                    "find the issue",
+                    "fetchAllCategories: $result"
+                )
             }
         }
     }
@@ -128,6 +132,10 @@ class AddProductSaleViewModel(
                     Log.e(TAG, "fetchCurrentUser: ${e.message}", e)
                     e.printStackTrace()
                 }
+                Log.d(
+                    "find the issue",
+                    "fetchCurrentUser: $result"
+                )
             }
         }
     }
