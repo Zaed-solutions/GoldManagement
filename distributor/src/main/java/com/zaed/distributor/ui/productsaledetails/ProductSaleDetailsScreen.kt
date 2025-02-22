@@ -106,7 +106,11 @@ private fun ProductSaleDetailsContent(
             SaleInfoSection(
                 receiptNumber = state.sale.receiptNumber,
                 createdAt = state.sale.createdAt,
-                paid = state.sale.paid
+                paid = state.sale.paid,
+                receiptStatus = state.sale.receiptStatus,
+                onRequestReceipt = {
+                    onAction(ProductSaleDetailsUiAction.OnPrintReceipt)
+                }
             )
             // customer info
             CustomerInfoSection(
@@ -129,16 +133,6 @@ private fun ProductSaleDetailsContent(
                     payments = state.payments
                 )
             }
-            //print/share
-            ProductSaleDetailsActionButtons(
-                onPrintClicked = {
-                    //TODO()
-                },
-                onShareClicked = {
-//                    TODO()
-                },
-                enabled = state.sale.paid
-            )
             ConfirmDeleteBottomSheet(
                 visible = isConfirmDeleteVisible,
                 onDismiss = {
