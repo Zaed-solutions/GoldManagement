@@ -33,7 +33,7 @@ fun DetailRow(
     textAlign: TextAlign = TextAlign.End,
     trailingContent: @Composable (() -> Unit)? = null
 ) {
-    AnimatedVisibility(value.isNotBlank()) {
+    AnimatedVisibility(value.isNotBlank() || trailingContent != null) {
         Column(
             modifier = modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(8.dp)

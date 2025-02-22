@@ -157,6 +157,9 @@ class AddProductSaleViewModel(
     }
 
     private fun updateSale() {
+        _uiState.update { oldState ->
+            oldState.copy(isLoading = true)
+        }
         viewModelScope.launch(Dispatchers.IO) {
             with(uiState.value) {
                 val customer = selectedCustomer
@@ -171,7 +174,7 @@ class AddProductSaleViewModel(
                             customerId = customer.id,
                             customerName = customer.name,
                             customerPhone = customer.phone,
-                            paid = (uiState.value.totalAmount - uiState.value.totalPaid) == 0.0,
+                            paid = (uiState.value.totalAmount - uiState.value.totalPaid).toInt() <= 0,
                             logs = oldState.sale.logs + updateLog
                         ),
                         payments = oldState.payments.map { it.copy(customerId = oldState.selectedCustomer.id) }
@@ -187,15 +190,21 @@ class AddProductSaleViewModel(
                 )
             ).onSuccess {
                 _uiState.update { oldState ->
-                    oldState.copy(isFinished = true)
+                    oldState.copy(isLoading = false, isFinished = true)
                 }
             }.onFailure {
                 Log.e(TAG, "updateSale: ${it.message}", it)
+                _uiState.update { oldState ->
+                    oldState.copy(isLoading = false)
+                }
             }
         }
     }
 
     private fun addSale() {
+        _uiState.update {
+            it.copy(isLoading = true)
+        }
         viewModelScope.launch(Dispatchers.IO) {
             val customer = uiState.value.selectedCustomer
             val distributor = uiState.value.currentUser
@@ -208,7 +217,7 @@ class AddProductSaleViewModel(
                         distributorId = distributor.id,
                         distributorName = distributor.fullName,
                         createdAt = Date(),
-                        paid = (oldState.totalAmount - oldState.totalPaid) <= 0.0
+                        paid = (oldState.totalAmount - oldState.totalPaid).toInt() <= 0
                     )
                 )
             }
@@ -239,10 +248,13 @@ class AddProductSaleViewModel(
                 )
             ).onSuccess { id ->
                 _uiState.update { oldState ->
-                    oldState.copy(sale = oldState.sale.copy(id = id), isFinished = true)
+                    oldState.copy(sale = oldState.sale.copy(id = id), isLoading = false, isFinished = true)
                 }
             }.onFailure {
                 Log.e(TAG, "addSale: ${it.message}", it)
+                _uiState.update { oldState ->
+                    oldState.copy(isLoading = false)
+                }
             }
         }
     }

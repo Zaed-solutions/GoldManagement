@@ -1,4 +1,4 @@
-package com.zaed.common.ui.components
+package com.zaed.distributor.ui.productsaledetails.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -21,15 +21,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.sale.Product
-import com.zaed.common.ui.util.formatMoney
 import com.zaed.common.R
+import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.ui.util.formatMoney
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ProductsTable(
+fun PaymentsTable(
     modifier: Modifier = Modifier,
-    products: List<Product>
+    payments: List<Payment> = emptyList()
 ) {
     Surface(
         border = BorderStroke(
@@ -43,7 +43,6 @@ fun ProductsTable(
             modifier = modifier
                 .fillMaxWidth()
                 .heightIn(max = 400.dp),
-//            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // Header
             stickyHeader {
@@ -56,33 +55,58 @@ fun ProductsTable(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = stringResource(R.string.product),
+                            text = stringResource(R.string.type),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.weight(0.5f)
+                            modifier = Modifier.weight(5f)
                         )
                         Text(
-                            text = stringResource(R.string.grams),
+                            text = stringResource(R.string.value),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.weight(0.2f),
-                            textAlign = TextAlign.Center
-                        )
-                        Text(
-                            text = stringResource(R.string.price),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.weight(0.3f),
+                            modifier = Modifier.weight(2f),
                             textAlign = TextAlign.Center
                         )
                     }
                     HorizontalDivider()
                 }
             }
-            items(products) {
-                ProductItem(product = it)
+            items(payments) { payment ->
+                PaymentTableItem(
+                    payment = payment
+                )
             }
         }
     }
 }
 
+@Composable
+fun PaymentTableItem(
+    modifier: Modifier = Modifier,
+    payment: Payment
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        tonalElevation = 2.dp
+    ) {
+        Row (
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Text(
+                text = payment.type.name,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.weight(5f)
+            )
+            Text(
+                text = payment.amount.formatMoney(),
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                modifier = Modifier.weight(2f)
+            )
+        }
+    }
+
+}
