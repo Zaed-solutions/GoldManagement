@@ -25,10 +25,10 @@ import com.zaed.common.ui.components.TitledDropDownTextField
 @Composable
 fun SavePaymentBottomSheetContent(
     modifier: Modifier = Modifier,
-//    initialPayment: Payment,
-//    onSave: (Payment) -> Unit={}
+    initialPayment: Payment,
+    onSave: (Payment) -> Unit={}
 ) {
-    var payment by remember { mutableStateOf(Payment()) }
+    var payment by remember { mutableStateOf(initialPayment) }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -49,7 +49,7 @@ fun SavePaymentBottomSheetContent(
             },
         )
         NumberInputTextField(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
             label = stringResource(R.string.amount),
             value = payment.amount,
             onValueChange = {
@@ -59,7 +59,7 @@ fun SavePaymentBottomSheetContent(
         Button(
             modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).padding(top = 24.dp),
             onClick = {
-//                onSave(payment)
+                onSave(payment)
             }
         ) {
             Text(

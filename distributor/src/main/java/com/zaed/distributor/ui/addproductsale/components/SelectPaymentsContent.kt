@@ -1,6 +1,5 @@
 package com.zaed.distributor.ui.addproductsale.components
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,6 +23,7 @@ import com.zaed.common.R
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.util.formatMoney
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,15 +85,15 @@ fun SelectPaymentsContent(
             ) {
 
                 SavePaymentBottomSheetContent(
-//                    initialPayment = selectedPayment,
-//                    onSave = {
-//                        if(selectedPayment.id.isBlank()){
-//                            onAddPayment(it.copy(id = "distributor-"+ UUID.randomUUID().toString()))
-//                        } else {
-//                            onEditPayment(it)
-//                        }
-//                        isBottomSheetVisible = false
-//                    }
+                    initialPayment = selectedPayment,
+                    onSave = {
+                        if(selectedPayment.id.isBlank()){
+                            onAddPayment(it.copy(id = "distributor-"+ UUID.randomUUID().toString()))
+                        } else {
+                            onEditPayment(it)
+                        }
+                        isBottomSheetVisible = false
+                    }
                 )
             }
         }
