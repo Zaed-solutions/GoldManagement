@@ -52,7 +52,7 @@ import com.zaed.cashier.ui.loss.LossFieldsError
 import com.zaed.cashier.ui.loss.LossUiAction
 import com.zaed.cashier.ui.loss.LossUiState
 import com.zaed.cashier.ui.theme.CashierAppTheme
-import com.zaed.common.data.model.loss.Loss
+import com.zaed.common.data.model.loss.StoreLoss
 import com.zaed.common.ui.components.AnimatedLoading
 import com.zaed.common.ui.components.ConfirmDeleteDialog
 import com.zaed.common.ui.components.CustomSnackbar
@@ -73,7 +73,7 @@ fun LossScreenContent(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-    var selectedLoss by remember { mutableStateOf<Loss>(Loss()) }
+    var selectedLoss by remember { mutableStateOf<StoreLoss>(StoreLoss()) }
     var isSaveLossSheetOpen by remember { mutableStateOf(false) }
     var isDeleteLossSheetOpen by remember { mutableStateOf(false) }
     LaunchedEffect(uiState.errorMessage, uiState.successMessage) {
@@ -85,7 +85,7 @@ fun LossScreenContent(
             onAction(LossUiAction.ResetError)
         }
         if (uiState.successMessage != null) {
-            selectedLoss = Loss()
+            selectedLoss = StoreLoss()
             isSaveLossSheetOpen = false
             snackbarHostState.showSnackbar(
                 message = uiState.successMessage,
@@ -123,7 +123,7 @@ fun LossScreenContent(
                     .rotate(45f),
                 shape = RoundedCornerShape(16.dp),
                 onClick = {
-                    selectedLoss = Loss()
+                    selectedLoss = StoreLoss()
                     isSaveLossSheetOpen = true
                 }
             ) {
@@ -202,7 +202,7 @@ fun LossScreenContent(
             sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
             scope,
             onDismiss = {
-                selectedLoss = Loss()
+                selectedLoss = StoreLoss()
                 isSaveLossSheetOpen = false
             }
         ) {
@@ -220,7 +220,7 @@ fun LossScreenContent(
                     )
                 },
                 onDismiss = {
-                    selectedLoss = Loss()
+                    selectedLoss = StoreLoss()
                     isSaveLossSheetOpen = false
                 }
             )
@@ -228,20 +228,20 @@ fun LossScreenContent(
         AnimatedVisibility(isDeleteLossSheetOpen) {
             ModalBottomSheet(
                 onDismissRequest = {
-                    selectedLoss = Loss()
+                    selectedLoss = StoreLoss()
                     isDeleteLossSheetOpen = false
                 },
             ) {
                 ConfirmDeleteDialog(
                     onDismiss = {
-                        selectedLoss = Loss()
+                        selectedLoss = StoreLoss()
                         isDeleteLossSheetOpen = false
                     },
                     label = stringResource(R.string.loss),
                     onConfirm = {
                         onAction(LossUiAction.OnDeleteLoss(selectedLoss.id))
                         isDeleteLossSheetOpen = false
-                        selectedLoss = Loss()
+                        selectedLoss = StoreLoss()
                     }
                 )
             }
@@ -254,8 +254,8 @@ private fun AddLossBottomSheetContent(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
     fieldError: LossFieldsError,
-    initialLoss: Loss,
-    onSaveLoss: (Loss) -> Unit,
+    initialLoss: StoreLoss,
+    onSaveLoss: (StoreLoss) -> Unit,
     onDismiss: () -> Unit
 ) {
     var loss by remember { mutableStateOf(initialLoss) }

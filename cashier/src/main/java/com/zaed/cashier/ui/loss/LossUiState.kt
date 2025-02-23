@@ -2,12 +2,12 @@ package com.zaed.cashier.ui.loss
 
 import androidx.annotation.StringRes
 import com.zaed.common.R
-import com.zaed.common.data.model.loss.Loss
+import com.zaed.common.data.model.loss.StoreLoss
 import com.zaed.common.data.model.authentication.User
 
 data class LossUiState(
     val isSignedOut: Boolean = false,
-    val losses: Map<String, List<Loss>> = emptyMap(),
+    val losses: Map<String, List<StoreLoss>> = emptyMap(),
     val currentUser: User = User(),
     val isLoading: Boolean = false,
     @StringRes val errorMessage: Int? = null,

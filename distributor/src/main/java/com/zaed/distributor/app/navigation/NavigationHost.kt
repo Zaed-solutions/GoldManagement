@@ -22,6 +22,7 @@ import com.zaed.distributor.ui.addcustomers.AddCustomersScreen
 import com.zaed.distributor.ui.addproductsale.AddProductSaleScreen
 import com.zaed.distributor.ui.customerdetails.CustomerDetailsScreen
 import com.zaed.distributor.ui.displaycustomers.DisplayCustomersScreen
+import com.zaed.distributor.ui.losses.LossesScreen
 import com.zaed.distributor.ui.productsaledetails.ProductSaleDetailsScreen
 import com.zaed.distributor.ui.sales.SalesScreen
 import kotlinx.serialization.Serializable
@@ -35,7 +36,7 @@ fun NavigationHost(
     NavHost(
         modifier = Modifier.systemBarsPadding(),
         navController = navController,
-        startDestination = startDestination,
+        startDestination = Route.LossesRoute,
     ) {
         composable<Route.SignUpRoute> {
             SignUpScreen(
@@ -183,7 +184,9 @@ fun NavigationHost(
                 Text("Gold Sale Details $saleId")
             }
         }
-
+        composable<Route.LossesRoute> {
+            LossesScreen()
+        }
     }
 }
 
@@ -230,7 +233,9 @@ sealed interface Route {
     @Serializable
     data class CustomerDetails(val customerId: String) : Route
 
-
     @Serializable
     data class GoldSaleDetailsRoute(val saleId: String = "") : Route
+
+    @Serializable
+    data object LossesRoute: Route
 }

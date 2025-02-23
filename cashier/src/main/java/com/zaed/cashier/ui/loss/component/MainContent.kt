@@ -6,13 +6,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.loss.Loss
+import com.zaed.common.data.model.loss.StoreLoss
 
 @Composable
 fun MainContent(
     date: String,
     onShowDetails: () -> Unit,
-    losses: List<Loss> = emptyList()
+    losses: List<StoreLoss> = emptyList()
 ) {
     Surface(
         shadowElevation = 5.dp,

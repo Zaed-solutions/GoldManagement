@@ -52,9 +52,13 @@ import com.zaed.common.domain.customer.FetchWholesaleCustomerSalesUseCase
 import com.zaed.common.domain.customer.FetchWholesaleCustomersByNameUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomersUseCase
+import com.zaed.common.domain.loss.AddDistributorLossUseCase
+import com.zaed.common.domain.loss.ConvertLossesToDatedLossesUseCase
 import com.zaed.common.domain.loss.CreateNewLossUseCase
 import com.zaed.common.domain.loss.DeleteLossUseCase
+import com.zaed.common.domain.loss.FetchDistributorLossesUseCase
 import com.zaed.common.domain.loss.GetStoreLossesUseCase
+import com.zaed.common.domain.loss.UpdateDistributorLossUseCase
 import com.zaed.common.domain.loss.UpdateLossUseCase
 import com.zaed.common.domain.payment.AddNewPaymentUseCase
 import com.zaed.common.domain.payment.DeletePaymentUseCase
@@ -126,6 +130,10 @@ val useCaseModule = module {
     singleOf(::AddWholesaleProductSaleUseCase)
     singleOf(::DeleteWholeSaleCustomerUseCase)
     singleOf(::EditWholeSalesCustomerUseCase)
+    singleOf(::ConvertLossesToDatedLossesUseCase)
+    singleOf(::FetchDistributorLossesUseCase)
+    singleOf(::AddDistributorLossUseCase)
+    singleOf(::UpdateDistributorLossUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }

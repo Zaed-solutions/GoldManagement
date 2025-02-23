@@ -1,13 +1,13 @@
 package com.zaed.cashier.ui.loss
 
-import com.zaed.common.data.model.loss.Loss
+import com.zaed.common.data.model.loss.StoreLoss
 
 sealed interface LossUiAction {
     data class OnCreateLoss(
-        val loss: Loss,
+        val loss: StoreLoss,
     ) : LossUiAction
     data class OnUpdateLoss(
-        val loss: Loss,
+        val loss: StoreLoss,
     ) : LossUiAction
     data class OnDeleteLoss(
         val id : String = ""
