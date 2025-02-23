@@ -10,14 +10,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.loss.Loss
+import com.zaed.common.data.model.loss.StoreLoss
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.toMoneyFormat
 
 @Composable
 fun LossItemTopRow(
     date: String,
-    losses: List<Loss>
+    losses: List<StoreLoss>
 ) {
     Row(
         modifier = Modifier

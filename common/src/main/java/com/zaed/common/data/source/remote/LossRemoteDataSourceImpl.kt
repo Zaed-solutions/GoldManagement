@@ -4,10 +4,14 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.common.data.model.authentication.ChangeLog
-import com.zaed.common.data.model.loss.Loss
+import com.zaed.common.data.model.loss.DistributorLoss
+import com.zaed.common.data.model.loss.StoreLoss
+import com.zaed.common.data.model.loss.request.AddDistributorLossRequest
 import com.zaed.common.data.model.loss.request.CreateNewLossRequest
 import com.zaed.common.data.model.loss.request.DeleteLossRequest
+import com.zaed.common.data.model.loss.request.FetchDistributorLossesRequest
 import com.zaed.common.data.model.loss.request.GetStoreLossesRequest
+import com.zaed.common.data.model.loss.request.UpdateDistributorLossRequest
 import com.zaed.common.data.model.loss.request.UpdateLossRequest
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -19,11 +23,11 @@ class LossRemoteDataSourceImpl(
     firestore: FirebaseFirestore,
     private val crashlytics: FirebaseCrashlytics
 ) : LossRemoteDataSource {
-    private val LOSS_STORE_COLLECTION = "store-losses"
-    private val lossCollection = firestore.collection(LOSS_STORE_COLLECTION)
+    private val storeLossesCollection = firestore.collection("store-losses")
+    private val distributorLossesCollection = firestore.collection("distributor-losses")
     override suspend fun createNewLoss(request: CreateNewLossRequest): Result<Unit> {
         return try {
-            val document = lossCollection.document()
+            val document = storeLossesCollection.document()
             val loss = request.loss.copy(
                 id = document.id,
                 logs = listOf(
@@ -46,7 +50,7 @@ class LossRemoteDataSourceImpl(
 
     override suspend fun updateLoss(request: UpdateLossRequest): Result<Unit> {
         return try {
-            lossCollection.document(request.loss.id).set(request.loss).await()
+            storeLossesCollection.document(request.loss.id).set(request.loss).await()
             Result.success(Unit)
         } catch (e: Exception) {
             crashlytics.recordException(e)
@@ -56,7 +60,7 @@ class LossRemoteDataSourceImpl(
 
     override suspend fun deleteLoss(request: DeleteLossRequest): Result<Unit> {
         return try {
-            val loss = lossCollection.document(request.lossId).get().await().toObject(Loss::class.java) ?: Loss()
+            val loss = storeLossesCollection.document(request.lossId).get().await().toObject(StoreLoss::class.java) ?: StoreLoss()
             val logs = loss.logs.toMutableList()
             logs.add(
                 ChangeLog(
@@ -66,7 +70,7 @@ class LossRemoteDataSourceImpl(
                     action = "${request.employeeName} Deleted this loss"
                 )
             )
-            lossCollection.document(request.lossId).set(loss.copy(logs = logs, deleted = true)).await()
+            storeLossesCollection.document(request.lossId).set(loss.copy(logs = logs, deleted = true)).await()
             Result.success(Unit)
         } catch (e: Exception) {
             crashlytics.recordException(e)
@@ -74,10 +78,10 @@ class LossRemoteDataSourceImpl(
         }
     }
 
-    override fun getStoreLosses(request: GetStoreLossesRequest): Flow<Result<List<Loss>>> =
+    override fun getStoreLosses(request: GetStoreLossesRequest): Flow<Result<List<StoreLoss>>> =
         callbackFlow {
             try {
-                lossCollection.where(
+                storeLossesCollection.where(
                     Filter.and(
                         Filter.equalTo("storeId", request.storeId),
                         Filter.equalTo("deleted", false)
@@ -87,7 +91,7 @@ class LossRemoteDataSourceImpl(
                             crashlytics.recordException(e)
                             trySend(Result.failure(e))
                         }
-                        val losses = snapshot?.toObjects(Loss::class.java)?: emptyList()
+                        val losses = snapshot?.toObjects(StoreLoss::class.java)?: emptyList()
                         trySend(Result.success(losses))
                     }
             } catch (e: Exception) {
@@ -96,4 +100,48 @@ class LossRemoteDataSourceImpl(
             }
             awaitClose {}
         }
+
+    override fun fetchDistributorLosses(request: FetchDistributorLossesRequest): Flow<Result<List<DistributorLoss>>> =
+        callbackFlow {
+            try {
+                distributorLossesCollection.where(
+                    Filter.and(
+                        Filter.equalTo("userId", request.distributorId),
+                        Filter.equalTo("deleted", false)
+                    )
+                ).addSnapshotListener { snapshot, e ->
+                    if (e != null) {
+                        crashlytics.recordException(e)
+                        trySend(Result.failure(e))
+                    }
+                    val losses = snapshot?.toObjects(DistributorLoss::class.java)?: emptyList()
+                    trySend(Result.success(losses))
+                }
+            } catch (e: Exception) {
+                crashlytics.recordException(e)
+                trySend(Result.failure(e))
+            }
+            awaitClose {}
+        }
+
+    override suspend fun updateDistributorLoss(request: UpdateDistributorLossRequest): Result<Unit> {
+        return try {
+            distributorLossesCollection.document(request.loss.id).set(request.loss).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun addDistributorLoss(request: AddDistributorLossRequest): Result<Unit> {
+        return try {
+            val document = distributorLossesCollection.document()
+            document.set(request.loss.copy(id = document.id)).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
 }

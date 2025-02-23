@@ -1,6 +1,6 @@
 package com.zaed.common.domain.loss
 
-import com.zaed.common.data.model.loss.Loss
+import com.zaed.common.data.model.loss.StoreLoss
 import com.zaed.common.data.model.loss.request.GetStoreLossesRequest
 import com.zaed.common.data.repository.LossRepository
 import com.zaed.common.ui.util.DateFormat
@@ -12,12 +12,12 @@ import java.util.Locale
 class GetStoreLossesUseCase(
     private val lossRepository: LossRepository
 ) {
-    operator fun invoke(request: GetStoreLossesRequest): Flow<Result<Map<String, List<Loss>>>>{
+    operator fun invoke(request: GetStoreLossesRequest): Flow<Result<Map<String, List<StoreLoss>>>>{
         return lossRepository.getStoreLosses(request).map {
             it.map { it.toLossesGroups() }
         }
     }
-    private fun List<Loss>.toLossesGroups(): Map<String, List<Loss>> {
+    private fun List<StoreLoss>.toLossesGroups(): Map<String, List<StoreLoss>> {
         val dateFormatter = SimpleDateFormat(DateFormat.DATE.pattern, Locale.getDefault())
         return groupBy { loss ->
             dateFormatter.format(loss.date)

@@ -3,16 +3,13 @@ package com.zaed.common.data.model.loss
 import com.zaed.common.data.model.authentication.ChangeLog
 import java.util.Date
 
-data class Loss(
-    val id: String = "",
-    val value: Double = 0.0,
-    val reason: String = "",
-    val date: Date = Date(),
-    val userId: String = "",
-    val userName: String = "",
-    val storeId: String = "",
-    val storeName: String = "",
-    val deleted: Boolean = false,
-    val logs: List<ChangeLog> = emptyList()
-)
-
+sealed class Loss {
+    abstract val id: String
+    abstract val value: Double
+    abstract val reason: String
+    abstract val date: Date
+    abstract val userId: String
+    abstract val userName: String
+    abstract val deleted: Boolean
+    abstract val logs: List<ChangeLog>
+}

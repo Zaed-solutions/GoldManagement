@@ -8,4 +8,5 @@
     <string name="product">Product</string>
     <string name="grams">Grams</string>
     <string name="price">Price</string>
+    <string name="daily_allowance">Daily Allowance</string>
 </resources>

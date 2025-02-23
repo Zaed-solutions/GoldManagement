@@ -9,15 +9,15 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.loss.Loss
+import com.zaed.common.data.model.loss.StoreLoss
 
 @Composable
 fun DetailsContent(
     onBack: () -> Unit,
     date: String,
-    losses: List<Loss>,
-    onEdit: (loss: Loss) -> Unit = {},
-    onDelete: (loss: Loss) -> Unit = {}
+    losses: List<StoreLoss>,
+    onEdit: (loss: StoreLoss) -> Unit = {},
+    onDelete: (loss: StoreLoss) -> Unit = {}
 ) {
     Surface(
         modifier = Modifier.padding(4.dp),

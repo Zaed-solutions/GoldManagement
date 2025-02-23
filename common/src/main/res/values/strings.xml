@@ -162,4 +162,6 @@
     <string name="receipt_status">Receipt Status</string>
     <string name="request_receipt">Request Receipt</string>
     <string name="not_requested">Not Requested</string>
+    <string name="save_loss">Save Loss</string>
+    <string name="allowance">Allowance</string>
 </resources>

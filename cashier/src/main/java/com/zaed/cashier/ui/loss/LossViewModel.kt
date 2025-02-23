@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.authentication.ChangeLog
-import com.zaed.common.data.model.loss.Loss
+import com.zaed.common.data.model.loss.StoreLoss
 import com.zaed.common.data.model.loss.request.CreateNewLossRequest
 import com.zaed.common.data.model.loss.request.DeleteLossRequest
 import com.zaed.common.data.model.loss.request.GetStoreLossesRequest
@@ -100,7 +100,7 @@ class LossViewModel(
         }
     }
 
-    private fun updateLoss(loss: Loss) {
+    private fun updateLoss(loss: StoreLoss) {
         if (!validateInput(loss)) return
         viewModelScope.launch(
             Dispatchers.IO
@@ -171,7 +171,7 @@ class LossViewModel(
 
 
     private fun submitNewLoss(
-        loss: Loss
+        loss: StoreLoss
     ) {
         if (!validateInput(loss)) return
         viewModelScope.launch(Dispatchers.IO) {
@@ -200,7 +200,7 @@ class LossViewModel(
     }
 
     private fun validateInput(
-        loss: Loss
+        loss: StoreLoss
     ): Boolean {
         when {
             loss.reason.isEmpty() -> {
