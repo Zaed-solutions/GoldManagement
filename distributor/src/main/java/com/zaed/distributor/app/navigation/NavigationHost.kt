@@ -153,10 +153,18 @@ fun NavigationHost(
                 },
                 saleId = saleId,
                 onNavigateToProductSaleDetails = {
-                    navController.navigate(Route.ProductSaleDetailsRoute(it))
+                    navController.navigate(Route.ProductSaleDetailsRoute(it)){
+                        popUpTo(Route.AddProductSaleRoute) {
+                            inclusive = true
+                        }
+                    }
                 },
                 onNavigateToAddCustomer = {
-                    navController.navigate(Route.AddCustomers())
+                    navController.navigate(Route.AddCustomers()){
+                        popUpTo(Route.AddProductSaleRoute) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }

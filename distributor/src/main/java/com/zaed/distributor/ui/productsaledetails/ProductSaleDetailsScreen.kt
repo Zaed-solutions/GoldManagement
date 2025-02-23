@@ -52,18 +52,6 @@ fun ProductSaleDetailsScreen(
         when (action) {
             ProductSaleDetailsUiAction.OnBackClicked -> onBackClicked()
             ProductSaleDetailsUiAction.OnEditClicked -> onNavigateToEditSale(saleId)
-            ProductSaleDetailsUiAction.OnPrintReceipt -> {
-                //TODO()
-            }
-
-            ProductSaleDetailsUiAction.OnShareReceiptViaEmail -> {
-                //TODO()
-            }
-
-            ProductSaleDetailsUiAction.OnShareReceiptViaWhatsapp -> {
-                //TODO()
-            }
-
             else -> viewModel.handleAction(action)
         }
     }
