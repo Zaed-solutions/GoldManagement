@@ -9,6 +9,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun DisplayCustomersScreen(
     viewModel: DisplayCustomersViewModel = koinViewModel(),
+    onShowNavDrawer: () -> Unit,
     navigateToAddCustomer: () -> Unit,
     navigateToCustomerDetails: (String) -> Unit,
     navigateToEditCustomer:(String) -> Unit,
@@ -18,6 +19,7 @@ fun DisplayCustomersScreen(
         uiState = state,
         onAction = { action ->
             when (action) {
+                DisplayWholeSalesCustomerUiAction.OnShowNavDrawer -> onShowNavDrawer()
                 is DisplayWholeSalesCustomerUiAction.OnAddWholeSaleCustomerClicked -> {
                     navigateToAddCustomer()
                 }

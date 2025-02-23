@@ -16,7 +16,6 @@ import com.zaed.common.domain.payment.FetchPaymentsByIdsUseCase
 import com.zaed.common.domain.sale.DeleteWholesaleProductSaleUseCase
 import com.zaed.common.domain.sale.FetchWholesaleProductSaleUseCase
 import com.zaed.common.domain.sale.UpdateWholesaleProductSaleUseCase
-import com.zaed.distributor.ui.saledetails.SaleDetailsUiAction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

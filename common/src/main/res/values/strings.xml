@@ -165,4 +165,7 @@
     <string name="not_requested">Not Requested</string>
     <string name="save_loss">Save Loss</string>
     <string name="allowance">Allowance</string>
+    <string name="customers">Customers</string>
+    <string name="gold_sales">Gold Sales</string>
+    <string name="ingots_sales">Ingots Sales</string>
 </resources>

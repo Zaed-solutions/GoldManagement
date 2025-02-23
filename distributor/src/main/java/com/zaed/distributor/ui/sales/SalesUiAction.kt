@@ -4,6 +4,7 @@ sealed interface SalesUiAction {
     data object AddProductSaleClicked: SalesUiAction
     data object AddGoldSaleClicked: SalesUiAction
     data object OnSignOut: SalesUiAction
+    data object OnShowNavDrawer: SalesUiAction
     data class UpdateSearchQuery(val searchQuery: String): SalesUiAction
     data class UpdatePaymentStatusFilter(val status: PaymentStatus): SalesUiAction
     data class OnDeleteProductSale(val saleId: String): SalesUiAction
