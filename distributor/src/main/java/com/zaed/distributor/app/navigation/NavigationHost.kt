@@ -154,15 +154,15 @@ fun NavigationHost(
                 saleId = saleId,
                 onNavigateToProductSaleDetails = {
                     navController.navigate(Route.ProductSaleDetailsRoute(it)){
-                        popUpTo(Route.AddProductSaleRoute) {
-                            inclusive = true
+                        popUpTo(Route.SalesRoute) {
+                            inclusive = false
                         }
                     }
                 },
                 onNavigateToAddCustomer = {
                     navController.navigate(Route.AddCustomers()){
-                        popUpTo(Route.AddProductSaleRoute) {
-                            inclusive = true
+                        popUpTo(Route.SalesRoute) {
+                            inclusive = false
                         }
                     }
                 }
