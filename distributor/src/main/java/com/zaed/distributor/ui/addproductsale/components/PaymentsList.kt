@@ -19,16 +19,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.distributor.ui.customerdetails.component.PaymentItem
 
 @Composable
 fun PaymentsList(
     modifier: Modifier = Modifier,
-    payments: List<Payment>,
+    moneyPayments: List<MoneyPayment>,
     onAddPayment: () -> Unit,
-    onEditPayment: (Payment) -> Unit,
-    onRemovePayment: (Payment) -> Unit
+    onEditPayment: (MoneyPayment) -> Unit,
+    onRemovePayment: (MoneyPayment) -> Unit
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -57,11 +57,11 @@ fun PaymentsList(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(
-                items = payments,
+                items = moneyPayments,
                 key = { it.id }
             ) { payment ->
                 PaymentItem(
-                    payment = payment,
+                    moneyPayment = payment,
                     onEdit = {
                         onEditPayment(payment)
                     },

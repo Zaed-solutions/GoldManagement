@@ -4,14 +4,12 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.authentication.ChangeLog
-import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
 import com.zaed.common.data.model.sale.ReceiptStatus
 import com.zaed.common.data.model.sale.request.DeleteWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.UpdateWholesaleProductSaleRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
-import com.zaed.common.domain.customer.FetchWholesaleCustomerSalesUseCase
 import com.zaed.common.domain.payment.FetchPaymentsByIdsUseCase
 import com.zaed.common.domain.sale.DeleteWholesaleProductSaleUseCase
 import com.zaed.common.domain.sale.FetchWholesaleProductSaleUseCase
@@ -74,7 +72,7 @@ class ProductSaleDetailsViewModel(
                 FetchPaymentsByIdsRequest(paymentsIds)
             ).onSuccess { data ->
                 _uiState.update { oldState->
-                    oldState.copy(payments = data)
+                    oldState.copy(moneyPayments = data)
                 }
             }.onFailure {
                 Log.e(TAG, "fetchPayments: ${it.message}",it )
@@ -106,7 +104,7 @@ class ProductSaleDetailsViewModel(
             updateWholesaleProductSaleUseCase(
                 UpdateWholesaleProductSaleRequest(
                     sale = sale.copy(logs = logs),
-                    payments = uiState.value.payments,
+                    moneyPayments = uiState.value.moneyPayments,
                     employeeName = uiState.value.currentUser.fullName,
                     employeeId = uiState.value.currentUser.id
                 )

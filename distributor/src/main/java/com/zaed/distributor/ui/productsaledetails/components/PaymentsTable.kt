@@ -22,14 +22,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.common.ui.util.formatMoney
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PaymentsTable(
     modifier: Modifier = Modifier,
-    payments: List<Payment> = emptyList()
+    moneyPayments: List<MoneyPayment> = emptyList()
 ) {
     Surface(
         border = BorderStroke(
@@ -71,9 +71,9 @@ fun PaymentsTable(
                     HorizontalDivider()
                 }
             }
-            items(payments) { payment ->
+            items(moneyPayments) { payment ->
                 PaymentTableItem(
-                    payment = payment
+                    moneyPayment = payment
                 )
             }
         }
@@ -83,7 +83,7 @@ fun PaymentsTable(
 @Composable
 fun PaymentTableItem(
     modifier: Modifier = Modifier,
-    payment: Payment
+    moneyPayment: MoneyPayment
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -95,12 +95,12 @@ fun PaymentTableItem(
             verticalAlignment = Alignment.CenterVertically
         ){
             Text(
-                text = payment.type.name,
+                text = moneyPayment.type.name,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.weight(5f)
             )
             Text(
-                text = payment.amount.formatMoney(),
+                text = moneyPayment.amount.formatMoney(),
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center,
                 maxLines = 1,

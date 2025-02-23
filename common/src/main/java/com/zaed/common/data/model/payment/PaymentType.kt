@@ -6,5 +6,6 @@ enum class PaymentType :DropdownMenuItem {
     CASH,
     BANK_TRANSFER,
     CHEQUE,
-    FUTURES
+    FUTURES,
+    GOLD
 }

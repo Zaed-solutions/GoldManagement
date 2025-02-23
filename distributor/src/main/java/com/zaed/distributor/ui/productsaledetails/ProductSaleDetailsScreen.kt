@@ -24,7 +24,6 @@ import com.zaed.common.ui.components.ProductsTable
 import com.zaed.common.ui.components.TitledSection
 import com.zaed.distributor.ui.productsaledetails.components.CustomerInfoSection
 import com.zaed.distributor.ui.productsaledetails.components.PaymentsTable
-import com.zaed.distributor.ui.productsaledetails.components.ProductSaleDetailsActionButtons
 import com.zaed.distributor.ui.productsaledetails.components.ProductSaleDetailsTopBar
 import com.zaed.distributor.ui.productsaledetails.components.SaleInfoSection
 import org.koin.androidx.compose.koinViewModel
@@ -131,7 +130,7 @@ private fun ProductSaleDetailsContent(
                 title = stringResource(R.string.payments)
             ) {
                 PaymentsTable(
-                    payments = state.payments
+                    moneyPayments = state.moneyPayments
                 )
             }
             ConfirmDeleteBottomSheet(

@@ -10,6 +10,7 @@ import com.google.firebase.firestore.SetOptions
 import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
+import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.sale.StoreSale
 import com.zaed.common.data.model.sale.WholesaleGoldSale
 import com.zaed.common.data.model.sale.WholesaleProductSale
@@ -365,10 +366,15 @@ class SaleRemoteSourceImpl(
                 "receiptNumber",
                 Query.Direction.DESCENDING
             ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")?.toLongOrNull() ?: 0
-            request.payments.forEach {
+            request.moneyPayments.forEach {
                 val ref = paymentsCollection.document()
                 paymentsIds.add(ref.id)
-                batch.set(ref, it.copy(id = ref.id, receiptNumber = receiptNumber.toString()))
+                val amount = if(it.type == PaymentType.FUTURES){
+                    it.amount.unaryMinus()
+                }else{
+                    it.amount
+                }
+                batch.set(ref, it.copy(id = ref.id, amount = amount, receiptNumber = receiptNumber.toString()))
             }
             batch.set(docRef, request.sale.copy(id = docRef.id, paymentsIds = paymentsIds, receiptNumber = (receiptNumber + 1).toString()))
             batch.commit().await()
@@ -389,7 +395,7 @@ class SaleRemoteSourceImpl(
                     ?: return Result.failure(Exception("Sale not found"))
             val existingPaymentIds = existingSale.paymentsIds
             val updatedPaymentIds = mutableListOf<String>()
-            request.payments.forEach { payment ->
+            request.moneyPayments.forEach { payment ->
                 if (payment.id.isNotEmpty() && existingPaymentIds.contains(payment.id)) {
                     val paymentRef = paymentsCollection.document(payment.id)
                     batch.set(paymentRef, payment, SetOptions.merge())

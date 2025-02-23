@@ -13,7 +13,7 @@ class AddNewPaymentUseCase(
         if (result.isSuccess) {
             val result2 = wholeSalesCustomerRepository.addNewPayment(
                 request.copy(
-                    payment = request.payment.copy(id = result.getOrNull() ?: "")
+                    moneyPayment = request.moneyPayment.copy(id = result.getOrNull() ?: "")
                 )
             )
             if (result2.isSuccess) {

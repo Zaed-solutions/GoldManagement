@@ -13,7 +13,7 @@ class EditPaymentUseCase(
         if (result.isSuccess) {
             val result2 = customerRepository.updateCustomerDebt(
                 UpdateCustomerDebtRequest(
-                    customerId = request.newPayment.customerId,
+                    customerId = request.newMoneyPayment.customerId,
                     difference = request.diff
                 )
             )

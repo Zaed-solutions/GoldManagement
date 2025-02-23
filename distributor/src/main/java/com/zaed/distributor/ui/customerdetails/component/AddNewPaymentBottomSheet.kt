@@ -66,7 +66,7 @@ fun AddOrEditNewPaymentBottomSheet(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
                     label = stringResource(R.string.amount),
-                    value = uiState.currentPayment.amount.absoluteValue,
+                    value = uiState.currentMoneyPayment.amount.absoluteValue,
                     onValueChange = {
                         onAction(CustomerDetailsUiAction.OnAmountChanged(it))
                     },
@@ -77,7 +77,7 @@ fun AddOrEditNewPaymentBottomSheet(
                         .padding(horizontal = 16.dp),
                     label = stringResource(R.string.type),
                     options = PaymentType.entries,
-                    selectedValue = uiState.currentPayment.type,
+                    selectedValue = uiState.currentMoneyPayment.type,
                     onValueChanged = {
                         onAction(CustomerDetailsUiAction.OnTypeChanged(it))
                     },

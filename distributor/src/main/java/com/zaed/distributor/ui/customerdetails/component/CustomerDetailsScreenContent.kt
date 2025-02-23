@@ -39,7 +39,7 @@ import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.common.ui.components.BackIcon
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
 import com.zaed.common.ui.util.toMoneyFormat
@@ -56,7 +56,7 @@ fun CustomerDetailsScreenContent(
 ) {
     var addPaymentBottomSheetVisible by remember { mutableStateOf(false) }
     val listState = remember { LazyListState() }
-    var selectedPayment by remember { mutableStateOf<Payment?>(null) }
+    var selectedMoneyPayment by remember { mutableStateOf<MoneyPayment?>(null) }
     var confirmDeletePaymentSheet by remember { mutableStateOf(false) }
     var editPaymentSheet by remember { mutableStateOf(false)}
     Scaffold(
@@ -156,7 +156,7 @@ fun CustomerDetailsScreenContent(
                             debtAmount = uiState.customer.debtAmount,
                             payments = uiState.payments,
                             onDeletePayment = { payment ->
-                                selectedPayment = payment
+                                selectedMoneyPayment = payment
                                 confirmDeletePaymentSheet = true
                             },
                             onEditPayment = { payment ->
@@ -221,15 +221,15 @@ fun CustomerDetailsScreenContent(
         )
         ConfirmDeleteBottomSheet(
             visible = confirmDeletePaymentSheet,
-            label = selectedPayment?.amount?.toMoneyFormat(2) ?:"",
+            label = selectedMoneyPayment?.amount?.toMoneyFormat(2) ?:"",
             onDismiss = {
                 confirmDeletePaymentSheet = false
-                selectedPayment = null
+                selectedMoneyPayment = null
             },
             onConfirm = {
-                selectedPayment?.let { onAction(CustomerDetailsUiAction.DeletePayment(it)) }
+                selectedMoneyPayment?.let { onAction(CustomerDetailsUiAction.DeletePayment(it)) }
                 confirmDeletePaymentSheet = false
-                selectedPayment = null
+                selectedMoneyPayment = null
             }
         )
     }

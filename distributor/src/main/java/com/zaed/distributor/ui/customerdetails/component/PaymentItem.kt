@@ -20,7 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.common.ui.components.SwipeToEditOrDeleteContainer
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
@@ -32,7 +32,7 @@ import kotlin.math.absoluteValue
 @Composable
 fun PaymentItem(
     modifier: Modifier = Modifier,
-    payment: Payment,
+    moneyPayment: MoneyPayment,
     onClick: () -> Unit = {},
     onDelete: () -> Unit = {},
     onEdit: () -> Unit = {}
@@ -50,7 +50,7 @@ fun PaymentItem(
             shape = MaterialTheme.shapes.medium
         ) {
             val chipColor =
-                if (payment.amount >= 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                if (moneyPayment.amount >= 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
             Column(
                 modifier = Modifier.padding(12.dp)
             ) {
@@ -61,7 +61,7 @@ fun PaymentItem(
                         modifier = Modifier.height(FilterChipDefaults.Height - 8.dp),
                         selected = true,
                         onClick = {},
-                        label = { Text(text = payment.type.name) },
+                        label = { Text(text = moneyPayment.type.name) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = chipColor,
                             selectedLabelColor = contentColorFor(chipColor)
@@ -69,7 +69,7 @@ fun PaymentItem(
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
-                        text = if (payment.amount >= 0) stringResource(R.string.taken) else stringResource(R.string.given),
+                        text = if (moneyPayment.amount >= 0) stringResource(R.string.taken) else stringResource(R.string.given),
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
@@ -78,12 +78,12 @@ fun PaymentItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = payment.createdAt.format(DateFormat.TIME),
+                        text = moneyPayment.createdAt.format(DateFormat.TIME),
                         style = MaterialTheme.typography.titleLarge
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
-                        text = payment.amount.absoluteValue.toMoneyFormat(2),
+                        text = moneyPayment.amount.absoluteValue.toMoneyFormat(2),
                         style = MaterialTheme.typography.titleLarge,
                         color = chipColor,
                         fontWeight = FontWeight.Bold
@@ -100,7 +100,7 @@ fun PaymentItem(
 private fun PaymentItemPreview() {
     DistributorAppTheme {
     PaymentItem(
-        payment = Payment(
+        moneyPayment = MoneyPayment(
             amount = 1000.0,
             type = com.zaed.common.data.model.payment.PaymentType.CASH,
             createdAt = Date(),
