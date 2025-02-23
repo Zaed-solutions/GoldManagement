@@ -4,6 +4,7 @@ import com.zaed.common.data.model.loss.DistributorLoss
 import com.zaed.common.data.model.loss.StoreLoss
 
 sealed interface LossesUiAction {
+    data object OnShowNavDrawer : LossesUiAction
     data class OnAddLoss(
         val loss: DistributorLoss,
     ) : LossesUiAction

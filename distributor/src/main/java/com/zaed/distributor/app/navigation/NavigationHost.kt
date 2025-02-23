@@ -1,5 +1,6 @@
 package com.zaed.distributor.app.navigation
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,10 +12,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.zaed.common.data.model.authentication.UserPermission
 import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
@@ -29,14 +32,15 @@ import kotlinx.serialization.Serializable
 
 @Composable
 fun NavigationHost(
-    startDestination: Route
+    startDestination: Route,
+    onShowNavDrawer: () -> Unit,
+    navController: NavHostController
 ) {
-    val navController = rememberNavController()
-    val context = LocalContext.current
+//    Log.d("CrashBugTest", "NavigationHost: reached")
     NavHost(
         modifier = Modifier.systemBarsPadding(),
         navController = navController,
-        startDestination = Route.LossesRoute,
+        startDestination = startDestination,
     ) {
         composable<Route.SignUpRoute> {
             SignUpScreen(
@@ -69,6 +73,7 @@ fun NavigationHost(
         }
         composable<Route.SalesRoute> {
             SalesScreen(
+                onShowNavDrawer = onShowNavDrawer,
                 onNavigateToLogin = {
                     navController.navigate(Route.LoginRoute) {
                         popUpTo(Route.LoginRoute) {
@@ -92,6 +97,7 @@ fun NavigationHost(
         }
         composable<Route.WholeSaleCustomers> {
             DisplayCustomersScreen(
+                onShowNavDrawer = onShowNavDrawer,
                 navigateToAddCustomer = {
                     navController.navigate(Route.AddCustomers())
                 },
@@ -185,7 +191,9 @@ fun NavigationHost(
             }
         }
         composable<Route.LossesRoute> {
-            LossesScreen()
+            LossesScreen(
+                onShowNavDrawer = onShowNavDrawer
+            )
         }
     }
 }

@@ -16,11 +16,13 @@ import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.GridGoldenratio
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -39,7 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
-import com.zaed.common.data.model.authentication.Permission
+import com.zaed.common.data.model.authentication.UserPermission
 import com.zaed.common.ui.components.ConfirmDeleteDialog
 import com.zaed.common.ui.components.FabItem
 import com.zaed.common.ui.components.MoreDropDownMenu
@@ -52,6 +54,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun SalesScreen(
     viewModel: SalesViewModel = koinViewModel(),
+    onShowNavDrawer: () -> Unit,
     onNavigateToLogin: () -> Unit,
     onNavigateToAddProductSale: (String) -> Unit,
     onNavigateToAddGoldSale: (String) -> Unit,
@@ -68,6 +71,7 @@ fun SalesScreen(
         state = state,
         onAction = { action ->
             when (action) {
+                SalesUiAction.OnShowNavDrawer -> onShowNavDrawer()
                 SalesUiAction.AddProductSaleClicked -> onNavigateToAddProductSale("")
                 SalesUiAction.AddGoldSaleClicked -> onNavigateToAddGoldSale("")
                 is SalesUiAction.OnEditProductSale -> onNavigateToAddProductSale(action.saleId)
@@ -101,6 +105,16 @@ fun SalesScreenContent(
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { onAction(SalesUiAction.OnShowNavDrawer) }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Menu,
+                            contentDescription = "Menu icon"
+                        )
+                    }
+                },
                 actions = {
                     MoreDropDownMenu(
                         items = listOf(
@@ -116,7 +130,7 @@ fun SalesScreenContent(
             )
         },
         floatingActionButton = {
-            if (state.currentUser.permissions.contains(Permission.SELL_GOLD)) {
+            if (state.currentUser.permissions.contains(UserPermission.SELL_GOLD)) {
                 val fabItems = remember {
                     listOf(
                         FabItem(

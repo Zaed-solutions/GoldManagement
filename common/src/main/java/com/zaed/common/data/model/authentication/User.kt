@@ -9,11 +9,7 @@ data class User(
     val password: String = "",
     val approvalStatusType: UserApprovalStatus = UserApprovalStatus.PENDING,
     val role: UserRole = UserRole.NONE,
-    val permissions: List<Permission>  = emptyList()
+    val permissions: List<UserPermission>  = emptyList()
 )
-
-enum class Permission {
-    SELL_GOLD,
-}
 
 
