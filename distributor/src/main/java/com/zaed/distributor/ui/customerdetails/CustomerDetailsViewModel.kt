@@ -3,17 +3,24 @@ package com.zaed.distributor.ui.customerdetails
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.DeletePaymentRequest
+import com.zaed.common.data.model.payment.request.EditPaymentRequest
 import com.zaed.common.data.model.payment.request.FetchCustomerPaymentsRequest
+import com.zaed.common.data.model.sale.request.DeleteWholesaleGoldSaleRequest
+import com.zaed.common.data.model.sale.request.DeleteWholesaleProductSaleRequest
+import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.customer.FetchWholesaleCustomerSalesUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
 import com.zaed.common.domain.payment.AddNewPaymentUseCase
 import com.zaed.common.domain.payment.DeletePaymentUseCase
 import com.zaed.common.domain.payment.EditPaymentUseCase
 import com.zaed.common.domain.payment.FetchCustomerPaymentsUseCase
+import com.zaed.common.domain.sale.DeleteWholesaleGoldSaleUseCase
+import com.zaed.common.domain.sale.DeleteWholesaleProductSaleUseCase
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +28,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.math.absoluteValue
 
 class CustomerDetailsViewModel(
     private val fetchCustomerPaymentsUseCase: FetchCustomerPaymentsUseCase,
@@ -28,8 +36,13 @@ class CustomerDetailsViewModel(
     private val addPaymentUseCase: AddNewPaymentUseCase,
     private val getWholeSalesCustomerUseCase: GetWholeSalesCustomerUseCase,
     private val deletePaymentUseCase: DeletePaymentUseCase,
-    private val editPaymentUseCase: EditPaymentUseCase
-) : ViewModel() {
+    private val editPaymentUseCase: EditPaymentUseCase,
+    private val deleteProductSaleUseCase: DeleteWholesaleProductSaleUseCase,
+    private val deleteGoldSaleUseCase: DeleteWholesaleGoldSaleUseCase,
+    private val getCurrentUserLoggedInUseCase: GetCurrentUserLoggedInUseCase
+    ) : ViewModel() {
+        val TAG = "CustomerDetailsViewModel"
+
     private val _uiState = MutableStateFlow(CustomerDetailsUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -40,6 +53,21 @@ class CustomerDetailsViewModel(
         }
         getCustomerPayments(customerId)
         getCustomerTransactions(customerId)
+        getCurrentUser()
+    }
+
+    private fun getCurrentUser() {
+        viewModelScope.launch(Dispatchers.IO) {
+            getCurrentUserLoggedInUseCase().collect { result ->
+                result.onSuccess { data ->
+                    _uiState.update {
+                        it.copy(
+                            currentDistributor = data
+                        )
+                    }
+                }
+            }
+        }
     }
 
     private fun getCustomerTransactions(customerId: String) {
@@ -48,7 +76,7 @@ class CustomerDetailsViewModel(
                 it.copy(loading = true)
             }
             fetchWholeSalesCustomerSalesUseCase(
-                request = com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest(
+                request = FetchWholesaleCustomerSalesRequest(
                     customerId = customerId
                 )
             ).collect{result->
@@ -80,7 +108,45 @@ class CustomerDetailsViewModel(
             CustomerDetailsUiAction.OnConfirmEditPayment -> confirmEditPayment()
             CustomerDetailsUiAction.OnSaveClicked -> addPayment()
             is CustomerDetailsUiAction.OnTypeChanged -> updateType(action.type)
+
+            is CustomerDetailsUiAction.OnDeleteProductSale -> deleteProductSale(action.saleId)
+            is CustomerDetailsUiAction.OnDeleteGoldSale -> deleteGoldSale(action.saleId)
+
             else -> {}
+        }
+    }
+
+    private fun deleteProductSale(saleId: String) {
+        viewModelScope.launch (Dispatchers.IO){
+            deleteProductSaleUseCase(
+                DeleteWholesaleProductSaleRequest(
+                    saleId = saleId,
+                    distributorId = uiState.value.currentDistributor.id,
+                    distributorName = uiState.value.currentDistributor.fullName
+                )
+            ).onSuccess {
+                Log.d(TAG, "deleteProductSale: success")
+            }.onFailure {
+                Log.e(TAG, "deleteProductSale: ${it.message}",it )
+                it.printStackTrace()
+            }
+        }
+    }
+
+    private fun deleteGoldSale(saleId: String) {
+        viewModelScope.launch (Dispatchers.IO){
+            deleteGoldSaleUseCase(
+                DeleteWholesaleGoldSaleRequest(
+                    saleId = saleId,
+                    distributorId = uiState.value.currentDistributor.id,
+                    distributorName = uiState.value.currentDistributor.fullName
+                )
+            ).onSuccess {
+                Log.d(TAG, "deleteGoldSale: success")
+            }.onFailure {
+                Log.e(TAG, "deleteGoldSale: ${it.message}", it)
+                it.printStackTrace()
+            }
         }
     }
 
@@ -91,9 +157,12 @@ class CustomerDetailsViewModel(
                 it.copy(loading = true)
             }
             editPaymentUseCase(
-                request = com.zaed.common.data.model.payment.request.EditPaymentRequest(
+                request = EditPaymentRequest(
                     customerId = uiState.value.customer.id,
-                    payment = uiState.value.currentPayment
+                    newPayment = uiState.value.currentPayment.copy(
+                        amount = if (uiState.value.paymentDirection) uiState.value.currentPayment.amount else uiState.value.currentPayment.amount.unaryMinus()
+                    ),
+                    oldAmount = uiState.value.tempPayment.amount
                 )
             ).onSuccess {
                 _uiState.update {
@@ -115,7 +184,9 @@ class CustomerDetailsViewModel(
     private fun updateCurrentPayment(payment: Payment) {
         _uiState.update {
             it.copy(
-                currentPayment = payment
+                tempPayment = payment,
+                currentPayment = payment.copy(amount = payment.amount.absoluteValue),
+                paymentDirection = payment.amount > 0
             )
         }
     }
@@ -159,7 +230,9 @@ class CustomerDetailsViewModel(
             addPaymentUseCase(
                 request = AddNewPaymentRequest(
                     customerId = uiState.value.customer.id,
-                    payment = uiState.value.currentPayment
+                    payment = uiState.value.currentPayment.copy(
+                        amount = if (uiState.value.paymentDirection) uiState.value.currentPayment.amount else uiState.value.currentPayment.amount.unaryMinus()
+                    )
                 )
             ).onSuccess {
                 _uiState.update {
@@ -192,12 +265,11 @@ class CustomerDetailsViewModel(
         }
     }
 
-    private fun updateAmountDirection(given: Boolean) {
+    private fun updateAmountDirection(value: Boolean) {
+        Log.d("TAG", "updateAmountDirection: $value")
         _uiState.update {
             it.copy(
-                currentPayment = it.currentPayment.copy(
-                    amount = it.currentPayment.amount * -1
-                )
+                paymentDirection = value,
             )
         }
     }

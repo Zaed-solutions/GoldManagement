@@ -29,7 +29,6 @@ class AddNewPaymentUseCase(
 
 data class UpdateCustomerDebtRequest(
     val customerId: String,
-    val paymentId: String,
-    val amount: Double
+    val difference : Double,
 )
 

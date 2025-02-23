@@ -93,7 +93,7 @@ fun AddOrEditNewPaymentBottomSheet(
                     Text(stringResource(R.string.given))
                     Switch(
                         modifier = Modifier.padding(horizontal = 8.dp),
-                        checked = uiState.currentPayment.amount > 0,
+                        checked = uiState.paymentDirection,
                         onCheckedChange = {
                             onAction(CustomerDetailsUiAction.OnChangeValueDirection(it))
                         },

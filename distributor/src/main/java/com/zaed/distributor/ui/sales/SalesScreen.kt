@@ -88,6 +88,7 @@ fun SalesScreenContent(
     onAction: (SalesUiAction) -> Unit,
     context: Context = LocalContext.current
 ) {
+
     var selectedSale by remember { mutableStateOf("" to false) }
     var isConfirmDeleteVisible by remember { mutableStateOf(false) }
     Scaffold(

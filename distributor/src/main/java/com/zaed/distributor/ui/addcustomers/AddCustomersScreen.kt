@@ -40,8 +40,14 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun AddCustomersScreen(
     viewModel: AddCustomersViewModel = koinViewModel(),
+    customerId: String,
     onBack: () -> Unit
 ) {
+    if (customerId.isNotEmpty()) {
+        LaunchedEffect(Unit) {
+            viewModel.getCustomer(customerId)
+        }
+    }
     val state by viewModel.state.collectAsStateWithLifecycle()
     AddCustomersScreenContent(
         uiState = state,
@@ -73,7 +79,7 @@ fun AddCustomersScreenContent(
         if (uiState.successStatus) {
             snackBarError = false
             snackBarHostState.showSnackbar(
-                message = context.getString(com.zaed.common.R.string.customer_added),
+                message =if(uiState.isEditMode) context.getString(com.zaed.common.R.string.customer_edited) else context.getString(com.zaed.common.R.string.customer_added),
                 duration = SnackbarDuration.Short,
                 withDismissAction = true
             )
@@ -178,7 +184,11 @@ fun AddCustomersScreenContent(
                     .padding(horizontal = 16.dp)
                     .padding(top = 16.dp),
                 onClick = {
-                    onAction(AddCustomersUiAction.OnSave)
+                    if (uiState.isEditMode) {
+                        onAction(AddCustomersUiAction.OnEdit)
+                    }else {
+                        onAction(AddCustomersUiAction.OnSave)
+                    }
                 }
             ) {
                 Text(

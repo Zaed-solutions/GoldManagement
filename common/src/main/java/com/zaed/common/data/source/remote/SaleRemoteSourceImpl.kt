@@ -4,6 +4,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.zaed.common.data.model.Category
@@ -172,6 +173,8 @@ class SaleRemoteSourceImpl(
 
     override fun fetchWholesaleDistributorSales(request: FetchDistributorSalesRequest): Flow<Result<List<WholesaleSale>>> =
         callbackFlow {
+            var goldSalesListener: ListenerRegistration? = null
+            var productSalesListener: ListenerRegistration? = null
             try {
                 var latestGoldSales: List<WholesaleGoldSale> = emptyList()
                 var latestProductSales: List<WholesaleProductSale> = emptyList()
@@ -181,7 +184,7 @@ class SaleRemoteSourceImpl(
                     trySend(Result.success(combinedSales))
                 }
 
-                val goldSalesListener = wholesaleGoldSalesCollection.where(
+                goldSalesListener = wholesaleGoldSalesCollection.where(
                     Filter.and(
                         Filter.equalTo("distributorId", request.distributorId),
                         Filter.equalTo("deleted", false)
@@ -197,7 +200,7 @@ class SaleRemoteSourceImpl(
                     updateAndSend()
                 }
 
-                val productSalesListener = wholesaleProductSalesCollection.where(
+                productSalesListener = wholesaleProductSalesCollection.where(
                     Filter.and(
                         Filter.equalTo("distributorId", request.distributorId),
                         Filter.equalTo("deleted", false)
@@ -213,17 +216,20 @@ class SaleRemoteSourceImpl(
                     updateAndSend()
                 }
 
-                awaitClose {
-                    goldSalesListener.remove()
-                    productSalesListener.remove()
-                }
             } catch (e: Exception) {
                 crashlytics.recordException(e)
                 trySend(Result.failure(e))
             }
+            awaitClose {
+                goldSalesListener?.remove()
+                productSalesListener?.remove()
+            }
         }
+
     override fun fetchWholesaleCustomerSales(request: FetchWholesaleCustomerSalesRequest): Flow<Result<List<WholesaleSale>>> =
         callbackFlow {
+            var goldSalesListener: ListenerRegistration? = null
+            var productSalesListener: ListenerRegistration? = null
             try {
                 var latestGoldSales: List<WholesaleGoldSale> = emptyList()
                 var latestProductSales: List<WholesaleProductSale> = emptyList()
@@ -233,7 +239,7 @@ class SaleRemoteSourceImpl(
                     trySend(Result.success(combinedSales))
                 }
 
-                val goldSalesListener = wholesaleGoldSalesCollection.where(
+                goldSalesListener = wholesaleGoldSalesCollection.where(
                     Filter.and(
                         Filter.equalTo("customerId", request.customerId),
                         Filter.equalTo("deleted", false)
@@ -249,7 +255,7 @@ class SaleRemoteSourceImpl(
                     updateAndSend()
                 }
 
-                val productSalesListener = wholesaleProductSalesCollection.where(
+                productSalesListener = wholesaleProductSalesCollection.where(
                     Filter.and(
                         Filter.equalTo("customerId", request.customerId),
                         Filter.equalTo("deleted", false)
@@ -265,13 +271,14 @@ class SaleRemoteSourceImpl(
                     updateAndSend()
                 }
 
-                awaitClose {
-                    goldSalesListener.remove()
-                    productSalesListener.remove()
-                }
+
             } catch (e: Exception) {
                 crashlytics.recordException(e)
                 trySend(Result.failure(e))
+            }
+            awaitClose {
+                goldSalesListener?.remove()
+                productSalesListener?.remove()
             }
         }
 
@@ -376,9 +383,10 @@ class SaleRemoteSourceImpl(
         return try {
             val batch = firestore.batch()
             val saleDocRef = wholesaleProductSalesCollection.document(request.sale.id)
-            val existingSale = wholesaleProductSalesCollection.document(request.sale.id).get().await()
-                .toObject(WholesaleProductSale::class.java)
-                ?: return Result.failure(Exception("Sale not found"))
+            val existingSale =
+                wholesaleProductSalesCollection.document(request.sale.id).get().await()
+                    .toObject(WholesaleProductSale::class.java)
+                    ?: return Result.failure(Exception("Sale not found"))
             val existingPaymentIds = existingSale.paymentsIds
             val updatedPaymentIds = mutableListOf<String>()
             request.payments.forEach { payment ->
@@ -397,8 +405,10 @@ class SaleRemoteSourceImpl(
                     batch.delete(paymentsCollection.document(paymentId))
                 }
             }
-            batch.set(saleDocRef, request.sale.copy(paymentsIds = updatedPaymentIds),
-                SetOptions.merge())
+            batch.set(
+                saleDocRef, request.sale.copy(paymentsIds = updatedPaymentIds),
+                SetOptions.merge()
+            )
             batch.commit().await()
             Result.success(Unit)
         } catch (e: Exception) {

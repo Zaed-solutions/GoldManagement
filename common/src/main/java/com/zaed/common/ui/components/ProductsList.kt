@@ -1,13 +1,9 @@
 package com.zaed.common.ui.components
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
@@ -54,31 +50,12 @@ fun ProductsList(
                 )
             }
         }
-        LazyColumn (
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            items(
-                items = products,
-                key = {it.id}
-            ) {
-                SwipeToEditOrDeleteContainer(
-                    onDelete = {
-                        onRemoveProduct(it.id)
-                    },
-                    isEditEnabled = true,
-                    onEdit = {
-                        onEditProduct(it)
-                    }
-                ) {
-                    ProductItem(
-                        modifier = Modifier.animateItem().padding(horizontal = 16.dp),
-                        product = it,
-                    )
-                }
-            }
-        }
+        ProductsTable(
+            products = products,
+            onEditProduct = onEditProduct,
+            onRemoveProduct = onRemoveProduct
+        )
+
     }
 }
 
@@ -99,10 +76,10 @@ fun ProductItem(
             Text(
                 text = product.name,
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.weight(0.5f)
+                modifier = Modifier.weight(0.4f)
             )
             Text(
-                text = stringResource(R.string.grams_placeholder, product.grams),
+                text = product.grams.toString(),
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.weight(0.2f)

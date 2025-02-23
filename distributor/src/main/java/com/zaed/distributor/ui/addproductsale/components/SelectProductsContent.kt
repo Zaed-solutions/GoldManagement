@@ -1,5 +1,6 @@
 package com.zaed.distributor.ui.addproductsale.components
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -37,6 +38,7 @@ fun SelectProductsContent(
     onEditProduct: (Product) -> Unit,
     onRemoveProduct: (id: String) -> Unit,
 ) {
+
     var isAddProductSheetVisible by remember { mutableStateOf(false) }
     var isSaveProductBottomSheetVisible by remember { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -55,6 +57,7 @@ fun SelectProductsContent(
             style = MaterialTheme.typography.headlineMedium
         )
         ProductsList(
+            modifier = Modifier.padding(horizontal = 8.dp),
             products = sale.products,
             onAddProduct = { isAddProductSheetVisible = true },
             onRemoveProduct = onRemoveProduct,
@@ -84,6 +87,7 @@ fun SelectProductsContent(
                 sheetState = bottomSheetState2,
                 onDismissRequest = { isSaveProductBottomSheetVisible = false },
             ) {
+
                 SaveProductSheetContent(
                     initialProduct = selectedProduct,
                     onSaveProduct = {

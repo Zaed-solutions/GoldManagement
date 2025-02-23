@@ -21,15 +21,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.sale.Product
-import com.zaed.common.ui.util.formatMoney
 import com.zaed.common.R
+import com.zaed.common.data.model.sale.Product
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProductsTable(
     modifier: Modifier = Modifier,
-    products: List<Product>
+    products: List<Product>,
+    onEditProduct: (Product) -> Unit ={},
+    onRemoveProduct: (id: String) -> Unit={},
+    isModifyEnabled: Boolean = true
 ) {
     Surface(
         border = BorderStroke(
@@ -80,7 +82,33 @@ fun ProductsTable(
                 }
             }
             items(products) {
-                ProductItem(product = it)
+                when (isModifyEnabled) {
+                    true -> {
+                        SwipeToEditOrDeleteContainer(
+                            onDelete = {
+                                onRemoveProduct(it.id)
+                            },
+                            isEditEnabled = true,
+                            onEdit = {
+                                onEditProduct(it)
+                            }
+                        ) {
+                            ProductItem(
+                                modifier = Modifier
+                                    .animateItem(),
+                                product = it,
+                            )
+                        }
+                    }
+                    false -> {
+                        ProductItem(
+                            modifier = Modifier
+                                .animateItem(),
+                            product = it,
+                        )
+                    }
+                }
+
             }
         }
     }

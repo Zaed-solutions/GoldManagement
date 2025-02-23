@@ -11,7 +11,9 @@ import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -68,11 +70,17 @@ private fun AddSaleScreenContent(
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
     val pagerState = rememberPagerState { 3 }
-    val progress by animateFloatAsState(
-        targetValue = (pagerState.currentPage + 1).toFloat() /(pagerState.pageCount + 1),
-        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
-        label = "linear progress inicator"
-    )
+    val progress by remember {
+        derivedStateOf {
+            (pagerState.currentPage + 1).toFloat() / (pagerState.pageCount + 1)
+        }
+    }.let { progressState ->
+        animateFloatAsState(
+            targetValue = progressState.value,
+            animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+            label = "linear progress indicator"
+        )
+    }
     Scaffold(
         modifier = modifier,
         topBar = {

@@ -61,7 +61,10 @@ fun SaleSummaryContent(
             isDividerVisible = false
         )
         ProductsTable(
-            products = sale.products
+            products = sale.products,
+            isModifyEnabled = false,
+            onEditProduct = {},
+            onRemoveProduct = {}
         )
         Spacer(modifier = Modifier.weight(1f))
         DashedDivider(

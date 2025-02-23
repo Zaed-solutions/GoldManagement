@@ -122,7 +122,8 @@ private fun ProductSaleDetailsContent(
                 title = stringResource(R.string.products)
             ) {
                 ProductsTable(
-                    products = state.sale.products
+                    products = state.sale.products,
+                    isModifyEnabled = false
                 )
             }
             //payments
