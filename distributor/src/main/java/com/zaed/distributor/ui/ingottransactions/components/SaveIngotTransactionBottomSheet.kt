@@ -72,16 +72,6 @@ fun SaveIngotTransactionBottomSheet(
                         transaction = transaction.copy(type = TransactionType.entries[index])
                     }
                 )
-                //grams
-                NumberInputTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = transaction.grams,
-                    withBorder = true,
-                    onValueChange = { grams ->
-                        transaction = transaction.copy(grams = grams)
-                    },
-                    label = stringResource(id = R.string.grams),
-                )
                 //karat
                 TitledDropDownTextField(
                     modifier = Modifier.fillMaxWidth(),
@@ -92,6 +82,16 @@ fun SaveIngotTransactionBottomSheet(
                     label = stringResource(id = R.string.karat),
                     options = Karat.entries.map { it.value.toString() },
                     shape = RoundedCornerShape(32.dp)
+                )
+                //grams
+                NumberInputTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = transaction.grams,
+                    withBorder = true,
+                    onValueChange = { grams ->
+                        transaction = transaction.copy(grams = grams)
+                    },
+                    label = stringResource(id = R.string.grams),
                 )
                 //selling price
                 NumberInputTextField(
@@ -115,7 +115,7 @@ fun SaveIngotTransactionBottomSheet(
                 )
                 Row(
                     modifier = Modifier
-                        .padding(bottom = 16.dp),
+                        .padding(vertical = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {

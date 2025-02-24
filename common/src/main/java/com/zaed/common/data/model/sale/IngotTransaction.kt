@@ -36,10 +36,5 @@ enum class TransactionType(@StringRes val stringRes: Int) {
 }
 enum class Karat (val value: Int) {
     K24(24),
-    K22(22),
-    K21(21),
     K18(18),
-    K14(14),
-    K12(12),
-    K10(10),
 }

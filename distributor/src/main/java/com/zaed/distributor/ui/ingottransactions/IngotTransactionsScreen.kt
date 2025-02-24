@@ -135,6 +135,7 @@ fun IngotTransactionsScreenContent(
             )
             //tab row
             PrimaryTabRow(
+                modifier = Modifier.padding(top = 16.dp),
                 selectedTabIndex = pagerState.currentPage,
                 indicator = {
                     TabRowDefaults.PrimaryIndicator(
@@ -227,6 +228,7 @@ fun IngotTransactionsScreenContent(
                 },
                 onSave = { transaction ->
                     onAction(IngotTransactionsUiAction.OnSaveTransaction(transaction))
+                    isSaveTransactionSheetVisible = false
                 }
             )
             ConfirmDeleteBottomSheet(
