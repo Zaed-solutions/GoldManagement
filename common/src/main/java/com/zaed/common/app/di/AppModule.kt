@@ -64,6 +64,8 @@ import com.zaed.common.domain.payment.AddNewPaymentUseCase
 import com.zaed.common.domain.payment.DeletePaymentUseCase
 import com.zaed.common.domain.payment.EditPaymentUseCase
 import com.zaed.common.domain.payment.FetchCustomerPaymentsUseCase
+import com.zaed.common.domain.payment.FetchPaymentsByIdsUseCase
+import com.zaed.common.domain.sale.AddIngotTransactionUseCase
 import com.zaed.common.domain.payment.FetchGoldPaymentsByIdsUseCase
 import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
 import com.zaed.common.domain.sale.AddGoldSaleUseCase
@@ -73,10 +75,12 @@ import com.zaed.common.domain.sale.DeleteStoreSaleUseCase
 import com.zaed.common.domain.sale.DeleteWholesaleGoldSaleUseCase
 import com.zaed.common.domain.sale.DeleteWholesaleProductSaleUseCase
 import com.zaed.common.domain.sale.FetchDistributorSalesUseCase
+import com.zaed.common.domain.sale.FetchIngotTransactionsUseCase
 import com.zaed.common.domain.sale.FetchStoreSalesUseCase
 import com.zaed.common.domain.sale.FetchWholesaleGoldSaleUseCase
 import com.zaed.common.domain.sale.FetchWholesaleProductSaleUseCase
 import com.zaed.common.domain.sale.GetStoreSaleUseCase
+import com.zaed.common.domain.sale.UpdateIngotTransactionUseCase
 import com.zaed.common.domain.sale.UpdateStoreSaleUseCase
 import com.zaed.common.domain.sale.UpdateWholesaleGoldSaleUseCase
 import com.zaed.common.domain.sale.UpdateWholesaleProductSaleUseCase
@@ -140,6 +144,9 @@ val useCaseModule = module {
     singleOf(::AddGoldSaleUseCase)
     singleOf(::FetchGoldPaymentsByIdsUseCase)
     singleOf(::UpdateWholesaleGoldSaleUseCase)
+    singleOf(::FetchIngotTransactionsUseCase)
+    singleOf(::AddIngotTransactionUseCase)
+    singleOf(::UpdateIngotTransactionUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }

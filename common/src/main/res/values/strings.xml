@@ -173,4 +173,14 @@
     <string name="money_paid">Money Paid</string>
     <string name="gold_paid">Gold Paid</string>
     <string name="specifying_karat">Specifying_karat</string>
+    <string name="purchase">Purchase</string>
+    <string name="karat">Karat</string>
+    <string name="selling_price">Selling Price</string>
+    <string name="buying_price">Buying Price</string>
+    <string name="add_ingot_transaction">Add Ingot Transaction</string>
+    <string name="edit_ingot_transaction">Edit Ingot Transaction</string>
+    <string name="total_earning">Total Earnings</string>
+    <string name="ingots">Ingots</string>
+    <string name="purchases">Purchases</string>
+    <string name="transaction">Transaction</string>
 </resources>

@@ -50,20 +50,8 @@ fun ProductSaleDetailsScreen(
         state = state
     ) { action ->
         when (action) {
-            SaleDetailsUiAction.OnBackClicked -> onBackClicked()
-            SaleDetailsUiAction.OnEditClicked -> onNavigateToEditSale(saleId)
-            SaleDetailsUiAction.OnPrintReceipt -> {
-                //TODO()
-            }
-
-            SaleDetailsUiAction.OnShareReceiptViaEmail -> {
-                //TODO()
-            }
-
-            SaleDetailsUiAction.OnShareReceiptViaWhatsapp -> {
-                //TODO()
-            }
-
+            ProductSaleDetailsUiAction.OnBackClicked -> onBackClicked()
+            ProductSaleDetailsUiAction.OnEditClicked -> onNavigateToEditSale(saleId)
             else -> viewModel.handleAction(action)
         }
     }

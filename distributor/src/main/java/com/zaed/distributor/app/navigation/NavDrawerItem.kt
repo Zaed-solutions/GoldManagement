@@ -33,7 +33,7 @@ enum class NavDrawerItem(
     INGOTS_SALES(
         title = R.string.ingots_sales,
         icon = null,
-        route = Route.SalesRoute
+        route = Route.IngotTransactionsRoute
     ),
 }
 

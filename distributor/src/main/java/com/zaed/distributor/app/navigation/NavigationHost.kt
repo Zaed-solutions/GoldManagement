@@ -2,9 +2,10 @@ package com.zaed.distributor.app.navigation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.compiler.plugins.kotlin.EmptyFunctionMetrics.composable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,6 +23,7 @@ import com.zaed.distributor.ui.addproductsale.AddProductSaleScreen
 import com.zaed.distributor.ui.customerdetails.CustomerDetailsScreen
 import com.zaed.distributor.ui.displaycustomers.DisplayCustomersScreen
 import com.zaed.distributor.ui.goldsaledetails.GoldSaleDetailsScreen
+import com.zaed.distributor.ui.ingottransactions.IngotTransactionsScreen
 import com.zaed.distributor.ui.losses.LossesScreen
 import com.zaed.distributor.ui.productsaledetails.ProductSaleDetailsScreen
 import com.zaed.distributor.ui.sales.SalesScreen
@@ -104,8 +106,9 @@ fun NavigationHost(
                 navigateToEditCustomer = { customerId ->
                     navController.navigate(
                         Route.AddCustomers(
-                        customerId = customerId
-                    ))
+                            customerId = customerId
+                        )
+                    )
                 }
             )
         }
@@ -122,7 +125,7 @@ fun NavigationHost(
                 onBack = {
                     navController.popBackStack()
                 },
-                navigateToEditCustomer = {id->
+                navigateToEditCustomer = { id ->
                     navController.navigate(Route.AddCustomers(id))
                 },
                 onNavigateToAddGoldSale = {
@@ -150,10 +153,18 @@ fun NavigationHost(
                 },
                 saleId = saleId,
                 onNavigateToProductSaleDetails = {
-                    navController.navigate(Route.ProductSaleDetailsRoute(it))
+                    navController.navigate(Route.ProductSaleDetailsRoute(it)) {
+                        popUpTo(Route.SalesRoute) {
+                            inclusive = false
+                        }
+                    }
                 },
                 onNavigateToAddCustomer = {
-                    navController.navigate(Route.AddCustomers())
+                    navController.navigate(Route.AddCustomers()) {
+                        popUpTo(Route.SalesRoute) {
+                            inclusive = false
+                        }
+                    }
                 }
             )
         }
@@ -199,20 +210,11 @@ fun NavigationHost(
                 onShowNavDrawer = onShowNavDrawer
             )
         }
-    }
-}
-
-@Composable
-fun HomeScreen() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Home",
-            style = MaterialTheme.typography.titleLarge
-        )
+        composable<Route.IngotTransactionsRoute> {
+            IngotTransactionsScreen(
+                onShowNavDrawer = onShowNavDrawer
+            )
+        }
     }
 }
 
@@ -249,5 +251,8 @@ sealed interface Route {
     data class GoldSaleDetailsRoute(val saleId: String = "") : Route
 
     @Serializable
-    data object LossesRoute: Route
+    data object LossesRoute : Route
+
+    @Serializable
+    data object IngotTransactionsRoute : Route
 }
