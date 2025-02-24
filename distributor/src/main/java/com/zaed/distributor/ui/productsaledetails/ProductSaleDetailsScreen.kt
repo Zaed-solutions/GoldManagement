@@ -50,8 +50,8 @@ fun ProductSaleDetailsScreen(
         state = state
     ) { action ->
         when (action) {
-            ProductSaleDetailsUiAction.OnBackClicked -> onBackClicked()
-            ProductSaleDetailsUiAction.OnEditClicked -> onNavigateToEditSale(saleId)
+            SaleDetailsUiAction.OnBackClicked -> onBackClicked()
+            SaleDetailsUiAction.OnEditClicked -> onNavigateToEditSale(saleId)
             else -> viewModel.handleAction(action)
         }
     }

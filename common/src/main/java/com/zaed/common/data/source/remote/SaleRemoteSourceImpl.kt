@@ -492,10 +492,6 @@ class SaleRemoteSourceImpl(
             val customerRef = wholesaleCustomersCollection.document(request.sale.customerId)
             request.moneyPayments.forEach {
                 val ref = moneyPaymentCollection.document()
-            ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")
-                ?.toLongOrNull() ?: 0
-            request.payments.forEach {
-                val ref = paymentsCollection.document()
                 paymentsIds.add(ref.id)
 
                 val amount = if (it.type == PaymentType.FUTURES) {
@@ -520,14 +516,7 @@ class SaleRemoteSourceImpl(
                     receiptNumber = (receiptNumber + 1).toString()
                 )
             )
-            batch.set(
-                docRef,
-                request.sale.copy(
-                    id = docRef.id,
-                    paymentsIds = paymentsIds,
-                    receiptNumber = (receiptNumber + 1).toString()
-                )
-            )
+
 
             batch.commit().await()
             Result.success(docRef.id)
