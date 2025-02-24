@@ -39,7 +39,7 @@ fun PaymentsList(
             }
             items(payments) { payment ->
                 PaymentItem(
-                    moneyPayment = payment,
+                    payment = payment,
                     onClick = { onPaymentClicked(payment) },
                     onDelete = {  onDeletePayment(payment) },
                     onEdit = {  onEditPayment(payment) }

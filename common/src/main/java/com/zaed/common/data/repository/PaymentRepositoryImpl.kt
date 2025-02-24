@@ -1,5 +1,6 @@
 package com.zaed.common.data.repository
 
+import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.EditPaymentRequest
@@ -15,8 +16,12 @@ class PaymentRepositoryImpl(
         return paymentDataSource.addPayment(request)
     }
 
-    override suspend fun fetchPaymentsByIds(request: FetchPaymentsByIdsRequest): Result<List<MoneyPayment>> {
-        return paymentDataSource.fetchPaymentsByIds(request)
+    override suspend fun fetchMoneyPaymentsByIds(request: FetchPaymentsByIdsRequest): Result<List<MoneyPayment>> {
+        return paymentDataSource.fetchMoneyPaymentsByIds(request)
+    }
+
+    override suspend fun fetchGoldPaymentsByIds(request: FetchPaymentsByIdsRequest): Result<List<GoldPayment>> {
+        return paymentDataSource.fetchGoldPaymentsByIds(request)
     }
 
 

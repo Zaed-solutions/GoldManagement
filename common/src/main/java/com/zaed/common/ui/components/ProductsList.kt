@@ -1,5 +1,6 @@
 package com.zaed.common.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.ui.util.formatMoney
+import com.zaed.common.ui.util.toMoneyFormat
 
 @Composable
 fun ProductsList(
@@ -73,17 +75,26 @@ fun ProductItem(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ){
-            Text(
-                text = product.name,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.weight(0.4f)
-            )
+            AnimatedVisibility(product.name.isNotEmpty()) {
+                Text(
+                    text = product.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.weight(0.5f)
+                )
+            }
             Text(
                 text = product.grams.toString(),
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.weight(0.2f)
+                modifier = Modifier.weight(0.3f)
             )
+            AnimatedVisibility(product.name.isEmpty()) {
+                Text(
+                    text = product.laborCost.toMoneyFormat(2),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.weight(0.3f)
+                )
+            }
             Text(
                 text = (product.grams * product.gramPrice * product.quantity).formatMoney(),
                 style = MaterialTheme.typography.titleMedium,

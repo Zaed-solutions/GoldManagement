@@ -1,7 +1,9 @@
 package com.zaed.common.data.source.remote
 
+import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FieldPath
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
@@ -10,12 +12,14 @@ import com.google.firebase.firestore.SetOptions
 import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
+import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.sale.StoreSale
 import com.zaed.common.data.model.sale.WholesaleGoldSale
 import com.zaed.common.data.model.sale.WholesaleProductSale
 import com.zaed.common.data.model.sale.WholesaleSale
 import com.zaed.common.data.model.sale.request.AddStoreSaleRequest
+import com.zaed.common.data.model.sale.request.AddWholesaleGoldSaleRequest
 import com.zaed.common.data.model.sale.request.AddWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.DeleteStoreSaleRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleGoldSaleRequest
@@ -25,6 +29,7 @@ import com.zaed.common.data.model.sale.request.FetchStoreSalesRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleGoldSaleRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.UpdateStoreSaleRequest
+import com.zaed.common.data.model.sale.request.UpdateWholesaleGoldSaleRequest
 import com.zaed.common.data.model.sale.request.UpdateWholesaleProductSaleRequest
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -40,7 +45,11 @@ class SaleRemoteSourceImpl(
     private val categoriesCollection = firestore.collection("categories")
     private val wholesaleProductSalesCollection = firestore.collection("wholesale_product_sales")
     private val wholesaleGoldSalesCollection = firestore.collection("wholesale_gold_sales")
-    private val paymentsCollection = firestore.collection("payments")
+    private val moneyPaymentCollection = firestore.collection("money_payments")
+    private val goldPaymentsCollection = firestore.collection("gold_payments")
+    private val wholesaleCustomersCollection = firestore.collection("whole_sale_customers")
+
+
     override fun fetchStoreSales(request: FetchStoreSalesRequest): Flow<Result<List<StoreSale>>> =
         callbackFlow {
             try {
@@ -296,14 +305,34 @@ class SaleRemoteSourceImpl(
                     date = Date(),
                     employeeId = request.distributorId,
                     employeeName = request.distributorName,
-                    action = "${request.distributorName} Deleted this sale"
+                    action = "Deleted this sale"
                 )
             )
             batch.set(saleRef, sale.copy(logs = logs, deleted = true))
+            val customerRef = wholesaleCustomersCollection.document(sale.customerId)
+            var totalPaymentDeleted = 0.0
             sale.paymentsIds.forEach {
-                val paymentRef = paymentsCollection.document(it)
-                batch.delete(paymentRef)
+                val paymentRef = moneyPaymentCollection.document(it)
+                val payment = paymentRef.get().await().toObject(MoneyPayment::class.java)
+                val log = ChangeLog(
+                    date = Date(),
+                    employeeId = request.distributorId,
+                    employeeName = request.distributorName,
+                    action = "Deleted this payment"
+                )
+                val updatePayments = mapOf(
+                    "deleted" to true,
+                    "logs" to FieldValue.arrayUnion(log)
+                )
+                batch.update(paymentRef, updatePayments)
+                if (payment?.type == PaymentType.FUTURES) {
+                    totalPaymentDeleted += payment.amount
+                }
             }
+            batch.update(
+                customerRef,
+                mapOf("debtAmount" to FieldValue.increment(totalPaymentDeleted.unaryMinus()))
+            )
             batch.commit().await()
             Result.success(Unit)
         } catch (e: Exception) {
@@ -314,8 +343,9 @@ class SaleRemoteSourceImpl(
 
     override suspend fun deleteWholesaleGoldSale(request: DeleteWholesaleGoldSaleRequest): Result<Unit> {
         return try {
-            //todo delete payment
-            val sale = wholesaleProductSalesCollection.document(request.saleId).get().await()
+            val batch = firestore.batch()
+            val saleRef = wholesaleGoldSalesCollection.document(request.saleId)
+            val sale = saleRef.get().await()
                 .toObject(WholesaleGoldSale::class.java) ?: WholesaleGoldSale()
             val logs = sale.logs.toMutableList()
             logs.add(
@@ -323,11 +353,49 @@ class SaleRemoteSourceImpl(
                     date = Date(),
                     employeeId = request.distributorId,
                     employeeName = request.distributorName,
-                    action = "${request.distributorName} Deleted this sale"
+                    action = "Deleted this sale"
                 )
             )
-            wholesaleProductSalesCollection.document(request.saleId)
-                .set(sale.copy(logs = logs, deleted = true)).await()
+            batch.set(saleRef, sale.copy(logs = logs, deleted = true))
+            val customerRef = wholesaleCustomersCollection.document(sale.customerId)
+            var totalPaymentDeleted = 0.0
+            sale.moneyPaymentsIds.forEach {
+                val paymentRef = moneyPaymentCollection.document(it)
+                val payment = paymentRef.get().await().toObject(MoneyPayment::class.java)
+                val log = ChangeLog(
+                    date = Date(),
+                    employeeId = request.distributorId,
+                    employeeName = request.distributorName,
+                    action = "Deleted this payment"
+                )
+                val updatePayments = mapOf(
+                    "deleted" to true,
+                    "logs" to FieldValue.arrayUnion(log)
+                )
+                batch.update(paymentRef, updatePayments)
+                if (payment?.type == PaymentType.FUTURES) {
+                    totalPaymentDeleted += payment.amount
+                }
+            }
+            batch.update(
+                customerRef,
+                mapOf("debtAmount" to FieldValue.increment(totalPaymentDeleted.unaryMinus()))
+            )
+            sale.goldPaymentsIds.forEach {
+                val paymentRef = goldPaymentsCollection.document(it)
+                val log = ChangeLog(
+                    date = Date(),
+                    employeeId = request.distributorId,
+                    employeeName = request.distributorName,
+                    action = "Deleted this payment"
+                )
+                val updatePayments = mapOf(
+                    "deleted" to true,
+                    "logs" to FieldValue.arrayUnion(log)
+                )
+                batch.update(paymentRef, updatePayments)
+            }
+            batch.commit().await()
             Result.success(Unit)
         } catch (e: Exception) {
             crashlytics.recordException(e)
@@ -365,18 +433,36 @@ class SaleRemoteSourceImpl(
             val receiptNumber = wholesaleProductSalesCollection.orderBy(
                 "receiptNumber",
                 Query.Direction.DESCENDING
-            ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")?.toLongOrNull() ?: 0
+            ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")
+                ?.toLongOrNull() ?: 0
+            val customerRef = wholesaleCustomersCollection.document(request.sale.customerId)
             request.moneyPayments.forEach {
-                val ref = paymentsCollection.document()
+                val ref = moneyPaymentCollection.document()
                 paymentsIds.add(ref.id)
-                val amount = if(it.type == PaymentType.FUTURES){
+
+                val amount = if (it.type == PaymentType.FUTURES) {
+                    batch.update(
+                        customerRef,
+                        mapOf("debtAmount" to FieldValue.increment(it.amount.unaryMinus()))
+                    )
                     it.amount.unaryMinus()
-                }else{
+                } else {
                     it.amount
                 }
-                batch.set(ref, it.copy(id = ref.id, amount = amount, receiptNumber = receiptNumber.toString()))
+                batch.set(
+                    ref,
+                    it.copy(id = ref.id, amount = amount, receiptNumber = receiptNumber.toString())
+                )
             }
-            batch.set(docRef, request.sale.copy(id = docRef.id, paymentsIds = paymentsIds, receiptNumber = (receiptNumber + 1).toString()))
+            batch.set(
+                docRef,
+                request.sale.copy(
+                    id = docRef.id,
+                    paymentsIds = paymentsIds,
+                    receiptNumber = (receiptNumber + 1).toString()
+                )
+            )
+
             batch.commit().await()
             Result.success(docRef.id)
         } catch (e: Exception) {
@@ -384,6 +470,70 @@ class SaleRemoteSourceImpl(
             Result.failure(e)
         }
     }
+
+    override suspend fun addGoldSale(request: AddWholesaleGoldSaleRequest): Result<String> {
+        return try {
+            val batch = firestore.batch()
+            val docRef = wholesaleGoldSalesCollection.document()
+            val moneyPaymentsIds = mutableListOf<String>()
+            val goldPaymentsIds = mutableListOf<String>()
+            val receiptNumber = wholesaleGoldSalesCollection.orderBy(
+                "receiptNumber",
+                Query.Direction.DESCENDING
+            ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")
+                ?.toLongOrNull() ?: 0
+            val customerRef = wholesaleCustomersCollection.document(request.sale.customerId)
+            request.moneyPayments.forEach {
+                val ref = moneyPaymentCollection.document()
+                moneyPaymentsIds.add(ref.id)
+                val amount = if (it.type == PaymentType.FUTURES) {
+                    batch.update(
+                        customerRef,
+                        mapOf("debtAmount" to FieldValue.increment(it.amount.unaryMinus()))
+                    )
+                    it.amount.unaryMinus()
+                } else {
+                    it.amount
+                }
+                batch.set(
+                    ref,
+                    it.copy(id = ref.id, amount = amount, receiptNumber = receiptNumber.toString())
+                )
+            }
+            request.goldPayments.forEach {
+                val ref = goldPaymentsCollection.document()
+                goldPaymentsIds.add(ref.id)
+                val amount = if (it.type == PaymentType.FUTURES) {
+                    it.givenGoldAmount.unaryMinus()
+                } else {
+                    it.givenGoldAmount
+                }
+                batch.set(
+                    ref,
+                    it.copy(
+                        id = ref.id,
+                        givenGoldAmount = amount,
+                        receiptNumber = receiptNumber.toString()
+                    )
+                )
+            }
+            batch.set(
+                docRef,
+                request.sale.copy(
+                    id = docRef.id,
+                    moneyPaymentsIds = moneyPaymentsIds,
+                    goldPaymentsIds = goldPaymentsIds,
+                    receiptNumber = (receiptNumber + 1).toString()
+                )
+            )
+            batch.commit().await()
+            Result.success(docRef.id)
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
+
 
     override suspend fun updateWholesaleProductSale(request: UpdateWholesaleProductSaleRequest): Result<Unit> {
         return try {
@@ -394,25 +544,120 @@ class SaleRemoteSourceImpl(
                     .toObject(WholesaleProductSale::class.java)
                     ?: return Result.failure(Exception("Sale not found"))
             val existingPaymentIds = existingSale.paymentsIds
+            val existingPayment = moneyPaymentCollection.where(
+                Filter.and(
+                    Filter.inArray("id", existingPaymentIds),
+                    Filter.equalTo("type", PaymentType.FUTURES)
+                )
+            ).get().await().documents.firstOrNull()?.toObject(MoneyPayment::class.java)?: MoneyPayment()
             val updatedPaymentIds = mutableListOf<String>()
+            val customerRef = wholesaleCustomersCollection.document(request.sale.customerId)
+            Log.d("finding_the_sex", "existingPayment: ${existingPayment.amount}")
+            batch.update(customerRef, mapOf("debtAmount" to FieldValue.increment(existingPayment.amount.unaryMinus())))
             request.moneyPayments.forEach { payment ->
+
                 if (payment.id.isNotEmpty() && existingPaymentIds.contains(payment.id)) {
-                    val paymentRef = paymentsCollection.document(payment.id)
+                    val paymentRef = moneyPaymentCollection.document(payment.id)
                     batch.set(paymentRef, payment, SetOptions.merge())
                     updatedPaymentIds.add(payment.id)
                 } else {
-                    val newPaymentRef = paymentsCollection.document()
-                    batch.set(newPaymentRef, payment.copy(id = newPaymentRef.id))
+                    val newPaymentRef = moneyPaymentCollection.document()
+                    val amount = if(payment.type == PaymentType.FUTURES){
+                        batch.update(customerRef, mapOf("debtAmount" to FieldValue.increment(payment.amount.unaryMinus())))
+                        payment.amount.unaryMinus()
+                    }else{
+                        payment.amount
+                    }
+                    batch.set(newPaymentRef, payment.copy(id = newPaymentRef.id,amount = amount))
                     updatedPaymentIds.add(newPaymentRef.id)
                 }
+
             }
             existingPaymentIds.forEach { paymentId ->
                 if (!updatedPaymentIds.contains(paymentId)) {
-                    batch.delete(paymentsCollection.document(paymentId))
+                    batch.delete(moneyPaymentCollection.document(paymentId))
                 }
             }
             batch.set(
                 saleDocRef, request.sale.copy(paymentsIds = updatedPaymentIds),
+                SetOptions.merge()
+            )
+            batch.commit().await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun updateWholesaleGoldSale(request: UpdateWholesaleGoldSaleRequest): Result<Unit> {
+        return try {
+            val batch = firestore.batch()
+            val saleDocRef = wholesaleGoldSalesCollection.document(request.sale.id)
+            val existingSale =
+                wholesaleGoldSalesCollection.document(request.sale.id).get().await()
+                    .toObject(WholesaleGoldSale::class.java)
+                    ?: return Result.failure(Exception("Sale not found"))
+            val existingMoneyPaymentIds = existingSale.moneyPaymentsIds
+            val existingPayment = moneyPaymentCollection.where(
+                Filter.and(
+                    Filter.inArray("id", existingMoneyPaymentIds),
+                    Filter.equalTo("type", PaymentType.FUTURES)
+                )
+            ).get().await().documents.firstOrNull()?.toObject(MoneyPayment::class.java)?: MoneyPayment()
+            val existingGoldPaymentIds = existingSale.goldPaymentsIds
+            val updatedMoneyPaymentIds = mutableListOf<String>()
+            val updatedGoldPaymentIds = mutableListOf<String>()
+            val customerRef = wholesaleCustomersCollection.document(request.sale.customerId)
+            batch.update(customerRef, mapOf("debtAmount" to FieldValue.increment(existingPayment.amount.unaryMinus())))
+            request.moneyPayments.forEach { payment ->
+                if (payment.id.isNotEmpty() && existingMoneyPaymentIds.contains(payment.id)) {
+                    val paymentRef = moneyPaymentCollection.document(payment.id)
+                    batch.set(paymentRef, payment, SetOptions.merge())
+                    updatedMoneyPaymentIds.add(payment.id)
+                } else {
+                    val newPaymentRef = moneyPaymentCollection.document()
+                    val amount = if(payment.type == PaymentType.FUTURES){
+                        batch.update(customerRef, mapOf("debtAmount" to FieldValue.increment(payment.amount.unaryMinus())))
+                        payment.amount.unaryMinus()
+                    }else{
+                        payment.amount
+                    }
+                    batch.set(newPaymentRef, payment.copy(id = newPaymentRef.id,amount = amount))
+                    updatedMoneyPaymentIds.add(newPaymentRef.id)
+                }
+            }
+            existingMoneyPaymentIds.forEach { paymentId ->
+                if (!updatedMoneyPaymentIds.contains(paymentId)) {
+                    batch.delete(moneyPaymentCollection.document(paymentId))
+                }
+            }
+            batch.set(
+                saleDocRef, request.sale.copy(moneyPaymentsIds = updatedMoneyPaymentIds),
+                SetOptions.merge()
+            )
+            //
+            request.goldPayments.forEach { payment ->
+                if (payment.id.isNotEmpty() && existingGoldPaymentIds.contains(payment.id)) {
+                    val paymentRef = goldPaymentsCollection.document(payment.id)
+                    batch.set(paymentRef, payment, SetOptions.merge())
+                    updatedGoldPaymentIds.add(payment.id)
+                } else {
+                    val newPaymentRef = goldPaymentsCollection.document()
+                    batch.set(newPaymentRef, payment.copy(id = newPaymentRef.id))
+                    updatedGoldPaymentIds.add(newPaymentRef.id)
+                }
+            }
+            existingGoldPaymentIds.forEach { paymentId ->
+                if (!updatedGoldPaymentIds.contains(paymentId)) {
+                    batch.delete(goldPaymentsCollection.document(paymentId))
+                }
+            }
+            batch.set(
+                saleDocRef, request.sale.copy(
+                    goldPaymentsIds = updatedGoldPaymentIds,
+                    moneyPaymentsIds = updatedMoneyPaymentIds
+                    ),
                 SetOptions.merge()
             )
             batch.commit().await()

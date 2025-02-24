@@ -1,5 +1,6 @@
 package com.zaed.distributor.ui.sales.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,12 +26,11 @@ fun GoldSaleItem(
     onSaleClicked: () -> Unit
 ) {
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp),
         shape = MaterialTheme.shapes.medium,
-        color = GoldenCustomColors.current.color,
-        contentColor = GoldenCustomColors.current.onColor,
         onClick = { onSaleClicked() },
-        tonalElevation = 2.dp
+        tonalElevation = 2.dp,
+        border = BorderStroke(2.dp, GoldenCustomColors.current.colorContainer)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),

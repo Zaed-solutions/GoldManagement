@@ -64,7 +64,9 @@ import com.zaed.common.domain.payment.AddNewPaymentUseCase
 import com.zaed.common.domain.payment.DeletePaymentUseCase
 import com.zaed.common.domain.payment.EditPaymentUseCase
 import com.zaed.common.domain.payment.FetchCustomerPaymentsUseCase
-import com.zaed.common.domain.payment.FetchPaymentsByIdsUseCase
+import com.zaed.common.domain.payment.FetchGoldPaymentsByIdsUseCase
+import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
+import com.zaed.common.domain.sale.AddGoldSaleUseCase
 import com.zaed.common.domain.sale.AddStoreSaleUseCase
 import com.zaed.common.domain.sale.AddWholesaleProductSaleUseCase
 import com.zaed.common.domain.sale.DeleteStoreSaleUseCase
@@ -76,6 +78,7 @@ import com.zaed.common.domain.sale.FetchWholesaleGoldSaleUseCase
 import com.zaed.common.domain.sale.FetchWholesaleProductSaleUseCase
 import com.zaed.common.domain.sale.GetStoreSaleUseCase
 import com.zaed.common.domain.sale.UpdateStoreSaleUseCase
+import com.zaed.common.domain.sale.UpdateWholesaleGoldSaleUseCase
 import com.zaed.common.domain.sale.UpdateWholesaleProductSaleUseCase
 import com.zaed.common.domain.store.GetStoresUseCase
 import com.zaed.common.ui.auth.MainViewModel
@@ -119,7 +122,7 @@ val useCaseModule = module {
     singleOf(::GetWholeSalesCustomersUseCase)
     singleOf(::FetchCustomerPaymentsUseCase)
     singleOf(::AddNewPaymentUseCase)
-    singleOf(::FetchPaymentsByIdsUseCase)
+    singleOf(::FetchMoneyPaymentsByIdsUseCase)
     singleOf(::FetchWholesaleCustomersByNameUseCase)
     singleOf(::GetWholeSalesCustomerUseCase)
     singleOf(::DeletePaymentUseCase)
@@ -134,6 +137,9 @@ val useCaseModule = module {
     singleOf(::FetchDistributorLossesUseCase)
     singleOf(::AddDistributorLossUseCase)
     singleOf(::UpdateDistributorLossUseCase)
+    singleOf(::AddGoldSaleUseCase)
+    singleOf(::FetchGoldPaymentsByIdsUseCase)
+    singleOf(::UpdateWholesaleGoldSaleUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }

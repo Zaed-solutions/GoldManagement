@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.productsaledetails
+package com.zaed.distributor.ui.goldsaledetails
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,17 +22,17 @@ import com.zaed.common.R
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
 import com.zaed.common.ui.components.ProductsTable
 import com.zaed.common.ui.components.TitledSection
+import com.zaed.distributor.ui.goldsaledetails.components.GoldSaleInfoSection
+import com.zaed.distributor.ui.productsaledetails.SaleDetailsUiAction
 import com.zaed.distributor.ui.productsaledetails.components.CustomerInfoSection
 import com.zaed.distributor.ui.productsaledetails.components.PaymentsTable
 import com.zaed.distributor.ui.productsaledetails.components.ProductSaleDetailsTopBar
-import com.zaed.distributor.ui.productsaledetails.components.SaleInfoSection
-
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun ProductSaleDetailsScreen(
+fun GoldSaleDetailsScreen(
     modifier: Modifier = Modifier,
-    viewModel: ProductSaleDetailsViewModel = koinViewModel(),
+    viewModel: GoldSaleDetailsViewModel = koinViewModel(),
     onBackClicked: () -> Unit,
     onNavigateToEditSale: (String) -> Unit,
     saleId: String = ""
@@ -46,7 +46,7 @@ fun ProductSaleDetailsScreen(
             onBackClicked()
         }
     }
-    ProductSaleDetailsContent(
+    GoldSaleDetailsContent(
         state = state
     ) { action ->
         when (action) {
@@ -70,9 +70,9 @@ fun ProductSaleDetailsScreen(
 }
 
 @Composable
-private fun ProductSaleDetailsContent(
+private fun GoldSaleDetailsContent(
     modifier: Modifier = Modifier,
-    state: ProductSaleDetailsUiState,
+    state: GoldSaleDetailsUiState,
     onAction: (SaleDetailsUiAction) -> Unit,
 ) {
     var isConfirmDeleteVisible by remember { mutableStateOf(false) }
@@ -103,10 +103,10 @@ private fun ProductSaleDetailsContent(
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             // sale info
-            SaleInfoSection(
+            GoldSaleInfoSection(
                 receiptNumber = state.sale.receiptNumber,
                 createdAt = state.sale.createdAt,
-                paid = state.sale.paid,
+                paymentStatus = state.paymentStatus,
                 receiptStatus = state.sale.receiptStatus,
                 onRequestReceipt = {
                     onAction(SaleDetailsUiAction.OnRequestReceipt)
@@ -131,7 +131,7 @@ private fun ProductSaleDetailsContent(
                 title = stringResource(R.string.payments)
             ) {
                 PaymentsTable(
-                    payments = state.moneyPayments
+                    payments = state.payments
                 )
             }
             ConfirmDeleteBottomSheet(
@@ -151,8 +151,8 @@ private fun ProductSaleDetailsContent(
 @Preview(showSystemUi = true, showBackground = true, device = "id:pixel_9_pro")
 @Composable
 private fun Preview() {
-    ProductSaleDetailsContent(
+    GoldSaleDetailsContent(
         onAction = {},
-        state = ProductSaleDetailsUiState()
+        state = GoldSaleDetailsUiState()
     )
 }

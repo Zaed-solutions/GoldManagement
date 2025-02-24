@@ -1,7 +1,6 @@
 package com.zaed.distributor.ui.sales
 
 import android.content.Context
-import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -42,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
 import com.zaed.common.data.model.authentication.UserPermission
+import com.zaed.common.data.model.payment.PaymentStatus
 import com.zaed.common.ui.components.ConfirmDeleteDialog
 import com.zaed.common.ui.components.FabItem
 import com.zaed.common.ui.components.MoreDropDownMenu
@@ -75,7 +75,7 @@ fun SalesScreen(
                 SalesUiAction.AddProductSaleClicked -> onNavigateToAddProductSale("")
                 SalesUiAction.AddGoldSaleClicked -> onNavigateToAddGoldSale("")
                 is SalesUiAction.OnEditProductSale -> onNavigateToAddProductSale(action.saleId)
-                is SalesUiAction.OnEditGoldSale -> onNavigateToGoldSaleDetails(action.saleId)
+                is SalesUiAction.OnEditGoldSale -> onNavigateToAddGoldSale(action.saleId)
                 is SalesUiAction.OnProductSaleClicked -> onNavigateToProductSaleDetails(action.saleId)
                 is SalesUiAction.OnGoldSaleClicked -> onNavigateToGoldSaleDetails(action.saleId)
                 else -> viewModel.handleAction(action)
@@ -246,6 +246,7 @@ fun SalesScreenContent(
                                     SalesUiAction.OnDeleteGoldSale(selectedSale.first)
                                 }
                             )
+                            isConfirmDeleteVisible = false
                         }
                     )
                 }
@@ -255,8 +256,3 @@ fun SalesScreenContent(
 
 }
 
-enum class PaymentStatus(@StringRes val label: Int) {
-    ALL(R.string.all),
-    PAID(R.string.paid),
-    UNPAID(R.string.unpaid)
-}

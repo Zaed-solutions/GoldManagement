@@ -1,6 +1,5 @@
-package com.zaed.distributor.ui.addproductsale.components
+package com.zaed.distributor.ui.addGoldSale.components
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,16 +19,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.payment.MoneyPayment
+import com.zaed.common.data.model.payment.Payment
 import com.zaed.distributor.ui.customerdetails.component.PaymentItem
 
 @Composable
 fun PaymentsList(
     modifier: Modifier = Modifier,
-    moneyPayments: List<MoneyPayment>,
+    payments: List<Payment>,
     onAddPayment: () -> Unit,
-    onEditPayment: (MoneyPayment) -> Unit,
-    onRemovePayment: (MoneyPayment) -> Unit
+    onEditPayment: (Payment) -> Unit,
+    onRemovePayment: (Payment) -> Unit
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -58,7 +57,7 @@ fun PaymentsList(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(
-                items = moneyPayments,
+                items = payments,
                 key = { it.id }
             ) { payment ->
                 PaymentItem(
@@ -67,7 +66,6 @@ fun PaymentsList(
                         onEditPayment(payment)
                     },
                     onDelete = {
-                        Log.d("find the issue", "paymentSent: $payment")
                         onRemovePayment(payment)
                     }
                 )

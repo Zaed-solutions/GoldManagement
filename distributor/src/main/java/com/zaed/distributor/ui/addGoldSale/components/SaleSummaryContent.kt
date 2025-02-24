@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.addproductsale.components
+package com.zaed.distributor.ui.addGoldSale.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.sp
 import com.zaed.common.R
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.MoneyPayment
-import com.zaed.common.data.model.sale.Product
+import com.zaed.common.data.model.sale.WholesaleProductSale
 import com.zaed.common.ui.components.DashedDivider
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.components.PriceCalculationItem
@@ -30,7 +30,7 @@ import java.util.Date
 fun SaleSummaryContent(
     modifier: Modifier = Modifier,
     customer: WholeSaleCustomer,
-    products : List<Product>,
+    sale: WholesaleProductSale,
     moneyPayments: List<MoneyPayment>,
     totalAmount: Double,
     totalPaid: Double,
@@ -61,7 +61,7 @@ fun SaleSummaryContent(
             isDividerVisible = false
         )
         ProductsTable(
-            products = products,
+            products = sale.products,
             isModifyEnabled = false,
             onEditProduct = {},
             onRemoveProduct = {}

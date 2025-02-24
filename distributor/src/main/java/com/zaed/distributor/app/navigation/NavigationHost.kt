@@ -1,8 +1,6 @@
 package com.zaed.distributor.app.navigation
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -11,20 +9,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.zaed.common.data.model.authentication.UserPermission
 import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
+import com.zaed.distributor.ui.addGoldSale.AddGoldSaleScreen
 import com.zaed.distributor.ui.addcustomers.AddCustomersScreen
 import com.zaed.distributor.ui.addproductsale.AddProductSaleScreen
 import com.zaed.distributor.ui.customerdetails.CustomerDetailsScreen
 import com.zaed.distributor.ui.displaycustomers.DisplayCustomersScreen
+import com.zaed.distributor.ui.goldsaledetails.GoldSaleDetailsScreen
 import com.zaed.distributor.ui.losses.LossesScreen
 import com.zaed.distributor.ui.productsaledetails.ProductSaleDetailsScreen
 import com.zaed.distributor.ui.sales.SalesScreen
@@ -174,21 +171,28 @@ fun NavigationHost(
         }
         composable<Route.AddGoldSaleRoute> { backstackEntry ->
             val saleId = backstackEntry.toRoute<Route.AddGoldSaleRoute>().saleId
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Add Gold Sale $saleId")
-            }
+            AddGoldSaleScreen(
+                saleId = saleId,
+                onBackClicked = {
+                    navController.popBackStack()
+                },
+                onNavigateToGoldSaleDetails = {
+                    navController.navigate(Route.GoldSaleDetailsRoute(it))
+                },
+                onNavigateToAddCustomer = {
+                    navController.navigate(Route.AddCustomers())
+                }
+            )
         }
         composable<Route.GoldSaleDetailsRoute> { backstackEntry ->
             val saleId = backstackEntry.toRoute<Route.GoldSaleDetailsRoute>().saleId
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Gold Sale Details $saleId")
-            }
+            GoldSaleDetailsScreen(
+                saleId = saleId,
+                onBackClicked = {
+                    navController.popBackStack()
+                },
+                onNavigateToEditSale = {}
+            )
         }
         composable<Route.LossesRoute> {
             LossesScreen(

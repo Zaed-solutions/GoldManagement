@@ -7,8 +7,9 @@ data class GoldPayment(
     override val id: String = "",
     override val customerId: String = "",
     override val type: PaymentType = PaymentType.GOLD,
-    val givenGoldAmount: Double = 0.0, // خاص بـ GoldPayment
-    val givenGoldKarat: Int = 0,       // خاص بـ GoldPayment
+    val givenGoldAmount: Double = 0.0,
+    val givenGoldKarat: Int = 0,
+    val pricePerGram: Double = 0.0,
     override val deleted: Boolean = false,
     override val receiptNumber: String = "",
     override val createdAt: Date = Date(),

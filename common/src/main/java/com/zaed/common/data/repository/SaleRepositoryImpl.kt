@@ -6,6 +6,7 @@ import com.zaed.common.data.model.sale.WholesaleGoldSale
 import com.zaed.common.data.model.sale.WholesaleProductSale
 import com.zaed.common.data.model.sale.WholesaleSale
 import com.zaed.common.data.model.sale.request.AddStoreSaleRequest
+import com.zaed.common.data.model.sale.request.AddWholesaleGoldSaleRequest
 import com.zaed.common.data.model.sale.request.AddWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.DeleteStoreSaleRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleGoldSaleRequest
@@ -15,6 +16,7 @@ import com.zaed.common.data.model.sale.request.FetchStoreSalesRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleGoldSaleRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.UpdateStoreSaleRequest
+import com.zaed.common.data.model.sale.request.UpdateWholesaleGoldSaleRequest
 import com.zaed.common.data.model.sale.request.UpdateWholesaleProductSaleRequest
 import com.zaed.common.data.source.remote.SaleRemoteSource
 import kotlinx.coroutines.flow.Flow
@@ -59,8 +61,16 @@ class SaleRepositoryImpl(
         return saleRemoteSource.fetchWholesaleGoldSale(request)
     }
 
+    override suspend fun updateWholesaleGoldSale(request: UpdateWholesaleGoldSaleRequest): Result<Unit> {
+        return saleRemoteSource.updateWholesaleGoldSale(request)
+    }
+
     override suspend fun addWholesaleProductSale(request: AddWholesaleProductSaleRequest): Result<String> {
         return saleRemoteSource.addWholesaleProductSale(request)
+    }
+
+    override suspend fun addGoldSale(request: AddWholesaleGoldSaleRequest): Result<String> {
+        return saleRemoteSource.addGoldSale(request)
     }
 
     override suspend fun updateWholesaleProductSale(request: UpdateWholesaleProductSaleRequest): Result<Unit> {

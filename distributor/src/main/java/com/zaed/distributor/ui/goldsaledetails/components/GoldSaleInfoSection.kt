@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.productsaledetails.components
+package com.zaed.distributor.ui.goldsaledetails.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -6,28 +6,29 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
+import com.zaed.common.data.model.payment.PaymentStatus
 import com.zaed.common.data.model.sale.ReceiptStatus
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.components.TitledSection
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
-import com.zaed.distributor.ui.sales.components.PaidStatusChip
 import java.util.Date
 
 @Composable
-fun SaleInfoSection(
+fun GoldSaleInfoSection(
     modifier: Modifier = Modifier,
     receiptNumber: String,
     createdAt: Date,
-    paid: Boolean,
+    paymentStatus: PaymentStatus,
     receiptStatus: ReceiptStatus,
     onRequestReceipt: () -> Unit = {}
 ) {
@@ -49,8 +50,15 @@ fun SaleInfoSection(
                 label = stringResource(R.string.payment_status),
                 value = "",
                 trailingContent = {
-                    PaidStatusChip(
-                        paid = paid
+                    AssistChip(
+                        modifier = modifier,
+                        onClick = {},
+                        shape = MaterialTheme.shapes.small,
+                        label = {
+                            Text(
+                                text = stringResource(paymentStatus.label)
+                            )
+                        },
                     )
                 },
                 isDividerVisible = false,
@@ -77,16 +85,4 @@ fun SaleInfoSection(
             }
         }
     }
-}
-
-@Preview(showSystemUi = true, showBackground = true, device = "id:pixel_9_pro")
-@Composable
-private fun Preview() {
-    SaleInfoSection(
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 50.dp),
-        receiptNumber = "123456",
-        createdAt = Date(),
-        paid = true,
-        receiptStatus = ReceiptStatus.PENDING
-    )
 }

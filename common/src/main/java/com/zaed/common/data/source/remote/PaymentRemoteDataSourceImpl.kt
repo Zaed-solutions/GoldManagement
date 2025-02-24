@@ -1,8 +1,10 @@
 package com.zaed.common.data.source.remote
 
+import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObjects
+import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
@@ -18,10 +20,11 @@ class PaymentRemoteDataSourceImpl(
     private val firestore: FirebaseFirestore,
     private val crashlytics: FirebaseCrashlytics
 ) : PaymentRemoteDataSource {
-    private val paymentsCollection = firestore.collection("payments")
+    private val moneyPaymentsCollection = firestore.collection("money_payments")
+    private val goldPaymentsCollection = firestore.collection("gold_payments")
     override suspend fun addPayment(request: AddNewPaymentRequest): Result<String> {
         try {
-            val document = paymentsCollection.document()
+            val document = moneyPaymentsCollection.document()
             val amount = if(request.moneyPayment.type == PaymentType.FUTURES){
                 request.moneyPayment.amount.unaryMinus()
             }else{
@@ -44,7 +47,7 @@ class PaymentRemoteDataSourceImpl(
     override fun fetchCustomerPayments(request: FetchCustomerPaymentsRequest): Flow<Result<List<MoneyPayment>>> =
         callbackFlow {
             try {
-                paymentsCollection.whereEqualTo("customerId", request.customerId)
+                moneyPaymentsCollection.whereEqualTo("customerId", request.customerId)
                     .addSnapshotListener { snapshot, error ->
                         if (error != null) {
                             crashlytics.recordException(error)
@@ -55,7 +58,7 @@ class PaymentRemoteDataSourceImpl(
                             trySend(Result.success(payments))
                         }
                     }
-                paymentsCollection.whereEqualTo("customerId", request.customerId)
+                moneyPaymentsCollection.whereEqualTo("customerId", request.customerId)
             } catch (e: Exception) {
                 crashlytics.recordException(e)
                 e.printStackTrace()
@@ -64,9 +67,19 @@ class PaymentRemoteDataSourceImpl(
             awaitClose { }
         }
 
-    override suspend fun fetchPaymentsByIds(request: FetchPaymentsByIdsRequest): Result<List<MoneyPayment>> {
+    override suspend fun fetchMoneyPaymentsByIds(request: FetchPaymentsByIdsRequest): Result<List<MoneyPayment>> {
         return try {
-            val moneyPayments = paymentsCollection.whereIn("id", request.paymentsIds).get().await().toObjects<MoneyPayment>()
+            Log.d("PaymentRemoteDataSource", "fetchMoneyPaymentsByIds: ${request.paymentsIds}")
+            val moneyPayments = moneyPaymentsCollection.whereIn("id", request.paymentsIds).get().await().toObjects<MoneyPayment>()
+            Log.d("PaymentRemoteDataSource", "fetchMoneyPaymentsByIds: $moneyPayments")
+            Result.success(moneyPayments)
+        } catch (e: Exception){
+            Result.failure(e)
+        }
+    }
+    override suspend fun fetchGoldPaymentsByIds(request: FetchPaymentsByIdsRequest): Result<List<GoldPayment>> {
+        return try {
+            val moneyPayments = goldPaymentsCollection.whereIn("id", request.paymentsIds).get().await().toObjects<GoldPayment>()
             Result.success(moneyPayments)
         } catch (e: Exception){
             Result.failure(e)
@@ -75,7 +88,7 @@ class PaymentRemoteDataSourceImpl(
 
     override suspend fun editPayment(request: EditPaymentRequest): Result<Unit> {
         try {
-            paymentsCollection.document(request.newMoneyPayment.id).set(request.newMoneyPayment).await()
+            moneyPaymentsCollection.document(request.newMoneyPayment.id).set(request.newMoneyPayment).await()
             return Result.success(Unit)
         }catch (e: Exception){
             crashlytics.recordException(e)
@@ -86,7 +99,7 @@ class PaymentRemoteDataSourceImpl(
 
     override suspend fun deletePayment(id: String): Result<Unit> {
         try {
-            paymentsCollection.document(id).delete().await()
+            moneyPaymentsCollection.document(id).delete().await()
             return Result.success(Unit)
         }catch (e: Exception){
             crashlytics.recordException(e)

@@ -1,6 +1,5 @@
-package com.zaed.distributor.ui.addproductsale
+package com.zaed.distributor.ui.addGoldSale
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -32,20 +31,20 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
 import com.zaed.common.ui.components.ProgressIndicatorTopAppBar
+import com.zaed.distributor.ui.addGoldSale.components.SelectGoldContent
+import com.zaed.distributor.ui.addGoldSale.components.SelectGoldPaymentsContent
 import com.zaed.distributor.ui.addproductsale.components.SaleSummaryContent
 import com.zaed.distributor.ui.addproductsale.components.SelectCustomerContent
-import com.zaed.distributor.ui.addproductsale.components.SelectPaymentsContent
-import com.zaed.distributor.ui.addproductsale.components.SelectProductsContent
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun AddProductSaleScreen(
+fun AddGoldSaleScreen(
     modifier: Modifier = Modifier,
-    viewModel: AddProductSaleViewModel = koinViewModel(),
+    viewModel: AddGoldSaleViewModel = koinViewModel(),
     saleId: String = "",
     onBackClicked: () -> Unit,
-    onNavigateToProductSaleDetails: (saleId: String) -> Unit,
+    onNavigateToGoldSaleDetails: (saleId: String) -> Unit,
     onNavigateToAddCustomer: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -54,15 +53,15 @@ fun AddProductSaleScreen(
     }
     LaunchedEffect (state.isFinished){
         if(state.isFinished){
-            onNavigateToProductSaleDetails(state.sale.id)
+            onNavigateToGoldSaleDetails(state.sale.id)
         }
     }
-    AddProductSaleScreenContent(
+    AddGoldSaleScreenContent(
         state = state,
         onAction = { action ->
             when(action){
-                AddProductSaleUiAction.OnAddNewCustomerClicked -> onNavigateToAddCustomer()
-                AddProductSaleUiAction.OnBackClicked -> onBackClicked()
+                AddGoldSaleUiAction.OnAddNewCustomerClicked -> onNavigateToAddCustomer()
+                AddGoldSaleUiAction.OnBackClicked -> onBackClicked()
                 else -> viewModel.handleAction(action)
             }
         }
@@ -70,16 +69,12 @@ fun AddProductSaleScreen(
 }
 
 @Composable
-private fun AddProductSaleScreenContent(
+private fun AddGoldSaleScreenContent(
     modifier: Modifier = Modifier,
-    state: AddProductSaleUiState,
-    onAction: (AddProductSaleUiAction) -> Unit,
+    state: AddGoldSaleUiState,
+    onAction: (AddGoldSaleUiAction) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-    Log.d(
-        "find the issue",
-        "fetchCurrentUser: screen"
-    )
     val pagerState = rememberPagerState { 4 }
     val progress by remember {
         derivedStateOf {
@@ -99,7 +94,7 @@ private fun AddProductSaleScreenContent(
                 pagerState.animateScrollToPage(pagerState.currentPage - 1)
             }
         } else {
-            onAction(AddProductSaleUiAction.OnBackClicked)
+            onAction(AddGoldSaleUiAction.OnBackClicked)
         }
     }
     Scaffold (
@@ -107,7 +102,7 @@ private fun AddProductSaleScreenContent(
             ProgressIndicatorTopAppBar(
                 progress = progress
             ) {
-                onAction(AddProductSaleUiAction.OnBackClicked)
+                onAction(AddGoldSaleUiAction.OnBackClicked)
             }
         },
         bottomBar = {
@@ -140,7 +135,7 @@ private fun AddProductSaleScreenContent(
                         modifier = Modifier.weight(1f).heightIn(min = 48.dp),
                         onClick = {
                             if(pagerState.currentPage == 3){
-                                onAction(AddProductSaleUiAction.OnSubmitClicked)
+                                onAction(AddGoldSaleUiAction.OnSubmitClicked)
                             } else {
                                 scope.launch {
                                     pagerState.animateScrollToPage(pagerState.currentPage+1)
@@ -171,47 +166,50 @@ private fun AddProductSaleScreenContent(
                         SelectCustomerContent(
                             query = state.customerSearchQuery,
                             onQueryChanged = {
-                                onAction(AddProductSaleUiAction.OnCustomerSearchQueryChanged(it))
+                                onAction(AddGoldSaleUiAction.OnCustomerSearchQueryChanged(it))
                             },
                             selectedCustomer = state.selectedCustomer,
                             suggestedCustomers = state.suggestedCustomers,
                             onAddNewCustomer = {
-                                onAction(AddProductSaleUiAction.OnAddNewCustomerClicked)
+                                onAction(AddGoldSaleUiAction.OnAddNewCustomerClicked)
                             },
                             onCustomerSelected = {
-                                onAction(AddProductSaleUiAction.OnCustomerSelected(it))
+                                onAction(AddGoldSaleUiAction.OnCustomerSelected(it))
                             }
                         )
                     }
                     1 -> {
                         //add products
-                        SelectProductsContent(
-                            categories = state.categories,
-                            sale = state.sale,
-                            onAddProduct = {
-                                onAction(AddProductSaleUiAction.OnAddProduct(it))
+                        SelectGoldContent(
+                            sale = state.sale.products,
+                            onAddGold = {
+                                onAction(AddGoldSaleUiAction.OnAddProduct(it))
                             },
-                            onRemoveProduct = {
-                                onAction(AddProductSaleUiAction.OnRemoveProduct(it))
+                            onRemoveGold = {
+                                onAction(AddGoldSaleUiAction.OnRemoveProduct(it))
                             },
-                            onEditProduct = {
-                                onAction(AddProductSaleUiAction.OnEditProduct(it))
+                            onEditGold = {
+                                onAction(AddGoldSaleUiAction.OnEditProduct(it))
                             }
                         )
                     }
                     2 -> {
-                        SelectPaymentsContent(
-                            totalAmount = state.totalAmount,
+                        SelectGoldPaymentsContent(
+                            goldCost= state.totalAmount,
+                            laborCost = state.laborCost,
+                            moneyPayments = state.totalMoneyPaid,
+                            goldPayments = state.totalGoldAmount,
+                            totalGoldPaid = state.totalGoldPrice,
                             totalPaid = state.totalPaid,
-                            moneyPayments = state.moneyPayments,
+                            payments = state.moneyPayments + state.goldPayments,
                             onAddPayment = {
-                                onAction(AddProductSaleUiAction.OnAddPayment(it))
+                                onAction(AddGoldSaleUiAction.OnAddPayment(it))
                             },
                             onEditPayment = {
-                                onAction(AddProductSaleUiAction.OnEditPayment(it))
+                                onAction(AddGoldSaleUiAction.OnEditPayment(it))
                             },
                             onRemovePayment = {
-                                onAction(AddProductSaleUiAction.OnRemovePayment(it.id))
+                                onAction(AddGoldSaleUiAction.OnRemovePayment(it.id))
                             }
                         )
                     }
@@ -219,8 +217,8 @@ private fun AddProductSaleScreenContent(
                         SaleSummaryContent(
                             customer = state.selectedCustomer,
                             products = state.sale.products,
-                            totalPaid = state.totalPaid,
-                            totalAmount = state.totalAmount,
+                            totalPaid = state.totalPaid ,
+                            totalAmount = state.totalAmount+ state.laborCost,
                             moneyPayments = state.moneyPayments
                         )
                     }
