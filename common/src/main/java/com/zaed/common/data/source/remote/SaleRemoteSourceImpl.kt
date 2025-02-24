@@ -10,19 +10,23 @@ import com.google.firebase.firestore.SetOptions
 import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
+import com.zaed.common.data.model.sale.IngotTransaction
 import com.zaed.common.data.model.sale.StoreSale
 import com.zaed.common.data.model.sale.WholesaleGoldSale
 import com.zaed.common.data.model.sale.WholesaleProductSale
 import com.zaed.common.data.model.sale.WholesaleSale
+import com.zaed.common.data.model.sale.request.AddIngotTransactionRequest
 import com.zaed.common.data.model.sale.request.AddStoreSaleRequest
 import com.zaed.common.data.model.sale.request.AddWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.DeleteStoreSaleRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleGoldSaleRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.FetchDistributorSalesRequest
+import com.zaed.common.data.model.sale.request.FetchIngotTransactionsRequest
 import com.zaed.common.data.model.sale.request.FetchStoreSalesRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleGoldSaleRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleProductSaleRequest
+import com.zaed.common.data.model.sale.request.UpdateIngotTransactionRequest
 import com.zaed.common.data.model.sale.request.UpdateStoreSaleRequest
 import com.zaed.common.data.model.sale.request.UpdateWholesaleProductSaleRequest
 import kotlinx.coroutines.channels.awaitClose
@@ -40,6 +44,7 @@ class SaleRemoteSourceImpl(
     private val wholesaleProductSalesCollection = firestore.collection("wholesale_product_sales")
     private val wholesaleGoldSalesCollection = firestore.collection("wholesale_gold_sales")
     private val paymentsCollection = firestore.collection("payments")
+    private val ingotTransactionsCollection = firestore.collection("ingot_transactions")
     override fun fetchStoreSales(request: FetchStoreSalesRequest): Flow<Result<List<StoreSale>>> =
         callbackFlow {
             try {
@@ -282,6 +287,54 @@ class SaleRemoteSourceImpl(
             }
         }
 
+    override fun fetchIngotTransaction(request: FetchIngotTransactionsRequest): Flow<Result<List<IngotTransaction>>> =
+        callbackFlow {
+            try {
+                ingotTransactionsCollection.where(
+                    Filter.and(
+                        Filter.equalTo("distributorId", request.distributorId),
+                        Filter.equalTo("deleted", false)
+                    )
+                ).addSnapshotListener { snapshot, e ->
+                    if (e != null) {
+                        crashlytics.recordException(e)
+                        trySend(Result.failure(e))
+                        return@addSnapshotListener
+                    }
+                    val transactions =
+                        snapshot?.toObjects(IngotTransaction::class.java) ?: emptyList()
+                    trySend(Result.success(transactions))
+                }
+            } catch (e: Exception) {
+                crashlytics.recordException(e)
+                trySend(Result.failure(e))
+            }
+            awaitClose { }
+        }
+
+    override suspend fun addIngotTransaction(transaction: AddIngotTransactionRequest): Result<String> {
+        return try {
+            val docRef = ingotTransactionsCollection.document()
+            ingotTransactionsCollection.document(docRef.id)
+                .set(transaction.transaction.copy(id = docRef.id)).await()
+            Result.success(docRef.id)
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun updateIngotTransaction(transaction: UpdateIngotTransactionRequest): Result<Unit> {
+        return try {
+            ingotTransactionsCollection.document(transaction.transaction.id)
+                .set(transaction.transaction, SetOptions.merge()).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
+
 
     override suspend fun deleteWholesaleProductSale(request: DeleteWholesaleProductSaleRequest): Result<Unit> {
         return try {
@@ -364,13 +417,21 @@ class SaleRemoteSourceImpl(
             val receiptNumber = wholesaleProductSalesCollection.orderBy(
                 "receiptNumber",
                 Query.Direction.DESCENDING
-            ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")?.toLongOrNull() ?: 0
+            ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")
+                ?.toLongOrNull() ?: 0
             request.payments.forEach {
                 val ref = paymentsCollection.document()
                 paymentsIds.add(ref.id)
                 batch.set(ref, it.copy(id = ref.id, receiptNumber = receiptNumber.toString()))
             }
-            batch.set(docRef, request.sale.copy(id = docRef.id, paymentsIds = paymentsIds, receiptNumber = (receiptNumber + 1).toString()))
+            batch.set(
+                docRef,
+                request.sale.copy(
+                    id = docRef.id,
+                    paymentsIds = paymentsIds,
+                    receiptNumber = (receiptNumber + 1).toString()
+                )
+            )
             batch.commit().await()
             Result.success(docRef.id)
         } catch (e: Exception) {

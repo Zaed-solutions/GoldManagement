@@ -168,4 +168,14 @@
     <string name="customers">Customers</string>
     <string name="gold_sales">Gold Sales</string>
     <string name="ingots_sales">Ingots Sales</string>
+    <string name="purchase">Purchase</string>
+    <string name="karat">Karat</string>
+    <string name="selling_price">Selling Price</string>
+    <string name="buying_price">Buying Price</string>
+    <string name="add_ingot_transaction">Add Ingot Transaction</string>
+    <string name="edit_ingot_transaction">Edit Ingot Transaction</string>
+    <string name="total_earning">Total Earnings</string>
+    <string name="ingots">Ingots</string>
+    <string name="purchases">Purchases</string>
+    <string name="transaction">Transaction</string>
 </resources>

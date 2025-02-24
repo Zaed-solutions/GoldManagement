@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -35,6 +36,7 @@ fun TitledDropDownTextField(
     selectedValue: String,
     options: List<String>,
     onValueChanged: (Int) -> Unit = {},
+    shape: Shape = MaterialTheme.shapes.large,
 ) {
     var expanded by remember { mutableStateOf(false) }
     Column(
@@ -58,7 +60,7 @@ fun TitledDropDownTextField(
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                 },
-                shape = MaterialTheme.shapes.large,
+                shape = shape,
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                 ),
