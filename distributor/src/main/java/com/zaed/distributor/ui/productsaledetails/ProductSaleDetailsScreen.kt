@@ -24,9 +24,9 @@ import com.zaed.common.ui.components.ProductsTable
 import com.zaed.common.ui.components.TitledSection
 import com.zaed.distributor.ui.productsaledetails.components.CustomerInfoSection
 import com.zaed.distributor.ui.productsaledetails.components.PaymentsTable
-import com.zaed.distributor.ui.productsaledetails.components.ProductSaleDetailsActionButtons
 import com.zaed.distributor.ui.productsaledetails.components.ProductSaleDetailsTopBar
 import com.zaed.distributor.ui.productsaledetails.components.SaleInfoSection
+
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -50,8 +50,8 @@ fun ProductSaleDetailsScreen(
         state = state
     ) { action ->
         when (action) {
-            ProductSaleDetailsUiAction.OnBackClicked -> onBackClicked()
-            ProductSaleDetailsUiAction.OnEditClicked -> onNavigateToEditSale(saleId)
+            SaleDetailsUiAction.OnBackClicked -> onBackClicked()
+            SaleDetailsUiAction.OnEditClicked -> onNavigateToEditSale(saleId)
             else -> viewModel.handleAction(action)
         }
     }
@@ -61,7 +61,7 @@ fun ProductSaleDetailsScreen(
 private fun ProductSaleDetailsContent(
     modifier: Modifier = Modifier,
     state: ProductSaleDetailsUiState,
-    onAction: (ProductSaleDetailsUiAction) -> Unit,
+    onAction: (SaleDetailsUiAction) -> Unit,
 ) {
     var isConfirmDeleteVisible by remember { mutableStateOf(false) }
     Scaffold(
@@ -69,10 +69,10 @@ private fun ProductSaleDetailsContent(
         topBar = {
             ProductSaleDetailsTopBar(
                 onBackClicked = {
-                    onAction(ProductSaleDetailsUiAction.OnBackClicked)
+                    onAction(SaleDetailsUiAction.OnBackClicked)
                 },
                 onEditClicked = {
-                    onAction(ProductSaleDetailsUiAction.OnEditClicked)
+                    onAction(SaleDetailsUiAction.OnEditClicked)
                 },
                 onDeleteClicked = {
                     isConfirmDeleteVisible = true
@@ -97,7 +97,7 @@ private fun ProductSaleDetailsContent(
                 paid = state.sale.paid,
                 receiptStatus = state.sale.receiptStatus,
                 onRequestReceipt = {
-                    onAction(ProductSaleDetailsUiAction.OnPrintReceipt)
+                    onAction(SaleDetailsUiAction.OnRequestReceipt)
                 }
             )
             // customer info
@@ -119,7 +119,7 @@ private fun ProductSaleDetailsContent(
                 title = stringResource(R.string.payments)
             ) {
                 PaymentsTable(
-                    payments = state.payments
+                    payments = state.moneyPayments
                 )
             }
             ConfirmDeleteBottomSheet(
@@ -128,7 +128,7 @@ private fun ProductSaleDetailsContent(
                     isConfirmDeleteVisible = false
                 },
                 onConfirm = {
-                    onAction(ProductSaleDetailsUiAction.OnDeleteSale)
+                    onAction(SaleDetailsUiAction.OnDeleteSale)
                     isConfirmDeleteVisible = false
                 }
             )

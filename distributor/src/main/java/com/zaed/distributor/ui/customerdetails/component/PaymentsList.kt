@@ -12,16 +12,16 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.data.model.payment.MoneyPayment
 
 @Composable
 fun PaymentsList(
     listState: LazyListState,
-    payments: Map<String, List<Payment>>,
+    payments: Map<String, List<MoneyPayment>>,
     debtAmount: Double,
-    onPaymentClicked: (Payment) -> Unit = {},
-    onDeletePayment: (Payment) -> Unit = {},
-    onEditPayment: (Payment) -> Unit = {}
+    onPaymentClicked: (MoneyPayment) -> Unit = {},
+    onDeletePayment: (MoneyPayment) -> Unit = {},
+    onEditPayment: (MoneyPayment) -> Unit = {}
 ) {
     LazyColumn (
         state = listState,

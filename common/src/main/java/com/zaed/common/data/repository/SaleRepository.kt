@@ -8,6 +8,7 @@ import com.zaed.common.data.model.sale.WholesaleProductSale
 import com.zaed.common.data.model.sale.WholesaleSale
 import com.zaed.common.data.model.sale.request.AddIngotTransactionRequest
 import com.zaed.common.data.model.sale.request.AddStoreSaleRequest
+import com.zaed.common.data.model.sale.request.AddWholesaleGoldSaleRequest
 import com.zaed.common.data.model.sale.request.AddWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.DeleteStoreSaleRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleGoldSaleRequest
@@ -19,6 +20,7 @@ import com.zaed.common.data.model.sale.request.FetchWholesaleGoldSaleRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.UpdateIngotTransactionRequest
 import com.zaed.common.data.model.sale.request.UpdateStoreSaleRequest
+import com.zaed.common.data.model.sale.request.UpdateWholesaleGoldSaleRequest
 import com.zaed.common.data.model.sale.request.UpdateWholesaleProductSaleRequest
 import kotlinx.coroutines.flow.Flow
 
@@ -35,7 +37,9 @@ interface SaleRepository {
     suspend fun fetchWholesaleGoldSale(request: FetchWholesaleGoldSaleRequest): Result<WholesaleGoldSale>
     fun fetchWholesaleCustomerSales(request: FetchWholesaleCustomerSalesRequest): Flow<Result<List<WholesaleSale>>>
     suspend fun addWholesaleProductSale(request: AddWholesaleProductSaleRequest): Result<String>
+    suspend fun addGoldSale(request: AddWholesaleGoldSaleRequest): Result<String>
     suspend fun updateWholesaleProductSale(request: UpdateWholesaleProductSaleRequest): Result<Unit>
+    suspend fun updateWholesaleGoldSale(request: UpdateWholesaleGoldSaleRequest): Result<Unit>
     fun fetchIngotTransaction(request: FetchIngotTransactionsRequest): Flow<Result<List<IngotTransaction>>>
     suspend fun addIngotTransaction(transaction: AddIngotTransactionRequest): Result<String>
     suspend fun updateIngotTransaction(transaction: UpdateIngotTransactionRequest): Result<Unit>

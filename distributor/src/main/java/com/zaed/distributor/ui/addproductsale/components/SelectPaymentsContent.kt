@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.util.formatMoney
 import java.util.UUID
@@ -31,13 +31,13 @@ fun SelectPaymentsContent(
     modifier: Modifier = Modifier,
     totalAmount: Double,
     totalPaid: Double,
-    payments: List<Payment>,
-    onAddPayment: (Payment) -> Unit = {},
-    onRemovePayment: (Payment) -> Unit = {},
-    onEditPayment: (Payment) -> Unit = {},
+    moneyPayments: List<MoneyPayment>,
+    onAddPayment: (MoneyPayment) -> Unit = {},
+    onRemovePayment: (MoneyPayment) -> Unit = {},
+    onEditPayment: (MoneyPayment) -> Unit = {},
 ) {
     var isBottomSheetVisible by remember { mutableStateOf(false) }
-    var selectedPayment by remember { mutableStateOf(Payment()) }
+    var selectedMoneyPayment by remember { mutableStateOf(MoneyPayment()) }
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     Column(
         modifier = modifier
@@ -66,13 +66,13 @@ fun SelectPaymentsContent(
         )
         //payments list
         PaymentsList(
-            payments = payments,
+            moneyPayments = moneyPayments,
             onAddPayment = {
-                selectedPayment = Payment()
+                selectedMoneyPayment = MoneyPayment()
                 isBottomSheetVisible = true
             },
             onEditPayment = {
-                selectedPayment = it
+                selectedMoneyPayment = it
                 isBottomSheetVisible = true
             },
             onRemovePayment = onRemovePayment
@@ -85,9 +85,9 @@ fun SelectPaymentsContent(
             ) {
 
                 SavePaymentBottomSheetContent(
-                    initialPayment = selectedPayment,
+                    initialMoneyPayment = selectedMoneyPayment,
                     onSave = {
-                        if(selectedPayment.id.isBlank()){
+                        if(selectedMoneyPayment.id.isBlank()){
                             onAddPayment(it.copy(id = "distributor-"+ UUID.randomUUID().toString()))
                         } else {
                             onEditPayment(it)

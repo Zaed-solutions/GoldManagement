@@ -1,6 +1,7 @@
 package com.zaed.common.data.repository
 
-import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.data.model.payment.GoldPayment
+import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.EditPaymentRequest
 import com.zaed.common.data.model.payment.request.FetchCustomerPaymentsRequest
@@ -8,9 +9,11 @@ import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
 import kotlinx.coroutines.flow.Flow
 
 interface PaymentRepository {
-    fun fetchCustomerPayments(request: FetchCustomerPaymentsRequest): Flow<Result<List<Payment>>>
-    suspend fun fetchPaymentsByIds(request: FetchPaymentsByIdsRequest): Result<List<Payment>>
+    fun fetchCustomerPayments(request: FetchCustomerPaymentsRequest): Flow<Result<List<MoneyPayment>>>
+    suspend fun fetchMoneyPaymentsByIds(request: FetchPaymentsByIdsRequest): Result<List<MoneyPayment>>
     suspend fun addPayment(request: AddNewPaymentRequest): Result<String>
     suspend fun deletePayment(id: String): Result<Unit>
     suspend fun editPayment(request: EditPaymentRequest): Result<Unit>
+    suspend fun fetchGoldPaymentsByIds(request: FetchPaymentsByIdsRequest): Result<List<GoldPayment>>
+
 }

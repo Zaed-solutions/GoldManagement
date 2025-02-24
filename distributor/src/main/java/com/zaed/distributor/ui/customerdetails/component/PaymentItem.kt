@@ -20,6 +20,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
+import com.zaed.common.data.model.payment.GoldPayment
+import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.ui.components.SwipeToEditOrDeleteContainer
 import com.zaed.common.ui.util.DateFormat
@@ -37,58 +39,130 @@ fun PaymentItem(
     onDelete: () -> Unit = {},
     onEdit: () -> Unit = {}
 ) {
-    SwipeToEditOrDeleteContainer(
-        modifier = modifier,
-        onDelete = onDelete,
-        onEdit = onEdit,
-        isEditEnabled = true,
-    ) {
-        Surface(
-            modifier = Modifier.padding(8.dp),
-            onClick = onClick,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
-            shape = MaterialTheme.shapes.medium
-        ) {
-            val chipColor =
-                if (payment.amount >= 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
-            Column(
-                modifier = Modifier.padding(12.dp)
+    when(payment) {
+        is MoneyPayment -> {
+            SwipeToEditOrDeleteContainer(
+                modifier = modifier,
+                onDelete = onDelete,
+                onEdit = onEdit,
+                isEditEnabled = true,
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                Surface(
+                    modifier = Modifier.padding(8.dp),
+                    onClick = onClick,
+                    border = BorderStroke(
+                        1.dp,
+                        MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                    ),
+                    shape = MaterialTheme.shapes.medium
                 ) {
-                    FilterChip(
-                        modifier = Modifier.height(FilterChipDefaults.Height - 8.dp),
-                        selected = true,
-                        onClick = {},
-                        label = { Text(text = payment.type.name) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = chipColor,
-                            selectedLabelColor = contentColorFor(chipColor)
-                        )
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    Text(
-                        text = if (payment.amount >= 0) stringResource(R.string.taken) else stringResource(R.string.given),
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = payment.createdAt.format(DateFormat.TIME),
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    Text(
-                        text = payment.amount.absoluteValue.toMoneyFormat(2),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = chipColor,
-                        fontWeight = FontWeight.Bold
-                    )
+                    val chipColor =
+                        if (payment.amount >= 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                    Column(
+                        modifier = Modifier.padding(12.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            FilterChip(
+                                modifier = Modifier.height(FilterChipDefaults.Height - 8.dp),
+                                selected = true,
+                                onClick = {},
+                                label = { Text(text = payment.type.name) },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = chipColor,
+                                    selectedLabelColor = contentColorFor(chipColor)
+                                )
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
+                            Text(
+                                text = if (payment.amount >= 0) stringResource(R.string.taken) else stringResource(
+                                    R.string.given
+                                ),
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = payment.createdAt.format(DateFormat.TIME),
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
+                            Text(
+                                text = payment.amount.absoluteValue.toMoneyFormat(2),
+                                style = MaterialTheme.typography.titleLarge,
+                                color = chipColor,
+                                fontWeight = FontWeight.Bold
+                            )
 
+                        }
+                    }
+                }
+            }
+        }
+        is GoldPayment->{
+            SwipeToEditOrDeleteContainer(
+                modifier = modifier,
+                onDelete = onDelete,
+                onEdit = onEdit,
+                isEditEnabled = true,
+            ) {
+                Surface(
+                    modifier = Modifier.padding(8.dp),
+                    onClick = onClick,
+                    border = BorderStroke(
+                        1.dp,
+                        MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                    ),
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    val chipColor =
+                        if (payment.givenGoldAmount >= 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                    Column(
+                        modifier = Modifier.padding(12.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            FilterChip(
+                                modifier = Modifier.height(FilterChipDefaults.Height - 8.dp),
+                                selected = true,
+                                onClick = {},
+                                label = { Text(text = payment.type.name) },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = chipColor,
+                                    selectedLabelColor = contentColorFor(chipColor)
+                                )
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
+                            Text(
+                                text = if (payment.givenGoldAmount >= 0) stringResource(R.string.taken) else stringResource(
+                                    R.string.given
+                                ),
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = payment.createdAt.format(DateFormat.TIME),
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
+                            Text(
+                                text = stringResource(R.string.grams_placeholder, payment.givenGoldAmount.absoluteValue.toString()),
+                                style = MaterialTheme.typography.titleLarge,
+                                color = chipColor,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                        }
+                    }
                 }
             }
         }
@@ -100,7 +174,7 @@ fun PaymentItem(
 private fun PaymentItemPreview() {
     DistributorAppTheme {
     PaymentItem(
-        payment = Payment(
+        payment = MoneyPayment(
             amount = 1000.0,
             type = com.zaed.common.data.model.payment.PaymentType.CASH,
             createdAt = Date(),

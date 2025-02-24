@@ -28,7 +28,7 @@ enum class NavDrawerItem(
     GOLD_SALES(
         title = R.string.gold_sales,
         icon = null,
-        route = Route.SalesRoute
+        route = Route.AddGoldSaleRoute()
     ),
     INGOTS_SALES(
         title = R.string.ingots_sales,

@@ -10,9 +10,13 @@ data class WholesaleGoldSale(
     override val customerPhone: String = "",
     override val distributorId: String = "",
     override val distributorName: String = "",
+    override val receiptNumber: String ="",
+    val moneyPaymentsIds: List<String> = emptyList(),
+    val goldPaymentsIds: List<String> = emptyList(),
+    val products :List<Product> = emptyList(),
+    val receiptStatus: ReceiptStatus = ReceiptStatus.NOT_REQUESTED,
     override val createdAt: Date = Date(),
     override val logs: List<ChangeLog> = emptyList(),
     override val deleted: Boolean = false,
-    override val paid: Boolean = false,
-    override val receiptNumber: String =""
+    override val paid: Boolean = false
 ): WholesaleSale()

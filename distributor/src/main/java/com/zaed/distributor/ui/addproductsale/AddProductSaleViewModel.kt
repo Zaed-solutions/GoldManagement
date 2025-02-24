@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.customer.FetchWholesaleCustomersByNameRequest
 import com.zaed.common.data.model.customer.WholeSaleCustomer
-import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
 import com.zaed.common.data.model.sale.Product
@@ -17,7 +17,7 @@ import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.category.FetchAllCategoriesUseCase
 import com.zaed.common.domain.customer.FetchWholesaleCustomersByNameUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
-import com.zaed.common.domain.payment.FetchPaymentsByIdsUseCase
+import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
 import com.zaed.common.domain.sale.AddWholesaleProductSaleUseCase
 import com.zaed.common.domain.sale.FetchWholesaleProductSaleUseCase
 import com.zaed.common.domain.sale.UpdateWholesaleProductSaleUseCase
@@ -34,7 +34,7 @@ class AddProductSaleViewModel(
     private val getCurrentUserUseCase: GetCurrentUserLoggedInUseCase,
     private val getCurrentWholeSalesCustomerUseCase: GetWholeSalesCustomerUseCase,
     private val fetchCustomersByNameUseCase: FetchWholesaleCustomersByNameUseCase,
-    private val fetchPaymentsByIdsUseCase: FetchPaymentsByIdsUseCase,
+    private val fetchMoneyPaymentsByIdsUseCase: FetchMoneyPaymentsByIdsUseCase,
     private val addProductSaleUseCase: AddWholesaleProductSaleUseCase,
     private val updateProductSaleUseCase: UpdateWholesaleProductSaleUseCase
 ) : ViewModel() {
@@ -73,14 +73,15 @@ class AddProductSaleViewModel(
 
     private fun fetchPayments(paymentsIds: List<String>) {
         viewModelScope.launch(Dispatchers.IO) {
-            fetchPaymentsByIdsUseCase(
+            fetchMoneyPaymentsByIdsUseCase(
                 FetchPaymentsByIdsRequest(
                     paymentsIds = paymentsIds
                 )
             ).onSuccess { data ->
                 _uiState.update { oldState ->
-                    oldState.copy(payments = data)
+                    oldState.copy(moneyPayments = data.filter { it.type != PaymentType.FUTURES })
                 }
+                updateTotalAmounts()
             }.onFailure { e ->
                 Log.e(TAG, "fetchPayments: ${e.message}", e)
             }
@@ -148,8 +149,8 @@ class AddProductSaleViewModel(
             is AddProductSaleUiAction.OnEditProduct -> updateProduct(action.product)
             is AddProductSaleUiAction.OnRemoveProduct -> removeProduct(action.productId)
             AddProductSaleUiAction.OnSubmitClicked -> onSubmit()
-            is AddProductSaleUiAction.OnAddPayment -> addPayment(action.payment)
-            is AddProductSaleUiAction.OnEditPayment -> updatePayment(action.payment)
+            is AddProductSaleUiAction.OnAddPayment -> addPayment(action.moneyPayment)
+            is AddProductSaleUiAction.OnEditPayment -> updatePayment(action.moneyPayment)
             is AddProductSaleUiAction.OnRemovePayment -> removePayment(action.paymentId)
             else -> Unit
         }
@@ -185,14 +186,22 @@ class AddProductSaleViewModel(
                             paid = (uiState.value.totalAmount - uiState.value.totalPaid).toInt() <= 0,
                             logs = oldState.sale.logs + updateLog
                         ),
-                        payments = oldState.payments.map { it.copy(customerId = oldState.selectedCustomer.id) }
+                        moneyPayments = oldState.moneyPayments.map { it.copy(customerId = oldState.selectedCustomer.id) }
                     )
                 }
+            }
+            if (uiState.value.totalPaid != uiState.value.totalAmount) {
+                val futureMoneyPayment = MoneyPayment(
+                    customerId = uiState.value.selectedCustomer.id,
+                    type = PaymentType.FUTURES,
+                    amount = uiState.value.totalAmount - uiState.value.totalPaid
+                )
+                _uiState.update {oldState-> oldState.copy(moneyPayments = oldState.moneyPayments.filter { it.type!= PaymentType.FUTURES } + futureMoneyPayment) }
             }
             updateProductSaleUseCase(
                 UpdateWholesaleProductSaleRequest(
                     sale = uiState.value.sale,
-                    payments = uiState.value.payments,
+                    moneyPayments = uiState.value.moneyPayments,
                     employeeName = uiState.value.currentUser.fullName,
                     employeeId = uiState.value.currentUser.id
                 )
@@ -238,21 +247,21 @@ class AddProductSaleViewModel(
                             action = "created this sale"
                         )
                     ),
-                    payments = oldState.payments.map { it.copy(customerId = oldState.selectedCustomer.id) }
+                    moneyPayments = oldState.moneyPayments.map { it.copy(customerId = oldState.selectedCustomer.id) }
                 )
             }
             if (uiState.value.totalPaid != uiState.value.totalAmount) {
-                val futurePayment = Payment(
+                val futureMoneyPayment = MoneyPayment(
                     customerId = customer.id,
                     type = PaymentType.FUTURES,
                     amount = uiState.value.totalAmount - uiState.value.totalPaid
                 )
-                _uiState.update { it.copy(payments = it.payments + futurePayment) }
+                _uiState.update { it.copy(moneyPayments = it.moneyPayments + futureMoneyPayment) }
             }
             addProductSaleUseCase(
                 AddWholesaleProductSaleRequest(
                     sale = uiState.value.sale,
-                    payments = uiState.value.payments
+                    moneyPayments = uiState.value.moneyPayments
                 )
             ).onSuccess { id ->
                 _uiState.update { oldState ->
@@ -318,7 +327,7 @@ class AddProductSaleViewModel(
         viewModelScope.launch(Dispatchers.Default) {
             val totalAmount = uiState.value.sale.products.sumOf { it.grams * it.gramPrice }
             val totalPaid =
-                uiState.value.payments.filter { it.type != PaymentType.FUTURES }.sumOf { it.amount }
+                uiState.value.moneyPayments.filter { it.type != PaymentType.FUTURES }.sumOf { it.amount }
             _uiState.update {
                 it.copy(totalAmount = totalAmount, totalPaid = totalPaid)
             }
@@ -326,19 +335,20 @@ class AddProductSaleViewModel(
         }
     }
 
-    private fun addPayment(payment: Payment) {
+    private fun addPayment(moneyPayment: MoneyPayment) {
         viewModelScope.launch {
             _uiState.update { oldState ->
-                oldState.copy(payments = oldState.payments + payment)
+                oldState.copy(moneyPayments = oldState.moneyPayments + moneyPayment)
             }
             updateTotalAmounts()
         }
     }
 
     private fun removePayment(paymentId: String) {
+        Log.d(TAG, "paymentSent: $paymentId")
         viewModelScope.launch {
             _uiState.update { oldState ->
-                oldState.copy(payments = oldState.payments.filter { it.id == paymentId })
+                oldState.copy(moneyPayments = oldState.moneyPayments.filter { it.id != paymentId })
             }
             updateTotalAmounts()
         }
@@ -353,13 +363,13 @@ class AddProductSaleViewModel(
         }
     }
 
-    private fun updatePayment(payment: Payment) {
+    private fun updatePayment(moneyPayment: MoneyPayment) {
         viewModelScope.launch {
             _uiState.update { oldState ->
                 oldState.copy(
-                    payments = oldState.payments.map {
-                        if (it.id == payment.id) {
-                            payment
+                    moneyPayments = oldState.moneyPayments.map {
+                        if (it.id == moneyPayment.id) {
+                            moneyPayment
                         } else {
                             it
                         }

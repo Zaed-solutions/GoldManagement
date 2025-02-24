@@ -59,7 +59,7 @@ class WholeSalesCustomerRemoteDataSourceImpl(
         try {
             customersCollection.document(request.customerId).update(
                 "debtAmount",
-                FieldValue.increment(request.payment.amount),
+                FieldValue.increment(request.moneyPayment.amount),
             ).await()
             return Result.success(Unit)
         } catch (e: Exception) {

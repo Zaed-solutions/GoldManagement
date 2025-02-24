@@ -22,6 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
+import com.zaed.common.data.model.payment.GoldPayment
+import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.ui.util.formatMoney
 
@@ -58,13 +60,13 @@ fun PaymentsTable(
                             text = stringResource(R.string.type),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.weight(5f)
+                            modifier = Modifier.weight(3f)
                         )
                         Text(
                             text = stringResource(R.string.value),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.weight(2f),
+                            modifier = Modifier.weight(5f),
                             textAlign = TextAlign.Center
                         )
                     }
@@ -85,6 +87,17 @@ fun PaymentTableItem(
     modifier: Modifier = Modifier,
     payment: Payment
 ) {
+    val amount = when(payment){
+        is MoneyPayment -> payment.amount.formatMoney()
+        is GoldPayment -> {
+            if(payment.pricePerGram!=0.0){
+                (payment.givenGoldAmount*payment.pricePerGram).formatMoney()
+            }else{
+                stringResource(R.string.specifying_karat)
+            }
+        }
+        else -> ""
+    }
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
@@ -97,14 +110,15 @@ fun PaymentTableItem(
             Text(
                 text = payment.type.name,
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.weight(5f)
+                modifier = Modifier.weight(3f)
             )
+
             Text(
-                text = payment.amount.formatMoney(),
+                text = amount,
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
-                modifier = Modifier.weight(2f)
+                modifier = Modifier.weight(5f)
             )
         }
     }

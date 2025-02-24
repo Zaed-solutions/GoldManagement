@@ -1,5 +1,7 @@
 package com.zaed.distributor.ui.sales
 
+import com.zaed.common.data.model.payment.PaymentStatus
+
 sealed interface SalesUiAction {
     data object AddProductSaleClicked: SalesUiAction
     data object AddGoldSaleClicked: SalesUiAction

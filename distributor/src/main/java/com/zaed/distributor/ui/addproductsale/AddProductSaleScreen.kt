@@ -203,7 +203,7 @@ private fun AddProductSaleScreenContent(
                         SelectPaymentsContent(
                             totalAmount = state.totalAmount,
                             totalPaid = state.totalPaid,
-                            payments = state.payments,
+                            moneyPayments = state.moneyPayments,
                             onAddPayment = {
                                 onAction(AddProductSaleUiAction.OnAddPayment(it))
                             },
@@ -218,10 +218,10 @@ private fun AddProductSaleScreenContent(
                     3 -> {
                         SaleSummaryContent(
                             customer = state.selectedCustomer,
-                            sale = state.sale,
+                            products = state.sale.products,
                             totalPaid = state.totalPaid,
                             totalAmount = state.totalAmount,
-                            payments = state.payments
+                            moneyPayments = state.moneyPayments
                         )
                     }
                 }

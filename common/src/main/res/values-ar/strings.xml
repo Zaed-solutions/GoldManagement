@@ -148,5 +148,27 @@
     <string name="given">المعطى</string>
     <string name="in_debt">باقى عنده</string>
     <string name="not_in_debt">باقى عندي</string>
+    <string name="edit_payment">تعديل الدفع</string>
+    <string name="customer_edited">تم تعديل العميل بنجاح</string>
+    <string name="search_customers">البحث عن العملاء</string>
+    <string name="sale_information">معلومات البيع</string>
+    <string name="receipt_number">رقم الإيصال</string>
+    <string name="status">الحالة</string>
+    <string name="sale_must_be_paid_to_print_or_share_receipt">يجب دفع البيع بالكامل لطباعة أو مشاركة الإيصال</string>
+    <string name="pending">معلق</string>
+    <string name="not_received">لم يتم الاستلام</string>
+    <string name="payment_status">حالة الدفع</string>
+    <string name="receipt_status">حالة الإيصال</string>
+    <string name="request_receipt">طلب إيصال</string>
+    <string name="not_requested">لم يُطلب</string>
+    <string name="save_loss">حفظ الخسارة</string>
+    <string name="allowance">البدل</string>
+    <string name="customers">العملاء</string>
+    <string name="gold_sales">مبيعات الذهب</string>
+    <string name="ingots_sales">مبيعات السبائك</string>
+    <string name="karat">العيار</string>
+    <string name="labor_cost">تكلفة المصنعية</string>
+    <string name="money_paid">المبلغ المدفوع</string>
+    <string name="gold_paid">الذهب المدفوع</string>
 
 </resources>

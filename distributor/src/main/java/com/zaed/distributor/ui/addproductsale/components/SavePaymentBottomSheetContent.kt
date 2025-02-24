@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.ui.components.NumberInputTextField
 import com.zaed.common.ui.components.TitledDropDownTextField
@@ -25,10 +25,10 @@ import com.zaed.common.ui.components.TitledDropDownTextField
 @Composable
 fun SavePaymentBottomSheetContent(
     modifier: Modifier = Modifier,
-    initialPayment: Payment,
-    onSave: (Payment) -> Unit={}
+    initialMoneyPayment: MoneyPayment,
+    onSave: (MoneyPayment) -> Unit={}
 ) {
-    var payment by remember { mutableStateOf(initialPayment) }
+    var payment by remember { mutableStateOf(initialMoneyPayment) }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -73,14 +73,14 @@ fun SavePaymentBottomSheetContent(
 @Composable
 private fun PaymentTypeDropDownMenu(
     modifier: Modifier = Modifier,
-    payment: Payment,
+    moneyPayment: MoneyPayment,
     onTypeChanged: (PaymentType) -> Unit
 ) {
     TitledDropDownTextField(
         modifier = modifier,
         label = stringResource(R.string.type),
         options = PaymentType.entries.map { it.name },
-        selectedValue = payment.type.name,
+        selectedValue = moneyPayment.type.name,
         onValueChanged = { index->
             onTypeChanged(PaymentType.entries[index])
         },

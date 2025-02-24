@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
-import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.DeletePaymentRequest
@@ -103,8 +103,8 @@ class CustomerDetailsViewModel(
         when (action) {
             is CustomerDetailsUiAction.OnAmountChanged -> updateAmount(action.amount)
             is CustomerDetailsUiAction.OnChangeValueDirection -> updateAmountDirection(action.isGiven)
-            is CustomerDetailsUiAction.DeletePayment -> deletePayment(action.payment)
-            is CustomerDetailsUiAction.EditPayment -> updateCurrentPayment(action.payment)
+            is CustomerDetailsUiAction.DeletePayment -> deletePayment(action.moneyPayment)
+            is CustomerDetailsUiAction.EditPayment -> updateCurrentPayment(action.moneyPayment)
             CustomerDetailsUiAction.OnConfirmEditPayment -> confirmEditPayment()
             CustomerDetailsUiAction.OnSaveClicked -> addPayment()
             is CustomerDetailsUiAction.OnTypeChanged -> updateType(action.type)
@@ -151,7 +151,7 @@ class CustomerDetailsViewModel(
     }
 
     private fun confirmEditPayment() {
-        Log.d("TAG", "confirmEditPayment: ${uiState.value.currentPayment}")
+        Log.d("TAG", "confirmEditPayment: ${uiState.value.currentMoneyPayment}")
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update {
                 it.copy(loading = true)
@@ -159,10 +159,10 @@ class CustomerDetailsViewModel(
             editPaymentUseCase(
                 request = EditPaymentRequest(
                     customerId = uiState.value.customer.id,
-                    newPayment = uiState.value.currentPayment.copy(
-                        amount = if (uiState.value.paymentDirection) uiState.value.currentPayment.amount else uiState.value.currentPayment.amount.unaryMinus()
+                    newMoneyPayment = uiState.value.currentMoneyPayment.copy(
+                        amount = if (uiState.value.paymentDirection) uiState.value.currentMoneyPayment.amount else uiState.value.currentMoneyPayment.amount.unaryMinus()
                     ),
-                    oldAmount = uiState.value.tempPayment.amount
+                    oldAmount = uiState.value.tempMoneyPayment.amount
                 )
             ).onSuccess {
                 _uiState.update {
@@ -181,26 +181,26 @@ class CustomerDetailsViewModel(
         }
     }
 
-    private fun updateCurrentPayment(payment: Payment) {
+    private fun updateCurrentPayment(moneyPayment: MoneyPayment) {
         _uiState.update {
             it.copy(
-                tempPayment = payment,
-                currentPayment = payment.copy(amount = payment.amount.absoluteValue),
-                paymentDirection = payment.amount > 0
+                tempMoneyPayment = moneyPayment,
+                currentMoneyPayment = moneyPayment.copy(amount = moneyPayment.amount.absoluteValue),
+                paymentDirection = moneyPayment.amount > 0
             )
         }
     }
 
-    private fun deletePayment(payment: Payment) {
+    private fun deletePayment(moneyPayment: MoneyPayment) {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update {
                 it.copy(loading = true)
             }
             deletePaymentUseCase.invoke(
                 DeletePaymentRequest(
-                    paymentId = payment.id,
+                    paymentId = moneyPayment.id,
                     customerId = uiState.value.customer.id,
-                    amount = payment.amount
+                    amount = moneyPayment.amount
                 )
             ).onSuccess {
                 _uiState.update {
@@ -223,22 +223,22 @@ class CustomerDetailsViewModel(
 
     private fun addPayment() {
         viewModelScope.launch(Dispatchers.IO) {
-            if (uiState.value.currentPayment.amount == 0.0) return@launch
+            if (uiState.value.currentMoneyPayment.amount == 0.0) return@launch
             _uiState.update {
                 it.copy(loading = true)
             }
             addPaymentUseCase(
                 request = AddNewPaymentRequest(
                     customerId = uiState.value.customer.id,
-                    payment = uiState.value.currentPayment.copy(
-                        amount = if (uiState.value.paymentDirection) uiState.value.currentPayment.amount else uiState.value.currentPayment.amount.unaryMinus()
+                    moneyPayment = uiState.value.currentMoneyPayment.copy(
+                        amount = if (uiState.value.paymentDirection) uiState.value.currentMoneyPayment.amount else uiState.value.currentMoneyPayment.amount.unaryMinus()
                     )
                 )
             ).onSuccess {
                 _uiState.update {
                     it.copy(
                         loading = false,
-                        currentPayment = Payment()
+                        currentMoneyPayment = MoneyPayment()
                     )
                 }
                 getCustomerDetails(uiState.value.customer.id)
@@ -258,7 +258,7 @@ class CustomerDetailsViewModel(
     private fun updateType(type: PaymentType) {
         _uiState.update {
             it.copy(
-                currentPayment = it.currentPayment.copy(
+                currentMoneyPayment = it.currentMoneyPayment.copy(
                     type = type
                 )
             )
@@ -277,7 +277,7 @@ class CustomerDetailsViewModel(
     private fun updateAmount(amount: Double) {
         _uiState.update {
             it.copy(
-                currentPayment = it.currentPayment.copy(
+                currentMoneyPayment = it.currentMoneyPayment.copy(
                     amount = amount
                 )
             )
