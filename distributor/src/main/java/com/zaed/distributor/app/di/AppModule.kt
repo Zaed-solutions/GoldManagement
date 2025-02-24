@@ -1,6 +1,7 @@
 package com.zaed.distributor.app.di
 
 import com.zaed.distributor.ui.addcustomers.AddCustomersViewModel
+import com.zaed.distributor.ui.ingottransactions.IngotTransactionsViewModel
 import com.zaed.distributor.ui.addproductsale.AddProductSaleViewModel
 import com.zaed.distributor.ui.customerdetails.CustomerDetailsViewModel
 import com.zaed.distributor.ui.displaycustomers.DisplayCustomersViewModel
@@ -20,4 +21,5 @@ val appModule = module {
     viewModelOf(::AddProductSaleViewModel)
     viewModelOf(::ProductSaleDetailsViewModel)
     viewModelOf(::LossesViewModel)
+    viewModelOf(::IngotTransactionsViewModel)
 }

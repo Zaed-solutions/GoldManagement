@@ -73,18 +73,21 @@ fun NumberInputTextField(
         isError = isError,
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-        supportingText = {
+        supportingText =
             if (isError) {
-                Text(
-                    text = stringResource(errorMessage),
-                    color = MaterialTheme.colorScheme.error
-                )
+                {
+                    Text(
+                        text = stringResource(errorMessage),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
             } else if (supportingText.isNotBlank()) {
-                Text(
-                    text = supportingText,
-                    style = MaterialTheme.typography.labelSmall
-                )
-            }
-        }
+                {
+                    Text(
+                        text = supportingText,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
+            } else null
     )
 }
