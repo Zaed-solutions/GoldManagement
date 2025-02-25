@@ -21,6 +21,7 @@ import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.components.TitledSection
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
+import com.zaed.distributor.ui.sales.components.PaidStatusChip
 import java.util.Date
 
 @Composable
@@ -50,26 +51,20 @@ fun GoldSaleInfoSection(
                 label = stringResource(R.string.payment_status),
                 value = "",
                 trailingContent = {
-                    AssistChip(
-                        modifier = modifier,
-                        onClick = {},
-                        shape = MaterialTheme.shapes.small,
-                        label = {
-                            Text(
-                                text = stringResource(paymentStatus.label)
-                            )
-                        },
+                    PaidStatusChip(
+                        status = paymentStatus
                     )
                 },
-                isDividerVisible = false,
             )
             DetailRow(
+                modifier = Modifier.padding(top = 8.dp),
                 label = stringResource(R.string.receipt_status),
-                value = stringResource(receiptStatus.titleRes)
+                value = stringResource(receiptStatus.titleRes),
+                isDividerVisible = false,
             )
             AnimatedVisibility(visible = receiptStatus == ReceiptStatus.NOT_REQUESTED) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
                     OutlinedButton(

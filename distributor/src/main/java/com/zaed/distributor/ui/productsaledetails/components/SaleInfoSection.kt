@@ -14,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
+import com.zaed.common.data.model.payment.PaymentStatus
 import com.zaed.common.data.model.sale.ReceiptStatus
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.components.TitledSection
@@ -27,7 +28,7 @@ fun SaleInfoSection(
     modifier: Modifier = Modifier,
     receiptNumber: String,
     createdAt: Date,
-    paid: Boolean,
+    paymentStatus: PaymentStatus,
     receiptStatus: ReceiptStatus,
     onRequestReceipt: () -> Unit = {}
 ) {
@@ -50,18 +51,19 @@ fun SaleInfoSection(
                 value = "",
                 trailingContent = {
                     PaidStatusChip(
-                        paid = paid
+                        status = paymentStatus
                     )
                 },
-                isDividerVisible = false,
             )
             DetailRow(
+                modifier = Modifier.padding(top = 8.dp),
                 label = stringResource(R.string.receipt_status),
-                value = stringResource(receiptStatus.titleRes)
+                value = stringResource(receiptStatus.titleRes),
+                isDividerVisible = false,
             )
             AnimatedVisibility(visible = receiptStatus == ReceiptStatus.NOT_REQUESTED) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
                     OutlinedButton(
@@ -86,7 +88,7 @@ private fun Preview() {
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 50.dp),
         receiptNumber = "123456",
         createdAt = Date(),
-        paid = true,
+        paymentStatus = PaymentStatus.PAID,
         receiptStatus = ReceiptStatus.PENDING
     )
 }

@@ -46,7 +46,11 @@ fun TransactionItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${transaction.grams}g of ${transaction.karat}",
+                    text = stringResource(
+                        com.zaed.distributor.R.string.ingot_transaction_title_placeholder,
+                        transaction.grams,
+                        transaction.karat.value
+                    ),
                     style = MaterialTheme.typography.titleLarge,
                     maxLines = 1,
                     modifier = Modifier.weight(1f)

@@ -67,7 +67,7 @@ fun PaymentsTable(
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.weight(5f),
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.End
                         )
                     }
                     HorizontalDivider()
@@ -108,7 +108,7 @@ fun PaymentTableItem(
             verticalAlignment = Alignment.CenterVertically
         ){
             Text(
-                text = payment.type.name,
+                text = stringResource(payment.type.titleRes),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.weight(3f)
             )
@@ -116,7 +116,7 @@ fun PaymentTableItem(
             Text(
                 text = amount,
                 style = MaterialTheme.typography.titleMedium,
-                textAlign = TextAlign.Center,
+                textAlign = TextAlign.End,
                 maxLines = 1,
                 modifier = Modifier.weight(5f)
             )

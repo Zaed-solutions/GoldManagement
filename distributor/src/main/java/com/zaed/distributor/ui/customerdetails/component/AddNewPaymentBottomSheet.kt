@@ -18,6 +18,7 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,7 +26,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.payment.PaymentType
+import com.zaed.common.data.model.payment.getPaymentTypeDropDownItems
 import com.zaed.common.ui.components.NumberInputTextField
+import com.zaed.common.ui.components.TitledDropDownTextField
 import com.zaed.common.ui.components.TitledDropDownTextField2
 import com.zaed.distributor.ui.customerdetails.CustomerDetailsUiAction
 import com.zaed.distributor.ui.customerdetails.CustomerDetailsUiState
@@ -40,6 +43,9 @@ fun AddOrEditNewPaymentBottomSheet(
     onAction: (CustomerDetailsUiAction) -> Unit,
     onDismiss: () -> Unit = {}
 ) {
+    val dropDownOptions = remember {
+        getPaymentTypeDropDownItems()
+    }
     AnimatedVisibility(
         visible = visible
     ) {
@@ -71,17 +77,16 @@ fun AddOrEditNewPaymentBottomSheet(
                         onAction(CustomerDetailsUiAction.OnAmountChanged(it))
                     },
                 )
-                TitledDropDownTextField2(
+                TitledDropDownTextField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
                     label = stringResource(R.string.type),
-                    options = PaymentType.entries,
-                    selectedValue = uiState.currentMoneyPayment.type,
+                    options = dropDownOptions.map { stringResource(it.titleRes) },
+                    selectedValue = stringResource(uiState.currentMoneyPayment.type.titleRes),
                     onValueChanged = {
-                        onAction(CustomerDetailsUiAction.OnTypeChanged(it))
+                        onAction(CustomerDetailsUiAction.OnTypeChanged(dropDownOptions[it]))
                     },
-                    placeHolder = stringResource(R.string.select_type)
                 )
                 Row(
                     modifier = Modifier

@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.GridGoldenratio
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -40,13 +39,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
-import com.zaed.common.data.model.authentication.UserPermission
 import com.zaed.common.data.model.payment.PaymentStatus
 import com.zaed.common.ui.components.ConfirmDeleteDialog
-import com.zaed.common.ui.components.FabItem
 import com.zaed.common.ui.components.MoreDropDownMenu
 import com.zaed.common.ui.components.MoreDropdownItem
-import com.zaed.common.ui.components.MultiFloatingActionButton
 import com.zaed.common.ui.components.SearchBar
 import com.zaed.distributor.ui.sales.components.SalesList
 import org.koin.androidx.compose.koinViewModel
@@ -101,7 +97,7 @@ fun SalesScreenContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(com.zaed.distributor.R.string.app_name),
+                        text = stringResource(R.string.sales),
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
@@ -130,37 +126,18 @@ fun SalesScreenContent(
             )
         },
         floatingActionButton = {
-            if (state.currentUser.permissions.contains(UserPermission.SELL_GOLD)) {
-                val fabItems = remember {
-                    listOf(
-                        FabItem(
-                            icon = Icons.Default.GridGoldenratio,
-                            label = context.getString(R.string.add_sale),
-                            onFabItemClicked = {
-                                onAction(SalesUiAction.AddProductSaleClicked)
-                            }
-                        )
-                    )
-                }
-                MultiFloatingActionButton(
-                    fabIcon = Icons.Default.Add,
-                    items = fabItems,
-                    backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+            FloatingActionButton(
+                modifier = Modifier
+                    .padding(bottom = 8.dp, end = 8.dp)
+                    .rotate(45f),
+                shape = RoundedCornerShape(16.dp),
+                onClick = { onAction(SalesUiAction.AddProductSaleClicked) },
+            ) {
+                Icon(
+                    modifier = Modifier.rotate(-45f),
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add Sale"
                 )
-            } else {
-                FloatingActionButton(
-                    modifier = Modifier
-                        .padding(bottom = 8.dp, end = 8.dp)
-                        .rotate(45f),
-                    shape = RoundedCornerShape(16.dp),
-                    onClick = { onAction(SalesUiAction.AddProductSaleClicked) },
-                ) {
-                    Icon(
-                        modifier = Modifier.rotate(-45f),
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add Sale"
-                    )
-                }
             }
         }
     ) { innerPadding ->
@@ -240,7 +217,7 @@ fun SalesScreenContent(
                         },
                         onConfirm = {
                             onAction(
-                                if(selectedSale.second){
+                                if (selectedSale.second) {
                                     SalesUiAction.OnDeleteProductSale(selectedSale.first)
                                 } else {
                                     SalesUiAction.OnDeleteGoldSale(selectedSale.first)

@@ -7,12 +7,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -25,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -99,6 +102,31 @@ fun AddCustomersScreenContent(
                     onAction(AddCustomersUiAction.OnBack)
                 }
             )
+        },
+        bottomBar = {
+            Surface(
+                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                shadowElevation = 8.dp
+            ) {
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(65.dp)
+                        .padding(16.dp),
+                    onClick = {
+                        if (uiState.isEditMode) {
+                            onAction(AddCustomersUiAction.OnEdit)
+                        }else {
+                            onAction(AddCustomersUiAction.OnSave)
+                        }
+                    }
+                ) {
+                    Text(
+                        text = stringResource(com.zaed.common.R.string.save),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+            }
         }
     ) {
         Column(
@@ -110,12 +138,11 @@ fun AddCustomersScreenContent(
                 .padding(it)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             TextInputTextField(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .fillMaxWidth(),
                 label = stringResource(com.zaed.common.R.string.full_name),
                 value = uiState.request.name,
                 onValueChange = { name ->
@@ -128,8 +155,7 @@ fun AddCustomersScreenContent(
             )
             TextInputTextField(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .fillMaxWidth(),
                 label = stringResource(com.zaed.common.R.string.email),
                 value = uiState.request.email,
                 onValueChange = { email ->
@@ -138,18 +164,17 @@ fun AddCustomersScreenContent(
             )
             TextInputTextField(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .fillMaxWidth(),
                 label = stringResource(com.zaed.common.R.string.phone_number),
                 value = uiState.request.phone,
                 onValueChange = { phone ->
                     onAction(AddCustomersUiAction.UpdatePhone(phone))
-                }
+                },
+                keyboardType = KeyboardType.Phone
             )
             TextInputTextField(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .fillMaxWidth(),
                 label = stringResource(com.zaed.common.R.string.address),
                 value = uiState.request.address,
                 onValueChange = { address ->
@@ -158,45 +183,13 @@ fun AddCustomersScreenContent(
             )
             TextInputTextField(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .fillMaxWidth(),
                 label = stringResource(com.zaed.common.R.string.city),
                 value = uiState.request.city,
                 onValueChange = { city ->
                     onAction(AddCustomersUiAction.UpdateCity(city))
                 }
             )
-            TitledDropDownTextField2(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                label = stringResource(com.zaed.common.R.string.zone),
-                selectedValue = uiState.request.zone,
-                options = Zone.entries,
-                onValueChanged = { zone ->
-                    onAction(AddCustomersUiAction.UpdateZone(zone))
-                }
-            )
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(65.dp)
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 16.dp),
-                onClick = {
-                    if (uiState.isEditMode) {
-                        onAction(AddCustomersUiAction.OnEdit)
-                    }else {
-                        onAction(AddCustomersUiAction.OnSave)
-                    }
-                }
-            ) {
-                Text(
-                    text = stringResource(com.zaed.common.R.string.save),
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-
         }
     }
 

@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.common.data.model.payment.PaymentType
+import com.zaed.common.data.model.payment.getPaymentTypeDropDownItems
 import com.zaed.common.ui.components.NumberInputTextField
 import com.zaed.common.ui.components.TitledDropDownTextField
 
@@ -29,6 +30,9 @@ fun SavePaymentBottomSheetContent(
     onSave: (MoneyPayment) -> Unit={}
 ) {
     var payment by remember { mutableStateOf(initialMoneyPayment) }
+    val dropDownOptions = remember {
+        getPaymentTypeDropDownItems()
+    }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -42,10 +46,10 @@ fun SavePaymentBottomSheetContent(
         TitledDropDownTextField(
             modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
             label = stringResource(R.string.type),
-            options = PaymentType.entries.map { it.name },
-            selectedValue = payment.type.name,
+            options = dropDownOptions.map { stringResource(it.titleRes) },
+            selectedValue = stringResource(payment.type.titleRes),
             onValueChanged = { index->
-                payment = payment.copy(type = PaymentType.entries[index])
+                payment = payment.copy(type = dropDownOptions[index])
             },
         )
         NumberInputTextField(

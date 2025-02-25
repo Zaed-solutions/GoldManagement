@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
@@ -29,10 +31,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
@@ -46,6 +50,7 @@ import com.zaed.common.ui.util.toMoneyFormat
 import com.zaed.distributor.ui.customerdetails.CustomerDetailsUiAction
 import com.zaed.distributor.ui.customerdetails.CustomerDetailsUiState
 import com.zaed.distributor.ui.sales.components.SalesList
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,6 +64,9 @@ fun CustomerDetailsScreenContent(
     var selectedMoneyPayment by remember { mutableStateOf<MoneyPayment?>(null) }
     var confirmDeletePaymentSheet by remember { mutableStateOf(false) }
     var editPaymentSheet by remember { mutableStateOf(false)}
+    val pagerState = rememberPagerState { 2 }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -118,13 +126,14 @@ fun CustomerDetailsScreenContent(
                 .padding(it)
 
         ) {
-            var selectedTab by remember { mutableIntStateOf(0) }
-            val tabs = listOf(
-                stringResource(com.zaed.common.R.string.payments),
-                stringResource(com.zaed.common.R.string.sales)
-            )
+            val tabs = remember{
+                listOf(
+                    context.getString(com.zaed.common.R.string.payments),
+                    context.getString(com.zaed.common.R.string.sales)
+                )
+            }
             PrimaryTabRow(
-                selectedTabIndex = selectedTab,
+                selectedTabIndex = pagerState.currentPage,
                 indicator = {
                     TabRowDefaults.PrimaryIndicator(
                         modifier = Modifier
@@ -134,21 +143,28 @@ fun CustomerDetailsScreenContent(
                                 else
                                     this
                             }
-                            .tabIndicatorOffset(selectedTab, true),
+                            .tabIndicatorOffset(pagerState.currentPage, true),
                         width = Dp.Unspecified,
                     )
                 }
             ) {
                 tabs.forEachIndexed { index, title ->
                     Tab(
-                        selected = selectedTab == index,
-                        onClick = { selectedTab = index },
+                        selected = pagerState.currentPage == index,
+                        onClick = {
+                            scope.launch {
+                                pagerState.animateScrollToPage(index)
+                            }
+                        },
                         text = { Text(text = title) }
                     )
                 }
             }
 
-            AnimatedContent(selectedTab) { value ->
+            HorizontalPager(
+                state = pagerState,
+                userScrollEnabled = false,
+                ) { value ->
                 when (value) {
                     0 -> {
                         PaymentsList(
@@ -201,9 +217,7 @@ fun CustomerDetailsScreenContent(
                         )
                     }
                 }
-
             }
-
         }
         AddOrEditNewPaymentBottomSheet(
             addPaymentBottomSheetVisible,

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -74,6 +75,7 @@ fun SelectCustomerContent(
         SearchBar(
             modifier = Modifier
                 .fillMaxWidth(),
+            windowInsets = WindowInsets(0),
             colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.surface),
             inputField = {
                 SearchBarDefaults.InputField(
@@ -155,10 +157,7 @@ fun SelectCustomerContent(
                             label = stringResource(R.string.email),
                             value = selectedCustomer.email,
                         )
-                        DetailRow(
-                            label = stringResource(R.string.zone),
-                            value = selectedCustomer.zone.name
-                        )
+
                         DetailRow(
                             label = stringResource(R.string.city),
                             value = selectedCustomer.city,

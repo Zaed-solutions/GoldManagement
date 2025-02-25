@@ -7,13 +7,9 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -26,6 +22,8 @@ import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
+import com.zaed.common.data.model.payment.getPaymentTypeDropDownItems
+import com.zaed.common.ui.components.MultiOptionSwitch
 import com.zaed.common.ui.components.NumberInputTextField
 import com.zaed.common.ui.components.TitledDropDownTextField
 
@@ -36,8 +34,11 @@ fun SaveGoldPaymentBottomSheetContent(
     onSave: (Payment) -> Unit = {}
 ) {
 
-    var selectedIndex by remember { mutableIntStateOf(0) }
-    val options = listOf(PaymentType.CASH,PaymentType.GOLD)
+    var selectedType by remember { mutableStateOf(initialMoneyPayment.type) }
+    val options = listOf(PaymentType.CASH, PaymentType.GOLD)
+    val dropDownOptions = remember {
+        getPaymentTypeDropDownItems()
+    }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -49,34 +50,33 @@ fun SaveGoldPaymentBottomSheetContent(
             text = stringResource(R.string.save_payment),
             style = MaterialTheme.typography.titleLarge
         )
-        SingleChoiceSegmentedButtonRow(
+        MultiOptionSwitch(
             modifier = Modifier.padding(top = 8.dp),
-        ) {
-            options.forEachIndexed { index, label ->
-                SegmentedButton(
-                    shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
-                    onClick = { selectedIndex = index },
-                    selected = index == selectedIndex
-                ) {
-                    Text(label.name)
-                }
+            selectedIndex = options.indexOf(selectedType),
+            options = options.map { stringResource(it.titleRes) },
+            onOptionSelected = { index ->
+                selectedType = options[index]
             }
-        }
-        AnimatedContent(selectedIndex) { it ->
+        )
+        AnimatedContent(selectedType) { it ->
             when (it) {
-                0 -> {
-                    var payment by remember { mutableStateOf(initialMoneyPayment as? MoneyPayment?: MoneyPayment()) }
+                PaymentType.CASH -> {
+                    var payment by remember {
+                        mutableStateOf(
+                            initialMoneyPayment as? MoneyPayment ?: MoneyPayment()
+                        )
+                    }
                     Column {
                         TitledDropDownTextField(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 16.dp),
                             label = stringResource(R.string.type),
-                            options = PaymentType.entries.map { it.name },
-                            selectedValue = payment.type.name,
+                            options = dropDownOptions.map { stringResource(it.titleRes) },
+                            selectedValue = stringResource(payment.type.titleRes),
                             onValueChanged = { index ->
                                 payment =
-                                    payment.copy(type = PaymentType.entries[index])
+                                    payment.copy(type = dropDownOptions[index])
                             },
                         )
                         NumberInputTextField(
@@ -105,21 +105,15 @@ fun SaveGoldPaymentBottomSheetContent(
                         }
                     }
                 }
-                1->{
-                    var payment by remember { mutableStateOf(initialMoneyPayment as? GoldPayment?: GoldPayment()) }
-                    Column {
-                        TitledDropDownTextField(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 16.dp),
-                            label = stringResource(R.string.type),
-                            options = PaymentType.entries.map { it.name },
-                            selectedValue = payment.type.name,
-                            onValueChanged = { index ->
-                                payment =
-                                    payment.copy(type = PaymentType.entries[index])
-                            },
+
+                else -> {
+                    var payment by remember {
+                        mutableStateOf(
+                            initialMoneyPayment as? GoldPayment ?: GoldPayment()
                         )
+                    }
+                    Column {
+
                         NumberInputTextField(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -190,4 +184,5 @@ private fun PaymentTypeDropDownMenu(
         },
     )
 }
+
 fun Int.ifZero(value: () -> String): String = if (this == 0) value() else this.toString()

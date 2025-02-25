@@ -1,6 +1,7 @@
 package com.zaed.common.data.model.sale
 
 import com.zaed.common.data.model.authentication.ChangeLog
+import com.zaed.common.data.model.payment.PaymentStatus
 import kotlinx.serialization.Transient
 import java.util.Date
 
@@ -17,7 +18,7 @@ data class WholesaleProductSale(
     val receiptStatus: ReceiptStatus = ReceiptStatus.NOT_REQUESTED,
     val products: List<Product> = emptyList(),
     val paymentsIds: List<String> = emptyList(),
-    override val paid: Boolean = false,
+    override val paymentStatus: PaymentStatus = PaymentStatus.UNPAID,
     override val receiptNumber: String = "",
 ) : WholesaleSale(){
     @Transient

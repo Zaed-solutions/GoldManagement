@@ -5,12 +5,14 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObjects
+import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.customer.AddWholeSaleCustomerRequest
 import com.zaed.common.data.model.customer.FetchWholesaleCustomersByNameRequest
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.customer.request.EditWholeSalesCustomerRequest
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.DeletePaymentRequest
+import com.zaed.common.data.model.sale.WholesaleProductSale
 import com.zaed.common.domain.payment.UpdateCustomerDebtRequest
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +24,10 @@ class WholeSalesCustomerRemoteDataSourceImpl(
     private val crashlytics: FirebaseCrashlytics
 ) : WholeSalesCustomerRemoteDataSource {
     private val customersCollection = firestore.collection("whole_sale_customers")
+    private val wholesaleProductsCollection = firestore.collection("wholesale_product_sales")
+    private val wholesaleGoldCollection = firestore.collection("wholesale_gold_sales")
+    private val moneyPaymentsCollection = firestore.collection("money_payments")
+    private val goldPaymentsCollection = firestore.collection("gold_payments")
     override fun getWholeSalesCustomers(distributorId:String): Flow<Result<List<WholeSaleCustomer>>> = callbackFlow {
         try {
             customersCollection.whereEqualTo("distributorId",distributorId).addSnapshotListener { snapshot, error ->
@@ -71,7 +77,19 @@ class WholeSalesCustomerRemoteDataSourceImpl(
 
     override suspend fun deleteCustomer(customerId: String): Result<Unit> {
         try {
-            customersCollection.document(customerId).delete().await()
+            val customerRef = customersCollection.document(customerId)
+            val customer = customerRef.get().await().toObject(WholeSaleCustomer::class.java)
+            val deleteLog = ChangeLog(
+                employeeId = customer?.id?:"",
+                employeeName = customer?.name?:"",
+                action = "deleted this customer",
+            )
+            customerRef.update(
+                mapOf(
+                    "deleted" to true,
+                    "logs" to FieldValue.arrayUnion(deleteLog)
+                )
+            ).await()
             return Result.success(Unit)
         }catch (e:Exception){
             crashlytics.recordException(e)
@@ -89,7 +107,6 @@ class WholeSalesCustomerRemoteDataSourceImpl(
                     "phone" to request.updatedData.phone,
                     "address" to request.updatedData.address,
                     "city" to request.updatedData.city,
-                    "zone" to request.updatedData.zone,
                 )
             ).await()
             return Result.success(Unit)
@@ -120,7 +137,8 @@ class WholeSalesCustomerRemoteDataSourceImpl(
                 .where(
                     Filter.and(
                         Filter.greaterThanOrEqualTo("name", request.name),
-                        Filter.lessThanOrEqualTo("name", request.name + "\uf8ff")
+                        Filter.lessThanOrEqualTo("name", request.name + "\uf8ff"),
+                        Filter.equalTo("distributorId", request.distributorId)
                     )
                 ).get()
                 .await()
@@ -161,7 +179,6 @@ class WholeSalesCustomerRemoteDataSourceImpl(
                     email = request.email,
                     address = request.address,
                     city = request.city,
-                    zone = request.zone,
                 )
             ).await()
             return Result.success(Unit)

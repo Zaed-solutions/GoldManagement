@@ -15,7 +15,7 @@ data class GoldSaleDetailsUiState(
 ) {
     val paymentStatus: PaymentStatus
         get() = payments.filterIsInstance<GoldPayment>().any { it.pricePerGram == 0.0 }.let {
-            if (it) PaymentStatus.SPECIFYING_KARAT else PaymentStatus.PAID
+            if (it) PaymentStatus.SPECIFYING_KARAT else  PaymentStatus.PAID
         }
 
 }

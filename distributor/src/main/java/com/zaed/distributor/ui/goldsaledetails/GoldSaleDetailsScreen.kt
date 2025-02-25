@@ -52,18 +52,6 @@ fun GoldSaleDetailsScreen(
         when (action) {
             SaleDetailsUiAction.OnBackClicked -> onBackClicked()
             SaleDetailsUiAction.OnEditClicked -> onNavigateToEditSale(saleId)
-            SaleDetailsUiAction.OnPrintReceipt -> {
-                //TODO()
-            }
-
-            SaleDetailsUiAction.OnShareReceiptViaEmail -> {
-                //TODO()
-            }
-
-            SaleDetailsUiAction.OnShareReceiptViaWhatsapp -> {
-                //TODO()
-            }
-
             else -> viewModel.handleAction(action)
         }
     }
@@ -106,7 +94,7 @@ private fun GoldSaleDetailsContent(
             GoldSaleInfoSection(
                 receiptNumber = state.sale.receiptNumber,
                 createdAt = state.sale.createdAt,
-                paymentStatus = state.paymentStatus,
+                paymentStatus = state.sale.paymentStatus,
                 receiptStatus = state.sale.receiptStatus,
                 onRequestReceipt = {
                     onAction(SaleDetailsUiAction.OnRequestReceipt)

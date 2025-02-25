@@ -188,7 +188,11 @@ fun NavigationHost(
                     navController.popBackStack()
                 },
                 onNavigateToGoldSaleDetails = {
-                    navController.navigate(Route.GoldSaleDetailsRoute(it))
+                    navController.navigate(Route.GoldSaleDetailsRoute(it)){
+                        popUpTo<Route.SalesRoute>{
+                            inclusive = false
+                        }
+                    }
                 },
                 onNavigateToAddCustomer = {
                     navController.navigate(Route.AddCustomers())
@@ -202,7 +206,9 @@ fun NavigationHost(
                 onBackClicked = {
                     navController.popBackStack()
                 },
-                onNavigateToEditSale = {}
+                onNavigateToEditSale = {
+                    navController.navigate(Route.AddGoldSaleRoute(it))
+                }
             )
         }
         composable<Route.LossesRoute> {

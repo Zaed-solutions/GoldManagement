@@ -99,14 +99,6 @@ class AddCustomersViewModel(
                     )
                 }
 
-                is AddCustomersUiAction.UpdateZone -> _state.update {
-                    it.copy(
-                        request = it.request.copy(
-                            zone = action.zone
-                        )
-                    )
-                }
-
                 is AddCustomersUiAction.OnEdit -> {
                     editCustomer()
                 }
@@ -182,7 +174,6 @@ class AddCustomersViewModel(
                                 phone = data.phone,
                                 address = data.address,
                                 city = data.city,
-                                zone = data.zone
                             )
                         )
                     }
@@ -200,7 +191,6 @@ class AddCustomersViewModel(
         data class UpdatePhone(val phone: String) : AddCustomersUiAction
         data class UpdateAddress(val address: String) : AddCustomersUiAction
         data class UpdateCity(val city: String) : AddCustomersUiAction
-        data class UpdateZone(val zone: Zone) : AddCustomersUiAction
     }
 
     data class AddCustomersState(

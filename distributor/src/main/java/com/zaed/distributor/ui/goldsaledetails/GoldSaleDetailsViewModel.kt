@@ -8,12 +8,14 @@ import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
 import com.zaed.common.data.model.sale.ReceiptStatus
+import com.zaed.common.data.model.sale.request.DeleteWholesaleGoldSaleRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleGoldSaleRequest
 import com.zaed.common.data.model.sale.request.UpdateWholesaleGoldSaleRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.payment.FetchGoldPaymentsByIdsUseCase
 import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
+import com.zaed.common.domain.sale.DeleteWholesaleGoldSaleUseCase
 import com.zaed.common.domain.sale.DeleteWholesaleProductSaleUseCase
 import com.zaed.common.domain.sale.FetchWholesaleGoldSaleUseCase
 import com.zaed.common.domain.sale.UpdateWholesaleGoldSaleUseCase
@@ -29,7 +31,7 @@ class GoldSaleDetailsViewModel(
     private val fetchMoneyPaymentsUseCase: FetchMoneyPaymentsByIdsUseCase,
     private val fetchGoldPaymentsUseCase: FetchGoldPaymentsByIdsUseCase,
     private val getCurrentUseUseCase: GetCurrentUserLoggedInUseCase,
-    private val deleteWholesaleProductSaleUseCase: DeleteWholesaleProductSaleUseCase,
+    private val deleteWholesaleGoldSaleUseCase: DeleteWholesaleGoldSaleUseCase,
     private val updateWholesaleGoldSaleUseCase: UpdateWholesaleGoldSaleUseCase
 ): ViewModel() {
     private val TAG = "ProductSaleDetailsViewModel"
@@ -140,8 +142,8 @@ class GoldSaleDetailsViewModel(
 
     private fun deleteSale() {
         viewModelScope.launch (Dispatchers.IO){
-            deleteWholesaleProductSaleUseCase(
-                DeleteWholesaleProductSaleRequest(
+            deleteWholesaleGoldSaleUseCase(
+                DeleteWholesaleGoldSaleRequest(
                     saleId = uiState.value.sale.id
                 )
             ).onSuccess {

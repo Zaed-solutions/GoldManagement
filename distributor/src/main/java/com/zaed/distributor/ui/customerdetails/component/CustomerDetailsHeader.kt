@@ -36,9 +36,5 @@ fun CustomerDetailsHeader(
             label = stringResource(R.string.city),
             value = customer.city,
         )
-        DetailRow(
-            label = stringResource(R.string.zone),
-            value = customer.zone.name,
-        )
     }
 }

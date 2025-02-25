@@ -2,6 +2,7 @@ package com.zaed.distributor.ui.addproductsale
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,10 +11,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
@@ -138,6 +141,7 @@ private fun AddProductSaleScreenContent(
                     }
                     Button(
                         modifier = Modifier.weight(1f).heightIn(min = 48.dp),
+                        enabled = !state.isLoading,
                         onClick = {
                             if(pagerState.currentPage == 3){
                                 onAction(AddProductSaleUiAction.OnSubmitClicked)
@@ -148,9 +152,21 @@ private fun AddProductSaleScreenContent(
                             }
                         }
                     ) {
-                        Text(
-                            text = if(pagerState.currentPage == 3) stringResource(R.string.submit) else stringResource(R.string.continue_)
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = if (pagerState.currentPage == 3) stringResource(R.string.submit) else stringResource(
+                                    R.string.continue_
+                                )
+                            )
+                            AnimatedVisibility(state.isLoading) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                        }
                     }
                 }
             }

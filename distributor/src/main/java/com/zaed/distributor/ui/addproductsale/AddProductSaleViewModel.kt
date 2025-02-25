@@ -7,6 +7,7 @@ import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.customer.FetchWholesaleCustomersByNameRequest
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.MoneyPayment
+import com.zaed.common.data.model.payment.PaymentStatus
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
 import com.zaed.common.data.model.sale.Product
@@ -183,7 +184,7 @@ class AddProductSaleViewModel(
                             customerId = customer.id,
                             customerName = customer.name,
                             customerPhone = customer.phone,
-                            paid = (uiState.value.totalAmount - uiState.value.totalPaid).toInt() <= 0,
+                            paymentStatus = if ((uiState.value.totalAmount - uiState.value.totalPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID,
                             logs = oldState.sale.logs + updateLog
                         ),
                         moneyPayments = oldState.moneyPayments.map { it.copy(customerId = oldState.selectedCustomer.id) }
@@ -196,7 +197,7 @@ class AddProductSaleViewModel(
                     type = PaymentType.FUTURES,
                     amount = uiState.value.totalAmount - uiState.value.totalPaid
                 )
-                _uiState.update {oldState-> oldState.copy(moneyPayments = oldState.moneyPayments.filter { it.type!= PaymentType.FUTURES } + futureMoneyPayment) }
+                _uiState.update { oldState -> oldState.copy(moneyPayments = oldState.moneyPayments.filter { it.type != PaymentType.FUTURES } + futureMoneyPayment) }
             }
             updateProductSaleUseCase(
                 UpdateWholesaleProductSaleRequest(
@@ -234,7 +235,7 @@ class AddProductSaleViewModel(
                         distributorId = distributor.id,
                         distributorName = distributor.fullName,
                         createdAt = Date(),
-                        paid = (oldState.totalAmount - oldState.totalPaid).toInt() <= 0
+                        paymentStatus = if ((uiState.value.totalAmount - uiState.value.totalPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID
                     )
                 )
             }
@@ -265,7 +266,11 @@ class AddProductSaleViewModel(
                 )
             ).onSuccess { id ->
                 _uiState.update { oldState ->
-                    oldState.copy(sale = oldState.sale.copy(id = id), isLoading = false, isFinished = true)
+                    oldState.copy(
+                        sale = oldState.sale.copy(id = id),
+                        isLoading = false,
+                        isFinished = true
+                    )
                 }
             }.onFailure {
                 Log.e(TAG, "addSale: ${it.message}", it)
@@ -291,7 +296,8 @@ class AddProductSaleViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             fetchCustomersByNameUseCase(
                 FetchWholesaleCustomersByNameRequest(
-                    name = uiState.value.customerSearchQuery
+                    name = uiState.value.customerSearchQuery,
+                    distributorId = uiState.value.currentUser.id
                 )
             ).onSuccess { data ->
                 launch(Dispatchers.Main) {
@@ -327,7 +333,8 @@ class AddProductSaleViewModel(
         viewModelScope.launch(Dispatchers.Default) {
             val totalAmount = uiState.value.sale.products.sumOf { it.grams * it.gramPrice }
             val totalPaid =
-                uiState.value.moneyPayments.filter { it.type != PaymentType.FUTURES }.sumOf { it.amount }
+                uiState.value.moneyPayments.filter { it.type != PaymentType.FUTURES }
+                    .sumOf { it.amount }
             _uiState.update {
                 it.copy(totalAmount = totalAmount, totalPaid = totalPaid)
             }

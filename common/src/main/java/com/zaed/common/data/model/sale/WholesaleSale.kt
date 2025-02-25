@@ -1,6 +1,7 @@
 package com.zaed.common.data.model.sale
 
 import com.zaed.common.data.model.authentication.ChangeLog
+import com.zaed.common.data.model.payment.PaymentStatus
 import java.util.Date
 
 sealed class WholesaleSale {
@@ -14,7 +15,7 @@ sealed class WholesaleSale {
     abstract val logs: List<ChangeLog>
     abstract val receiptNumber: String
     abstract val deleted: Boolean
-    abstract val paid: Boolean
+    abstract val paymentStatus: PaymentStatus
 }
 
 

@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
+import com.zaed.common.data.model.payment.PaymentStatus
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
 import com.zaed.common.ui.components.ProductsTable
 import com.zaed.common.ui.components.TitledSection
@@ -94,7 +95,7 @@ private fun ProductSaleDetailsContent(
             SaleInfoSection(
                 receiptNumber = state.sale.receiptNumber,
                 createdAt = state.sale.createdAt,
-                paid = state.sale.paid,
+                paymentStatus = state.sale.paymentStatus,
                 receiptStatus = state.sale.receiptStatus,
                 onRequestReceipt = {
                     onAction(SaleDetailsUiAction.OnRequestReceipt)

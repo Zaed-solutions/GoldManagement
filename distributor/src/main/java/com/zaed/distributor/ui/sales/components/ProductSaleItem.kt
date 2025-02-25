@@ -52,7 +52,7 @@ fun ProductSaleItem(
                 )
             }
             PaidStatusChip(
-                paid = sale.paid
+                status = sale.paymentStatus
             )
         }
     }
@@ -61,17 +61,23 @@ fun ProductSaleItem(
 @Composable
 fun PaidStatusChip(
     modifier: Modifier = Modifier,
-    paid: Boolean
+    status: PaymentStatus
 ) {
-    val (label, borderColor, backgroundColor, textColor) = when {
-        paid -> FourTuple(
-            stringResource(PaymentStatus.PAID.label),
+    val (label, borderColor, backgroundColor, textColor) = when (status){
+        PaymentStatus.PAID -> FourTuple(
+            stringResource(status.label),
             MaterialTheme.colorScheme.primary,
             MaterialTheme.colorScheme.primaryContainer,
             MaterialTheme.colorScheme.primary
         )
+        PaymentStatus.UNPAID -> FourTuple(
+            stringResource(status.label),
+            MaterialTheme.colorScheme.secondary,
+            MaterialTheme.colorScheme.secondaryContainer,
+            MaterialTheme.colorScheme.secondary
+        )
         else -> FourTuple(
-            stringResource(PaymentStatus.UNPAID.label),
+            stringResource(status.label),
             MaterialTheme.colorScheme.tertiary,
             MaterialTheme.colorScheme.tertiaryContainer,
             MaterialTheme.colorScheme.tertiary

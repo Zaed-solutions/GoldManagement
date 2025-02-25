@@ -125,17 +125,8 @@ fun IngotTransactionsScreenContent(
         Column(
             modifier = Modifier.padding(innerPadding)
         ) {
-            //search bar
-            SearchBar(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                query = state.searchQuery,
-                onQueryChanged = {
-                    onAction(IngotTransactionsUiAction.OnUpdateSearchQuery(it))
-                }
-            )
             //tab row
             PrimaryTabRow(
-                modifier = Modifier.padding(top = 16.dp),
                 selectedTabIndex = pagerState.currentPage,
                 indicator = {
                     TabRowDefaults.PrimaryIndicator(

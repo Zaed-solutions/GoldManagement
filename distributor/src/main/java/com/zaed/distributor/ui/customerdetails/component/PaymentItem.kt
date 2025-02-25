@@ -68,7 +68,7 @@ fun PaymentItem(
                                 modifier = Modifier.height(FilterChipDefaults.Height - 8.dp),
                                 selected = true,
                                 onClick = {},
-                                label = { Text(text = payment.type.name) },
+                                label = { Text(text = stringResource(payment.type.titleRes)) },
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = chipColor,
                                     selectedLabelColor = contentColorFor(chipColor)
@@ -131,7 +131,7 @@ fun PaymentItem(
                                 modifier = Modifier.height(FilterChipDefaults.Height - 8.dp),
                                 selected = true,
                                 onClick = {},
-                                label = { Text(text = payment.type.name) },
+                                label = { Text(text = stringResource(payment.type.titleRes)) },
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = chipColor,
                                     selectedLabelColor = contentColorFor(chipColor)

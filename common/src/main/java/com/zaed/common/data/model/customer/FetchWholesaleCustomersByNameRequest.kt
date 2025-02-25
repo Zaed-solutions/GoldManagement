@@ -1,5 +1,6 @@
 package com.zaed.common.data.model.customer
 
 data class FetchWholesaleCustomersByNameRequest(
-    val name: String = ""
+    val name: String = "",
+    val distributorId: String = ""
 )

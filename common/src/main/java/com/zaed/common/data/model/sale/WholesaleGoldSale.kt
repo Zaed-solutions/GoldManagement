@@ -1,6 +1,7 @@
 package com.zaed.common.data.model.sale
 
 import com.zaed.common.data.model.authentication.ChangeLog
+import com.zaed.common.data.model.payment.PaymentStatus
 import java.util.Date
 
 data class WholesaleGoldSale(
@@ -18,5 +19,5 @@ data class WholesaleGoldSale(
     override val createdAt: Date = Date(),
     override val logs: List<ChangeLog> = emptyList(),
     override val deleted: Boolean = false,
-    override val paid: Boolean = false
+    override val paymentStatus: PaymentStatus = PaymentStatus.UNPAID
 ): WholesaleSale()

@@ -156,8 +156,7 @@ class SalesViewModel(
                 }
             } else if(searchQuery.isBlank()) {
                 //no search query & payment status is not all
-                val paid = paymentStatus == PaymentStatus.PAID
-                val filteredSales = uiState.value.allSales.filter { it.paid == paid }
+                val filteredSales = uiState.value.allSales.filter { it.paymentStatus == paymentStatus }
                 _uiState.update { oldState ->
                     oldState.copy(isLoading = false, displayedSales = filteredSales)
                 }
@@ -169,8 +168,7 @@ class SalesViewModel(
                 }
             } else {
                 //search query is not blank & payment status is not all
-                val paid = paymentStatus == PaymentStatus.PAID
-                val filteredSales = uiState.value.allSales.filter { it.customerName.contains(searchQuery, ignoreCase = true) && it.paid == paid }
+                val filteredSales = uiState.value.allSales.filter { it.customerName.contains(searchQuery, ignoreCase = true) && it.paymentStatus == paymentStatus }
                 _uiState.update { oldState ->
                     oldState.copy(isLoading = false, displayedSales = filteredSales)
                 }

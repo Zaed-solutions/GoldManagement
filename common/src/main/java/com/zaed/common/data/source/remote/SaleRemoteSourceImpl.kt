@@ -484,11 +484,17 @@ class SaleRemoteSourceImpl(
             val batch = firestore.batch()
             val docRef = wholesaleProductSalesCollection.document()
             val paymentsIds = mutableListOf<String>()
-            val receiptNumber = wholesaleProductSalesCollection.orderBy(
+            val maxProductReceipt = wholesaleProductSalesCollection.orderBy(
                 "receiptNumber",
                 Query.Direction.DESCENDING
             ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")
                 ?.toLongOrNull() ?: 0
+            val maxGoldReceiptNumber = wholesaleGoldSalesCollection.orderBy(
+                "receiptNumber",
+                Query.Direction.DESCENDING
+            ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")
+                ?.toLongOrNull() ?: 0
+            val receiptNumber = maxOf(maxProductReceipt, maxGoldReceiptNumber) + 1
             val customerRef = wholesaleCustomersCollection.document(request.sale.customerId)
             request.moneyPayments.forEach {
                 val ref = moneyPaymentCollection.document()
@@ -513,7 +519,7 @@ class SaleRemoteSourceImpl(
                 request.sale.copy(
                     id = docRef.id,
                     paymentsIds = paymentsIds,
-                    receiptNumber = (receiptNumber + 1).toString()
+                    receiptNumber = receiptNumber.toString()
                 )
             )
 
@@ -532,11 +538,17 @@ class SaleRemoteSourceImpl(
             val docRef = wholesaleGoldSalesCollection.document()
             val moneyPaymentsIds = mutableListOf<String>()
             val goldPaymentsIds = mutableListOf<String>()
-            val receiptNumber = wholesaleGoldSalesCollection.orderBy(
+            val maxProductReceipt = wholesaleProductSalesCollection.orderBy(
                 "receiptNumber",
                 Query.Direction.DESCENDING
             ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")
                 ?.toLongOrNull() ?: 0
+            val maxGoldReceiptNumber = wholesaleGoldSalesCollection.orderBy(
+                "receiptNumber",
+                Query.Direction.DESCENDING
+            ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")
+                ?.toLongOrNull() ?: 0
+            val receiptNumber = maxOf(maxProductReceipt, maxGoldReceiptNumber) + 1
             val customerRef = wholesaleCustomersCollection.document(request.sale.customerId)
             request.moneyPayments.forEach {
                 val ref = moneyPaymentCollection.document()
@@ -578,7 +590,7 @@ class SaleRemoteSourceImpl(
                     id = docRef.id,
                     moneyPaymentsIds = moneyPaymentsIds,
                     goldPaymentsIds = goldPaymentsIds,
-                    receiptNumber = (receiptNumber + 1).toString()
+                    receiptNumber = receiptNumber.toString()
                 )
             )
             batch.commit().await()

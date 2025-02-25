@@ -7,5 +7,4 @@ data class AddWholeSaleCustomerRequest(
     val email: String = "",
     val address: String = "",
     val city: String = "",
-    val zone: Zone = Zone.NOT_DEFINED,
 )

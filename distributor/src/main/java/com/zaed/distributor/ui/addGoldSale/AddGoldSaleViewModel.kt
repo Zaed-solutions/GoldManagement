@@ -8,6 +8,7 @@ import com.zaed.common.data.model.customer.FetchWholesaleCustomersByNameRequest
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.MoneyPayment
+import com.zaed.common.data.model.payment.PaymentStatus
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
 import com.zaed.common.data.model.sale.Product
@@ -188,20 +189,24 @@ class AddGoldSaleViewModel(
                             customerId = customer.id,
                             customerName = customer.name,
                             customerPhone = customer.phone,
-                            paid = (uiState.value.totalPaid).toInt() <= 0,
+                            paymentStatus = when {
+                                uiState.value.goldPayments.any { it.pricePerGram == 0.0 } -> PaymentStatus.SPECIFYING_KARAT
+                                totalPaid == (totalAmount + laborCost) -> PaymentStatus.PAID
+                                else -> PaymentStatus.UNPAID
+                            },
                             logs = oldState.sale.logs + updateLog
                         ),
                         moneyPayments = oldState.moneyPayments.map { it.copy(customerId = oldState.selectedCustomer.id) }
                     )
                 }
             }
-            if (uiState.value.totalPaid != (uiState.value.totalAmount+uiState.value.laborCost)) {
+            if (uiState.value.totalPaid != (uiState.value.totalAmount + uiState.value.laborCost)) {
                 val futureMoneyPayment = MoneyPayment(
                     customerId = uiState.value.selectedCustomer.id,
                     type = PaymentType.FUTURES,
-                    amount = (uiState.value.totalAmount - uiState.value.totalPaid)+uiState.value.laborCost
+                    amount = (uiState.value.totalAmount - uiState.value.totalPaid) + uiState.value.laborCost
                 )
-                _uiState.update {oldState-> oldState.copy(moneyPayments = oldState.moneyPayments.filter { it.type!= PaymentType.FUTURES } + futureMoneyPayment) }
+                _uiState.update { oldState -> oldState.copy(moneyPayments = oldState.moneyPayments.filter { it.type != PaymentType.FUTURES } + futureMoneyPayment) }
             }
             updateGoldSaleUseCase(
                 UpdateWholesaleGoldSaleRequest(
@@ -244,7 +249,11 @@ class AddGoldSaleViewModel(
                         distributorId = distributor.id,
                         distributorName = distributor.fullName,
                         createdAt = Date(),
-                        paid = (oldState.totalPaid).toInt() <= 0
+                        paymentStatus = when {
+                            uiState.value.goldPayments.any { it.pricePerGram == 0.0 } -> PaymentStatus.SPECIFYING_KARAT
+                            uiState.value.totalPaid == (uiState.value.totalAmount + uiState.value.laborCost) -> PaymentStatus.PAID
+                            else -> PaymentStatus.UNPAID
+                        },
                     )
                 )
             }
@@ -262,13 +271,13 @@ class AddGoldSaleViewModel(
                     goldPayments = oldState.goldPayments.map { it.copy(customerId = oldState.selectedCustomer.id) }
                 )
             }
-            if (uiState.value.totalPaid != (uiState.value.totalAmount+uiState.value.laborCost)) {
+            if (uiState.value.totalPaid != (uiState.value.totalAmount + uiState.value.laborCost)) {
                 val futureMoneyPayment = MoneyPayment(
                     customerId = uiState.value.selectedCustomer.id,
                     type = PaymentType.FUTURES,
-                    amount = (uiState.value.totalAmount - uiState.value.totalPaid)+uiState.value.laborCost
+                    amount = (uiState.value.totalAmount - uiState.value.totalPaid) + uiState.value.laborCost
                 )
-                _uiState.update {oldState-> oldState.copy(moneyPayments = oldState.moneyPayments.filter { it.type!= PaymentType.FUTURES } + futureMoneyPayment) }
+                _uiState.update { oldState -> oldState.copy(moneyPayments = oldState.moneyPayments.filter { it.type != PaymentType.FUTURES } + futureMoneyPayment) }
             }
             Log.d(TAG, "addSale: Calling addGoldSaleUseCase with sale and payments")
             addGoldSaleUseCase(
@@ -320,7 +329,8 @@ class AddGoldSaleViewModel(
             )
             fetchCustomersByNameUseCase(
                 FetchWholesaleCustomersByNameRequest(
-                    name = uiState.value.customerSearchQuery
+                    name = uiState.value.customerSearchQuery,
+                    distributorId = uiState.value.currentUser.id
                 )
             ).onSuccess { data ->
                 withContext(Dispatchers.Main) {

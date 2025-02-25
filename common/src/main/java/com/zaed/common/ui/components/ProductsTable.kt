@@ -58,35 +58,36 @@ fun ProductsTable(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        AnimatedVisibility(products.all { it.name.isNotEmpty() }) {
+                        if(products.firstOrNull()?.name?.isNotEmpty() == true) {
                             Text(
                                 text = stringResource(R.string.product),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                modifier = Modifier.weight(0.5f)
+                                modifier = Modifier.weight(5f)
                             )
                         }
                         Text(
                             text = stringResource(R.string.grams),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.weight(0.3f),
+                            modifier = Modifier.weight(3f),
                             textAlign = TextAlign.Center
                         )
-                        AnimatedVisibility(products.all { it.name.isEmpty() }) {
+                        if(products.firstOrNull()?.name?.isEmpty() == true) {
                             Text(
                                 text = stringResource(R.string.labor_cost),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                modifier = Modifier.weight(0.5f)
+                                modifier = Modifier.weight(5f),
+                                textAlign = TextAlign.Center
                             )
                         }
                         Text(
                             text = stringResource(R.string.price),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.weight(0.3f),
-                            textAlign = TextAlign.Center
+                            modifier = Modifier.weight(3f),
+                            textAlign = TextAlign.End
                         )
                     }
                     HorizontalDivider()
