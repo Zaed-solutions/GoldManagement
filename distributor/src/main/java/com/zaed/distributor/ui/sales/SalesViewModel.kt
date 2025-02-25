@@ -162,13 +162,13 @@ class SalesViewModel(
                 }
             } else if(paymentStatus == PaymentStatus.ALL) {
                 //search query is not blank & payment status is all
-                val filteredSales = uiState.value.allSales.filter { it.customerName.contains(searchQuery, ignoreCase = true) }
+                val filteredSales = uiState.value.allSales.filter { listOf(it.customerName,it.receiptNumber).any { it.contains(searchQuery, ignoreCase = true) } }
                 _uiState.update { oldState ->
                     oldState.copy(isLoading = false, displayedSales = filteredSales)
                 }
             } else {
                 //search query is not blank & payment status is not all
-                val filteredSales = uiState.value.allSales.filter { it.customerName.contains(searchQuery, ignoreCase = true) && it.paymentStatus == paymentStatus }
+                val filteredSales = uiState.value.allSales.filter { listOf(it.customerName,it.receiptNumber).any { it.contains(searchQuery, ignoreCase = true) } && it.paymentStatus == paymentStatus }
                 _uiState.update { oldState ->
                     oldState.copy(isLoading = false, displayedSales = filteredSales)
                 }
