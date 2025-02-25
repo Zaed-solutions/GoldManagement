@@ -12,27 +12,27 @@ enum class NavDrawerItem(
 ) {
     PRODUCT_SALES(
         title = R.string.sales,
-        icon = null,
+        icon = R.drawable.ic_money_plus,
         route = Route.SalesRoute
     ),
     CUSTOMERS(
         title = R.string.customers,
-        icon = null,
+        icon = R.drawable.ic_customers,
         route = Route.WholeSaleCustomers
     ),
     LOSSES(
         title = R.string.losses,
-        icon = null,
+        icon = R.drawable.ic_money_minus,
         route = Route.LossesRoute
     ),
     GOLD_SALES(
         title = R.string.gold_sales,
-        icon = null,
+        icon = R.drawable.ic_coins,
         route = Route.AddGoldSaleRoute()
     ),
     INGOTS_SALES(
         title = R.string.ingots_sales,
-        icon = null,
+        icon = R.drawable.ic_ingot,
         route = Route.IngotTransactionsRoute
     ),
 }

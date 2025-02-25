@@ -170,5 +170,28 @@
     <string name="labor_cost">تكلفة المصنعية</string>
     <string name="money_paid">المبلغ المدفوع</string>
     <string name="gold_paid">الذهب المدفوع</string>
-
+    <string name="specifying_karat">تحديد العيار</string>
+    <string name="save_payment">حفظ الدفع</string>
+    <string name="submit">إرسال</string>
+    <string name="future">المستقبل</string>
+    <string name="purchase">شراء</string>
+    <string name="selling_price">سعر البيع</string>
+    <string name="buying_price">سعر الشراء</string>
+    <string name="add_ingot_transaction">إضافة معاملة سبيكة</string>
+    <string name="edit_ingot_transaction">تعديل معاملة سبيكة</string>
+    <string name="total_earning">إجمالي الأرباح</string>
+    <string name="ingots">سبائك</string>
+    <string name="purchases">المشتريات</string>
+    <string name="transaction">معاملة</string>
+    <string name="bank_transfer">تحويل بنكي</string>
+    <string name="cheque">شيك</string>
+    <string name="futures">آجل</string>
+    <string name="gold">ذهب</string>
+    <string name="all_transaction_and_payments_will_be_deleted">سيتم حذف جميع المعاملات والمدفوعات المرتبطة بهذا العميل</string>
+    <string name="logged_in_as_placeholder">تم تسجيل الدخول كـ %1$s</string>
+    <string name="daily_allowance">مصروف يومي</string>
+    <string name="unknown_customer">عميل غير معروف</string>
+    <string name="ingot_transaction_title_placeholder">%1$s غرام من %2$s عيار</string>
+    <string name="add_gold_amounts">أضف كمية الذهب</string>
+    <string name="add_amount">أضف الكمية</string>
 </resources>

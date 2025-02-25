@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.ui.components.NumberInputTextField
-import com.zaed.common.ui.util.formatMoney
 
 @Composable
 fun SaveGoldSheetContent(
@@ -36,7 +35,7 @@ fun SaveGoldSheetContent(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            text = stringResource(R.string.add_product),
+            text = stringResource(com.zaed.common.R.string.add_amount),
             style = MaterialTheme.typography.headlineMedium
         )
 
@@ -56,10 +55,7 @@ fun SaveGoldSheetContent(
                 product = product.copy(gramPrice = value)
             },
             label = stringResource(R.string.gram_price),
-            supportingText = stringResource(
-                R.string.minimum_price_placeholder,
-                product.minPrice.formatMoney()
-            ),
+
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
         )
         NumberInputTextField(

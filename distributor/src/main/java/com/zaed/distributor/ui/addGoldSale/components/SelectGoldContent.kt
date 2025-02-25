@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.zaed.common.R
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.ui.components.ProductsList
 
@@ -45,7 +44,7 @@ fun SelectGoldContent(
     ) {
         Text(
             modifier = Modifier.padding(horizontal = 16.dp),
-            text = stringResource(R.string.select_products),
+            text = stringResource(com.zaed.common.R.string.add_gold_amounts),
             style = MaterialTheme.typography.headlineMedium
         )
         ProductsList(
@@ -53,6 +52,7 @@ fun SelectGoldContent(
             products = sale,
             onAddProduct = { isAddProductSheetVisible = true },
             onRemoveProduct = onRemoveGold,
+            label = stringResource(com.zaed.common.R.string.gold),
             onEditProduct = {
                 selectedProduct = it
                 isAddProductSheetVisible = true

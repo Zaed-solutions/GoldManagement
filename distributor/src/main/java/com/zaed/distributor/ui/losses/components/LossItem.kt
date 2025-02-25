@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.sp
 import com.zaed.common.data.model.loss.DistributorLoss
 import com.zaed.common.ui.components.SwipeToEditOrDeleteContainer
 import com.zaed.common.ui.util.formatMoney
-import com.zaed.distributor.R
 
 @Composable
 fun LossItem(
@@ -44,7 +43,7 @@ fun LossItem(
                 Text(
                     modifier = Modifier.weight(1f),
                     maxLines = 1,
-                    text = if (loss.allowance) stringResource(R.string.daily_allowance) else loss.reason,
+                    text = if (loss.allowance) stringResource(com.zaed.common.R.string.daily_allowance) else loss.reason,
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontSize = 20.sp,
                     )

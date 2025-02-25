@@ -5,12 +5,17 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -18,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -57,7 +63,11 @@ class MainActivity : ComponentActivity() {
             if (!state.loading) {
                 DistributorAppTheme {
                     App(
-                        localUser = state.currentUser
+                        localUser = state.currentUser,
+                        onSignOut = {
+                            mainViewModel.signOut()
+                        },
+                        isSignedOut = state.isSignedOut
                     )
                 }
             }
@@ -66,7 +76,11 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun App(localUser: User?) {
+fun App(
+    localUser: User?,
+    isSignedOut: Boolean = false,
+    onSignOut: () -> Unit = {},
+) {
     val startDestination = remember(localUser) {
         when {
             localUser?.isApprovedDistributor() == true -> Route.SalesRoute
@@ -94,32 +108,60 @@ fun App(localUser: User?) {
             }
         }
     }
+    LaunchedEffect(isSignedOut) {
+        if (isSignedOut) {
+            navController.navigate(Route.LoginRoute) {
+                popUpTo(navController.graph.startDestinationId) {
+                    inclusive = true
+                }
+            }
+        }
+    }
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = navDrawerRoutes.contains(currentRoute),
         drawerContent = {
             ModalDrawerSheet {
-                Column(
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_launcher_foreground),
+                        painter = painterResource(com.zaed.common.R.drawable.app_icon),
                         contentDescription = "App Logo",
                         tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(250.dp)
+                        modifier = Modifier.size(82.dp)
+                    )
+                    Text(
+                        text = stringResource(R.string.app_name),
+                        modifier = Modifier.padding(start = 16.dp),
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                 }
+                Text(
+                    stringResource(
+                        com.zaed.common.R.string.logged_in_as_placeholder,
+                        localUser?.fullName ?: ""
+                    ),
+                    modifier = Modifier
+                        .padding(vertical = 16.dp)
+                        .padding(start = 16.dp),
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
                 HorizontalDivider(modifier = Modifier.padding(bottom = 16.dp))
                 Column(
                     modifier = Modifier
+                        .fillMaxHeight()
                         .padding(vertical = 8.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
                     navDrawerItems.forEach { item ->
                         NavigationDrawerItem(
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            shape = RoundedCornerShape(0.dp),
+                            modifier = Modifier.padding(vertical = 8.dp),
                             label = { Text(text = stringResource(item.title)) },
                             selected = currentRoute == item.route::class.qualifiedName.orEmpty(),
                             icon = item.icon?.let {
@@ -127,11 +169,11 @@ fun App(localUser: User?) {
                                     Icon(
                                         painter = painterResource(it),
                                         contentDescription = null,
-                                        modifier = Modifier.size(24.dp)
+                                        modifier = Modifier.size(24.dp),
+                                        tint = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
                             },
-                            shape = RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp),
                             onClick = {
                                 scope.launch {
                                     mutex.withLock {
@@ -145,6 +187,32 @@ fun App(localUser: User?) {
                             }
                         )
                     }
+                    Spacer(modifier = Modifier.weight(1f))
+                    HorizontalDivider(modifier = Modifier.padding(bottom = 8.dp))
+                    NavigationDrawerItem(
+                        shape = RoundedCornerShape(0.dp),
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        label = { Text(text = stringResource(com.zaed.common.R.string.sign_out)) },
+                        selected = false,
+                        icon = {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.Logout,
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        },
+                        colors = NavigationDrawerItemDefaults.colors(
+                            unselectedTextColor = MaterialTheme.colorScheme.error,
+                            unselectedIconColor = MaterialTheme.colorScheme.error,
+                        ) ,
+                        onClick = {
+                            onSignOut()
+                            scope.launch {
+                                drawerState.close()
+                            }
+                        },
+                    )
+
                 }
             }
         },

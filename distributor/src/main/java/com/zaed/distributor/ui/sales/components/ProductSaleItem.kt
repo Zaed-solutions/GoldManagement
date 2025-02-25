@@ -22,7 +22,6 @@ import com.zaed.common.data.model.sale.WholesaleProductSale
 import com.zaed.common.ui.components.FourTuple
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
-import com.zaed.distributor.R
 
 @Composable
 fun ProductSaleItem(
@@ -43,7 +42,7 @@ fun ProductSaleItem(
         ) {
             Column {
                 Text(
-                    text = sale.customerName.ifBlank { stringResource(R.string.unknown_customer) },
+                    text = sale.customerName.ifBlank { stringResource(com.zaed.common.R.string.unknown_customer) },
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal)
                 )
                 Text(

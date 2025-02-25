@@ -14,13 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.zaed.common.R
 import com.zaed.common.data.model.sale.IngotTransaction
 import com.zaed.common.ui.components.PriceCalculationItem
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
 import com.zaed.common.ui.util.formatMoney
-import com.zaed.common.R
 
 @Composable
 fun TransactionItem(
@@ -47,7 +46,7 @@ fun TransactionItem(
             ) {
                 Text(
                     text = stringResource(
-                        com.zaed.distributor.R.string.ingot_transaction_title_placeholder,
+                        com.zaed.common.R.string.ingot_transaction_title_placeholder,
                         transaction.grams,
                         transaction.karat.value
                     ),

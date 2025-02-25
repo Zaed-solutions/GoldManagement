@@ -1,6 +1,5 @@
 package com.zaed.distributor.ui.sales
 
-import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,7 +10,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Menu
@@ -34,15 +32,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
 import com.zaed.common.data.model.payment.PaymentStatus
 import com.zaed.common.ui.components.ConfirmDeleteDialog
-import com.zaed.common.ui.components.MoreDropDownMenu
-import com.zaed.common.ui.components.MoreDropdownItem
 import com.zaed.common.ui.components.SearchBar
 import com.zaed.distributor.ui.sales.components.SalesList
 import org.koin.androidx.compose.koinViewModel
@@ -86,7 +81,6 @@ fun SalesScreenContent(
     modifier: Modifier = Modifier,
     state: SalesUiState,
     onAction: (SalesUiAction) -> Unit,
-    context: Context = LocalContext.current
 ) {
 
     var selectedSale by remember { mutableStateOf("" to false) }
@@ -111,18 +105,6 @@ fun SalesScreenContent(
                         )
                     }
                 },
-                actions = {
-                    MoreDropDownMenu(
-                        items = listOf(
-                            MoreDropdownItem(
-                                onClick = { onAction(SalesUiAction.OnSignOut) },
-                                title = stringResource(R.string.sign_out),
-                                icon = Icons.AutoMirrored.Filled.Logout,
-                                tint = MaterialTheme.colorScheme.error
-                            )
-                        )
-                    )
-                }
             )
         },
         floatingActionButton = {

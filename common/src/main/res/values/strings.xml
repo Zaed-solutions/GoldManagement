@@ -142,9 +142,6 @@
     <string name="total_paid">Total Paid</string>
     <string name="all_unpaid_amount_will_be_considered_as_future_payment">All unpaid amount will be considered as future payment\n</string>
     <string name="payments">Payments</string>
-    <string name="save_payment">Save Payment</string>
-    <string name="submit">Submit</string>
-    <string name="future">Future</string>
     <string name="received">Recieved</string>
     <string name="taken">Taken</string>
     <string name="given">Given</string>
@@ -173,6 +170,9 @@
     <string name="money_paid">Money Paid</string>
     <string name="gold_paid">Gold Paid</string>
     <string name="specifying_karat">Specifying Karat</string>
+    <string name="save_payment">Save Payment</string>
+    <string name="submit">Submit</string>
+    <string name="future">Future</string>
     <string name="purchase">Purchase</string>
     <string name="selling_price">Selling Price</string>
     <string name="buying_price">Buying Price</string>
@@ -187,4 +187,10 @@
     <string name="futures">Futures</string>
     <string name="gold">Gold</string>
     <string name="all_transaction_and_payments_will_be_deleted">All transactions and payments associated with this customer will be deleted</string>
+    <string name="logged_in_as_placeholder">Logged in as %1$s</string>
+    <string name="daily_allowance">Daily Allowance</string>
+    <string name="unknown_customer">Unknown Customer</string>
+    <string name="ingot_transaction_title_placeholder">%1$s g of %2$s K</string>
+    <string name="add_gold_amounts">Add Gold Amounts</string>
+    <string name="add_amount">Add Amount</string>
 </resources>

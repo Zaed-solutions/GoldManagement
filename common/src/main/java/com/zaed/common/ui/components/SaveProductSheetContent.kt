@@ -22,7 +22,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.sale.Product
-import com.zaed.common.ui.util.formatMoney
 
 @Composable
 fun SaveProductSheetContent(
@@ -69,10 +68,6 @@ fun SaveProductSheetContent(
                 product = product.copy(gramPrice = value)
             },
             label = stringResource(R.string.gram_price),
-            supportingText = stringResource(
-                R.string.minimum_price_placeholder,
-                product.minPrice.formatMoney()
-            ),
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
         )
         Button(

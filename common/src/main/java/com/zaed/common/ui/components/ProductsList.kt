@@ -1,6 +1,5 @@
 package com.zaed.common.ui.components
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,6 +29,7 @@ fun ProductsList(
     products: List<Product>,
     onAddProduct: () -> Unit,
     onEditProduct: (Product) -> Unit,
+    label: String = stringResource(R.string.products),
     onRemoveProduct: (id: String) -> Unit
 ) {
     Column(
@@ -41,7 +41,7 @@ fun ProductsList(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stringResource(R.string.products),
+                text =label ,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.weight(1f)
             )
