@@ -2,6 +2,7 @@ package com.zaed.cashier.ui.sales
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -27,10 +28,12 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zaed.cashier.ui.saledetails.component.DateFilter
 import com.zaed.cashier.ui.sales.components.SalesList
 import com.zaed.common.R
 import com.zaed.common.data.model.sale.StoreSale
 import com.zaed.common.ui.components.ConfirmDeleteDialog
+import com.zaed.common.ui.components.DatePickerModal
 import com.zaed.common.ui.components.MoreDropDownMenu
 import com.zaed.common.ui.components.MoreDropdownItem
 import com.zaed.common.ui.components.SearchBar
@@ -78,8 +81,13 @@ private fun SalesScreenContent(
     var selectedSale by remember {
         mutableStateOf(StoreSale())
     }
+    var isDatePickerVisible by remember {
+        mutableStateOf(false)
+    }
+
     Scaffold (
         modifier = modifier,
+        contentWindowInsets = WindowInsets(0),
         topBar = {
             TopAppBar(
                 title= {
@@ -125,6 +133,11 @@ private fun SalesScreenContent(
                 query = state.searchQuery,
                 onQueryChanged = { onAction(SalesUiAction.UpdateSearchQuery(it)) }
             )
+            DateFilter(
+                date = state.selectedDate,
+            ) {
+                isDatePickerVisible = true
+            }
             //sales list
             SalesList(
                 isLoading = state.isLoading,
@@ -161,6 +174,18 @@ private fun SalesScreenContent(
                         },
                     )
                 }
+            }
+            androidx.compose.animation.AnimatedVisibility(isDatePickerVisible) {
+                DatePickerModal(
+                    initialDate = state.selectedDate,
+                    onDateSelected = {
+                        onAction(SalesUiAction.UpdateSelectedDate(it))
+                        isDatePickerVisible = false
+                    },
+                    onDismiss = {
+                        isDatePickerVisible = false
+                    }
+                )
             }
         }
     }

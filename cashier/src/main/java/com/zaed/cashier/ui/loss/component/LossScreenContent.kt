@@ -1,21 +1,14 @@
 package com.zaed.cashier.ui.loss.component
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
@@ -35,7 +28,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -47,15 +39,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.zaed.common.R
 import com.zaed.cashier.ui.loss.LossFieldsError
 import com.zaed.cashier.ui.loss.LossUiAction
 import com.zaed.cashier.ui.loss.LossUiState
 import com.zaed.cashier.ui.theme.CashierAppTheme
+import com.zaed.common.R
 import com.zaed.common.data.model.loss.StoreLoss
 import com.zaed.common.ui.components.AnimatedLoading
 import com.zaed.common.ui.components.ConfirmDeleteDialog
 import com.zaed.common.ui.components.CustomSnackbar
+import com.zaed.common.ui.components.DatedLossesList
 import com.zaed.common.ui.components.MoreDropDownMenu
 import com.zaed.common.ui.components.MoreDropdownItem
 import com.zaed.common.ui.components.NumberInputTextField
@@ -97,6 +90,7 @@ fun LossScreenContent(
 
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0),
         topBar = {
             TopAppBar(
                 title = {
@@ -148,54 +142,18 @@ fun LossScreenContent(
                 .padding(16.dp)
         ) {
             AnimatedLoading(uiState.isLoading)
-            var selectedDate by remember { mutableStateOf<String?>(null) }
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(300.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(uiState.losses.keys.toList()) { date ->
-                    key(date) {
-                        AnimatedContent(
-                            targetState = selectedDate,
-                            transitionSpec = {
-                                fadeIn(animationSpec = tween(300)) togetherWith fadeOut(
-                                    animationSpec = tween(
-                                        300
-                                    )
-                                )
-
-                            }
-                        ) { targetDate ->
-                            if (targetDate != date) {
-                                MainContent(
-                                    date = date,
-                                    losses = uiState.losses[date] ?: emptyList(),
-                                    onShowDetails = {
-                                        selectedDate = date
-                                    },
-                                )
-                            } else {
-                                DetailsContent(
-                                    onBack = {
-                                        selectedDate = null
-                                    },
-                                    date = date,
-                                    losses = uiState.losses[date] ?: emptyList(),
-                                    onEdit = { loss ->
-                                        selectedLoss = loss
-                                        isSaveLossSheetOpen = true
-                                    },
-                                    onDelete = { loss ->
-                                        selectedLoss = loss
-                                        isDeleteLossSheetOpen = true
-                                    }
-                                )
-                            }
-
-                        }
-                    }
+            DatedLossesList(
+               isLoading = uiState.isLoading,
+                datedLosses = uiState.datedLosses,
+                onDeleteLoss = {
+                    selectedLoss = it as StoreLoss
+                    isDeleteLossSheetOpen = true
+                },
+                onUpdateLoss = {
+                    selectedLoss = it as StoreLoss
+                    isSaveLossSheetOpen = true
                 }
-            }
+            )
         }
         AnimatedBottomSheetWithCreateAndDismiss(
             isSaveLossSheetOpen,
@@ -218,6 +176,7 @@ fun LossScreenContent(
                             LossUiAction.OnUpdateLoss(it)
                         }
                     )
+                    isSaveLossSheetOpen = false
                 },
                 onDismiss = {
                     selectedLoss = StoreLoss()
@@ -334,7 +293,7 @@ private fun LossScreenPreview() {
     CashierAppTheme {
         LossScreenContent(
             uiState = LossUiState(
-                losses = emptyMap()
+                losses = emptyList()
             ),
             {}
         )

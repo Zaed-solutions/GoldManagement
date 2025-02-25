@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material.icons.filled.Person
@@ -29,8 +31,13 @@ fun SelectCustomerContent(
     onUpdateCustomerEmail: (String) -> Unit,
 ) {
     Column(
-        modifier = modifier.fillMaxSize().padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+            .verticalScroll(
+                rememberScrollState()
+            ),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.Start
     ) {
         Text(
@@ -38,7 +45,9 @@ fun SelectCustomerContent(
             style = MaterialTheme.typography.headlineMedium,
         )
         TextInputTextField(
-            modifier = Modifier.fillMaxWidth().padding(top = 24.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 24.dp),
             value = sale.customerName,
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
             onValueChange = onUpdateCustomerName,

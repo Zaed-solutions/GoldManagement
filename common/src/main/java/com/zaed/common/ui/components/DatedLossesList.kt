@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.losses.components
+package com.zaed.common.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
@@ -15,15 +15,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.zaed.common.data.model.loss.DatedLoss
-import com.zaed.common.data.model.loss.DistributorLoss
+import com.zaed.common.data.model.loss.Loss
 
 @Composable
 fun DatedLossesList(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
     datedLosses: List<DatedLoss>,
-    onDeleteLoss: (DistributorLoss) -> Unit,
-    onUpdateLoss: (DistributorLoss) -> Unit
+    onDeleteLoss: (Loss) -> Unit,
+    onUpdateLoss: (Loss) -> Unit
 ) {
     Box(
         modifier = modifier.fillMaxSize(),

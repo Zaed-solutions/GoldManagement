@@ -86,7 +86,7 @@ fun SaleItem(
         ) {
             Column {
                 Text(
-                    text = sale.customerName,
+                    text = "CR-${sale.receiptNumber}",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal)
                 )
                 Text(

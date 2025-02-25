@@ -2,17 +2,19 @@ package com.zaed.cashier.ui.loss
 
 import androidx.annotation.StringRes
 import com.zaed.common.R
-import com.zaed.common.data.model.loss.StoreLoss
 import com.zaed.common.data.model.authentication.User
+import com.zaed.common.data.model.loss.DatedLoss
+import com.zaed.common.data.model.loss.StoreLoss
 
 data class LossUiState(
     val isSignedOut: Boolean = false,
-    val losses: Map<String, List<StoreLoss>> = emptyMap(),
+    val losses: List<StoreLoss> = emptyList(),
     val currentUser: User = User(),
     val isLoading: Boolean = false,
     @StringRes val errorMessage: Int? = null,
     val fieldError: LossFieldsError = LossFieldsError.NONE,
-    val successMessage: String? = null
+    val successMessage: String? = null,
+    val datedLosses : List<DatedLoss> = emptyList()
 )
 
 enum class LossFieldsError(@StringRes val message: Int) {

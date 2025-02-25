@@ -193,4 +193,5 @@
     <string name="ingot_transaction_title_placeholder">%1$s g of %2$s K</string>
     <string name="add_gold_amounts">Add Gold Amounts</string>
     <string name="add_amount">Add Amount</string>
+    <string name="sales_of">Sales of %1$s</string>
 </resources>

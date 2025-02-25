@@ -194,4 +194,5 @@
     <string name="ingot_transaction_title_placeholder">%1$s غرام من %2$s عيار</string>
     <string name="add_gold_amounts">أضف كمية الذهب</string>
     <string name="add_amount">أضف الكمية</string>
+    <string name="sales_of">مبيعات %1$s</string>
 </resources>

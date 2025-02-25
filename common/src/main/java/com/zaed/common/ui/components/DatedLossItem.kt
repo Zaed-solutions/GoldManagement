@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.losses.components
+package com.zaed.common.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zaed.common.data.model.loss.DatedLoss
 import com.zaed.common.data.model.loss.DistributorLoss
+import com.zaed.common.data.model.loss.Loss
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
 import com.zaed.common.ui.util.formatMoney
@@ -38,8 +39,8 @@ import java.util.Date
 fun DatedLossItem(
     modifier: Modifier = Modifier,
     datedLoss: DatedLoss,
-    onDeleteLoss: (DistributorLoss) -> Unit,
-    onUpdateLoss: (DistributorLoss) -> Unit
+    onDeleteLoss: (Loss) -> Unit,
+    onUpdateLoss: (Loss) -> Unit
 ) {
     var isExpanded by remember {
         mutableStateOf(false)
@@ -96,7 +97,7 @@ fun DatedLossItem(
                     ) {
                         datedLoss.losses.forEach { loss ->
                             LossItem(
-                                loss = loss as DistributorLoss,
+                                loss = loss ,
                                 onDeleteLoss = { onDeleteLoss(loss) },
                                 onUpdateLoss = { onUpdateLoss(loss) }
                             )

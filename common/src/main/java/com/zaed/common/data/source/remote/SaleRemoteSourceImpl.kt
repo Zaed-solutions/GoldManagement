@@ -85,13 +85,17 @@ class SaleRemoteSourceImpl(
         return try {
             val batch = firestore.batch()
             val docRef = storeSalesCollection.document()
-            batch.set(docRef, request.sale.copy(id = docRef.id))
             val categoryIds = request.sale.products.map { it.categoryId }.distinct()
             val categorySnapshots = categoriesCollection
                 .whereIn(FieldPath.documentId(), categoryIds)
                 .get()
                 .await()
-
+            val receiptNumber = storeSalesCollection.orderBy(
+                "receiptNumber",
+                Query.Direction.DESCENDING
+            ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")
+                ?.toLongOrNull() ?: 0
+            batch.set(docRef, request.sale.copy(id = docRef.id, receiptNumber = (receiptNumber + 1).toString()))
 
             val categoryMap = categorySnapshots.documents.associate { snapshot ->
                 snapshot.id to (snapshot.toObject(Category::class.java) ?: Category())

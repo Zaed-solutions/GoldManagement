@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.losses.components
+package com.zaed.common.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -16,13 +16,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zaed.common.data.model.loss.DistributorLoss
-import com.zaed.common.ui.components.SwipeToEditOrDeleteContainer
+import com.zaed.common.data.model.loss.Loss
 import com.zaed.common.ui.util.formatMoney
 
 @Composable
 fun LossItem(
     modifier: Modifier = Modifier,
-    loss: DistributorLoss,
+    loss: Loss,
     onDeleteLoss: () -> Unit,
     onUpdateLoss: () -> Unit
 ) {
@@ -43,7 +43,7 @@ fun LossItem(
                 Text(
                     modifier = Modifier.weight(1f),
                     maxLines = 1,
-                    text = if (loss.allowance) stringResource(com.zaed.common.R.string.daily_allowance) else loss.reason,
+                    text = if (loss is DistributorLoss && loss.allowance) stringResource(com.zaed.common.R.string.daily_allowance) else loss.reason,
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontSize = 20.sp,
                     )

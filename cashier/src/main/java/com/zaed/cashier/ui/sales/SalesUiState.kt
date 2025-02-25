@@ -1,7 +1,8 @@
 package com.zaed.cashier.ui.sales
 
-import com.zaed.common.data.model.sale.StoreSale
 import com.zaed.common.data.model.authentication.User
+import com.zaed.common.data.model.sale.StoreSale
+import java.util.Date
 
 data class SalesUiState(
     val isSignedOut: Boolean = false,
@@ -9,5 +10,6 @@ data class SalesUiState(
     val sales: List<StoreSale> = emptyList(),
     val searchQuery: String = "",
     val currentUser: User = User(),
-    val displaySales: List<StoreSale> = emptyList()
+    val displaySales: List<StoreSale> = emptyList(),
+    val selectedDate: Date = Date()
 )

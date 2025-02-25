@@ -41,10 +41,10 @@ object ReceiptUtil {
         val cellPadding = 8f
 
         // Modern Color Palette
-        val primaryColor = Color.parseColor("#344816") // Deep Indigo
-        val secondaryColor = Color.parseColor("#344816") // Indigo
-        val accentColor = Color.parseColor("#344816") // Amber
-        val lightAccentColor = Color.parseColor("#FFB74D") // Light Amber
+        val primaryColor = Color.parseColor("#3B1B00") // Deep Indigo
+        val secondaryColor = Color.parseColor("#3B1B00") // Indigo
+        val accentColor = Color.parseColor("#3B1B00") // Amber
+        val lightAccentColor = Color.parseColor("#FCB882") // Light Amber
         val backgroundColor = Color.parseColor("#FFFFFF") // White
         val surfaceColor = Color.parseColor("#F5F5F5") // Light Gray
         val textPrimaryColor = Color.parseColor("#212121") // Almost Black
@@ -230,9 +230,9 @@ object ReceiptUtil {
         val rightCol = leftCol - 155f
         currentY = detailsStartY + 25f
 
-        // Employee and customer details
-        drawLabelValuePair(canvas, "الموظف:", storeSale.employeeName, leftCol, currentY, rightCol)
-        currentY += PdfConfig.lineSpacing + 5f
+//        // Employee and customer details
+//        drawLabelValuePair(canvas, "الموظف:", storeSale.employeeName, leftCol, currentY, rightCol)
+//        currentY += PdfConfig.lineSpacing + 5f
 
         drawLabelValuePair(canvas, "العميل:", storeSale.customerName, leftCol, currentY, rightCol)
         currentY += PdfConfig.lineSpacing + 5f
@@ -260,7 +260,7 @@ object ReceiptUtil {
         currentY += PdfConfig.lineSpacing + 5f
 
         // Generate receipt number (you might want to use a real one from your data)
-        val receiptNumber = "R-${storeSale.id.take(7)}"
+        val receiptNumber = "CR-${storeSale.receiptNumber}"
         drawLabelValuePair(
             canvas,
             "رقم الإيصال:",
@@ -288,7 +288,7 @@ object ReceiptUtil {
         drawRoundedRect(canvas, tableHeaderRect, tableHeaderPaint)
 
         // Table header text
-        val tableHeader = listOf("المنتج", "الجرام", "السعر", "الإجمالي")
+        val tableHeader = listOf("المنتج", "الجرام", "الإجمالي")
 
         // Create a list of all rows including products
         val allRows = mutableListOf<List<String>>()
@@ -297,7 +297,6 @@ object ReceiptUtil {
                 listOf(
                     product.name,
                     "${product.grams}g",
-                    "${product.gramPrice} ر.س",
                     "${product.grams * product.gramPrice} ر.س"
                 )
             )
@@ -342,7 +341,6 @@ object ReceiptUtil {
             val rowData = listOf(
                 product.name,
                 "${product.grams}g",
-                "${product.gramPrice.toMoneyFormat(2)} ",
                 (product.grams * product.gramPrice).toMoneyFormat(2)
             )
             drawTableRow(
@@ -398,9 +396,11 @@ object ReceiptUtil {
         val discountText = when (storeSale.discount.type) {
             DiscountType.PERCENTAGE -> "${storeSale.discount.value}%"
             DiscountType.AMOUNT -> "${storeSale.discount.value.toMoneyFormat(2)} "
-            else -> "لا يوجد"
+            else -> ""
         }
-        summaryData.add(listOf("الخصم:", discountText))
+        if (discountText.isNotEmpty()) {
+            summaryData.add(listOf("الخصم:", discountText))
+        }
 
 // Add tax row if applicable (example)
 // summaryData.add(listOf("الضريبة (15%):", "${subtotal * 0.15} ر.س"))

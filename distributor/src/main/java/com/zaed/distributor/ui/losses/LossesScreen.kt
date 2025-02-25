@@ -28,7 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
 import com.zaed.common.data.model.loss.DistributorLoss
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
-import com.zaed.distributor.ui.losses.components.DatedLossesList
+import com.zaed.common.ui.components.DatedLossesList
 import com.zaed.distributor.ui.losses.components.SaveLossBottomSheet
 import org.koin.androidx.compose.koinViewModel
 
@@ -110,11 +110,11 @@ fun LossesScreenContent(
                 isLoading = state.isLoading,
                 datedLosses = state.datedLosses,
                 onDeleteLoss = {
-                    selectedLoss = it
+                    selectedLoss = it as DistributorLoss
                     isConfirmDeleteSheetVisible = true
                 },
                 onUpdateLoss = {
-                    selectedLoss = it
+                    selectedLoss = it as DistributorLoss
                     isSaveLossSheetVisible = true
                 }
             )

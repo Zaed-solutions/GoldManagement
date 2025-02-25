@@ -1,10 +1,9 @@
 package com.zaed.common.ui.util
 
 import java.text.NumberFormat
-import java.util.Locale
 
 fun Number.toMoneyFormat(padding: Int = 0): String {
-    val formatter = NumberFormat.getCurrencyInstance(Locale.getDefault()).apply {
+    val formatter = NumberFormat.getCurrencyInstance().apply {
         minimumFractionDigits = padding
         maximumFractionDigits = padding
     }

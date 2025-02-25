@@ -70,8 +70,6 @@ fun SelectCategorySheetContent(
                             Product(
                                 id = UUID.randomUUID().toString(),
                                 categoryId = category.id,
-                                minPrice = category.minimumPrice,
-                                gramPrice = category.minimumPrice
                             )
                         )
                     }

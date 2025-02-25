@@ -9,21 +9,19 @@ import com.zaed.common.data.model.loss.request.CreateNewLossRequest
 import com.zaed.common.data.model.loss.request.DeleteLossRequest
 import com.zaed.common.data.model.loss.request.GetStoreLossesRequest
 import com.zaed.common.data.model.loss.request.UpdateLossRequest
+import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
+import com.zaed.common.domain.authentication.LogoutUserUseCase
+import com.zaed.common.domain.loss.ConvertLossesToDatedLossesUseCase
 import com.zaed.common.domain.loss.CreateNewLossUseCase
 import com.zaed.common.domain.loss.DeleteLossUseCase
-import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.loss.GetStoreLossesUseCase
-import com.zaed.common.domain.authentication.LogoutUserUseCase
 import com.zaed.common.domain.loss.UpdateLossUseCase
-import com.zaed.common.ui.util.DateFormat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 
 class LossViewModel(
     private val createNewLossUseCase: CreateNewLossUseCase,
@@ -31,8 +29,9 @@ class LossViewModel(
     private val deleteLossUseCase: DeleteLossUseCase,
     private val getStoreLossesUseCase: GetStoreLossesUseCase,
     private val getCurrentUserUseCase: GetCurrentUserLoggedInUseCase,
-    private val logOutUseCase: LogoutUserUseCase
-) : ViewModel() {
+    private val logOutUseCase: LogoutUserUseCase,
+    private val convertToDatedLossesUseCase: ConvertLossesToDatedLossesUseCase,
+    ) : ViewModel() {
     private val TAG: String = "LossViewModel"
     private val _uiState = MutableStateFlow(LossUiState())
     val uiState = _uiState.asStateFlow()
@@ -61,8 +60,8 @@ class LossViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             getStoreLossesUseCase(GetStoreLossesRequest(storeId = uiState.value.currentUser.storeId)).collect { result ->
                 result.onSuccess { data ->
-                    Log.d(TAG, "getAllLosses: ${data.map { it.value.map { it.id } }}")
-                    _uiState.update { it.copy(losses = data) }
+                    val datedLosses = convertToDatedLossesUseCase(data)
+                    _uiState.update { it.copy(datedLosses = datedLosses, losses = data) }
                 }.onFailure { error ->
                     _uiState.update { it.copy(errorMessage = 0) }
                 }
@@ -105,10 +104,7 @@ class LossViewModel(
         viewModelScope.launch(
             Dispatchers.IO
         ) {
-            val originalLoss = uiState.value.losses[SimpleDateFormat(
-                DateFormat.DATE.pattern,
-                Locale.getDefault()
-            ).format(loss.date)]?.find { it.id == loss.id } ?: return@launch
+            val originalLoss = uiState.value.losses.firstOrNull { it.id==loss.id }?: return@launch
             val logMessage = if (originalLoss.value != loss.value) {
                 "${uiState.value.currentUser.fullName} updated the value from ${originalLoss.value} to ${loss.value}}"
             } else if (originalLoss.reason != loss.reason) {
