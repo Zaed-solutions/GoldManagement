@@ -1,14 +1,7 @@
 package com.zaed.distributor.app.navigation
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.compiler.plugins.kotlin.EmptyFunctionMetrics.composable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -37,7 +30,7 @@ fun NavigationHost(
 ) {
 //    Log.d("CrashBugTest", "NavigationHost: reached")
     NavHost(
-        modifier = Modifier.systemBarsPadding(),
+        modifier = Modifier.imePadding(),
         navController = navController,
         startDestination = startDestination,
     ) {

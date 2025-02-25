@@ -13,10 +13,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,7 +30,6 @@ import com.zaed.common.data.model.loss.DistributorLoss
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
 import com.zaed.distributor.ui.losses.components.DatedLossesList
 import com.zaed.distributor.ui.losses.components.SaveLossBottomSheet
-import com.zaed.distributor.ui.sales.SalesUiAction
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -45,7 +42,7 @@ fun LossesScreen(
     LossesScreenContent(
         state = state,
         onAction = { action ->
-            when(action){
+            when (action) {
                 LossesUiAction.OnShowNavDrawer -> onShowNavDrawer()
                 else -> viewModel.handleAction(action)
             }
@@ -66,29 +63,24 @@ fun LossesScreenContent(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
-            Surface(
-                tonalElevation = 2.dp,
-                shadowElevation = 8.dp
-            ) {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = stringResource(R.string.losses),
-                            style = MaterialTheme.typography.titleLarge
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(R.string.losses),
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { onAction(LossesUiAction.OnShowNavDrawer) }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Menu,
+                            contentDescription = "Menu icon"
                         )
-                    },
-                    navigationIcon = {
-                        IconButton(
-                            onClick = { onAction(LossesUiAction.OnShowNavDrawer) }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Menu icon"
-                            )
-                        }
-                    },
-                )
-            }
+                    }
+                },
+            )
         },
         floatingActionButton = {
             FloatingActionButton(

@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,9 +15,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -109,6 +112,10 @@ private fun AddGoldSaleScreenContent(
             }
         },
         bottomBar = {
+            BottomAppBar (
+                contentPadding = PaddingValues(0.dp),
+                containerColor = MaterialTheme.colorScheme.surface,
+            ){
             Surface (
                 shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
                 shadowElevation = 8.dp
@@ -119,7 +126,7 @@ private fun AddGoldSaleScreenContent(
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
-                ){
+                ) {
                     FilledTonalButton(
                         modifier = Modifier
                             .weight(1f).heightIn(min = 48.dp),
@@ -138,11 +145,11 @@ private fun AddGoldSaleScreenContent(
                         modifier = Modifier.weight(1f).heightIn(min = 48.dp),
                         enabled = !state.isLoading,
                         onClick = {
-                            if(pagerState.currentPage == 3){
+                            if (pagerState.currentPage == 3) {
                                 onAction(AddGoldSaleUiAction.OnSubmitClicked)
                             } else {
                                 scope.launch {
-                                    pagerState.animateScrollToPage(pagerState.currentPage+1)
+                                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
                                 }
                             }
                         }
@@ -163,6 +170,7 @@ private fun AddGoldSaleScreenContent(
                             }
                         }
                     }
+                }
                 }
             }
         }

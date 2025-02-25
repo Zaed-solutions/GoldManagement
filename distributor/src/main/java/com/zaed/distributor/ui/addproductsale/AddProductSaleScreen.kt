@@ -6,6 +6,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,9 +16,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -52,18 +55,18 @@ fun AddProductSaleScreen(
     onNavigateToAddCustomer: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect (true) {
+    LaunchedEffect(true) {
         viewModel.init(saleId)
     }
-    LaunchedEffect (state.isFinished){
-        if(state.isFinished){
+    LaunchedEffect(state.isFinished) {
+        if (state.isFinished) {
             onNavigateToProductSaleDetails(state.sale.id)
         }
     }
     AddProductSaleScreenContent(
         state = state,
         onAction = { action ->
-            when(action){
+            when (action) {
                 AddProductSaleUiAction.OnAddNewCustomerClicked -> onNavigateToAddCustomer()
                 AddProductSaleUiAction.OnBackClicked -> onBackClicked()
                 else -> viewModel.handleAction(action)
@@ -96,8 +99,8 @@ private fun AddProductSaleScreenContent(
         )
     }
 
-    BackHandler { 
-        if(pagerState.currentPage > 0){
+    BackHandler {
+        if (pagerState.currentPage > 0) {
             scope.launch {
                 pagerState.animateScrollToPage(pagerState.currentPage - 1)
             }
@@ -105,7 +108,7 @@ private fun AddProductSaleScreenContent(
             onAction(AddProductSaleUiAction.OnBackClicked)
         }
     }
-    Scaffold (
+    Scaffold(
         topBar = {
             ProgressIndicatorTopAppBar(
                 progress = progress
@@ -114,64 +117,72 @@ private fun AddProductSaleScreenContent(
             }
         },
         bottomBar = {
-            Surface (
-                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-                shadowElevation = 8.dp
-            ){
-                Row (
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    FilledTonalButton(
+            BottomAppBar(
+                contentPadding = PaddingValues(0.dp),
+                containerColor = MaterialTheme.colorScheme.surface,
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                    shadowElevation = 8.dp
+                ) {
+                    Row(
                         modifier = Modifier
-                            .weight(1f).heightIn(min = 48.dp),
-                        onClick = {
-                            scope.launch {
-                                pagerState.animateScrollToPage(pagerState.currentPage - 1)
-                            }
-                        },
-                        enabled = pagerState.currentPage > 0
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = stringResource(R.string.previous),
-                        )
-                    }
-                    Button(
-                        modifier = Modifier.weight(1f).heightIn(min = 48.dp),
-                        enabled = !state.isLoading,
-                        onClick = {
-                            if(pagerState.currentPage == 3){
-                                onAction(AddProductSaleUiAction.OnSubmitClicked)
-                            } else {
+                        FilledTonalButton(
+                            modifier = Modifier
+                                .weight(1f)
+                                .heightIn(min = 48.dp),
+                            onClick = {
                                 scope.launch {
-                                    pagerState.animateScrollToPage(pagerState.currentPage+1)
+                                    pagerState.animateScrollToPage(pagerState.currentPage - 1)
                                 }
-                            }
-                        }
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            },
+                            enabled = pagerState.currentPage > 0
                         ) {
                             Text(
-                                text = if (pagerState.currentPage == 3) stringResource(R.string.submit) else stringResource(
-                                    R.string.continue_
-                                )
+                                text = stringResource(R.string.previous),
                             )
-                            AnimatedVisibility(state.isLoading) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(24.dp)
+                        }
+                        Button(
+                            modifier = Modifier
+                                .weight(1f)
+                                .heightIn(min = 48.dp),
+                            enabled = !state.isLoading,
+                            onClick = {
+                                if (pagerState.currentPage == 3) {
+                                    onAction(AddProductSaleUiAction.OnSubmitClicked)
+                                } else {
+                                    scope.launch {
+                                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                    }
+                                }
+                            }
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Text(
+                                    text = if (pagerState.currentPage == 3) stringResource(R.string.submit) else stringResource(
+                                        R.string.continue_
+                                    )
                                 )
+                                AnimatedVisibility(state.isLoading) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
                             }
                         }
                     }
                 }
             }
         }
-    ){ innerPadding ->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -181,7 +192,7 @@ private fun AddProductSaleScreenContent(
                 state = pagerState,
                 userScrollEnabled = false,
             ) { page ->
-                when(page){
+                when (page) {
                     0 -> {
                         //select customer
                         SelectCustomerContent(
@@ -199,6 +210,7 @@ private fun AddProductSaleScreenContent(
                             }
                         )
                     }
+
                     1 -> {
                         //add products
                         SelectProductsContent(
@@ -215,6 +227,7 @@ private fun AddProductSaleScreenContent(
                             }
                         )
                     }
+
                     2 -> {
                         SelectPaymentsContent(
                             totalAmount = state.totalAmount,
@@ -231,6 +244,7 @@ private fun AddProductSaleScreenContent(
                             }
                         )
                     }
+
                     3 -> {
                         SaleSummaryContent(
                             customer = state.selectedCustomer,

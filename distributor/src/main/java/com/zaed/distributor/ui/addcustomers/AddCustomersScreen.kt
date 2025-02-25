@@ -3,11 +3,13 @@ package com.zaed.distributor.ui.addcustomers
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -31,12 +33,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.zaed.common.data.model.customer.Zone
 import com.zaed.common.ui.auth.FieldsError
 import com.zaed.common.ui.components.BackIcon
 import com.zaed.common.ui.components.CustomSnackbar
 import com.zaed.common.ui.components.TextInputTextField
-import com.zaed.common.ui.components.TitledDropDownTextField2
 import com.zaed.distributor.ui.theme.DistributorAppTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -104,27 +104,32 @@ fun AddCustomersScreenContent(
             )
         },
         bottomBar = {
-            Surface(
-                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-                shadowElevation = 8.dp
+            BottomAppBar(
+                contentPadding = PaddingValues(0.dp),
+                containerColor = MaterialTheme.colorScheme.surface,
             ) {
-                Button(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(65.dp)
-                        .padding(16.dp),
-                    onClick = {
-                        if (uiState.isEditMode) {
-                            onAction(AddCustomersUiAction.OnEdit)
-                        }else {
-                            onAction(AddCustomersUiAction.OnSave)
-                        }
-                    }
+                Surface(
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                    shadowElevation = 8.dp
                 ) {
-                    Text(
-                        text = stringResource(com.zaed.common.R.string.save),
-                        style = MaterialTheme.typography.titleMedium
-                    )
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(65.dp)
+                            .padding(16.dp),
+                        onClick = {
+                            if (uiState.isEditMode) {
+                                onAction(AddCustomersUiAction.OnEdit)
+                            } else {
+                                onAction(AddCustomersUiAction.OnSave)
+                            }
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(com.zaed.common.R.string.save),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
                 }
             }
         }

@@ -1,11 +1,14 @@
 package com.zaed.cashier.ui.addsale.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,43 +27,48 @@ fun AddSaleBottomBar(
     onContinueClicked: () -> Unit,
     onAddClicked: () -> Unit,
 ) {
-    Surface(
-        modifier = modifier,
-        shadowElevation = 8.dp
+    BottomAppBar (
+        contentPadding = PaddingValues(0.dp),
+        containerColor = MaterialTheme.colorScheme.surface,
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly
+        Surface(
+            modifier = modifier,
+            shadowElevation = 8.dp
         ) {
-            FilledTonalButton(
-                modifier = Modifier.weight(1f).padding(end = 8.dp),
-                onClick = onPreviousClicked,
-                enabled = currentPage > 0
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Text(
-                    text = stringResource(R.string.previous),
-                )
-            }
-            Button(
-                modifier = Modifier.weight(1f).padding(start = 8.dp),
-                onClick = {
-                    if (currentPage != 2) {
-                        onContinueClicked()
-                    } else {
-                        onAddClicked()
-                    }
+                FilledTonalButton(
+                    modifier = Modifier.weight(1f).padding(end = 8.dp),
+                    onClick = onPreviousClicked,
+                    enabled = currentPage > 0
+                ) {
+                    Text(
+                        text = stringResource(R.string.previous),
+                    )
                 }
-            ) {
-                Text(
-                    text = if (currentPage != 2) {
-                        stringResource(R.string.continue_)
-                    } else {
-                        stringResource(R.string.save)
+                Button(
+                    modifier = Modifier.weight(1f).padding(start = 8.dp),
+                    onClick = {
+                        if (currentPage != 2) {
+                            onContinueClicked()
+                        } else {
+                            onAddClicked()
+                        }
                     }
-                )
+                ) {
+                    Text(
+                        text = if (currentPage != 2) {
+                            stringResource(R.string.continue_)
+                        } else {
+                            stringResource(R.string.save)
+                        }
+                    )
+                }
             }
         }
     }
