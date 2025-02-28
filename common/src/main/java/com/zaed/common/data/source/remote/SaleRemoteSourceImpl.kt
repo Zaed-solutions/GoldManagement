@@ -45,10 +45,8 @@ class SaleRemoteSourceImpl(
     private val firestore: FirebaseFirestore,
     private val crashlytics: FirebaseCrashlytics
 ) : SaleRemoteSource {
-    private val storesCollection = firestore.collection("stores")
     private val storeSalesCollection = firestore.collection("store_sales")
     private val categoriesCollection = firestore.collection("categories")
-    private val usersCollection = firestore.collection("users")
     private val wholesaleProductSalesCollection = firestore.collection("wholesale_product_sales")
     private val wholesaleGoldSalesCollection = firestore.collection("wholesale_gold_sales")
     private val paymentsCollection = firestore.collection("payments")
@@ -56,8 +54,7 @@ class SaleRemoteSourceImpl(
     private val moneyPaymentCollection = firestore.collection("money_payments")
     private val goldPaymentsCollection = firestore.collection("gold_payments")
     private val wholesaleCustomersCollection = firestore.collection("whole_sale_customers")
-
-
+    private val inventoryCollection = firestore.collection("inventory")
     override fun fetchStoreSales(request: FetchStoreSalesRequest): Flow<Result<List<StoreSale>>> =
         callbackFlow {
             try {
@@ -96,10 +93,13 @@ class SaleRemoteSourceImpl(
             val categoryUpdates = request.sale.products
                 .groupBy { it.categoryId }
                 .mapValues { (_, products) -> products.sumOf { it.grams } }
-            val inventoryQuery = storesCollection
-                .document(request.sale.storeId)
-                .collection("inventory")
-                .whereIn("productId", categoryUpdates.keys.toList())
+            val inventoryQuery = inventoryCollection
+                .where(
+                    Filter.and(
+                        Filter.inArray("productId", categoryUpdates.keys.toList()),
+                        Filter.equalTo("ownerId", request.sale.storeId)
+                    )
+                )
                 .get().await()
 
             val inventoryByProductId = inventoryQuery.documents.associateBy {
@@ -138,11 +138,13 @@ class SaleRemoteSourceImpl(
             val inventoryChanges = sale.products
                 .groupBy { it.categoryId }
                 .mapValues { (_, products) -> products.sumOf { it.grams } }
-            val storeId = sale.storeId
-            val inventoryRefs = storesCollection
-                .document(storeId)
-                .collection("inventory")
-                .whereIn("productId", inventoryChanges.keys.toList())
+            val inventoryRefs = inventoryCollection
+                .where(
+                    Filter.and(
+                        Filter.inArray("productId", inventoryChanges.keys.toList()),
+                        Filter.equalTo("ownerId", sale.storeId)
+                    )
+                )
                 .get().await()
 
             val inventoryByProductId = inventoryRefs.documents.associateBy {
@@ -204,10 +206,13 @@ class SaleRemoteSourceImpl(
                         val newAmount = newProductsByCategory[categoryId] ?: 0.0
                         oldAmount - newAmount
                     }
-                val inventoryRefs = storesCollection
-                    .document(storeId)
-                    .collection("inventory")
-                    .whereIn("productId", inventoryChanges.keys.toList())
+                val inventoryRefs = inventoryCollection
+                    .where(
+                        Filter.and(
+                            Filter.inArray("productId", inventoryChanges.keys.toList()),
+                            Filter.equalTo("ownerId", request.sale.storeId)
+                        )
+                    )
                     .get().await()
 
                 val inventoryByProductId = inventoryRefs.documents.associateBy {
@@ -386,13 +391,12 @@ class SaleRemoteSourceImpl(
         return try {
             val batch = firestore.batch()
             val docRef = ingotTransactionsCollection.document()
-            usersCollection
-                .document(request.transaction.distributorId)
-                .collection("inventory")
+            inventoryCollection
                 .where(
                     Filter.and(
                         Filter.equalTo("type", InventoryType.INGOT),
-                        Filter.equalTo("karat", request.transaction.karat)
+                        Filter.equalTo("karat", request.transaction.karat),
+                        Filter.equalTo("ownerId", request.transaction.distributorId)
                     )
                 ).get().await().documents.firstOrNull()?.reference?.let { ref ->
                     val updates =
@@ -420,12 +424,12 @@ class SaleRemoteSourceImpl(
             val oldTransactionRef = ingotTransactionsCollection.document(request.transaction.id)
             val oldTransaction =
                 oldTransactionRef.get().await().toObject(IngotTransaction::class.java) ?: IngotTransaction()
-            usersCollection.document(request.transaction.distributorId)
-                .collection("inventory")
+            inventoryCollection
                 .where(
                     Filter.and(
                         Filter.equalTo("type", InventoryType.INGOT),
-                        Filter.equalTo("karat", oldTransaction.karat)
+                        Filter.equalTo("karat", request.transaction.karat),
+                        Filter.equalTo("ownerId", request.transaction.distributorId)
                     )
                 ).get().await().documents.firstOrNull()?.reference?.let { ref ->
                     val oldAmount = if(oldTransaction.type == TransactionType.SALE) oldTransaction.grams.unaryMinus() else oldTransaction.grams
@@ -487,10 +491,13 @@ class SaleRemoteSourceImpl(
                     .groupBy { it.categoryId }
                 .mapValues { (_, products) -> products.sumOf { it.grams } }
             val distributorId = sale.distributorId
-            val inventoryRefs = usersCollection
-                .document(distributorId)
-                .collection("inventory")
-                .whereIn("productId", inventoryChanges.keys.toList())
+            val inventoryRefs = inventoryCollection
+                .where(
+                    Filter.and(
+                        Filter.inArray("productId", inventoryChanges.keys.toList()),
+                        Filter.equalTo("ownerId", distributorId)
+                    )
+                )
                 .get().await()
 
             val inventoryByProductId = inventoryRefs.documents.associateBy {
@@ -570,10 +577,13 @@ class SaleRemoteSourceImpl(
                 batch.update(paymentRef, updatePayments)
             }
             val goldAmount = sale.products.sumOf { it.grams }
-            usersCollection
-                .document(sale.distributorId)
-                .collection("inventory")
-                .whereEqualTo("type", InventoryType.GOLD)
+            inventoryCollection
+                .where(
+                    Filter.and(
+                        Filter.equalTo("type", InventoryType.GOLD),
+                        Filter.equalTo("ownerId", sale.distributorId)
+                    )
+                )
                 .get().await().documents.firstOrNull()?.reference?.let { ref ->
                     val updates = mapOf("quantity" to FieldValue.increment(goldAmount))
                     batch.update(ref, updates)
@@ -646,10 +656,13 @@ class SaleRemoteSourceImpl(
             val categoryUpdates = request.sale.products
                 .groupBy { it.categoryId }
                 .mapValues { (_, products) -> products.sumOf { it.grams } }
-            val inventoryQuery = usersCollection
-                .document(request.sale.distributorId)
-                .collection("inventory")
-                .whereIn("productId", categoryUpdates.keys.toList())
+            val inventoryQuery = inventoryCollection
+                .where(
+                    Filter.and(
+                        Filter.inArray("productId", categoryUpdates.keys.toList()),
+                        Filter.equalTo("ownerId", request.sale.distributorId)
+                    )
+                )
                 .get().await()
 
             val inventoryByProductId = inventoryQuery.documents.associateBy {
@@ -734,10 +747,13 @@ class SaleRemoteSourceImpl(
                 )
             }
             val goldAmount = request.sale.products.sumOf { it.grams }
-            usersCollection
-                .document(request.sale.distributorId)
-                .collection("inventory")
-                .whereEqualTo("type", InventoryType.GOLD)
+            inventoryCollection
+                .where(
+                    Filter.and(
+                        Filter.equalTo("type", InventoryType.GOLD),
+                        Filter.equalTo("ownerId", request.sale.distributorId)
+                    )
+                )
                 .get().await().documents.firstOrNull()?.reference?.let { ref ->
                     val updates = mapOf("quantity" to FieldValue.increment(goldAmount.unaryMinus()))
                     batch.update(ref, updates)
@@ -823,10 +839,13 @@ class SaleRemoteSourceImpl(
                     val newAmount = newProductsByCategory[categoryId] ?: 0.0
                     oldAmount - newAmount
                 }
-            val inventoryRefs = usersCollection
-                .document(distributorId)
-                .collection("inventory")
-                .whereIn("productId", inventoryChanges.keys.toList())
+            val inventoryRefs = inventoryCollection
+                .where(
+                    Filter.and(
+                        Filter.inArray("productId", inventoryChanges.keys.toList()),
+                        Filter.equalTo("ownerId", distributorId)
+                    )
+                )
                 .get().await()
 
             val inventoryByProductId = inventoryRefs.documents.associateBy {
@@ -932,10 +951,13 @@ class SaleRemoteSourceImpl(
             val oldGoldAmount = existingSale.products.sumOf { it.grams }
             val newGoldAmount = request.sale.products.sumOf { it.grams }
             val goldUpdate = oldGoldAmount - newGoldAmount
-            usersCollection
-                .document(request.sale.distributorId)
-                .collection("inventory")
-                .whereEqualTo("type", InventoryType.GOLD)
+            inventoryCollection
+                .where(
+                    Filter.and(
+                        Filter.equalTo("type", InventoryType.GOLD),
+                        Filter.equalTo("ownerId", request.sale.distributorId)
+                    )
+                )
                 .get().await().documents.firstOrNull()?.reference?.let { ref ->
                     val updates = mapOf("quantity" to FieldValue.increment(goldUpdate))
                     batch.update(ref, updates)
