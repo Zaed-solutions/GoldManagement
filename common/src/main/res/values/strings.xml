@@ -196,4 +196,7 @@
     <string name="sales_of">Sales of %1$s</string>
     <string name="save_store">Save Store</string>
     <string name="location">Location</string>
+    <string name="daily">Daily</string>
+    <string name="monthly">Monthly</string>
+    <string name="yearly">Yearly</string>
 </resources>

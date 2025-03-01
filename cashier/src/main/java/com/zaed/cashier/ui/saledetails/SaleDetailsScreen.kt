@@ -62,7 +62,7 @@ fun SaleDetailsScreen(
 //                        Toast.makeText(context, it.absolutePath, Toast.LENGTH_SHORT).show()
                         PhoneUtil.sendReceiptViaWhatsapp(
                             context = context,
-                            phoneNumber = action.storeSale.customerPhoneNumber,
+                            phoneNumber ="+212${action.storeSale.customerPhoneNumber}",
                             file = it,
                         ) {
                             Toast.makeText(context, "error", Toast.LENGTH_SHORT).show()
@@ -119,10 +119,6 @@ private fun SaleDetailsScreenContentPreview() {
                             gramPrice = 200.0,
                             grams = 10.0,
                         )
-                    ),
-                    discount = Discount(
-                        type = DiscountType.AMOUNT,
-                        value = 10.0,
                     ),
                 ),
 
