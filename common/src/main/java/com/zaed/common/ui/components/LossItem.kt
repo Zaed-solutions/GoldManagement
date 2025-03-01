@@ -32,7 +32,9 @@ fun LossItem(
         isEditEnabled = true,
         onEdit = onUpdateLoss
     ) {
-        Surface {
+        Surface (
+            color = MaterialTheme.colorScheme.background
+        ){
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

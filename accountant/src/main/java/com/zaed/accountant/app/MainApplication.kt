@@ -1,4 +1,4 @@
-package com.zaed.app
+package com.zaed.accountant.app
 
 import android.app.Application
 import com.zaed.common.app.di.localSourceModule

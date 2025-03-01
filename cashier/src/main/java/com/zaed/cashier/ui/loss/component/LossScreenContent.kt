@@ -3,18 +3,25 @@ package com.zaed.cashier.ui.loss.component
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -53,6 +60,7 @@ import com.zaed.common.ui.components.MoreDropDownMenu
 import com.zaed.common.ui.components.MoreDropdownItem
 import com.zaed.common.ui.components.NumberInputTextField
 import com.zaed.common.ui.components.TextInputTextField
+import com.zaed.common.ui.util.DateFormat
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class,
@@ -69,6 +77,9 @@ fun LossScreenContent(
     var selectedLoss by remember { mutableStateOf<StoreLoss>(StoreLoss()) }
     var isSaveLossSheetOpen by remember { mutableStateOf(false) }
     var isDeleteLossSheetOpen by remember { mutableStateOf(false) }
+    val dateFilterItems = remember {
+        listOf(DateFormat.DATE, DateFormat.MONTH_YEAR, DateFormat.YEAR)
+    }
     LaunchedEffect(uiState.errorMessage, uiState.successMessage) {
         if (uiState.errorMessage != null) {
             snackbarHostState.showSnackbar(
@@ -139,8 +150,37 @@ fun LossScreenContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp)
+                .padding(vertical = 16.dp)
         ) {
+            LazyRow (
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ){
+                items(dateFilterItems){ filter ->
+                    val selected = filter == uiState.groupedByFilter
+                    FilterChip(
+                        selected = selected,
+                        onClick = {
+                        onAction(LossUiAction.UpdateGroupedByFilter(filter))
+                        },
+                        leadingIcon = if(selected){
+                            {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        } else null,
+                        label = {
+                            Text(
+                                text = stringResource(filter.labelRes)
+                            )
+                        }
+                    )
+                }
+            }
             AnimatedLoading(uiState.isLoading)
             DatedLossesList(
                isLoading = uiState.isLoading,
