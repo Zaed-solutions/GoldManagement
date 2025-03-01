@@ -2,7 +2,10 @@ package com.zaed.common.data.source.remote
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
-import com.zaed.common.data.model.Store
+import com.zaed.common.data.model.store.Store
+import com.zaed.common.data.model.store.request.AddStoreRequest
+import com.zaed.common.data.model.store.request.DeleteStoreRequest
+import com.zaed.common.data.model.store.request.UpdateStoreRequest
 import kotlinx.coroutines.tasks.await
 
 class StoreRemoteDataSourceImpl(
@@ -17,6 +20,37 @@ class StoreRemoteDataSourceImpl(
             val stores = snapshot.toObjects(Store::class.java)
             Result.success(stores)
         }catch (e: Exception){
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun addStore(request: AddStoreRequest): Result<Unit> {
+        return try{
+            val document = storesCollection.document()
+            document.set(request.store.copy(id = document.id)).await()
+            Result.success(Unit)
+        } catch (e: Exception){
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun updateStore(request: UpdateStoreRequest): Result<Unit> {
+        return try{
+            storesCollection.document(request.store.id).set(request.store).await()
+            Result.success(Unit)
+        } catch (e: Exception){
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun deleteStore(request: DeleteStoreRequest): Result<Unit> {
+        return try{
+            storesCollection.document(request.store.id).delete().await()
+            Result.success(Unit)
+        } catch (e: Exception){
             crashlytics.recordException(e)
             Result.failure(e)
         }

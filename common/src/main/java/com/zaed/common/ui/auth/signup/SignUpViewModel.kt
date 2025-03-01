@@ -2,7 +2,7 @@ package com.zaed.common.ui.auth.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zaed.common.data.model.Store
+import com.zaed.common.data.model.store.Store
 import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.data.model.authentication.request.SignUpUserRequest
 import com.zaed.common.domain.store.GetStoresUseCase

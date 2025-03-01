@@ -6,6 +6,9 @@ import java.util.Date
 data class Inventory(
     val id: String = "",
     val productId: String = "",
+    val productName: String = "",
+    val ownerId: String = "",
+    val ownerName: String = "",
     val quantity: Double = 0.0,
     val lastUpdated: Date = Date(),
     val type: InventoryType,

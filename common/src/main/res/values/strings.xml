@@ -194,4 +194,6 @@
     <string name="add_gold_amounts">Add Gold Amounts</string>
     <string name="add_amount">Add Amount</string>
     <string name="sales_of">Sales of %1$s</string>
+    <string name="save_store">Save Store</string>
+    <string name="location">Location</string>
 </resources>
