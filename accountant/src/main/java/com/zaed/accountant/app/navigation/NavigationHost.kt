@@ -1,4 +1,4 @@
-package com.zaed.app.navigation
+package com.zaed.accountant.app.navigation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

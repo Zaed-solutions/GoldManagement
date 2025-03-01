@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.ContactsContract
+import android.util.Log
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import java.io.File
@@ -54,8 +55,9 @@ object PhoneUtil {
         onFailure: () -> Unit
     ) {
         val  phoneNumber1 = phoneNumber.replace("+", "")
+        Log.d("PhoneNumberBug", "sendReceiptViaWhatsapp: $phoneNumber1")
         try {
-            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            val whatsappIntent = Intent(Intent.ACTION_SEND).apply {
                 val fileUri: Uri = FileProvider.getUriForFile(
                     context,
                     "${context.packageName}.fileprovider",
@@ -67,7 +69,30 @@ object PhoneUtil {
                 type = "application/pdf"
                 flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
             }
-            context.startActivity(shareIntent)
+            val whatsappBusinessIntent = Intent(Intent.ACTION_SEND).apply {
+                val fileUri: Uri = FileProvider.getUriForFile(
+                    context,
+                    "${context.packageName}.fileprovider",
+                    file
+                )
+                putExtra("jid", "$phoneNumber1@s.whatsapp.net")
+                putExtra(Intent.EXTRA_STREAM, fileUri)
+                setPackage("com.whatsapp.w4b")
+                type = "application/pdf"
+                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            val resolveInfos = listOf(whatsappIntent, whatsappBusinessIntent).mapNotNull {
+                if (it.resolveActivity(context.packageManager) != null) it else null
+            }
+
+            if (resolveInfos.isNotEmpty()) {
+                val chooserIntent = Intent.createChooser(resolveInfos[0], "Choose WhatsApp version")
+                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, resolveInfos.subList(1, resolveInfos.size).toTypedArray())
+                context.startActivity(chooserIntent)
+                onSuccess()
+            } else {
+                onFailure()
+            }
 
         } catch (e: Exception) {
             e.printStackTrace()
