@@ -44,7 +44,7 @@ fun PhoneNumberTextField(
         prefix = {
             Text(
                 text = "+212-",
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold)
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.ExtraBold)
             )
         },
         shape = RoundedCornerShape(32.dp),
