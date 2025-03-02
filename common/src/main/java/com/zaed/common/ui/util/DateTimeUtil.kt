@@ -13,5 +13,6 @@ enum class DateFormat(val pattern: String){
     DATE("d MMM, yyyy"),
     TIME("hh:mm a"),
     DATE_TIME("d MMM, yyyy, hh:mm a"),
+    SHORT_DATE_TIME("d MMM, hh:mm a")
 }
 

@@ -170,6 +170,9 @@ fun NavigationHost(
                 },
                 onNavigateToEditSale = {
                     navController.navigate(Route.AddProductSaleRoute(it))
+                },
+                onNavigateToCustomerDetails = {
+                    navController.navigate(Route.CustomerDetails(it))
                 }
             )
         }
@@ -201,6 +204,9 @@ fun NavigationHost(
                 },
                 onNavigateToEditSale = {
                     navController.navigate(Route.AddGoldSaleRoute(it))
+                },
+                navigateToCustomerDetails = {
+                    navController.navigate(Route.CustomerDetails(it))
                 }
             )
         }

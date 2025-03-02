@@ -8,4 +8,6 @@ sealed interface SaleDetailsUiAction {
     data object OnShareReceiptViaWhatsapp: SaleDetailsUiAction
     data object OnShareReceiptViaEmail: SaleDetailsUiAction
     data object OnRequestReceipt: SaleDetailsUiAction
+    data object OnCustomerClicked: SaleDetailsUiAction
+
 }
