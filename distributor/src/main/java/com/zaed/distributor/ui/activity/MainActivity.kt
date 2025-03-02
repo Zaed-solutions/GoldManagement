@@ -83,7 +83,7 @@ fun App(
 ) {
     val startDestination = remember(localUser) {
         when {
-            localUser?.isApprovedDistributor() == true -> Route.SalesRoute
+            localUser?.isApprovedDistributor() == true -> Route.AddProductSaleRoute()
             else -> Route.LoginRoute
         }
     }

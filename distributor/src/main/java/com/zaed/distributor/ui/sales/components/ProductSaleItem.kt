@@ -45,7 +45,7 @@ fun ProductSaleItem(
         onClick = { onSaleClicked() },
     ) {
         Row (
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ){
