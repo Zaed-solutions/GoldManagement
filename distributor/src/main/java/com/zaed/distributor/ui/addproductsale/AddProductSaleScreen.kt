@@ -85,8 +85,6 @@ private fun AddProductSaleScreenContent(
             scope.launch {
                 pagerState.animateScrollToPage(pagerState.currentPage - 1)
             }
-        } else {
-            onAction(AddProductSaleUiAction.OnBackClicked)
         }
     }
     Scaffold(
@@ -180,24 +178,6 @@ private fun AddProductSaleScreenContent(
                 userScrollEnabled = false,
             ) { page ->
                 when (page) {
-//                    0 -> {
-//                        //select customer
-//                        SelectCustomerContent(
-//                            query = state.customerSearchQuery,
-//                            onQueryChanged = {
-//                                onAction(AddProductSaleUiAction.OnCustomerSearchQueryChanged(it))
-//                            },
-//                            selectedCustomer = state.selectedCustomer,
-//                            suggestedCustomers = state.suggestedCustomers,
-//                            onAddNewCustomer = {
-//                                onAction(AddProductSaleUiAction.OnAddNewCustomerClicked)
-//                            },
-//                            onCustomerSelected = {
-//                                onAction(AddProductSaleUiAction.OnCustomerSelected(it))
-//                            }
-//                        )
-//                    }
-
                     0 -> {
                         //add products
                         SelectProductsContent(
