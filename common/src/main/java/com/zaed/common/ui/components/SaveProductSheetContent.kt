@@ -41,17 +41,17 @@ fun SaveProductSheetContent(
             text = stringResource(R.string.add_product),
             style = MaterialTheme.typography.headlineMedium
         )
-        TextInputTextField(
-            label = stringResource(R.string.name),
-            value = product.name,
-            onValueChange = {
-                product = product.copy(name = it)
-            },
-            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
-        )
+//        TextInputTextField(
+//            label = stringResource(R.string.name),
+//            value = product.name,
+//            onValueChange = {
+//                product = product.copy(name = it)
+//            },
+//            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(top = 16.dp)
+//        )
         NumberInputTextField(
             modifier = Modifier.fillMaxWidth(),
             value = product.grams,
@@ -79,7 +79,7 @@ fun SaveProductSheetContent(
             onClick = {
                 onSaveProduct(product)
             },
-            enabled = product.name.isNotBlank() && product.grams > 0.0 && product.gramPrice > 0.0
+            enabled =  product.grams > 0.0 && product.gramPrice > 0.0
         ) {
             Text(
                 text = stringResource(R.string.save)

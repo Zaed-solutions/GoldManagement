@@ -9,4 +9,5 @@ data class Product(
     val categoryId: String = "",
     val laborCost: Double = 0.0,
     val grams: Double = 0.0,
+    val discount: Discount = Discount(),
 )

@@ -197,4 +197,7 @@
     <string name="sales_of">مبيعات %1$s</string>
     <string name="customer">العميل</string>
     <string name="the_balance">الرصيد</string>
+    <string name="total_placeholder">المجموع %1$s</string>
+    <string name="sell">بيع</string>
+    <string name="x">%1$s × %2$s</string>
 </resources>

@@ -1,8 +1,8 @@
 package com.zaed.distributor.ui.addproductsale
 
-import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.MoneyPayment
+import com.zaed.common.data.model.sale.Product
 
 sealed interface AddProductSaleUiAction {
     data object OnBackClicked : AddProductSaleUiAction
@@ -16,4 +16,5 @@ sealed interface AddProductSaleUiAction {
     data class OnAddPayment(val moneyPayment: MoneyPayment): AddProductSaleUiAction
     data class OnEditPayment(val moneyPayment: MoneyPayment): AddProductSaleUiAction
     data class OnRemovePayment(val paymentId: String): AddProductSaleUiAction
+    data class OnUpdateProducts(val products: List<Product>): AddProductSaleUiAction
 }

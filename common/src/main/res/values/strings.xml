@@ -196,4 +196,7 @@
     <string name="sales_of">Sales of %1$s</string>
     <string name="customer">Customer</string>
     <string name="the_balance">Balance</string>
+    <string name="total_placeholder">Total  %1$s</string>
+    <string name="sell">Sell</string>
+    <string name="x">%1$s x %2$s</string>
 </resources>

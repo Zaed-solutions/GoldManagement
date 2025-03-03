@@ -33,6 +33,7 @@ fun NumberInputTextField(
     errorMessage: Int =0,
     isError: Boolean = false,
     withBorder: Boolean = false,
+    shape: RoundedCornerShape =RoundedCornerShape(32.dp) ,
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) {
     var textValue by remember { mutableStateOf(value.toString()) }
@@ -69,7 +70,7 @@ fun NumberInputTextField(
                 )
             }
         } else null,
-        shape = RoundedCornerShape(32.dp),
+        shape = shape,
         isError = isError,
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
