@@ -9,6 +9,7 @@ sealed interface AddProductSaleUiAction {
     data object OnSubmitClicked : AddProductSaleUiAction
     data object OnAddNewCustomerClicked : AddProductSaleUiAction
     data class OnRemoveProduct(val productId: String) : AddProductSaleUiAction
+    data class OnDeleteProduct(val product: Product) : AddProductSaleUiAction
     data class OnAddProduct(val product: Product) : AddProductSaleUiAction
     data class OnEditProduct(val product: Product) : AddProductSaleUiAction
     data class OnCustomerSearchQueryChanged(val query: String) : AddProductSaleUiAction
@@ -17,4 +18,6 @@ sealed interface AddProductSaleUiAction {
     data class OnEditPayment(val moneyPayment: MoneyPayment): AddProductSaleUiAction
     data class OnRemovePayment(val paymentId: String): AddProductSaleUiAction
     data class OnUpdateProducts(val products: List<Product>): AddProductSaleUiAction
+    data object OnDeleteAllProducts: AddProductSaleUiAction
+
 }

@@ -18,8 +18,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
+import com.zaed.common.data.model.sale.DiscountType
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.ui.util.toMoneyFormat
 
@@ -63,18 +66,61 @@ fun PreviewSaleItem(
                     text = stringResource(
                         R.string.x,
                         product.quantity,
-                        product.gramPrice * product.grams
+                        product.priceForItem
                     ),
                     color = MaterialTheme.colorScheme.outline
                 )
                 Spacer(modifier = Modifier.weight(1f))
-                Text(
+                Column(
                     modifier = Modifier.padding(end = 24.dp),
-                    text = (product.grams * product.gramPrice * product.quantity).toMoneyFormat(2),
-                    color = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.titleLarge
-                )
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    val validDiscount = product.discountAmount > 0 && product.discount.type != DiscountType.NONE
+                    Text(
+                        text = product.totalPriceBeforeDiscount.toMoneyFormat(
+                            2
+                        ),
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            textDecoration = if (validDiscount) TextDecoration.LineThrough else TextDecoration.None
+                        ),
+
+                    )
+                    if(validDiscount) {
+                        Text(
+                            text = product.totalPriceAfterDiscount.toMoneyFormat(
+                                2
+                            ),
+                            color = MaterialTheme.colorScheme.primary,
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        Text(
+                            text = "(${product.discountAsStr})",
+                            color = MaterialTheme.colorScheme.outline,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+
+                }
             }
         }
     }
+}
+
+@Preview
+@Composable
+private fun PreviewSaleItemPreview() {
+    PreviewSaleItem(
+        product = Product(
+            name = "Gold",
+            quantity = 1,
+            gramPrice = 100.0,
+            grams = 36.0,
+            discount = com.zaed.common.data.model.sale.Discount(
+                type = com.zaed.common.data.model.sale.DiscountType.PERCENTAGE,
+                value = 10.0
+            )
+        )
+    )
+    
 }

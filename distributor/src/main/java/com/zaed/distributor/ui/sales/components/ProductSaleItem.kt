@@ -74,7 +74,7 @@ fun ProductSaleItem(
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
-                        text = sale.totalPrice.toMoneyFormat(2),
+                        text = sale.totalPriceBeforeDiscount.toMoneyFormat(2),
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.primary
                     )

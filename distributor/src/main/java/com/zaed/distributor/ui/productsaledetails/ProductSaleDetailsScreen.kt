@@ -97,7 +97,7 @@ private fun ProductSaleDetailsContent(
             SaleInfoSection(
                 receiptNumber = state.sale.receiptNumber,
                 createdAt = state.sale.createdAt,
-                totalPrice = state.sale.totalPrice,
+                totalPrice = state.sale.totalPriceBeforeDiscount,
                 paymentStatus = state.sale.paymentStatus,
                 receiptStatus = state.sale.receiptStatus,
                 onRequestReceipt = {

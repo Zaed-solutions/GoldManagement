@@ -15,6 +15,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -43,6 +44,7 @@ fun SelectProductsContent(
     sale: WholesaleProductSale,
     onNext: () -> Unit,
     onAddProduct: (Product) -> Unit,
+    onDeleteProduct: (Product) -> Unit
 
 ) {
     val categories1 by rememberUpdatedState(categories)
@@ -57,7 +59,8 @@ fun SelectProductsContent(
         }
     }
     var enterProductSheetVisible by remember { mutableStateOf(false) }
-    var selectedCategory by remember { mutableStateOf<Category?>(null) }
+    var selectedProduct by remember { mutableStateOf<Product?>(null) }
+
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -78,11 +81,20 @@ fun SelectProductsContent(
         ) {
             items(displayedCategory) { category ->
                 CategoryItem(
-                    count = sale.products.count { it.name == category.name },
-                    price = sale.products.filter { it.name == category.name }.sumOf { it.grams * it.gramPrice },
+                    count = sale.products.firstOrNull { it.name == category.name }?.quantity?:0,
+                    price = sale.products.filter { it.name == category.name }.sumOf { it.totalPriceAfterDiscount },
                     category = category,
                     onClick = {
-                        selectedCategory = category
+                        selectedProduct = if(
+                            sale.products.any { it.name == category.name }
+                        ){
+                            sale.products.first { it.name == category.name }.copy(
+                                name = category.name, categoryId = category.id
+                            )
+                        }else{
+                            Product(name = category.name, categoryId = category.id)
+                        }
+
                         enterProductSheetVisible = true
                     }
                 )
@@ -107,7 +119,7 @@ fun SelectProductsContent(
                 Text(
                     text = stringResource(
                         R.string.total_placeholder,
-                        sale.totalPrice.toMoneyFormat(2)
+                        sale.totalPriceBeforeDiscount.toMoneyFormat(2)
                     ),
                     style = MaterialTheme.typography.titleMedium
                 )
@@ -115,19 +127,30 @@ fun SelectProductsContent(
         }
         AnimatedVisibility(enterProductSheetVisible) {
             ModalBottomSheet(
+                sheetState = rememberModalBottomSheetState(
+                    skipPartiallyExpanded = true,
+                ),
                 onDismissRequest = {
                     enterProductSheetVisible = false
-                    selectedCategory = null
+                    selectedProduct = null
                 }
             ) {
-                SaveProductSheetContent(
-                    initialProduct = Product(name = selectedCategory?.name?:"", categoryId = selectedCategory?.id?:""),
-                    onSaveProduct = {
-                        onAddProduct(it)
-                        enterProductSheetVisible = false
-                        selectedCategory = null
-                    }
-                )
+                selectedProduct?.let {
+                    SaveProductSheetContent(
+                        modifier = Modifier.fillMaxSize(),
+                        initialProduct = it,
+                        onSaveProduct = {
+                            onAddProduct(it)
+                            enterProductSheetVisible = false
+                            selectedProduct = null
+                        },
+                        deleteProduct = {deletedProduct ->
+                            onDeleteProduct(deletedProduct)
+                            enterProductSheetVisible = false
+                            selectedProduct = null
+                        }
+                    )
+                }
             }
         }
 
@@ -152,7 +175,8 @@ private fun SelectProductsContentPreview() {
             )
         ),
         onAddProduct = {},
-        onNext = {}
+        onNext = {},
+        onDeleteProduct = {}
     )
 }
 

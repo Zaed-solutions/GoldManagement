@@ -146,11 +146,13 @@ class AddProductSaleViewModel(
             is AddProductSaleUiAction.OnCustomerSelected -> updateCustomer(action.customer)
             is AddProductSaleUiAction.OnEditProduct -> updateProduct(action.product)
             is AddProductSaleUiAction.OnRemoveProduct -> removeProduct(action.productId)
+            is AddProductSaleUiAction.OnDeleteProduct -> deleteProduct(action.product)
             AddProductSaleUiAction.OnSubmitClicked -> onSubmit()
             is AddProductSaleUiAction.OnAddPayment -> addPayment(action.moneyPayment)
             is AddProductSaleUiAction.OnEditPayment -> updatePayment(action.moneyPayment)
             is AddProductSaleUiAction.OnRemovePayment -> removePayment(action.paymentId)
             is AddProductSaleUiAction.OnUpdateProducts -> updateProductsSale(action.products)
+            AddProductSaleUiAction.OnDeleteAllProducts -> updateProductsSale(emptyList())
             else -> Unit
         }
     }
@@ -320,7 +322,19 @@ class AddProductSaleViewModel(
     private fun addProduct(product: Product) {
         viewModelScope.launch {
             _uiState.update { oldState ->
-                oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products + product))
+                if (oldState.sale.products.any { it.name == product.name }) {
+                    oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products.map {
+                        if (it.name == product.name) {
+                            product
+                        } else {
+                            it
+                        }
+                    }
+                    )
+                    )
+                } else {
+                    oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products + product))
+                }
             }
             updateTotalAmounts()
         }
@@ -361,6 +375,14 @@ class AddProductSaleViewModel(
         viewModelScope.launch {
             _uiState.update { oldState ->
                 oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products.filter { it.id != productId }))
+            }
+            updateTotalAmounts()
+        }
+    }
+    private fun deleteProduct(product: Product) {
+        viewModelScope.launch {
+            _uiState.update { oldState ->
+                oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products.filter { it != product }))
             }
             updateTotalAmounts()
         }
