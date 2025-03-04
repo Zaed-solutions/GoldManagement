@@ -19,5 +19,8 @@ data class WholesaleGoldSale(
     override val createdAt: Date = Date(),
     override val logs: List<ChangeLog> = emptyList(),
     override val deleted: Boolean = false,
-    override val paymentStatus: PaymentStatus = PaymentStatus.UNPAID
-): WholesaleSale()
+    override val paymentStatus: PaymentStatus = PaymentStatus.UNPAID,
+): WholesaleSale(){
+    override val totalAmount
+        get() = products.sumOf { it.grams * it.gramPrice * it.quantity/*TODO*/ } - products.sumOf { it.discountAmount }
+}

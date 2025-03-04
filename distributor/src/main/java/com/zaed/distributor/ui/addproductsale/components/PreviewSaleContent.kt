@@ -115,7 +115,7 @@ fun PreviewSaleContent(
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = sale.totalPriceAfterDiscount.toMoneyFormat(2),
+                        text = sale.totalAmount.toMoneyFormat(2),
                         modifier = Modifier.weight(1f),
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.primary,

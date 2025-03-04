@@ -7,7 +7,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,8 +22,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -36,7 +37,9 @@ import com.zaed.common.ui.components.MoreDropDownMenu
 import com.zaed.common.ui.components.MoreDropdownItem
 import org.koin.androidx.compose.koinViewModel
 import com.zaed.common.R
+import com.zaed.common.ui.components.DatedSalesWithSearchSection
 import com.zaed.common.ui.components.StoreInventorySection
+import com.zaed.manager.ui.stores.components.SaveStoreBottomSheet
 import kotlinx.coroutines.launch
 
 @Composable
@@ -44,6 +47,8 @@ fun StoreDetailsScreen(
     modifier: Modifier = Modifier,
     viewModel: StoreDetailsViewModel = koinViewModel(),
     storeId: String,
+    onBackClicked: () -> Unit,
+    onNavigateToSaleDetails: (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect (true){
@@ -54,7 +59,8 @@ fun StoreDetailsScreen(
         state = state,
         onAction = { action ->
             when(action){
-
+                StoreDetailsUiAction.OnBackClicked -> onBackClicked()
+                is StoreDetailsUiAction.OnSaleClicked -> onNavigateToSaleDetails(action.id)
                 else -> viewModel.handleAction(action)
             }
         }
@@ -70,6 +76,9 @@ fun StoreDetailsScreenContent(
 ) {
     val pagerState = rememberPagerState { 3 }
     val scope = rememberCoroutineScope()
+    var isEditStoreSheetVisible by remember {
+        mutableStateOf(false)
+    }
     Scaffold (
         modifier = modifier,
         topBar = {
@@ -106,13 +115,17 @@ fun StoreDetailsScreenContent(
                             MoreDropdownItem(
                                 title = stringResource(id = R.string.edit),
                                 icon = Icons.Default.Edit,
-                                onClick = {TODO()},
+                                onClick = {
+                                    isEditStoreSheetVisible = true
+                                },
                                 tint = MaterialTheme.colorScheme.onSurface
                             ),
                             MoreDropdownItem(
                                 title = stringResource(id = R.string.delete),
                                 icon = Icons.Default.Delete,
-                                onClick = {TODO()},
+                                onClick = {
+                                    onAction(StoreDetailsUiAction.OnDeleteStore)
+                                },
                                 tint = MaterialTheme.colorScheme.error
                             )
                         )
@@ -157,21 +170,35 @@ fun StoreDetailsScreenContent(
                     )
                 }
             }
-            //horizontal pager
             HorizontalPager(
                 state = pagerState,
             ) { page ->
                 when(page){
                     StoreDetailsTab.SALES.ordinal -> {
-                        //sales
+                        DatedSalesWithSearchSection(
+                            modifier = Modifier.fillMaxSize(),
+                            isLoading = state.isLoading,
+                            query = state.salesQuery,
+                            onQueryChanged = { query ->
+                                onAction(StoreDetailsUiAction.OnSalesQueryChanged(query))
+                            },
+                            selectedFilter = state.selectedFilter,
+                            onFilterClicked = { filter ->
+                                onAction(StoreDetailsUiAction.OnFilterClicked(filter))
+                            },
+                            datedSales = state.displayedDatedSales,
+                            onSaleClicked = { saleId ->
+                                onAction(StoreDetailsUiAction.OnSaleClicked(saleId))
+                            }
+                        )
                     }
                     StoreDetailsTab.INVENTORY.ordinal -> {
                         StoreInventorySection(
                             modifier = Modifier.fillMaxSize(),
                             isLoading = state.isLoading,
-                            query = state.query,
+                            query = state.inventoryQuery,
                             onQueryChanged = { query ->
-                                onAction(StoreDetailsUiAction.OnQueryChanged(query))
+                                onAction(StoreDetailsUiAction.OnInventoryQueryChanged(query))
                             },
                             inventories = state.displayedInventories,
                             onAddInventory = {
@@ -181,6 +208,17 @@ fun StoreDetailsScreenContent(
                     }
                 }
             }
+            SaveStoreBottomSheet(
+                isVisible = isEditStoreSheetVisible,
+                onDismiss = {
+                    isEditStoreSheetVisible = false
+                },
+                onSave = {
+                    isEditStoreSheetVisible = false
+                    onAction(StoreDetailsUiAction.OnUpdateStore(it))
+                },
+                initialStore = state.store
+            )
         }
     }
 

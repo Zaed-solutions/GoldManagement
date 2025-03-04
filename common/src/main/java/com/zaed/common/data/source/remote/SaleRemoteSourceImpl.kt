@@ -180,7 +180,7 @@ class SaleRemoteSourceImpl(
                         date = Date(),
                         employeeId = request.employeeId,
                         employeeName = request.employeeName,
-                        action = "${request.employeeName} Changed the customer from ${oldSale.customerName}-${oldSale.customerEmail}-${oldSale.customerPhoneNumber} to ${request.sale.customerName}-${request.sale.customerEmail}-${request.sale.customerPhoneNumber}"
+                        action = "${request.employeeName} Changed the customer from ${oldSale.customerName}-${oldSale.customerEmail}-${oldSale.customerPhone} to ${request.sale.customerName}-${request.sale.customerEmail}-${request.sale.customerPhone}"
                     )
                 )
             }
@@ -972,7 +972,7 @@ class SaleRemoteSourceImpl(
 
     private companion object {
         fun isCustomerDifferent(sale1: StoreSale, sale2: StoreSale): Boolean {
-            return sale1.customerName != sale2.customerName || sale1.customerEmail != sale2.customerEmail || sale1.customerPhoneNumber != sale2.customerPhoneNumber
+            return sale1.customerName != sale2.customerName || sale1.customerEmail != sale2.customerEmail || sale1.customerPhone != sale2.customerPhone
         }
 
         fun isProductsDifferent(sale1: StoreSale, sale2: StoreSale): Boolean {

@@ -1,6 +1,5 @@
 package com.zaed.common.ui.components
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.data.model.sale.Product
+import com.zaed.common.data.model.sale.Sale
 import com.zaed.common.data.model.sale.WholesaleProductSale
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
@@ -26,9 +26,9 @@ import com.zaed.common.ui.util.formatMoney
 import java.util.Date
 
 @Composable
-fun ProductSaleItem(
+fun SaleItem(
     modifier: Modifier = Modifier,
-    sale: WholesaleProductSale,
+    sale: Sale,
     onSaleClicked: () -> Unit
 ) {
     Surface(
@@ -61,7 +61,7 @@ fun ProductSaleItem(
                     )
                 }
                 Text(
-                    text = sale.totalPrice.formatMoney(),
+                    text = sale.totalAmount.formatMoney(),
                     style = MaterialTheme.typography.titleMedium.copy(
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold
@@ -76,7 +76,7 @@ fun ProductSaleItem(
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 private fun Preview() {
-    ProductSaleItem(
+    SaleItem(
         sale = WholesaleProductSale(
             receiptNumber = "123456",
             createdAt = Date(),

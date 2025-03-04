@@ -24,6 +24,6 @@ data class WholesaleProductSale(
     @Transient
     val totalPriceBeforeDiscount
         get() = products.sumOf { it.grams*it.gramPrice *it.quantity}
-    val totalPriceAfterDiscount
+    override val totalAmount
         get() = totalPriceBeforeDiscount - products.sumOf { it.discountAmount }
 }

@@ -32,7 +32,7 @@ class SaleDetailsViewModel(
         _uiState.update { it.copy(storeSale = it.storeSale.copy(customerEmail = email)) }
     }
     private fun updateCustomerPhoneNumber(phoneNumber: String) {
-        _uiState.update { it.copy(storeSale = it.storeSale.copy(customerPhoneNumber = phoneNumber)) }
+        _uiState.update { it.copy(storeSale = it.storeSale.copy(customerPhone = phoneNumber)) }
     }
 
     private fun updateStoreSale(storeSale: StoreSale) {

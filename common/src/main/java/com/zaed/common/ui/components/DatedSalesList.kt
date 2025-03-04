@@ -7,13 +7,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.sale.DatedWholesaleProductSale
+import com.zaed.common.data.model.sale.DatedSales
 
 @Composable
-fun DatedProductSalesList(
+fun DatedSalesList(
     modifier: Modifier = Modifier,
-    isLoading : Boolean ,
-    datedProductSales: List<DatedWholesaleProductSale>,
+    isLoading : Boolean,
+    datedSales: List<DatedSales>,
     onSaleClicked: (String) -> Unit
 ) {
     ListWithLoading(
@@ -24,12 +24,12 @@ fun DatedProductSalesList(
             contentPadding = PaddingValues(vertical = 16.dp),
         ) {
             items(
-                items = datedProductSales,
+                items = datedSales,
                 key = { it.formattedDate }
             ) {
-                DatedProductSalesItem(
+                DatedSalesItem(
                     modifier = Modifier.animateItem(),
-                    datedProductSale = it,
+                    datedSale = it,
                     onSaleClicked = onSaleClicked
                 )
             }

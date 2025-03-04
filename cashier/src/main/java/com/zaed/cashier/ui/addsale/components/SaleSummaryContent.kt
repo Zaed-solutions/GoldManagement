@@ -52,7 +52,7 @@ fun SaleSummaryContent(
         )
         DetailRow(
             label = stringResource(R.string.phone_number),
-            value = sale.customerPhoneNumber
+            value = sale.customerPhone
         )
         DetailRow(
             label = stringResource(R.string.email),
@@ -106,7 +106,7 @@ private fun Preview() {
             discount = Discount(type = DiscountType.PERCENTAGE, value = 10.0),
             customerName = "Muhammed Edrees",
             customerEmail = "muhammed@edrees.com",
-            customerPhoneNumber = "+20106476561",
+            customerPhone = "+20106476561",
             products = listOf(
                 Product(
                     gramPrice = 10.0,

@@ -207,4 +207,5 @@
     <string name="inventory">Inventory</string>
     <string name="ingot_of_karat">Ingot of karat %1$s</string>
     <string name="units_placeholder">%1$s units</string>
+    <string name="search_by_receipt_number">Search by receipt number</string>
 </resources>

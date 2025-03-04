@@ -26,13 +26,13 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.zaed.common.data.model.sale.DatedWholesaleProductSale
+import com.zaed.common.data.model.sale.DatedSales
 import com.zaed.common.ui.util.formatMoney
 
 @Composable
-fun DatedProductSalesItem(
+fun DatedSalesItem(
     modifier: Modifier = Modifier,
-    datedProductSale: DatedWholesaleProductSale,
+    datedSale: DatedSales,
     onSaleClicked: (String) -> Unit
 ) {
     var isExpanded by remember {
@@ -66,12 +66,12 @@ fun DatedProductSalesItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = datedProductSale.formattedDate,
+                        text = datedSale.formattedDate,
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.weight(1f)
                     )
                     Text(
-                        text = datedProductSale.totalAmount.formatMoney(),
+                        text = datedSale.totalAmount.formatMoney(),
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontSize = 20.sp,
                             fontWeight = FontWeight.ExtraBold
@@ -89,8 +89,8 @@ fun DatedProductSalesItem(
                     Column(
                         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                     ) {
-                        datedProductSale.sales.forEach { sale ->
-                            ProductSaleItem(
+                        datedSale.sales.forEach { sale ->
+                            SaleItem(
                                 sale = sale,
                                 onSaleClicked = {
                                     onSaleClicked(sale.id)

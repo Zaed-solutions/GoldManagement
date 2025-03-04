@@ -242,7 +242,7 @@ private fun AddProductSaleScreenContent(
 
                     2 -> {
                         SelectPaymentsContent(
-                            totalAmount = state.sale.totalPriceAfterDiscount,
+                            totalAmount = state.sale.totalAmount,
                             totalPaid = state.totalPaid,
                             moneyPayments = state.moneyPayments,
                             onAddPayment = {
