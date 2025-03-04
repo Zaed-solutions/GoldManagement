@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
-import com.zaed.common.data.model.payment.PaymentStatus
+import com.zaed.common.data.model.sale.Product
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
 import com.zaed.common.ui.components.ProductsTable
 import com.zaed.common.ui.components.TitledSection
@@ -27,7 +27,6 @@ import com.zaed.distributor.ui.productsaledetails.components.CustomerInfoSection
 import com.zaed.distributor.ui.productsaledetails.components.PaymentsTable
 import com.zaed.distributor.ui.productsaledetails.components.ProductSaleDetailsTopBar
 import com.zaed.distributor.ui.productsaledetails.components.SaleInfoSection
-
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -36,7 +35,8 @@ fun ProductSaleDetailsScreen(
     viewModel: ProductSaleDetailsViewModel = koinViewModel(),
     onBackClicked: () -> Unit,
     onNavigateToEditSale: (String) -> Unit,
-    saleId: String = ""
+    saleId: String = "",
+    onNavigateToCustomerDetails: (String) -> Unit
 ) {
     LaunchedEffect(true) {
         viewModel.init(saleId)
@@ -52,6 +52,7 @@ fun ProductSaleDetailsScreen(
     ) { action ->
         when (action) {
             SaleDetailsUiAction.OnBackClicked -> onBackClicked()
+            SaleDetailsUiAction.OnCustomerClicked -> onNavigateToCustomerDetails(state.sale.customerId)
             SaleDetailsUiAction.OnEditClicked -> onNavigateToEditSale(saleId)
             else -> viewModel.handleAction(action)
         }
@@ -69,6 +70,7 @@ private fun ProductSaleDetailsContent(
         modifier = modifier,
         topBar = {
             ProductSaleDetailsTopBar(
+                receiptNumber = state.sale.receiptNumber,
                 onBackClicked = {
                     onAction(SaleDetailsUiAction.OnBackClicked)
                 },
@@ -95,6 +97,7 @@ private fun ProductSaleDetailsContent(
             SaleInfoSection(
                 receiptNumber = state.sale.receiptNumber,
                 createdAt = state.sale.createdAt,
+                totalPrice = state.sale.totalPriceBeforeDiscount,
                 paymentStatus = state.sale.paymentStatus,
                 receiptStatus = state.sale.receiptStatus,
                 onRequestReceipt = {
@@ -104,7 +107,10 @@ private fun ProductSaleDetailsContent(
             // customer info
             CustomerInfoSection(
                 customerName = state.sale.customerName,
-                customerPhone = state.sale.customerPhone
+                customerDebt = state.customer.debtAmount,
+                onCustomerClicked = {
+                    onAction(SaleDetailsUiAction.OnCustomerClicked)
+                }
             )
             //products
             TitledSection(
@@ -142,6 +148,26 @@ private fun ProductSaleDetailsContent(
 private fun Preview() {
     ProductSaleDetailsContent(
         onAction = {},
-        state = ProductSaleDetailsUiState()
+        state = ProductSaleDetailsUiState(
+            sale = com.zaed.common.data.model.sale.WholesaleProductSale(
+                customerName = "Ali",
+                createdAt = java.util.Date(),
+                receiptNumber = "123456",
+                products = listOf(
+                    Product(
+                        name = "Gold",
+                        quantity = 5,
+                        gramPrice = 100.0,
+                        grams = 10.0
+                    ),
+                    Product(
+                        name = "Silver",
+                        quantity = 2,
+                        gramPrice = 50.0,
+                        grams = 5.0
+                    )
+                )
+            )
+        )
     )
 }

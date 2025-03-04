@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -52,7 +53,7 @@ fun SalesList(
                             }
                         ) {
                             ProductSaleItem(
-                                modifier = Modifier.padding(horizontal = 16.dp),
+                                modifier = Modifier.padding(horizontal = 8.dp),
                                 sale = sale,
                                 onSaleClicked = { onSaleClicked(sale.id, true) }
                             )
@@ -78,6 +79,7 @@ fun SalesList(
                         }
                     }
                 }
+                HorizontalDivider()
             }
         }
     }

@@ -1,40 +1,102 @@
 package com.zaed.distributor.ui.productsaledetails.components
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.PermIdentity
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.zaed.common.ui.components.DetailRow
-import com.zaed.common.ui.components.TitledSection
 import com.zaed.common.R
+import com.zaed.common.ui.components.TitledSection
+import com.zaed.common.ui.util.toMoneyFormat
+import com.zaed.distributor.ui.theme.DistributorAppTheme
+import kotlin.math.absoluteValue
 
 @Composable
 fun CustomerInfoSection(
     modifier: Modifier = Modifier,
     customerName: String,
-    customerPhone: String,
+    customerDebt: Double ,
+    onCustomerClicked: () -> Unit
 ) {
     TitledSection(
-        title = stringResource(R.string.customer_information)
+        title = stringResource(R.string.customer)
     ) {
-        Column (
+        Surface(
             modifier = modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ){
-            DetailRow(
-                label = stringResource(R.string.name),
-                value = customerName,
-                isDividerVisible = customerPhone.isNotBlank()
-            )
-            DetailRow(
-                label = stringResource(R.string.phone_number),
-                value = customerPhone,
-                isDividerVisible = false
-            )
+            onClick = onCustomerClicked
+        ) {
+            Row(
+
+            ){
+                Box (
+                    modifier
+                        .padding(end = 4.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f))
+
+                ){
+                    Icon(
+                        imageVector = Icons.Default.PermIdentity,
+                        contentDescription = "Sale icon",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+                Column {
+                    Text(
+                        text = customerName,
+                        style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.primary)
+                    )
+                    Row(){
+                        Text(
+                            text = stringResource(com.zaed.common.R.string.the_balance),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Text(
+                            text = customerDebt.absoluteValue.toMoneyFormat(2),
+                            color = if(customerDebt < 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                            style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.primary)
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowForwardIos,
+                    contentDescription = "Sale icon",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+
         }
     }
 
+}
+
+@Preview
+@Composable
+private fun CustomerInfoSectionPreview() {
+    DistributorAppTheme {
+        CustomerInfoSection(
+            customerName = "Mohamed Mahmoud",
+            customerDebt = 100.0
+        ){}
+    }
+    
 }

@@ -164,6 +164,9 @@ private fun AddSaleScreenContent(
                             },
                             onEditProduct = {
                                 onAction(AddSaleUiAction.OnEditProduct(it))
+                            },
+                            onDeleteProduct = {
+                                onAction(AddSaleUiAction.OnDeleteProduct(it))
                             }
                         )
                     }

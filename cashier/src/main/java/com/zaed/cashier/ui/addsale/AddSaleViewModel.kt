@@ -7,9 +7,9 @@ import com.zaed.common.data.model.sale.DiscountType
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.request.AddStoreSaleRequest
 import com.zaed.common.data.model.sale.request.UpdateStoreSaleRequest
-import com.zaed.common.domain.sale.AddStoreSaleUseCase
-import com.zaed.common.domain.category.FetchAllCategoriesUseCase
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
+import com.zaed.common.domain.category.FetchAllCategoriesUseCase
+import com.zaed.common.domain.sale.AddStoreSaleUseCase
 import com.zaed.common.domain.sale.GetStoreSaleUseCase
 import com.zaed.common.domain.sale.UpdateStoreSaleUseCase
 import kotlinx.coroutines.Dispatchers
@@ -92,7 +92,14 @@ class AddSaleViewModel(
             is AddSaleUiAction.OnAddProduct -> addProduct(action.product)
             is AddSaleUiAction.OnUpdateDiscountType -> updateDiscountType(action.discountType)
             is AddSaleUiAction.OnUpdateDiscountValue -> updateDiscountValue(action.discountValue)
+            is AddSaleUiAction.OnDeleteProduct -> deleteProduct(action.product)
             else -> Unit
+        }
+    }
+
+    private fun deleteProduct(product: Product) {
+        _uiState.update { oldState ->
+            oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products.filter { it.id != product.id }))
         }
     }
 

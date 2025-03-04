@@ -2,44 +2,25 @@ package com.zaed.distributor.ui.addproductsale
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.zaed.common.R
 import com.zaed.common.ui.components.ProgressIndicatorTopAppBar
+import com.zaed.distributor.ui.addproductsale.components.PreviewSaleContent
 import com.zaed.distributor.ui.addproductsale.components.SaleSummaryContent
-import com.zaed.distributor.ui.addproductsale.components.SelectCustomerContent
 import com.zaed.distributor.ui.addproductsale.components.SelectPaymentsContent
 import com.zaed.distributor.ui.addproductsale.components.SelectProductsContent
 import kotlinx.coroutines.launch
@@ -104,8 +85,6 @@ private fun AddProductSaleScreenContent(
             scope.launch {
                 pagerState.animateScrollToPage(pagerState.currentPage - 1)
             }
-        } else {
-            onAction(AddProductSaleUiAction.OnBackClicked)
         }
     }
     Scaffold(
@@ -113,75 +92,81 @@ private fun AddProductSaleScreenContent(
             ProgressIndicatorTopAppBar(
                 progress = progress
             ) {
-                onAction(AddProductSaleUiAction.OnBackClicked)
-            }
-        },
-        bottomBar = {
-            BottomAppBar(
-                contentPadding = PaddingValues(0.dp),
-                containerColor = MaterialTheme.colorScheme.surface,
-            ) {
-                Surface(
-                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-                    shadowElevation = 8.dp
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        FilledTonalButton(
-                            modifier = Modifier
-                                .weight(1f)
-                                .heightIn(min = 48.dp),
-                            onClick = {
-                                scope.launch {
-                                    pagerState.animateScrollToPage(pagerState.currentPage - 1)
-                                }
-                            },
-                            enabled = pagerState.currentPage > 0
-                        ) {
-                            Text(
-                                text = stringResource(R.string.previous),
-                            )
-                        }
-                        Button(
-                            modifier = Modifier
-                                .weight(1f)
-                                .heightIn(min = 48.dp),
-                            enabled = !state.isLoading,
-                            onClick = {
-                                if (pagerState.currentPage == 3) {
-                                    onAction(AddProductSaleUiAction.OnSubmitClicked)
-                                } else {
-                                    scope.launch {
-                                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                                    }
-                                }
-                            }
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Text(
-                                    text = if (pagerState.currentPage == 3) stringResource(R.string.submit) else stringResource(
-                                        R.string.continue_
-                                    )
-                                )
-                                AnimatedVisibility(state.isLoading) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                }
-                            }
-                        }
+                if (pagerState.currentPage > 0) {
+                    scope.launch {
+                        pagerState.animateScrollToPage(pagerState.currentPage - 1)
                     }
+                } else {
+                    onAction(AddProductSaleUiAction.OnBackClicked)
                 }
             }
-        }
+        },
+//        bottomBar = {
+//            BottomAppBar(
+//                contentPadding = PaddingValues(0.dp),
+//                containerColor = MaterialTheme.colorScheme.surface,
+//            ) {
+//                Surface(
+//                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+//                    shadowElevation = 8.dp
+//                ) {
+//                    Row(
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(horizontal = 16.dp, vertical = 8.dp),
+//                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        FilledTonalButton(
+//                            modifier = Modifier
+//                                .weight(1f)
+//                                .heightIn(min = 48.dp),
+//                            onClick = {
+//                                scope.launch {
+//                                    pagerState.animateScrollToPage(pagerState.currentPage - 1)
+//                                }
+//                            },
+//                            enabled = pagerState.currentPage > 0
+//                        ) {
+//                            Text(
+//                                text = stringResource(R.string.previous),
+//                            )
+//                        }
+//                        Button(
+//                            modifier = Modifier
+//                                .weight(1f)
+//                                .heightIn(min = 48.dp),
+//                            enabled = !state.isLoading,
+//                            onClick = {
+//                                if (pagerState.currentPage == 3) {
+//                                    onAction(AddProductSaleUiAction.OnSubmitClicked)
+//                                } else {
+//                                    scope.launch {
+//                                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
+//                                    }
+//                                }
+//                            }
+//                        ) {
+//                            Row(
+//                                verticalAlignment = Alignment.CenterVertically,
+//                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+//                            ) {
+//                                Text(
+//                                    text = if (pagerState.currentPage == 3) stringResource(R.string.submit) else stringResource(
+//                                        R.string.continue_
+//                                    )
+//                                )
+//                                AnimatedVisibility(state.isLoading) {
+//                                    CircularProgressIndicator(
+//                                        modifier = Modifier.size(24.dp)
+//                                    )
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -194,8 +179,47 @@ private fun AddProductSaleScreenContent(
             ) { page ->
                 when (page) {
                     0 -> {
-                        //select customer
-                        SelectCustomerContent(
+                        //add products
+                        SelectProductsContent(
+                            categories = state.categories,
+                            sale = state.sale,
+                            onAddProduct = {
+                                onAction(AddProductSaleUiAction.OnAddProduct(it))
+                            },
+                            onNext = {
+                                if (pagerState.currentPage == 3) {
+                                    onAction(AddProductSaleUiAction.OnSubmitClicked)
+                                } else {
+                                    scope.launch {
+                                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                    }
+                                }
+                            },
+                            onDeleteProduct = {
+                                onAction(AddProductSaleUiAction.OnDeleteProduct(it))
+                            }
+                        )
+                    }
+
+                    1 -> {
+                        PreviewSaleContent(
+                            sale = state.sale,
+                            onUpdateProduct = {
+                                onAction(AddProductSaleUiAction.OnAddProduct(it))
+                            },
+                            onDeleteProduct = {
+                                onAction(AddProductSaleUiAction.OnDeleteProduct(it))
+                            },
+                            deleteAllProducts = {
+                                onAction(AddProductSaleUiAction.OnDeleteAllProducts)
+                                if (pagerState.currentPage > 0) {
+                                    scope.launch {
+                                        pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                                    }
+                                } else {
+                                    onAction(AddProductSaleUiAction.OnBackClicked)
+                                }
+                            },
                             query = state.customerSearchQuery,
                             onQueryChanged = {
                                 onAction(AddProductSaleUiAction.OnCustomerSearchQueryChanged(it))
@@ -207,30 +231,18 @@ private fun AddProductSaleScreenContent(
                             },
                             onCustomerSelected = {
                                 onAction(AddProductSaleUiAction.OnCustomerSelected(it))
-                            }
-                        )
-                    }
-
-                    1 -> {
-                        //add products
-                        SelectProductsContent(
-                            categories = state.categories,
-                            sale = state.sale,
-                            onAddProduct = {
-                                onAction(AddProductSaleUiAction.OnAddProduct(it))
                             },
-                            onRemoveProduct = {
-                                onAction(AddProductSaleUiAction.OnRemoveProduct(it))
-                            },
-                            onEditProduct = {
-                                onAction(AddProductSaleUiAction.OnEditProduct(it))
+                            onNext = {
+                                scope.launch {
+                                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                }
                             }
                         )
                     }
 
                     2 -> {
                         SelectPaymentsContent(
-                            totalAmount = state.totalAmount,
+                            totalAmount = state.sale.totalPriceAfterDiscount,
                             totalPaid = state.totalPaid,
                             moneyPayments = state.moneyPayments,
                             onAddPayment = {
@@ -260,3 +272,4 @@ private fun AddProductSaleScreenContent(
     }
 
 }
+

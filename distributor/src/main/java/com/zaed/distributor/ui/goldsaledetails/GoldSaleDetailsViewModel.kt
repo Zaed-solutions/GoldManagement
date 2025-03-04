@@ -9,14 +9,13 @@ import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
 import com.zaed.common.data.model.sale.ReceiptStatus
 import com.zaed.common.data.model.sale.request.DeleteWholesaleGoldSaleRequest
-import com.zaed.common.data.model.sale.request.DeleteWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleGoldSaleRequest
 import com.zaed.common.data.model.sale.request.UpdateWholesaleGoldSaleRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
+import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
 import com.zaed.common.domain.payment.FetchGoldPaymentsByIdsUseCase
 import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
 import com.zaed.common.domain.sale.DeleteWholesaleGoldSaleUseCase
-import com.zaed.common.domain.sale.DeleteWholesaleProductSaleUseCase
 import com.zaed.common.domain.sale.FetchWholesaleGoldSaleUseCase
 import com.zaed.common.domain.sale.UpdateWholesaleGoldSaleUseCase
 import com.zaed.distributor.ui.productsaledetails.SaleDetailsUiAction
@@ -32,7 +31,8 @@ class GoldSaleDetailsViewModel(
     private val fetchGoldPaymentsUseCase: FetchGoldPaymentsByIdsUseCase,
     private val getCurrentUseUseCase: GetCurrentUserLoggedInUseCase,
     private val deleteWholesaleGoldSaleUseCase: DeleteWholesaleGoldSaleUseCase,
-    private val updateWholesaleGoldSaleUseCase: UpdateWholesaleGoldSaleUseCase
+    private val updateWholesaleGoldSaleUseCase: UpdateWholesaleGoldSaleUseCase,
+    private val fetchCustomerUseCase: GetWholeSalesCustomerUseCase
 ): ViewModel() {
     private val TAG = "ProductSaleDetailsViewModel"
     private val _uiState = MutableStateFlow(GoldSaleDetailsUiState())
@@ -67,8 +67,19 @@ class GoldSaleDetailsViewModel(
                     oldState.copy(sale = data)
                 }
                 fetchPayments(data.moneyPaymentsIds,data.goldPaymentsIds)
+                fetchCustomer(data.customerId)
             }.onFailure {
                 Log.e(TAG, "fetchSale: ${it.message}", it)
+            }
+        }
+    }
+
+    private fun fetchCustomer(customerId: String) {
+        viewModelScope.launch (Dispatchers.IO){
+            fetchCustomerUseCase(customerId).onSuccess { data ->
+                _uiState.update { oldState ->
+                    oldState.copy(customer = data)
+                }
             }
         }
     }
