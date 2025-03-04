@@ -1,8 +1,7 @@
 package com.zaed.cashier.ui.saledetails.component
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -11,15 +10,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Whatsapp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -47,8 +45,9 @@ import com.zaed.cashier.ui.saledetails.SaleDetailsUiAction
 import com.zaed.cashier.ui.saledetails.SaleDetailsUiState
 import com.zaed.common.R
 import com.zaed.common.data.model.sale.DiscountType
+import com.zaed.common.ui.components.MultiOptionSwitch
+import com.zaed.common.ui.components.PhoneNumberTextField
 import com.zaed.common.ui.components.TextInputTextField
-import com.zaed.common.ui.util.isValidEmail
 import com.zaed.common.ui.util.isValidPhoneNumber
 import com.zaed.common.ui.util.toMoneyFormat
 
@@ -106,7 +105,7 @@ fun SaleDetailsPreview(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "CR-"+sale.receiptNumber,
+                        text = "CR-" + sale.receiptNumber,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                     )
@@ -417,7 +416,7 @@ fun SaleDetailsPreview(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     var emailFieldVisible by remember { mutableStateOf(false) }
-                    var phoneFieldVisible by remember { mutableStateOf(false) }
+                    var phoneFieldVisible by remember { mutableStateOf(true) }
                     var emailError by remember { mutableStateOf(false) }
                     var phoneError by remember { mutableStateOf(false) }
                     Text(
@@ -428,103 +427,89 @@ fun SaleDetailsPreview(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 16.dp)
+
                     )
-                    AnimatedVisibility(
-                        visible = emailFieldVisible,
-                        enter = slideInVertically(),
-                        exit = slideOutVertically()
-                    ) {
-                        TextInputTextField(
-                            value = uiState.storeSale.customerEmail,
-                            label = stringResource(R.string.email),
-                            onValueChange = {
-                                onAction(SaleDetailsUiAction.UpdateCustomerEmail(it))
-                            },
-                            imageVector = Icons.Default.Email,
-                            isError = emailError,
-                            errorMessage = R.string.not_a_valid_email
-                        )
-                    }
-                    AnimatedVisibility(
-                        visible = phoneFieldVisible,
-                        enter = slideInVertically(),
-                        exit = slideOutVertically()
-                    ) {
-                        TextInputTextField(
-                            value = uiState.storeSale.customerPhoneNumber,
-                            label = stringResource(R.string.phone_number),
-                            onValueChange = {
-                                onAction(SaleDetailsUiAction.UpdateCustomerPhoneNumber(it))
-                            },
-                            imageVector = Icons.Default.Phone,
-                            isError = phoneError,
-                            errorMessage = R.string.not_a_valid_phone_number
-                        )
-                    }
-                    Row(
-                        modifier = Modifier.padding(vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Button(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(end = 8.dp),
-                            onClick = {
-                                if (uiState.storeSale.customerPhoneNumber.isEmpty()) {
+                    MultiOptionSwitch(
+                        modifier = Modifier.heightIn(max = 48.dp),
+                        options = listOf(
+                            R.string.whatsapp,
+                            R.string.email
+                        ).map { stringResource(it) },
+                        selectedIndex = if (emailFieldVisible) 1 else 0,
+                        onOptionSelected = {
+                            when (it) {
+                                0 -> {
                                     emailFieldVisible = false
                                     phoneFieldVisible = true
-                                } else {
-                                    if (uiState.storeSale.customerPhoneNumber.isValidPhoneNumber()) {
-                                        phoneError = false
-                                        onAction(SaleDetailsUiAction.ShareViaWhatsapp(sale))
-                                    } else {
-                                        phoneError = true
-                                    }
                                 }
-                            }
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Whatsapp,
-                                    contentDescription = null
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(text = stringResource(R.string.whatsapp))
-                            }
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        FilledTonalButton(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(start = 8.dp),
-                            onClick = {
-                                if (uiState.storeSale.customerEmail.isEmpty()) {
+
+                                1 -> {
                                     phoneFieldVisible = false
                                     emailFieldVisible = true
-                                } else {
-                                    if (uiState.storeSale.customerEmail.isValidEmail()) {
-                                        emailError = false
-                                        onAction(SaleDetailsUiAction.ShareViaEmail(sale))
-                                    } else {
-                                        emailError = true
-                                    }
                                 }
                             }
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
+                        }
+                    )
+                    AnimatedContent(emailFieldVisible to phoneFieldVisible) { state ->
+                        when {
+                            state.first -> {
+                                TextInputTextField(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    value = uiState.storeSale.customerEmail,
+                                    label = stringResource(R.string.email),
+                                    onValueChange = {
+                                        onAction(SaleDetailsUiAction.UpdateCustomerEmail(it))
+                                    },
                                     imageVector = Icons.Default.Email,
-                                    contentDescription = null
+                                    isError = emailError,
+                                    errorMessage = R.string.not_a_valid_email
                                 )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(text = stringResource(R.string.email))
+                            }
+
+                            state.second -> {
+                                PhoneNumberTextField(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    value = uiState.storeSale.customerPhoneNumber,
+                                    onValueChange = {
+                                        onAction(SaleDetailsUiAction.UpdateCustomerPhoneNumber(it))
+                                    },
+                                    isError = phoneError,
+                                    errorMessage = R.string.not_a_valid_phone_number
+                                )
                             }
                         }
+
                     }
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp)
+                            .heightIn(min = 48.dp),
+                        onClick = {
+                            if (phoneFieldVisible) {
+                                if (uiState.storeSale.customerPhoneNumber.isValidPhoneNumber()) {
+                                    phoneError = false
+                                    onAction(SaleDetailsUiAction.ShareViaWhatsapp(sale))
+                                } else {
+                                    phoneError = true
+                                }
+                            } else {
+                                if (android.util.Patterns.EMAIL_ADDRESS.matcher(uiState.storeSale.customerEmail)
+                                        .matches()
+                                ) {
+                                    emailError = false
+                                    onAction(SaleDetailsUiAction.ShareViaEmail(sale))
+                                } else {
+                                    emailError = true
+                                }
+                            }
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.share)
+                        )
+                    }
+
                 }
             }
         }

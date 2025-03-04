@@ -199,4 +199,7 @@
     <string name="total_placeholder">Total  %1$s</string>
     <string name="sell">Sell</string>
     <string name="x">%1$s x %2$s</string>
+    <string name="daily">Daily</string>
+    <string name="monthly">Monthly</string>
+    <string name="yearly">Yearly</string>
 </resources>

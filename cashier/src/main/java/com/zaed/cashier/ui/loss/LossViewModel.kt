@@ -16,6 +16,7 @@ import com.zaed.common.domain.loss.CreateNewLossUseCase
 import com.zaed.common.domain.loss.DeleteLossUseCase
 import com.zaed.common.domain.loss.GetStoreLossesUseCase
 import com.zaed.common.domain.loss.UpdateLossUseCase
+import com.zaed.common.ui.util.DateFormat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -57,13 +58,24 @@ class LossViewModel(
     }
 
     private fun getAllLosses() {
+        _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch(Dispatchers.IO) {
             getStoreLossesUseCase(GetStoreLossesRequest(storeId = uiState.value.currentUser.storeId)).collect { result ->
                 result.onSuccess { data ->
-                    val datedLosses = convertToDatedLossesUseCase(data)
-                    _uiState.update { it.copy(datedLosses = datedLosses, losses = data) }
+                    _uiState.update { it.copy(losses = data) }
+                    convertToDatedLosses()
                 }.onFailure { error ->
                     _uiState.update { it.copy(errorMessage = 0) }
+                }
+            }
+        }
+    }
+
+    private fun convertToDatedLosses(){
+        viewModelScope.launch (Dispatchers.Default){
+            convertToDatedLossesUseCase(uiState.value.losses, uiState.value.groupedByFilter).let { datedLosses ->
+                _uiState.update { oldState ->
+                    oldState.copy(isLoading = false, datedLosses = datedLosses)
                 }
             }
         }
@@ -81,7 +93,15 @@ class LossViewModel(
             LossUiAction.ResetError -> resetError()
             LossUiAction.ResetSuccess -> resetSuccessState()
             LossUiAction.OnSignOut -> signOut()
+            is LossUiAction.UpdateGroupedByFilter -> updateGroupedByFilter(action.format)
             else -> {}
+        }
+    }
+
+    private fun updateGroupedByFilter(format: DateFormat) {
+        viewModelScope.launch {
+            _uiState.update { oldState -> oldState.copy(isLoading = true, groupedByFilter = format) }
+            convertToDatedLosses()
         }
     }
 

@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.sale.StoreSale
+import com.zaed.common.ui.components.PhoneNumberTextField
 import com.zaed.common.ui.components.TextInputTextField
 
 @Composable
@@ -54,13 +55,11 @@ fun SelectCustomerContent(
             placeHolder = stringResource(R.string.customer_name),
             imageVector = Icons.Default.Person,
         )
-        TextInputTextField(
+        PhoneNumberTextField(
             modifier = Modifier.fillMaxWidth(),
             value = sale.customerPhoneNumber,
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
             onValueChange = onUpdateCustomerPhone,
-            placeHolder = stringResource(R.string.customer_phone),
-            imageVector = Icons.Default.Phone,
         )
         TextInputTextField(
             modifier = Modifier.fillMaxWidth(),

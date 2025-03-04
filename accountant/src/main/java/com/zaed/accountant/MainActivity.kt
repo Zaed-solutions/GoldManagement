@@ -8,8 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.compose.AccountantAppTheme
-import com.zaed.app.navigation.NavigationHost
-import com.zaed.app.navigation.Route
+import com.zaed.accountant.app.navigation.NavigationHost
+import com.zaed.accountant.app.navigation.Route
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.authentication.UserApprovalStatus
 import com.zaed.common.data.model.authentication.UserRole

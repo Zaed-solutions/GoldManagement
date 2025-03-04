@@ -36,6 +36,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.ui.auth.FieldsError
 import com.zaed.common.ui.components.BackIcon
 import com.zaed.common.ui.components.CustomSnackbar
+import com.zaed.common.ui.components.PhoneNumberTextField
 import com.zaed.common.ui.components.TextInputTextField
 import com.zaed.distributor.ui.theme.DistributorAppTheme
 import org.koin.androidx.compose.koinViewModel
@@ -167,15 +168,13 @@ fun AddCustomersScreenContent(
                     onAction(AddCustomersUiAction.UpdateEmail(email))
                 }
             )
-            TextInputTextField(
+            PhoneNumberTextField(
                 modifier = Modifier
                     .fillMaxWidth(),
-                label = stringResource(com.zaed.common.R.string.phone_number),
                 value = uiState.request.phone,
                 onValueChange = { phone ->
                     onAction(AddCustomersUiAction.UpdatePhone(phone))
                 },
-                keyboardType = KeyboardType.Phone
             )
             TextInputTextField(
                 modifier = Modifier
