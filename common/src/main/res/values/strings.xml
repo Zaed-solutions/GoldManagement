@@ -199,7 +199,13 @@
     <string name="total_placeholder">Total  %1$s</string>
     <string name="sell">Sell</string>
     <string name="x">%1$s x %2$s</string>
+    <string name="save_store">Save Store</string>
+    <string name="location">Location</string>
     <string name="daily">Daily</string>
     <string name="monthly">Monthly</string>
     <string name="yearly">Yearly</string>
+    <string name="inventory">Inventory</string>
+    <string name="ingot_of_karat">Ingot of karat %1$s</string>
+    <string name="units_placeholder">%1$s units</string>
+    <string name="search_by_receipt_number">Search by receipt number</string>
 </resources>

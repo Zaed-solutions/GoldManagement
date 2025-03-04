@@ -3,6 +3,7 @@ package com.zaed.cashier.ui.sales
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -129,7 +130,7 @@ private fun SalesScreenContent(
        ){
             //search bar
             SearchBar(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
                 query = state.searchQuery,
                 onQueryChanged = { onAction(SalesUiAction.UpdateSearchQuery(it)) }
             )

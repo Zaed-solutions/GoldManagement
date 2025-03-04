@@ -23,7 +23,7 @@ fun SearchBar(
     onQueryChanged: (String) -> Unit
 ) {
     OutlinedTextField(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         value = query,
         onValueChange = {
             onQueryChanged(it)

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SwipeToEditOrDeleteContainer(
     modifier: Modifier = Modifier,
+    isDeleteEnabled: Boolean = true,
     onDelete: () -> Unit,
     isEditEnabled: Boolean = false,
     onEdit: () -> Unit = {},
@@ -41,6 +43,7 @@ fun SwipeToEditOrDeleteContainer(
         backgroundContent = {
             SwipeBackground(
                 swipeDismissState = state,
+                isDeleteEnabled = isDeleteEnabled,
                 isEditEnabled = isEditEnabled,
                 layoutDirection = layoutDirection
             )
@@ -78,6 +81,7 @@ fun SwipeToEditOrDeleteContainer(
 private fun SwipeBackground(
     modifier: Modifier = Modifier,
     swipeDismissState: SwipeToDismissBoxState,
+    isDeleteEnabled: Boolean,
     isEditEnabled: Boolean,
     layoutDirection: LayoutDirection,
 ) {
@@ -100,12 +104,19 @@ private fun SwipeBackground(
                         MaterialTheme.colorScheme.onError
                     )
                 }
-            } else {
+            } else if(isDeleteEnabled) {
                 FourTuple(
                     MaterialTheme.colorScheme.error,
                     Icons.Default.Delete,
                     Alignment.CenterEnd,
                     MaterialTheme.colorScheme.onError
+                )
+            } else {
+                FourTuple(
+                    Color.Transparent,
+                    Icons.Default.QuestionMark,
+                    Alignment.CenterEnd,
+                    MaterialTheme.colorScheme.onSurface
                 )
             }
         }

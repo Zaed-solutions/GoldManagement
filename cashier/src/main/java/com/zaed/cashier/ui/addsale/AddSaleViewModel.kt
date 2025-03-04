@@ -208,7 +208,7 @@ class AddSaleViewModel(
     private fun updateCustomerPhone(customerPhoneNumber: String) {
         viewModelScope.launch {
             _uiState.update { oldState ->
-                oldState.copy(sale = oldState.sale.copy(customerPhoneNumber = customerPhoneNumber))
+                oldState.copy(sale = oldState.sale.copy(customerPhone = customerPhoneNumber))
             }
         }
     }

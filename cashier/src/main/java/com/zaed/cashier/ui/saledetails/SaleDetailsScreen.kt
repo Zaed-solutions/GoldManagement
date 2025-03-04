@@ -10,8 +10,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.zaed.cashier.ui.saledetails.component.SaleDetailsScreenContent
 import com.zaed.cashier.ui.theme.CashierAppTheme
 import com.zaed.common.R
-import com.zaed.common.data.model.sale.Discount
-import com.zaed.common.data.model.sale.DiscountType
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.StoreSale
 import com.zaed.common.ui.util.FileUtil
@@ -62,7 +60,7 @@ fun SaleDetailsScreen(
 //                        Toast.makeText(context, it.absolutePath, Toast.LENGTH_SHORT).show()
                         PhoneUtil.sendReceiptViaWhatsapp(
                             context = context,
-                            phoneNumber ="+212${action.storeSale.customerPhoneNumber}",
+                            phoneNumber ="+212${action.storeSale.customerPhone}",
                             file = it,
                         ) {
                             Toast.makeText(context, "error", Toast.LENGTH_SHORT).show()
@@ -104,7 +102,7 @@ private fun SaleDetailsScreenContentPreview() {
                     employeeName = "Mohamed aly",
                     employeeId = "123456789",
                     customerName = "Ahmed alaa",
-                    customerPhoneNumber = "123456789",
+                    customerPhone = "123456789",
                     customerEmail = "william.henry.store.com",
                     products = listOf(
                         Product(

@@ -95,7 +95,10 @@ import com.zaed.common.domain.sale.UpdateIngotTransactionUseCase
 import com.zaed.common.domain.sale.UpdateStoreSaleUseCase
 import com.zaed.common.domain.sale.UpdateWholesaleGoldSaleUseCase
 import com.zaed.common.domain.sale.UpdateWholesaleProductSaleUseCase
+import com.zaed.common.domain.store.AddStoreUseCase
+import com.zaed.common.domain.store.DeleteStoreUseCase
 import com.zaed.common.domain.store.GetStoresUseCase
+import com.zaed.common.domain.store.UpdateStoreUseCase
 import com.zaed.common.ui.auth.MainViewModel
 import com.zaed.common.ui.auth.login.LoginViewModel
 import com.zaed.common.ui.auth.signup.SignUpViewModel
@@ -158,6 +161,9 @@ val useCaseModule = module {
     singleOf(::FetchIngotTransactionsUseCase)
     singleOf(::AddIngotTransactionUseCase)
     singleOf(::UpdateIngotTransactionUseCase)
+    singleOf(::DeleteStoreUseCase)
+    singleOf(::AddStoreUseCase)
+    singleOf(::UpdateStoreUseCase)
 
     singleOf(::AddManagerChequeUseCase)
     singleOf(::AddSalesChequeUseCase)

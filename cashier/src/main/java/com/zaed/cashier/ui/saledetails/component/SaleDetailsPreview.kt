@@ -169,7 +169,7 @@ fun SaleDetailsPreview(
                 )
 
             }
-            androidx.compose.animation.AnimatedVisibility(sale.customerPhoneNumber.isNotEmpty()) {
+            androidx.compose.animation.AnimatedVisibility(sale.customerPhone.isNotEmpty()) {
                 Row(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                 ) {
@@ -179,7 +179,7 @@ fun SaleDetailsPreview(
                         fontWeight = FontWeight.Bold,
                     )
                     Text(
-                        text = sale.customerPhoneNumber,
+                        text = sale.customerPhone,
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleMedium,
                     )
@@ -469,7 +469,7 @@ fun SaleDetailsPreview(
                             state.second -> {
                                 PhoneNumberTextField(
                                     modifier = Modifier.fillMaxWidth(),
-                                    value = uiState.storeSale.customerPhoneNumber,
+                                    value = uiState.storeSale.customerPhone,
                                     onValueChange = {
                                         onAction(SaleDetailsUiAction.UpdateCustomerPhoneNumber(it))
                                     },
@@ -487,7 +487,7 @@ fun SaleDetailsPreview(
                             .heightIn(min = 48.dp),
                         onClick = {
                             if (phoneFieldVisible) {
-                                if (uiState.storeSale.customerPhoneNumber.isValidPhoneNumber()) {
+                                if (uiState.storeSale.customerPhone.isValidPhoneNumber()) {
                                     phoneError = false
                                     onAction(SaleDetailsUiAction.ShareViaWhatsapp(sale))
                                 } else {

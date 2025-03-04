@@ -52,7 +52,7 @@ fun SelectCategorySheetContent(
             style = MaterialTheme.typography.headlineMedium
         )
         SearchBar(
-            modifier = Modifier.padding(horizontal = 16.dp).padding(top = 16.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 16.dp),
             query = query,
             onQueryChanged = {
                 query = it

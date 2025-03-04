@@ -10,7 +10,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -57,7 +56,7 @@ fun SelectCustomerContent(
         )
         PhoneNumberTextField(
             modifier = Modifier.fillMaxWidth(),
-            value = sale.customerPhoneNumber,
+            value = sale.customerPhone,
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
             onValueChange = onUpdateCustomerPhone,
         )

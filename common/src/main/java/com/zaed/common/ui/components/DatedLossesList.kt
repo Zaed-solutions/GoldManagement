@@ -25,17 +25,7 @@ fun DatedLossesList(
     onDeleteLoss: (Loss) -> Unit,
     onUpdateLoss: (Loss) -> Unit
 ) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.TopCenter
-    ) {
-        AnimatedVisibility(isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .size(24.dp)
-                    .padding(top = 48.dp)
-            )
-        }
+    ListWithLoading(isLoading = isLoading) {
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(vertical = 16.dp),

@@ -1,6 +1,6 @@
 package com.zaed.common.ui.auth
 
-import com.zaed.common.data.model.Store
+import com.zaed.common.data.model.store.Store
 import com.zaed.common.data.model.authentication.UserRole
 
 sealed interface AuthenticationUiAction {
