@@ -199,4 +199,7 @@
     <string name="daily">Daily</string>
     <string name="monthly">Monthly</string>
     <string name="yearly">Yearly</string>
+    <string name="inventory">Inventory</string>
+    <string name="ingot_of_karat">Ingot of karat %1$s</string>
+    <string name="units_placeholder">%1$s units</string>
 </resources>

@@ -74,6 +74,10 @@ dependencies {
     implementation(libs.androidx.ui.text.google.fonts)
     //Lottie
     implementation(libs.lottie.compose)
+    implementation(fileTree(mapOf(
+        "dir" to "C:\\Users\\moham\\AndroidStudioProjects\\GoldManagement\\libs",
+        "include" to listOf("*.aar", "*.jar"),
+    )))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -82,4 +86,5 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     //Compose Navigation
     implementation(libs.androidx.navigation.compose)
+    debugImplementation(libs.ui.tooling)
 }

@@ -55,6 +55,7 @@ import com.zaed.common.data.model.loss.StoreLoss
 import com.zaed.common.ui.components.AnimatedLoading
 import com.zaed.common.ui.components.ConfirmDeleteDialog
 import com.zaed.common.ui.components.CustomSnackbar
+import com.zaed.common.ui.components.DatedListWithFilter
 import com.zaed.common.ui.components.DatedLossesList
 import com.zaed.common.ui.components.MoreDropDownMenu
 import com.zaed.common.ui.components.MoreDropdownItem
@@ -152,46 +153,23 @@ fun LossScreenContent(
                 .padding(innerPadding)
                 .padding(vertical = 16.dp)
         ) {
-            LazyRow (
-                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ){
-                items(dateFilterItems){ filter ->
-                    val selected = filter == uiState.groupedByFilter
-                    FilterChip(
-                        selected = selected,
-                        onClick = {
-                        onAction(LossUiAction.UpdateGroupedByFilter(filter))
+            DatedListWithFilter(
+                isLoading = uiState.isLoading,
+                selectedFilter = uiState.groupedByFilter,
+                onFilterClicked = { onAction(LossUiAction.UpdateGroupedByFilter(it)) },
+                content = {
+                    DatedLossesList(
+                        isLoading = uiState.isLoading,
+                        datedLosses = uiState.datedLosses,
+                        onDeleteLoss = {
+                            selectedLoss = it as StoreLoss
+                            isDeleteLossSheetOpen = true
                         },
-                        leadingIcon = if(selected){
-                            {
-                                Icon(
-                                    imageVector = Icons.Default.Check,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                            }
-                        } else null,
-                        label = {
-                            Text(
-                                text = stringResource(filter.labelRes)
-                            )
+                        onUpdateLoss = {
+                            selectedLoss = it as StoreLoss
+                            isSaveLossSheetOpen = true
                         }
                     )
-                }
-            }
-            AnimatedLoading(uiState.isLoading)
-            DatedLossesList(
-               isLoading = uiState.isLoading,
-                datedLosses = uiState.datedLosses,
-                onDeleteLoss = {
-                    selectedLoss = it as StoreLoss
-                    isDeleteLossSheetOpen = true
-                },
-                onUpdateLoss = {
-                    selectedLoss = it as StoreLoss
-                    isSaveLossSheetOpen = true
                 }
             )
         }

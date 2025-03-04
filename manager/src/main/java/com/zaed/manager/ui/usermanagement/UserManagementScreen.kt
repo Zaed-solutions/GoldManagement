@@ -2,6 +2,7 @@ package com.zaed.manager.ui.usermanagement
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -71,7 +72,7 @@ private fun UserManagementScreenContent(
         ) {
             //search bar
             SearchBar(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
                 query = state.searchQuery,
                 placeHolder = stringResource(R.string.search_users),
                 onQueryChanged = { onAction(UserManagementUiAction.UpdateSearchQuery(it)) }

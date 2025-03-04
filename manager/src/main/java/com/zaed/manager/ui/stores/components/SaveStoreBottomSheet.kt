@@ -35,6 +35,8 @@ fun SaveStoreBottomSheet(
     onSave: (Store) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState()
+    var isNameError by remember { mutableStateOf(false) }
+    var isLocationError by remember { mutableStateOf(false) }
     AnimatedVisibility(isVisible) {
         var store by remember { mutableStateOf(initialStore) }
         ModalBottomSheet(
@@ -78,7 +80,20 @@ fun SaveStoreBottomSheet(
                         .padding(top = 16.dp)
                         .heightIn(min = 48.dp),
                     onClick = {
-                        onSave(store)
+                        if(store.name.isEmpty() && store.location.isEmpty()) {
+                            isNameError = true
+                            isLocationError = true
+                        } else if(store.name.isEmpty()) {
+                            isNameError = true
+                            isLocationError = false
+                        } else if(store.location.isEmpty()) {
+                            isNameError = false
+                            isLocationError = true
+                        } else {
+                            isNameError = false
+                            isLocationError = false
+                            onSave(store)
+                        }
                     }
                 ) {
                     Text(text = stringResource(R.string.save))
