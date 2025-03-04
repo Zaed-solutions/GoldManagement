@@ -9,15 +9,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -32,16 +32,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
+import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.payment.PaymentStatus
+import com.zaed.common.data.model.sale.Product
+import com.zaed.common.data.model.sale.WholesaleProductSale
 import com.zaed.common.ui.components.ConfirmDeleteDialog
 import com.zaed.common.ui.components.SearchBar
 import com.zaed.distributor.ui.sales.components.SalesList
+import com.zaed.distributor.ui.theme.DistributorAppTheme
 import org.koin.androidx.compose.koinViewModel
+import java.util.Date
 
 @Composable
 fun SalesScreen(
@@ -92,7 +97,7 @@ fun SalesScreenContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(R.string.sales),
+                        text = state.currentUser.fullName,
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
@@ -109,16 +114,16 @@ fun SalesScreenContent(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
+            ExtendedFloatingActionButton(
                 modifier = Modifier
-                    .padding(bottom = 8.dp, end = 8.dp)
-                    .rotate(45f),
-                shape = RoundedCornerShape(16.dp),
+                    .padding(),
+                shape = CircleShape,
                 onClick = { onAction(SalesUiAction.AddProductSaleClicked) },
             ) {
+                Text(text = "New Sale")
                 Icon(
-                    modifier = Modifier.rotate(-45f),
-                    imageVector = Icons.Default.Add,
+                    modifier = Modifier.padding(start = 8.dp),
+                    imageVector = Icons.Default.ShoppingBag,
                     contentDescription = "Add Sale"
                 )
             }
@@ -216,3 +221,32 @@ fun SalesScreenContent(
 
 }
 
+@Preview
+@Composable
+private fun SalesScreenContentPreview() {
+    DistributorAppTheme {
+        SalesScreenContent(
+            state = SalesUiState(
+                currentUser = User(
+                    fullName = "Mohamed Mahmoud"
+                ),
+                displayedSales = listOf(
+                    WholesaleProductSale(
+                        createdAt = Date(),
+                        customerName = "Ali",
+                        products = listOf(
+                            Product(
+                                name = "Gold",
+                                quantity = 10,
+                                gramPrice = 100.0,
+                                grams = 10.0
+                            )
+                        )
+                    )
+                ),
+            ),
+            onAction = {}
+        )
+    }
+    
+}

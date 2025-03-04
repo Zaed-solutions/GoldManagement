@@ -24,8 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.zaed.common.R
 import com.zaed.cashier.ui.theme.CashierAppTheme
+import com.zaed.common.R
 import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.sale.DiscountType
 import com.zaed.common.data.model.sale.Product
@@ -46,6 +46,7 @@ fun SelectProductsContent(
     onRemoveProduct: (id: String) -> Unit,
     onUpdateDiscountType: (DiscountType) -> Unit,
     onUpdateDiscountValue: (Double) -> Unit,
+    onDeleteProduct: (Product) -> Unit
 ) {
     var isAddProductSheetVisible by remember { mutableStateOf(false) }
     var isSaveProductBottomSheetVisible by remember { mutableStateOf(false) }
@@ -122,6 +123,10 @@ fun SelectProductsContent(
                     onSaveProduct = {
                         onEditProduct(it)
                         isSaveProductBottomSheetVisible = false
+                    },
+                    deleteProduct = {
+                        onDeleteProduct(it)
+                        isSaveProductBottomSheetVisible = false
                     }
                 )
             }
@@ -140,7 +145,8 @@ private fun Preview() {
             onAddProduct = {},
             onUpdateDiscountValue = {},
             onRemoveProduct = {},
-            onUpdateDiscountType = {}
+            onUpdateDiscountType = {},
+            onDeleteProduct = {}
         )
     }
 }

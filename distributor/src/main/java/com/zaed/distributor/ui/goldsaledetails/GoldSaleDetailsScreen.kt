@@ -35,6 +35,7 @@ fun GoldSaleDetailsScreen(
     viewModel: GoldSaleDetailsViewModel = koinViewModel(),
     onBackClicked: () -> Unit,
     onNavigateToEditSale: (String) -> Unit,
+    navigateToCustomerDetails: (String) -> Unit,
     saleId: String = ""
 ) {
     LaunchedEffect(true) {
@@ -52,6 +53,7 @@ fun GoldSaleDetailsScreen(
         when (action) {
             SaleDetailsUiAction.OnBackClicked -> onBackClicked()
             SaleDetailsUiAction.OnEditClicked -> onNavigateToEditSale(saleId)
+            SaleDetailsUiAction.OnCustomerClicked -> navigateToCustomerDetails(state.customer.id)
             else -> viewModel.handleAction(action)
         }
     }
@@ -76,7 +78,8 @@ private fun GoldSaleDetailsContent(
                 },
                 onDeleteClicked = {
                     isConfirmDeleteVisible = true
-                }
+                },
+                receiptNumber = state.sale.receiptNumber
             )
         }
     ) { innerPadding ->
@@ -103,7 +106,10 @@ private fun GoldSaleDetailsContent(
             // customer info
             CustomerInfoSection(
                 customerName = state.sale.customerName,
-                customerPhone = state.sale.customerPhone
+                customerDebt = state.customer.debtAmount,
+                onCustomerClicked = {
+                    onAction(SaleDetailsUiAction.OnCustomerClicked)
+                }
             )
             //products
             TitledSection(

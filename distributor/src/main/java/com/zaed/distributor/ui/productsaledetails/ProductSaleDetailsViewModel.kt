@@ -10,6 +10,7 @@ import com.zaed.common.data.model.sale.request.DeleteWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.UpdateWholesaleProductSaleRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
+import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
 import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
 import com.zaed.common.domain.sale.DeleteWholesaleProductSaleUseCase
 import com.zaed.common.domain.sale.FetchWholesaleProductSaleUseCase
@@ -25,7 +26,8 @@ class ProductSaleDetailsViewModel(
     private val fetchSalePaymentsUseCase: FetchMoneyPaymentsByIdsUseCase,
     private val getCurrentUseUseCase: GetCurrentUserLoggedInUseCase,
     private val deleteWholesaleProductSaleUseCase: DeleteWholesaleProductSaleUseCase,
-    private val updateWholesaleProductSaleUseCase: UpdateWholesaleProductSaleUseCase
+    private val updateWholesaleProductSaleUseCase: UpdateWholesaleProductSaleUseCase,
+    private val fetchCustomerUseCase: GetWholeSalesCustomerUseCase
 ): ViewModel() {
     private val TAG = "ProductSaleDetailsViewModel"
     private val _uiState = MutableStateFlow(ProductSaleDetailsUiState())
@@ -60,8 +62,18 @@ class ProductSaleDetailsViewModel(
                     oldState.copy(sale = data)
                 }
                 fetchPayments(data.paymentsIds)
+                fetchCustomer(data.customerId)
             }.onFailure {
                 Log.e(TAG, "fetchSale: ${it.message}", it)
+            }
+        }
+    }
+    private fun fetchCustomer(customerId: String) {
+        viewModelScope.launch (Dispatchers.IO){
+            fetchCustomerUseCase(customerId).onSuccess { data ->
+                _uiState.update { oldState ->
+                    oldState.copy(customer = data)
+                }
             }
         }
     }

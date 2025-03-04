@@ -1,6 +1,7 @@
 package com.zaed.distributor.ui.goldsaledetails
 
 import com.zaed.common.data.model.authentication.User
+import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentStatus
@@ -12,6 +13,7 @@ data class GoldSaleDetailsUiState(
     val currentUser: User = User(),
     val sale: WholesaleGoldSale = WholesaleGoldSale(),
     val payments: List<Payment> = emptyList(),
+    val customer: WholeSaleCustomer = WholeSaleCustomer()
 ) {
     val paymentStatus: PaymentStatus
         get() = payments.filterIsInstance<GoldPayment>().any { it.pricePerGram == 0.0 }.let {

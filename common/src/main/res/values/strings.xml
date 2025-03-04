@@ -194,6 +194,11 @@
     <string name="add_gold_amounts">Add Gold Amounts</string>
     <string name="add_amount">Add Amount</string>
     <string name="sales_of">Sales of %1$s</string>
+    <string name="customer">Customer</string>
+    <string name="the_balance">Balance</string>
+    <string name="total_placeholder">Total  %1$s</string>
+    <string name="sell">Sell</string>
+    <string name="x">%1$s x %2$s</string>
     <string name="save_store">Save Store</string>
     <string name="location">Location</string>
     <string name="daily">Daily</string>

@@ -59,8 +59,7 @@ class AddProductSaleViewModel(
             ).onSuccess { data ->
                 _uiState.update { oldState ->
                     oldState.copy(
-                        initialSale = data,
-                        sale = data
+                        initialSale = data, sale = data
                     )
                 }
                 fetchCustomer(data.customerId)
@@ -116,8 +115,7 @@ class AddProductSaleViewModel(
                     e.printStackTrace()
                 }
                 Log.d(
-                    "find the issue",
-                    "fetchAllCategories: $result"
+                    "find the issue", "fetchAllCategories: $result"
                 )
             }
         }
@@ -135,8 +133,7 @@ class AddProductSaleViewModel(
                     e.printStackTrace()
                 }
                 Log.d(
-                    "find the issue",
-                    "fetchCurrentUser: $result"
+                    "find the issue", "fetchCurrentUser: $result"
                 )
             }
         }
@@ -149,11 +146,20 @@ class AddProductSaleViewModel(
             is AddProductSaleUiAction.OnCustomerSelected -> updateCustomer(action.customer)
             is AddProductSaleUiAction.OnEditProduct -> updateProduct(action.product)
             is AddProductSaleUiAction.OnRemoveProduct -> removeProduct(action.productId)
+            is AddProductSaleUiAction.OnDeleteProduct -> deleteProduct(action.product)
             AddProductSaleUiAction.OnSubmitClicked -> onSubmit()
             is AddProductSaleUiAction.OnAddPayment -> addPayment(action.moneyPayment)
             is AddProductSaleUiAction.OnEditPayment -> updatePayment(action.moneyPayment)
             is AddProductSaleUiAction.OnRemovePayment -> removePayment(action.paymentId)
+            is AddProductSaleUiAction.OnUpdateProducts -> updateProductsSale(action.products)
+            AddProductSaleUiAction.OnDeleteAllProducts -> updateProductsSale(emptyList())
             else -> Unit
+        }
+    }
+
+    private fun updateProductsSale(products: List<Product>) {
+        _uiState.update { oldState ->
+            oldState.copy(sale = oldState.sale.copy(products = products))
         }
     }
 
@@ -179,16 +185,14 @@ class AddProductSaleViewModel(
                     action = "updated this sale"
                 )
                 _uiState.update { oldState ->
-                    oldState.copy(
-                        sale = uiState.value.sale.copy(
-                            customerId = customer.id,
-                            customerName = customer.name,
-                            customerPhone = customer.phone,
-                            paymentStatus = if ((uiState.value.totalAmount - uiState.value.totalPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID,
-                            logs = oldState.sale.logs + updateLog
-                        ),
-                        moneyPayments = oldState.moneyPayments.map { it.copy(customerId = oldState.selectedCustomer.id) }
-                    )
+                    oldState.copy(sale = uiState.value.sale.copy(
+                        customerId = customer.id,
+                        customerName = customer.name,
+                        customerPhone = customer.phone,
+                        paymentStatus = if ((uiState.value.totalAmount - uiState.value.totalPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID,
+                        logs = oldState.sale.logs + updateLog
+                    ),
+                        moneyPayments = oldState.moneyPayments.map { it.copy(customerId = oldState.selectedCustomer.id) })
                 }
             }
             if (uiState.value.totalPaid != uiState.value.totalAmount) {
@@ -240,16 +244,14 @@ class AddProductSaleViewModel(
                 )
             }
             _uiState.update { oldState ->
-                oldState.copy(
-                    sale = oldState.sale.copy(
-                        logs = oldState.sale.logs + ChangeLog(
-                            employeeId = distributor.id,
-                            employeeName = distributor.fullName,
-                            action = "created this sale"
-                        )
-                    ),
-                    moneyPayments = oldState.moneyPayments.map { it.copy(customerId = oldState.selectedCustomer.id) }
-                )
+                oldState.copy(sale = oldState.sale.copy(
+                    logs = oldState.sale.logs + ChangeLog(
+                        employeeId = distributor.id,
+                        employeeName = distributor.fullName,
+                        action = "created this sale"
+                    )
+                ),
+                    moneyPayments = oldState.moneyPayments.map { it.copy(customerId = oldState.selectedCustomer.id) })
             }
             if (uiState.value.totalPaid != uiState.value.totalAmount) {
                 val futureMoneyPayment = MoneyPayment(
@@ -261,15 +263,12 @@ class AddProductSaleViewModel(
             }
             addProductSaleUseCase(
                 AddWholesaleProductSaleRequest(
-                    sale = uiState.value.sale,
-                    moneyPayments = uiState.value.moneyPayments
+                    sale = uiState.value.sale, moneyPayments = uiState.value.moneyPayments
                 )
             ).onSuccess { id ->
                 _uiState.update { oldState ->
                     oldState.copy(
-                        sale = oldState.sale.copy(id = id),
-                        isLoading = false,
-                        isFinished = true
+                        sale = oldState.sale.copy(id = id), isLoading = false, isFinished = true
                     )
                 }
             }.onFailure {
@@ -323,7 +322,19 @@ class AddProductSaleViewModel(
     private fun addProduct(product: Product) {
         viewModelScope.launch {
             _uiState.update { oldState ->
-                oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products + product))
+                if (oldState.sale.products.any { it.name == product.name }) {
+                    oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products.map {
+                        if (it.name == product.name) {
+                            product
+                        } else {
+                            it
+                        }
+                    }
+                    )
+                    )
+                } else {
+                    oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products + product))
+                }
             }
             updateTotalAmounts()
         }
@@ -332,9 +343,8 @@ class AddProductSaleViewModel(
     private fun updateTotalAmounts() {
         viewModelScope.launch(Dispatchers.Default) {
             val totalAmount = uiState.value.sale.products.sumOf { it.grams * it.gramPrice }
-            val totalPaid =
-                uiState.value.moneyPayments.filter { it.type != PaymentType.FUTURES }
-                    .sumOf { it.amount }
+            val totalPaid = uiState.value.moneyPayments.filter { it.type != PaymentType.FUTURES }
+                .sumOf { it.amount }
             _uiState.update {
                 it.copy(totalAmount = totalAmount, totalPaid = totalPaid)
             }
@@ -369,19 +379,25 @@ class AddProductSaleViewModel(
             updateTotalAmounts()
         }
     }
+    private fun deleteProduct(product: Product) {
+        viewModelScope.launch {
+            _uiState.update { oldState ->
+                oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products.filter { it != product }))
+            }
+            updateTotalAmounts()
+        }
+    }
 
     private fun updatePayment(moneyPayment: MoneyPayment) {
         viewModelScope.launch {
             _uiState.update { oldState ->
-                oldState.copy(
-                    moneyPayments = oldState.moneyPayments.map {
-                        if (it.id == moneyPayment.id) {
-                            moneyPayment
-                        } else {
-                            it
-                        }
+                oldState.copy(moneyPayments = oldState.moneyPayments.map {
+                    if (it.id == moneyPayment.id) {
+                        moneyPayment
+                    } else {
+                        it
                     }
-                )
+                })
             }
             updateTotalAmounts()
         }
