@@ -146,7 +146,8 @@ fun StoresScreenContent(
                 onConfirm = {
                     onAction(StoresUiAction.OnDeleteStore(selectedStore))
                     isConfirmDeleteStoreSheetVisible = false
-                }
+                },
+                label = stringResource(com.zaed.common.R.string.store)
             )
         }
     }

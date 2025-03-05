@@ -11,7 +11,7 @@ data class Inventory(
     val quantity: Double = 0.0,
     val quantityUnit: QuantityUnit = QuantityUnit.GRAMS,
     val lastUpdated: Date = Date(),
-    val type: InventoryType,
+    val type: InventoryType = InventoryType.PRODUCT,
     val karat: String = "",
 )
 

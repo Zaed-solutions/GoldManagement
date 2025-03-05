@@ -27,7 +27,10 @@ fun DatedLossesList(
     isEditEnabled: Boolean = false,
     onUpdateLoss: (Loss) -> Unit = {}
 ) {
-    ListWithLoading(isLoading = isLoading) {
+    ListWithLoading(
+        modifier = modifier,
+        isLoading = isLoading
+    ) {
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(vertical = 16.dp),

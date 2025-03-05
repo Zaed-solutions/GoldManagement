@@ -11,9 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
+import com.zaed.manager.ui.storedetails.StoreDetailsScreen
 import com.zaed.manager.ui.stores.StoresScreen
 import com.zaed.manager.ui.usermanagement.UserManagementScreen
 
@@ -80,7 +82,17 @@ fun NavigationHost(
 //                    TODO()
                 },
                 onNavigateToStoreDetails = {
-//                    TODO()
+                    navController.navigate(Route.StoreDetailsRoute(it))
+                }
+            )
+        }
+        composable<Route.StoreDetailsRoute> { backstackEntry ->
+            val storeId = backstackEntry.toRoute<Route.StoreDetailsRoute>().storeId
+            StoreDetailsScreen(
+                storeId = storeId,
+                onNavigateToSaleDetails = {/*todo*/},
+                onBackClicked = {
+                    navController.popBackStack()
                 }
             )
         }

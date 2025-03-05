@@ -13,7 +13,8 @@ import com.zaed.common.data.model.inventory.Inventory
 fun InventoryList(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
-    inventories: List<Inventory>
+    inventories: List<Inventory>,
+    onInventoryClicked: (Inventory) -> Unit
 ) {
     ListWithLoading(
         modifier = modifier,
@@ -29,7 +30,10 @@ fun InventoryList(
             ) { inventory ->
                 InventoryItem(
                     modifier = Modifier.animateItem(),
-                    inventory = inventory
+                    inventory = inventory,
+                    onClick = {
+                        onInventoryClicked(inventory)
+                    }
                 )
             }
         }

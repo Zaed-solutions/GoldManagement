@@ -18,7 +18,6 @@ fun ListWithLoading(
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
     ) {
         AnimatedVisibility(isLoading) {
             CircularProgressIndicator(
