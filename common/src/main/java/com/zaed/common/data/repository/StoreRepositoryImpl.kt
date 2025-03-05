@@ -3,6 +3,7 @@ package com.zaed.common.data.repository
 import com.zaed.common.data.model.store.Store
 import com.zaed.common.data.model.store.request.AddStoreRequest
 import com.zaed.common.data.model.store.request.DeleteStoreRequest
+import com.zaed.common.data.model.store.request.FetchStoreByIdRequest
 import com.zaed.common.data.model.store.request.UpdateStoreRequest
 import com.zaed.common.data.source.remote.StoreRemoteDataSource
 
@@ -23,5 +24,9 @@ class StoreRepositoryImpl(
 
     override suspend fun deleteStore(request: DeleteStoreRequest): Result<Unit> {
         return remoteDataSource.deleteStore(request)
+    }
+
+    override suspend fun fetchStoreById(request: FetchStoreByIdRequest): Result<Store> {
+        return remoteDataSource.fetchStoreById(request)
     }
 }

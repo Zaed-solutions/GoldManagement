@@ -4,14 +4,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.Inventory
+import com.zaed.common.data.model.inventory.Inventory
 
 @Composable
 fun StoreInventorySection(
@@ -20,14 +22,18 @@ fun StoreInventorySection(
     query: String,
     onQueryChanged: (String) -> Unit,
     inventories: List<Inventory>,
-    onAddInventory: () -> Unit
+    onAddInventory: () -> Unit,
+    onInventoryClicked: (Inventory) -> Unit,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
             modifier = Modifier.fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             SearchBar(
                 modifier = Modifier.weight(1f),
@@ -47,7 +53,8 @@ fun StoreInventorySection(
         }
         InventoryList(
             isLoading = isLoading,
-            inventories = inventories
+            inventories = inventories,
+            onInventoryClicked = onInventoryClicked
         )
     }
 }

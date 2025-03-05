@@ -8,7 +8,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
-import com.zaed.common.data.model.InventoryType
+import com.zaed.common.data.model.inventory.InventoryType
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
 import com.zaed.common.data.model.payment.MoneyPayment
@@ -190,7 +190,7 @@ class SaleRemoteSourceImpl(
                         date = Date(),
                         employeeId = request.employeeId,
                         employeeName = request.employeeName,
-                        action = "${request.employeeName} Changed the products with total from ${oldSale.totalPrice} to ${request.sale.totalPrice}"
+                        action = "${request.employeeName} Changed the products with total from ${oldSale.totalAmount} to ${request.sale.totalAmount}"
                     )
                 )
                 val oldProductsByCategory = oldSale.products

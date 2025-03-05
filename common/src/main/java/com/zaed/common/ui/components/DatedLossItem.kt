@@ -40,7 +40,9 @@ import java.util.Date
 fun DatedLossItem(
     modifier: Modifier = Modifier,
     datedLoss: DatedLoss,
+    isDeleteEnabled: Boolean,
     onDeleteLoss: (Loss) -> Unit,
+    isEditEnabled: Boolean,
     onUpdateLoss: (Loss) -> Unit
 ) {
     var isExpanded by remember {
@@ -100,7 +102,9 @@ fun DatedLossItem(
                         datedLoss.losses.forEach { loss ->
                             LossItem(
                                 loss = loss ,
+                                isDeleteEnabled = isDeleteEnabled,
                                 onDeleteLoss = { onDeleteLoss(loss) },
+                                isEditEnabled = isEditEnabled,
                                 onUpdateLoss = { onUpdateLoss(loss) }
                             )
                         }
@@ -137,5 +141,7 @@ private fun Preview() {
         modifier = Modifier.padding(vertical = 48.dp),
         datedLoss = loss,
         onDeleteLoss = { },
+        isEditEnabled = true,
+        isDeleteEnabled = true,
     ) { }
 }

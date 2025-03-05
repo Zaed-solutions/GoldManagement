@@ -56,7 +56,7 @@ fun StoreSaleItem(
                     )
                 }
                 Text(
-                    text = sale.totalPrice.formatMoney(),
+                    text = sale.totalAmount.formatMoney(),
                     style = MaterialTheme.typography.titleMedium.copy(
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold

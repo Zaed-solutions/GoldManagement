@@ -3,6 +3,7 @@ package com.zaed.common.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -27,6 +28,7 @@ fun DatedSalesWithSearchSection(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         SearchBar(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             placeHolder = stringResource(R.string.search_by_receipt_number),
             query = query,
             onQueryChanged = onQueryChanged

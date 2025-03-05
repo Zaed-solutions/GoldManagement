@@ -208,4 +208,8 @@
     <string name="ingot_of_karat">Ingot of karat %1$s</string>
     <string name="units_placeholder">%1$s units</string>
     <string name="search_by_receipt_number">Search by receipt number</string>
+    <string name="quantity">Quantity</string>
+    <string name="quantity_cannot_be_zero">Quantity cannot be zero</string>
+    <string name="select_inventory">Select Inventory</string>
+    <string name="enter_added_quantity">Enter added quantity</string>
 </resources>

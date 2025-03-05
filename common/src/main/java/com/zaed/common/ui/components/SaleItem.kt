@@ -29,7 +29,8 @@ import java.util.Date
 fun SaleItem(
     modifier: Modifier = Modifier,
     sale: Sale,
-    onSaleClicked: () -> Unit
+    onSaleClicked: () -> Unit,
+    isDividerVisible: Boolean = true
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -68,7 +69,9 @@ fun SaleItem(
                     )
                 )
             }
-            HorizontalDivider(thickness = 1.dp)
+            if(isDividerVisible) {
+                HorizontalDivider(thickness = 1.dp)
+            }
         }
     }
 }

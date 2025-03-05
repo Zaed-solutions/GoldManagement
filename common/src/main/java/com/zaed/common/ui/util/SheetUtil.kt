@@ -453,7 +453,7 @@ object ReceiptUtil {
         }
         drawTableRow(
             canvas,
-            listOf("الإجمالي النهائي:", "${storeSale.totalPrice.toMoneyFormat(2)}"),
+            listOf("الإجمالي النهائي:", "${storeSale.totalAmount.toMoneyFormat(2)}"),
             summaryColumnWidths,
             summaryStartX + summaryTableWidth,
             currentY + PdfConfig.lineSpacing + 5,

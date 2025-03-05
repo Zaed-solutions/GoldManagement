@@ -1,6 +1,5 @@
-package com.zaed.common.data.model
+package com.zaed.common.data.model.inventory
 
-import com.zaed.common.data.model.sale.Karat
 import java.util.Date
 
 data class Inventory(
@@ -12,7 +11,7 @@ data class Inventory(
     val quantity: Double = 0.0,
     val quantityUnit: QuantityUnit = QuantityUnit.GRAMS,
     val lastUpdated: Date = Date(),
-    val type: InventoryType,
+    val type: InventoryType = InventoryType.PRODUCT,
     val karat: String = "",
 )
 

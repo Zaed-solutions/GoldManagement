@@ -7,13 +7,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.Inventory
+import com.zaed.common.data.model.inventory.Inventory
 
 @Composable
 fun InventoryList(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
-    inventories: List<Inventory>
+    inventories: List<Inventory>,
+    onInventoryClicked: (Inventory) -> Unit
 ) {
     ListWithLoading(
         modifier = modifier,
@@ -29,7 +30,10 @@ fun InventoryList(
             ) { inventory ->
                 InventoryItem(
                     modifier = Modifier.animateItem(),
-                    inventory = inventory
+                    inventory = inventory,
+                    onClick = {
+                        onInventoryClicked(inventory)
+                    }
                 )
             }
         }
