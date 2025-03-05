@@ -31,10 +31,12 @@ class StoresViewModel(
     }
     private fun fetchStores(){
         viewModelScope.launch (Dispatchers.IO){
-            getStoresUseCase().onSuccess {  data ->
-                _uiState.update { oldState -> oldState.copy(stores = data) }
-            }.onFailure {
-                Log.e(TAG, "fetchStores: ", )
+            getStoresUseCase().collect { result ->
+                result.onSuccess { data ->
+                    _uiState.update { oldState -> oldState.copy(stores = data) }
+                }.onFailure {
+                    Log.e(TAG, "fetchStores: ",)
+                }
             }
         }
     }
