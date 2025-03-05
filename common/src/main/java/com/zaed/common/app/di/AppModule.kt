@@ -13,6 +13,8 @@ import com.zaed.common.data.repository.CategoryRepository
 import com.zaed.common.data.repository.CategoryRepositoryImpl
 import com.zaed.common.data.repository.ChequeRepository
 import com.zaed.common.data.repository.ChequeRepositoryImpl
+import com.zaed.common.data.repository.InventoryRepository
+import com.zaed.common.data.repository.InventoryRepositoryImpl
 import com.zaed.common.data.repository.LossRepository
 import com.zaed.common.data.repository.LossRepositoryImpl
 import com.zaed.common.data.repository.PaymentRepository
@@ -31,6 +33,8 @@ import com.zaed.common.data.source.remote.CategoryRemoteSource
 import com.zaed.common.data.source.remote.CategoryRemoteSourceImpl
 import com.zaed.common.data.source.remote.ChequeRemoteSource
 import com.zaed.common.data.source.remote.ChequeRemoteSourceImpl
+import com.zaed.common.data.source.remote.InventoryRemoteSource
+import com.zaed.common.data.source.remote.InventoryRemoteSourceImpl
 import com.zaed.common.data.source.remote.LossRemoteDataSource
 import com.zaed.common.data.source.remote.LossRemoteDataSourceImpl
 import com.zaed.common.data.source.remote.PaymentRemoteDataSource
@@ -64,11 +68,13 @@ import com.zaed.common.domain.customer.FetchWholesaleCustomerSalesUseCase
 import com.zaed.common.domain.customer.FetchWholesaleCustomersByNameUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomersUseCase
+import com.zaed.common.domain.inventory.FetchStoreInventoryUseCase
 import com.zaed.common.domain.loss.AddDistributorLossUseCase
 import com.zaed.common.domain.loss.ConvertLossesToDatedLossesUseCase
 import com.zaed.common.domain.loss.CreateNewLossUseCase
 import com.zaed.common.domain.loss.DeleteLossUseCase
 import com.zaed.common.domain.loss.FetchDistributorLossesUseCase
+import com.zaed.common.domain.loss.FetchStoreLossesUseCase
 import com.zaed.common.domain.loss.GetStoreLossesUseCase
 import com.zaed.common.domain.loss.UpdateDistributorLossUseCase
 import com.zaed.common.domain.loss.UpdateLossUseCase
@@ -82,6 +88,7 @@ import com.zaed.common.domain.sale.AddGoldSaleUseCase
 import com.zaed.common.domain.sale.AddIngotTransactionUseCase
 import com.zaed.common.domain.sale.AddStoreSaleUseCase
 import com.zaed.common.domain.sale.AddWholesaleProductSaleUseCase
+import com.zaed.common.domain.sale.ConvertSalesToDatedSalesUseCase
 import com.zaed.common.domain.sale.DeleteStoreSaleUseCase
 import com.zaed.common.domain.sale.DeleteWholesaleGoldSaleUseCase
 import com.zaed.common.domain.sale.DeleteWholesaleProductSaleUseCase
@@ -97,6 +104,7 @@ import com.zaed.common.domain.sale.UpdateWholesaleGoldSaleUseCase
 import com.zaed.common.domain.sale.UpdateWholesaleProductSaleUseCase
 import com.zaed.common.domain.store.AddStoreUseCase
 import com.zaed.common.domain.store.DeleteStoreUseCase
+import com.zaed.common.domain.store.FetchStoreByIdUseCase
 import com.zaed.common.domain.store.GetStoresUseCase
 import com.zaed.common.domain.store.UpdateStoreUseCase
 import com.zaed.common.ui.auth.MainViewModel
@@ -164,7 +172,6 @@ val useCaseModule = module {
     singleOf(::DeleteStoreUseCase)
     singleOf(::AddStoreUseCase)
     singleOf(::UpdateStoreUseCase)
-
     singleOf(::AddManagerChequeUseCase)
     singleOf(::AddSalesChequeUseCase)
     singleOf(::FetchManagerChequesUseCase)
@@ -173,9 +180,10 @@ val useCaseModule = module {
     singleOf(::UpdateSaleCheckStatusUseCase)
     singleOf(::UpdateManagerChequeUseCase)
     singleOf(::UpdateSalesChequeUseCase)
-
-
-
+    singleOf(::FetchStoreLossesUseCase)
+    singleOf(::FetchStoreInventoryUseCase)
+    singleOf(::FetchStoreByIdUseCase)
+    singleOf(::ConvertSalesToDatedSalesUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }
@@ -186,6 +194,7 @@ val repositoryModule = module {
     singleOf(::WholeSalesCustomerRepositoryImpl) { bind<WholeSalesCustomerRepository>() }
     singleOf(::PaymentRepositoryImpl) { bind<PaymentRepository>() }
     singleOf(::ChequeRepositoryImpl) { bind<ChequeRepository>() }
+    singleOf(::InventoryRepositoryImpl) { bind<InventoryRepository>() }
 }
 val viewModelModule = module {
     viewModelOf(::SignUpViewModel)
@@ -201,15 +210,13 @@ val remoteSourceModule = module {
     singleOf(::PaymentRemoteDataSourceImpl) { bind<PaymentRemoteDataSource>() }
     singleOf(::WholeSalesCustomerRemoteDataSourceImpl) { bind<WholeSalesCustomerRemoteDataSource>() }
     singleOf(::ChequeRemoteSourceImpl) { bind<ChequeRemoteSource>() }
+    singleOf(::InventoryRemoteSourceImpl) { bind<InventoryRemoteSource>() }
     single<FirebaseFirestore> {
         val db = Firebase.firestore
-        val settings = FirebaseFirestoreSettings.Builder()
-            .setLocalCacheSettings(
+        val settings = FirebaseFirestoreSettings.Builder().setLocalCacheSettings(
                 PersistentCacheSettings.newBuilder()
-                    .setSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
-                    .build()
-            )
-            .build()
+                    .setSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED).build()
+            ).build()
         db.firestoreSettings = settings
         db
     }

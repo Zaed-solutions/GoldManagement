@@ -16,9 +16,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.Inventory
-import com.zaed.common.data.model.InventoryType
-import com.zaed.common.data.model.QuantityUnit
+import com.zaed.common.data.model.inventory.Inventory
+import com.zaed.common.data.model.inventory.InventoryType
+import com.zaed.common.data.model.inventory.QuantityUnit
 import com.zaed.common.data.model.sale.Karat
 
 @Composable

@@ -22,8 +22,10 @@ fun DatedLossesList(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
     datedLosses: List<DatedLoss>,
-    onDeleteLoss: (Loss) -> Unit,
-    onUpdateLoss: (Loss) -> Unit
+    isDeleteEnabled: Boolean = false,
+    onDeleteLoss: (Loss) -> Unit = {},
+    isEditEnabled: Boolean = false,
+    onUpdateLoss: (Loss) -> Unit = {}
 ) {
     ListWithLoading(isLoading = isLoading) {
         LazyColumn(
@@ -37,7 +39,9 @@ fun DatedLossesList(
                 DatedLossItem(
                     modifier = Modifier.animateItem(),
                     datedLoss = it,
+                    isDeleteEnabled = isDeleteEnabled,
                     onDeleteLoss = onDeleteLoss,
+                    isEditEnabled = isEditEnabled,
                     onUpdateLoss = onUpdateLoss
                 )
             }

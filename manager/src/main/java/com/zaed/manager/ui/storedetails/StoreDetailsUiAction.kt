@@ -8,7 +8,8 @@ sealed interface StoreDetailsUiAction {
     data object OnDeleteStore: StoreDetailsUiAction
     data class OnInventoryQueryChanged(val query: String): StoreDetailsUiAction
     data class OnSalesQueryChanged(val query: String): StoreDetailsUiAction
-    data class OnFilterClicked(val format: DateFormat): StoreDetailsUiAction
+    data class UpdateSalesDateFilter(val format: DateFormat): StoreDetailsUiAction
     data class OnUpdateStore(val store: Store): StoreDetailsUiAction
     data class OnSaleClicked(val id: String): StoreDetailsUiAction
+    data class UpdateLossesDateFilter(val format: DateFormat): StoreDetailsUiAction
 }

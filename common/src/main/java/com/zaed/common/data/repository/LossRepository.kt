@@ -6,6 +6,7 @@ import com.zaed.common.data.model.loss.request.AddDistributorLossRequest
 import com.zaed.common.data.model.loss.request.CreateNewLossRequest
 import com.zaed.common.data.model.loss.request.DeleteLossRequest
 import com.zaed.common.data.model.loss.request.FetchDistributorLossesRequest
+import com.zaed.common.data.model.loss.request.FetchStoreLossesRequest
 import com.zaed.common.data.model.loss.request.GetStoreLossesRequest
 import com.zaed.common.data.model.loss.request.UpdateDistributorLossRequest
 import com.zaed.common.data.model.loss.request.UpdateLossRequest
@@ -19,4 +20,5 @@ interface LossRepository {
     fun fetchDistributorLosses(request: FetchDistributorLossesRequest): Flow<Result<List<DistributorLoss>>>
     suspend fun addDistributorLoss(request: AddDistributorLossRequest): Result<Unit>
     suspend fun updateDistributorLoss(request: UpdateDistributorLossRequest): Result<Unit>
+    fun fetchStoreLosses(request: FetchStoreLossesRequest): Flow<Result<List<StoreLoss>>>
 }

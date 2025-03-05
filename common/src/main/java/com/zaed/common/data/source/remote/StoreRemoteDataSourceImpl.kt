@@ -5,6 +5,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.common.data.model.store.Store
 import com.zaed.common.data.model.store.request.AddStoreRequest
 import com.zaed.common.data.model.store.request.DeleteStoreRequest
+import com.zaed.common.data.model.store.request.FetchStoreByIdRequest
 import com.zaed.common.data.model.store.request.UpdateStoreRequest
 import kotlinx.coroutines.tasks.await
 
@@ -50,6 +51,21 @@ class StoreRemoteDataSourceImpl(
         return try{
             storesCollection.document(request.store.id).delete().await()
             Result.success(Unit)
+        } catch (e: Exception){
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun fetchStoreById(request: FetchStoreByIdRequest): Result<Store> {
+        return try{
+            val document = storesCollection.document(request.storeId).get().await()
+            val store = document.toObject(Store::class.java)
+            if(store != null){
+                Result.success(store)
+            } else {
+                Result.failure(Exception("Store not found"))
+            }
         } catch (e: Exception){
             crashlytics.recordException(e)
             Result.failure(e)

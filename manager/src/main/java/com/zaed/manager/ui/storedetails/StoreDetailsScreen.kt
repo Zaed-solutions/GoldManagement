@@ -37,6 +37,8 @@ import com.zaed.common.ui.components.MoreDropDownMenu
 import com.zaed.common.ui.components.MoreDropdownItem
 import org.koin.androidx.compose.koinViewModel
 import com.zaed.common.R
+import com.zaed.common.ui.components.DatedListWithFilter
+import com.zaed.common.ui.components.DatedLossesList
 import com.zaed.common.ui.components.DatedSalesWithSearchSection
 import com.zaed.common.ui.components.StoreInventorySection
 import com.zaed.manager.ui.stores.components.SaveStoreBottomSheet
@@ -74,7 +76,7 @@ fun StoreDetailsScreenContent(
     state: StoreDetailsUiState,
     onAction: (StoreDetailsUiAction) -> Unit
 ) {
-    val pagerState = rememberPagerState { 3 }
+    val pagerState = rememberPagerState { StoreDetailsTab.entries.size }
     val scope = rememberCoroutineScope()
     var isEditStoreSheetVisible by remember {
         mutableStateOf(false)
@@ -139,7 +141,6 @@ fun StoreDetailsScreenContent(
                 .fillMaxSize()
                 .padding(innerPadding)
         ){
-            //tab row
             PrimaryTabRow(
                 selectedTabIndex = pagerState.currentPage,
                 indicator = {
@@ -182,9 +183,9 @@ fun StoreDetailsScreenContent(
                             onQueryChanged = { query ->
                                 onAction(StoreDetailsUiAction.OnSalesQueryChanged(query))
                             },
-                            selectedFilter = state.selectedFilter,
+                            selectedFilter = state.selectedSalesFilter,
                             onFilterClicked = { filter ->
-                                onAction(StoreDetailsUiAction.OnFilterClicked(filter))
+                                onAction(StoreDetailsUiAction.UpdateSalesDateFilter(filter))
                             },
                             datedSales = state.displayedDatedSales,
                             onSaleClicked = { saleId ->
@@ -203,6 +204,19 @@ fun StoreDetailsScreenContent(
                             inventories = state.displayedInventories,
                             onAddInventory = {
                                 TODO()
+                            }
+                        )
+                    }
+                    StoreDetailsTab.LOSSES.ordinal -> {
+                        DatedListWithFilter(
+                            isLoading = state.isLoading,
+                            selectedFilter = state.selectedLossesFilter,
+                            onFilterClicked = { onAction(StoreDetailsUiAction.UpdateLossesDateFilter(it)) },
+                            content = {
+                                DatedLossesList(
+                                    isLoading = state.isLoading,
+                                    datedLosses = state.datedLosses,
+                                )
                             }
                         )
                     }
@@ -226,5 +240,6 @@ fun StoreDetailsScreenContent(
 
 enum class StoreDetailsTab(val titleRes: Int) {
     SALES(R.string.sales),
-    INVENTORY(R.string.inventory)
+    INVENTORY(R.string.inventory),
+    LOSSES(R.string.losses)
 }

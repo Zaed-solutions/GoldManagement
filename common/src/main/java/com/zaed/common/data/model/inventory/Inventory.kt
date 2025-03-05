@@ -1,6 +1,5 @@
-package com.zaed.common.data.model
+package com.zaed.common.data.model.inventory
 
-import com.zaed.common.data.model.sale.Karat
 import java.util.Date
 
 data class Inventory(
