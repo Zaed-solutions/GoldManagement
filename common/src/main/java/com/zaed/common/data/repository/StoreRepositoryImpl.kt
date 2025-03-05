@@ -6,11 +6,12 @@ import com.zaed.common.data.model.store.request.DeleteStoreRequest
 import com.zaed.common.data.model.store.request.FetchStoreByIdRequest
 import com.zaed.common.data.model.store.request.UpdateStoreRequest
 import com.zaed.common.data.source.remote.StoreRemoteDataSource
+import kotlinx.coroutines.flow.Flow
 
 class StoreRepositoryImpl(
     private val remoteDataSource: StoreRemoteDataSource
 ) : StoreRepository {
-    override suspend fun getStores(): Result<List<Store>> {
+    override fun getStores(): Flow<Result<List<Store>>> {
         return remoteDataSource.getStores()
     }
 

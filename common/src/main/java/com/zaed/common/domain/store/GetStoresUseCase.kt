@@ -6,7 +6,5 @@ import com.zaed.common.data.repository.StoreRepository
 class GetStoresUseCase(
     private val repository: StoreRepository
 ){
-    suspend operator fun invoke(): Result<List<Store>> {
-        return repository.getStores()
-    }
+    operator fun invoke() =  repository.getStores()
 }

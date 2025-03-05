@@ -29,15 +29,17 @@ class SignUpViewModel(
 
     private fun getStores() {
         viewModelScope.launch(Dispatchers.IO) {
-            getStoresUseCase().onSuccess { data ->
-                stores.update {
-                    it.copy(
-                        stores = data
-                    )
-                }
-            }.onFailure { error ->
-                _uiState.update {
-                    it.copy(errorMessage = Exception(error.message))
+            getStoresUseCase().collect { result ->
+                result.onSuccess { data ->
+                    stores.update {
+                        it.copy(
+                            stores = data
+                        )
+                    }
+                }.onFailure { error ->
+                    _uiState.update {
+                        it.copy(errorMessage = Exception(error.message))
+                    }
                 }
             }
         }
