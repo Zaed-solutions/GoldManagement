@@ -4,6 +4,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.common.data.model.authentication.ChangeLog
+import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.loss.DistributorLoss
 import com.zaed.common.data.model.loss.StoreLoss
 import com.zaed.common.data.model.loss.request.AddDistributorLossRequest
@@ -36,7 +37,7 @@ class LossRemoteDataSourceImpl(
                         date = Date(),
                         employeeId = request.loss.userId,
                         employeeName = request.loss.userName,
-                        action = "${request.loss.userName} Created a new loss with value ${request.loss.value} and reason ${request.loss.reason}"
+                        type = LogType.CREATE
                     )
                 )
             )
@@ -69,7 +70,7 @@ class LossRemoteDataSourceImpl(
                     date = Date(),
                     employeeId = request.employeeId,
                     employeeName = request.employeeName,
-                    action = "${request.employeeName} Deleted this loss"
+                    type = LogType.DELETE
                 )
             )
             storeLossesCollection.document(request.lossId)

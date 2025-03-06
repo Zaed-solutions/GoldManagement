@@ -15,6 +15,7 @@ import androidx.navigation.toRoute
 import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
+import com.zaed.manager.ui.distributors.DistributorsScreen
 import com.zaed.manager.ui.storedetails.StoreDetailsScreen
 import com.zaed.manager.ui.stores.StoresScreen
 import com.zaed.manager.ui.usermanagement.UserManagementScreen
@@ -28,7 +29,7 @@ fun NavigationHost(
     NavHost (
         navController = navController,
 //        startDestination =startDestination,
-        startDestination =Route.StoresRoute,
+        startDestination =Route.DistributorsRoute,
     ){
         composable<Route.LoginRoute> {
             LoginScreen(
@@ -94,6 +95,12 @@ fun NavigationHost(
                 onBackClicked = {
                     navController.popBackStack()
                 }
+            )
+        }
+        composable<Route.DistributorsRoute> {
+            DistributorsScreen(
+                onShowNavDrawer = {/*TODO*/},
+                onNavigateToDistributorDetails = {/*TODO*/}
             )
         }
     }

@@ -94,4 +94,8 @@ class AuthenticationRepositoryImpl(
     override suspend fun deleteUser(request: DeleteUserRequest): Result<Unit> {
         return remoteSource.deleteUser(request)
     }
+
+    override fun fetchDistributors(): Flow<Result<List<User>>> {
+        return remoteSource.fetchDistributors()
+    }
 }

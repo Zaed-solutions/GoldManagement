@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.authentication.ChangeLog
+import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.loss.StoreLoss
 import com.zaed.common.data.model.loss.request.CreateNewLossRequest
 import com.zaed.common.data.model.loss.request.DeleteLossRequest
@@ -124,14 +125,6 @@ class LossViewModel(
         viewModelScope.launch(
             Dispatchers.IO
         ) {
-            val originalLoss = uiState.value.losses.firstOrNull { it.id==loss.id }?: return@launch
-            val logMessage = if (originalLoss.value != loss.value) {
-                "${uiState.value.currentUser.fullName} updated the value from ${originalLoss.value} to ${loss.value}}"
-            } else if (originalLoss.reason != loss.reason) {
-                "${uiState.value.currentUser.fullName} updated the reason from ${originalLoss.reason} to ${loss.reason}}"
-            } else {
-                "${uiState.value.currentUser.fullName} updated this loss"
-            }
             _uiState.update { it.copy(isLoading = true) }
             updateLossUseCase(
                 UpdateLossRequest(
@@ -140,7 +133,7 @@ class LossViewModel(
                             date = Date(),
                             employeeId = uiState.value.currentUser.id,
                             employeeName = uiState.value.currentUser.fullName,
-                            action = logMessage
+                            type = LogType.UPDATE
                         )
                     )
                 )

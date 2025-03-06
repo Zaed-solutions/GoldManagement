@@ -3,6 +3,8 @@ package com.zaed.cashier.ui.addsale
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zaed.common.data.model.authentication.ChangeLog
+import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.sale.DiscountType
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.request.AddStoreSaleRequest
@@ -155,7 +157,14 @@ class AddSaleViewModel(
                         employeeName = uiState.value.currentUser.fullName,
                         employeeId = uiState.value.currentUser.id,
                         storeId = uiState.value.currentUser.storeId,
-                        storeName = uiState.value.currentUser.storeName
+                        storeName = uiState.value.currentUser.storeName,
+                        logs = listOf(
+                            ChangeLog(
+                                employeeId = uiState.value.currentUser.id,
+                                employeeName = uiState.value.currentUser.fullName,
+                                type = LogType.CREATE
+                            )
+                        )
                     )
                 )
             ).onSuccess { id ->

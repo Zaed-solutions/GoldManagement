@@ -46,6 +46,7 @@ import com.zaed.common.data.source.remote.StoreRemoteDataSourceImpl
 import com.zaed.common.data.source.remote.WholeSalesCustomerRemoteDataSource
 import com.zaed.common.data.source.remote.WholeSalesCustomerRemoteDataSourceImpl
 import com.zaed.common.domain.authentication.DeleteUserUseCase
+import com.zaed.common.domain.authentication.FetchDistributorsUseCase
 import com.zaed.common.domain.authentication.FetchUsersUseCase
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.authentication.LoginUserUseCase
@@ -188,6 +189,7 @@ val useCaseModule = module {
     singleOf(::ConvertSalesToDatedSalesUseCase)
     singleOf(::AddInventoryUseCase)
     singleOf(::UpdateInventoryUseCase)
+    singleOf(::FetchDistributorsUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }

@@ -17,4 +17,5 @@ interface AuthenticationRepository {
     fun fetchUsers(): Flow<Result<List<User>>>
     suspend fun updateUser(request: UpdateUserRequest): Result<Unit>
     suspend fun deleteUser(request: DeleteUserRequest): Result<Unit>
+    fun fetchDistributors(): Flow<Result<List<User>>>
 }

@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.authentication.ChangeLog
+import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.loss.DistributorLoss
 import com.zaed.common.data.model.loss.request.AddDistributorLossRequest
 import com.zaed.common.data.model.loss.request.FetchDistributorLossesRequest
@@ -99,7 +100,7 @@ class LossesViewModel(
                     date = Date(),
                     employeeId = distributor.id,
                     employeeName = distributor.fullName,
-                    action = "updated this loss"
+                    type = LogType.UPDATE
                 )
             )
             updateLossUseCase(
@@ -123,7 +124,7 @@ class LossesViewModel(
                     date = Date(),
                     employeeId = distributor.id,
                     employeeName = distributor.fullName,
-                    action = "deleted this loss"
+                    type = LogType.DELETE
                 )
             )
             updateLossUseCase(
@@ -146,7 +147,7 @@ class LossesViewModel(
                     date = Date(),
                     employeeId = distributor.id,
                     employeeName = distributor.fullName,
-                    action = "created a new loss with value ${loss.value} and reason ${loss.reason}"
+                    type = LogType.CREATE
                 )
             )
             addLossUseCase(
