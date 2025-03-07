@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.authentication.ChangeLog
+import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.sale.IngotTransaction
 import com.zaed.common.data.model.sale.Karat
 import com.zaed.common.data.model.sale.TransactionType
@@ -134,7 +135,7 @@ class IngotTransactionsViewModel(
                 ChangeLog(
                     employeeId = _uiState.value.currentUser.id,
                     employeeName = _uiState.value.currentUser.fullName,
-                    action = "created this transaction"
+                    type = LogType.CREATE
                 )
             )
             addTransactionUseCase(
@@ -159,7 +160,7 @@ class IngotTransactionsViewModel(
             val updateLog = ChangeLog(
                 employeeId = _uiState.value.currentUser.id,
                 employeeName = _uiState.value.currentUser.fullName,
-                action = "updated this transaction"
+                type = LogType.UPDATE
             )
             updateTransactionUseCase(
                 UpdateIngotTransactionRequest(
@@ -180,7 +181,7 @@ class IngotTransactionsViewModel(
             val deleteLog = ChangeLog(
                 employeeId = _uiState.value.currentUser.id,
                 employeeName = _uiState.value.currentUser.fullName,
-                action = "deleted this transaction"
+                type = LogType.DELETE
             )
             updateTransactionUseCase(
                 UpdateIngotTransactionRequest(

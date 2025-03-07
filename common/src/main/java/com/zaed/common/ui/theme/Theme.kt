@@ -1,10 +1,13 @@
 package com.zaed.common.ui.theme
+
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 private val lightScheme = lightColorScheme(
@@ -237,15 +240,26 @@ private val highContrastDarkColorScheme = darkColorScheme(
 
 @Immutable
 data class ColorFamily(
-    val color: Color,
-    val onColor: Color,
-    val colorContainer: Color,
-    val onColorContainer: Color
+    val color: Color = Color.Unspecified,
+    val onColor: Color = Color.Unspecified,
+    val colorContainer: Color = Color.Unspecified,
+    val onColorContainer: Color = Color.Unspecified
 )
 
-val unspecified_scheme = ColorFamily(
-    Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified
+val lightGoldColors = ColorFamily(
+    color = Color(0xFF815600),
+    onColor = Color(0xFFFFFFFF),
+    colorContainer = Color(0xFFFFB22C),
+    onColorContainer = Color(0xFF6D4700)
 )
+val darkGoldColors = ColorFamily(
+    color = Color(0xFFFFD7A0),
+    onColor = Color(0xFF442B00),
+    colorContainer = Color(0xFFFFB22C),
+    onColorContainer = Color(0xFF6D4700)
+)
+
+val GoldenCustomColors = staticCompositionLocalOf { ColorFamily() }
 
 @Composable
 fun GoldManagementTheme(
@@ -258,11 +272,15 @@ fun GoldManagementTheme(
         darkTheme -> darkScheme
         else -> lightScheme
     }
-
-  MaterialTheme(
-    colorScheme = colorScheme,
-    typography = AppTypography,
-    content = content
-  )
+    val goldenColors = if (darkTheme) darkGoldColors else lightGoldColors
+    CompositionLocalProvider(
+        GoldenCustomColors provides goldenColors
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = AppTypography,
+            content = content
+        )
+    }
 }
 

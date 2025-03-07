@@ -3,11 +3,13 @@ package com.zaed.common.data.source.remote
 import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.common.data.model.inventory.Inventory
 import com.zaed.common.data.model.inventory.request.AddInventoryRequest
 import com.zaed.common.data.model.inventory.request.FetchInventoriesRequest
 import com.zaed.common.data.model.inventory.request.UpdateInventoryRequest
+import com.zaed.common.data.model.inventory.toInventoryType
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -23,8 +25,14 @@ class InventoryRemoteSourceImpl(
     override fun fetchInventories(request: FetchInventoriesRequest): Flow<Result<List<Inventory>>> =
         callbackFlow {
             try {
-                inventoryCollection.whereEqualTo("ownerId", request.ownerId)
-                    .addSnapshotListener { snapshot, e ->
+                val types = request.permissions.map { it.toInventoryType() }
+                Log.d("FixBug", "fetchInventories: ownerId: ${request.ownerId}, types: $types, perms: ${request.permissions}")
+                inventoryCollection.where(
+                    Filter.and(
+                        Filter.equalTo("ownerId", request.ownerId),
+                        Filter.inArray("type", types)
+                    )
+                ).orderBy("productName").addSnapshotListener { snapshot, e ->
                         if (e != null) {
                             crashlytics.recordException(e)
                             trySend(Result.failure(e))

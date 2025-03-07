@@ -8,9 +8,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
-import com.zaed.common.data.model.inventory.InventoryType
 import com.zaed.common.data.model.authentication.ChangeLog
+import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
+import com.zaed.common.data.model.inventory.InventoryType
 import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.sale.IngotTransaction
@@ -89,7 +90,10 @@ class SaleRemoteSourceImpl(
                 Query.Direction.DESCENDING
             ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")
                 ?.toLongOrNull() ?: 0
-            batch.set(docRef, request.sale.copy(id = docRef.id, receiptNumber = (receiptNumber + 1).toString()))
+            batch.set(
+                docRef,
+                request.sale.copy(id = docRef.id, receiptNumber = (receiptNumber + 1).toString())
+            )
             val categoryUpdates = request.sale.products
                 .groupBy { it.categoryId }
                 .mapValues { (_, products) -> products.sumOf { it.grams } }
@@ -132,7 +136,7 @@ class SaleRemoteSourceImpl(
                     date = Date(),
                     employeeId = request.employeeId,
                     employeeName = request.employeeName,
-                    action = "${request.employeeName} Deleted this sale"
+                    type = LogType.DELETE
                 )
             )
             val inventoryChanges = sale.products
@@ -174,25 +178,15 @@ class SaleRemoteSourceImpl(
             val oldSale = oldSaleRef.get().await()
                 .toObject(StoreSale::class.java) ?: StoreSale()
             val logs = oldSale.logs.toMutableList()
-            if (isCustomerDifferent(oldSale, request.sale)) {
-                logs.add(
-                    ChangeLog(
-                        date = Date(),
-                        employeeId = request.employeeId,
-                        employeeName = request.employeeName,
-                        action = "${request.employeeName} Changed the customer from ${oldSale.customerName}-${oldSale.customerEmail}-${oldSale.customerPhone} to ${request.sale.customerName}-${request.sale.customerEmail}-${request.sale.customerPhone}"
-                    )
+            logs.add(
+                ChangeLog(
+                    date = Date(),
+                    employeeId = request.employeeId,
+                    employeeName = request.employeeName,
+                    type = LogType.UPDATE
                 )
-            }
+            )
             if (isProductsDifferent(oldSale, request.sale)) {
-                logs.add(
-                    ChangeLog(
-                        date = Date(),
-                        employeeId = request.employeeId,
-                        employeeName = request.employeeName,
-                        action = "${request.employeeName} Changed the products with total from ${oldSale.totalAmount} to ${request.sale.totalAmount}"
-                    )
-                )
                 val oldProductsByCategory = oldSale.products
                     .groupBy { it.categoryId }
                     .mapValues { (_, products) -> products.sumOf { it.grams } }
@@ -406,7 +400,8 @@ class SaleRemoteSourceImpl(
                                     request.transaction.grams.unaryMinus()
                                 else
                                     request.transaction.grams
-                            ))
+                            )
+                        )
                     batch.update(ref, updates)
                 }
             batch.set(docRef, request.transaction.copy(id = docRef.id))
@@ -423,7 +418,8 @@ class SaleRemoteSourceImpl(
             val batch = firestore.batch()
             val oldTransactionRef = ingotTransactionsCollection.document(request.transaction.id)
             val oldTransaction =
-                oldTransactionRef.get().await().toObject(IngotTransaction::class.java) ?: IngotTransaction()
+                oldTransactionRef.get().await().toObject(IngotTransaction::class.java)
+                    ?: IngotTransaction()
             inventoryCollection
                 .where(
                     Filter.and(
@@ -432,11 +428,13 @@ class SaleRemoteSourceImpl(
                         Filter.equalTo("ownerId", request.transaction.distributorId)
                     )
                 ).get().await().documents.firstOrNull()?.reference?.let { ref ->
-                    val oldAmount = if(oldTransaction.type == TransactionType.SALE) oldTransaction.grams.unaryMinus() else oldTransaction.grams
-                    val newAmount = if(request.transaction.type == TransactionType.SALE) request.transaction.grams.unaryMinus() else request.transaction.grams
+                    val oldAmount =
+                        if (oldTransaction.type == TransactionType.SALE) oldTransaction.grams.unaryMinus() else oldTransaction.grams
+                    val newAmount =
+                        if (request.transaction.type == TransactionType.SALE) request.transaction.grams.unaryMinus() else request.transaction.grams
                     val updates = mapOf(
                         "quantity" to FieldValue.increment(
-                            if(request.transaction.deleted) oldAmount else newAmount - oldAmount
+                            if (request.transaction.deleted) oldAmount else newAmount - oldAmount
                         )
                     )
                     batch.update(ref, updates)
@@ -463,7 +461,7 @@ class SaleRemoteSourceImpl(
                     date = Date(),
                     employeeId = request.distributorId,
                     employeeName = request.distributorName,
-                    action = "Deleted this sale"
+                    type = LogType.DELETE
                 )
             )
             batch.set(saleRef, sale.copy(logs = logs, deleted = true))
@@ -476,7 +474,7 @@ class SaleRemoteSourceImpl(
                     date = Date(),
                     employeeId = request.distributorId,
                     employeeName = request.distributorName,
-                    action = "Deleted this payment"
+                    type = LogType.DELETE
                 )
                 val updatePayments = mapOf(
                     "deleted" to true,
@@ -488,7 +486,7 @@ class SaleRemoteSourceImpl(
                 }
             }
             val inventoryChanges = sale.products
-                    .groupBy { it.categoryId }
+                .groupBy { it.categoryId }
                 .mapValues { (_, products) -> products.sumOf { it.grams } }
             val distributorId = sale.distributorId
             val inventoryRefs = inventoryCollection
@@ -534,7 +532,7 @@ class SaleRemoteSourceImpl(
                     date = Date(),
                     employeeId = request.distributorId,
                     employeeName = request.distributorName,
-                    action = "Deleted this sale"
+                    type = LogType.DELETE
                 )
             )
             batch.set(saleRef, sale.copy(logs = logs, deleted = true))
@@ -547,7 +545,7 @@ class SaleRemoteSourceImpl(
                     date = Date(),
                     employeeId = request.distributorId,
                     employeeName = request.distributorName,
-                    action = "Deleted this payment"
+                    type = LogType.DELETE
                 )
                 val updatePayments = mapOf(
                     "deleted" to true,
@@ -568,7 +566,7 @@ class SaleRemoteSourceImpl(
                     date = Date(),
                     employeeId = request.distributorId,
                     employeeName = request.distributorName,
-                    action = "Deleted this payment"
+                    type = LogType.DELETE
                 )
                 val updatePayments = mapOf(
                     "deleted" to true,
@@ -971,9 +969,6 @@ class SaleRemoteSourceImpl(
     }
 
     private companion object {
-        fun isCustomerDifferent(sale1: StoreSale, sale2: StoreSale): Boolean {
-            return sale1.customerName != sale2.customerName || sale1.customerEmail != sale2.customerEmail || sale1.customerPhone != sale2.customerPhone
-        }
 
         fun isProductsDifferent(sale1: StoreSale, sale2: StoreSale): Boolean {
             return sale1.products != sale2.products

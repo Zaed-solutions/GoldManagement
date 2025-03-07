@@ -24,7 +24,6 @@ import com.zaed.common.ui.util.DateFormat
 @Composable
 fun DatedListWithFilter(
     modifier: Modifier = Modifier,
-    isLoading: Boolean,
     selectedFilter: DateFormat,
     onFilterClicked: (DateFormat) -> Unit,
     content: @Composable () -> Unit
@@ -67,7 +66,6 @@ fun DatedListWithFilter(
                 )
             }
         }
-        AnimatedLoading(isLoading)
         content()
     }
 

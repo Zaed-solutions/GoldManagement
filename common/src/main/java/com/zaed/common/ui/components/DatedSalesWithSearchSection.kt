@@ -35,7 +35,6 @@ fun DatedSalesWithSearchSection(
         )
         DatedListWithFilter(
             modifier = modifier,
-            isLoading = isLoading,
             selectedFilter = selectedFilter,
             onFilterClicked = onFilterClicked
         ) {

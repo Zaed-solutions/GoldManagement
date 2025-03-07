@@ -154,7 +154,6 @@ fun LossScreenContent(
                 .padding(vertical = 16.dp)
         ) {
             DatedListWithFilter(
-                isLoading = uiState.isLoading,
                 selectedFilter = uiState.groupedByFilter,
                 onFilterClicked = { onAction(LossUiAction.UpdateGroupedByFilter(it)) },
                 content = {
