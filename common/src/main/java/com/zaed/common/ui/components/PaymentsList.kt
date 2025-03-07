@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.addproductsale.components
+package com.zaed.common.ui.components
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +17,6 @@ import com.zaed.common.data.model.payment.ChequePayment
 import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.LossPayment
 import com.zaed.common.data.model.payment.Payment
-import com.zaed.distributor.ui.customerdetails.component.PaymentItem
 
 @Composable
 fun PaymentsList(

@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.addproductsale.components
+package com.zaed.common.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,10 +25,6 @@ import com.zaed.common.R
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.sale.Product
-import com.zaed.common.ui.components.DashedDivider
-import com.zaed.common.ui.components.DetailRow
-import com.zaed.common.ui.components.PriceCalculationItem
-import com.zaed.common.ui.components.ProductsTable
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
 import java.util.Date

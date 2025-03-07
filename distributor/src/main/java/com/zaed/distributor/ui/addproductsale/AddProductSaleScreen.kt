@@ -19,10 +19,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.ui.components.ProgressIndicatorTopAppBar
-import com.zaed.distributor.ui.addproductsale.components.PreviewSaleContent
-import com.zaed.distributor.ui.addproductsale.components.SaleSummaryContent
-import com.zaed.distributor.ui.addproductsale.components.SelectPaymentsContent
-import com.zaed.distributor.ui.addproductsale.components.SelectProductsContent
+import com.zaed.common.ui.components.PreviewSaleContent
+import com.zaed.common.ui.components.SaleSummaryContent
+import com.zaed.common.ui.components.SelectPaymentsContent
+import com.zaed.common.ui.components.SelectProductsContent
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 

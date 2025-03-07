@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.addproductsale.components
+package com.zaed.common.ui.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,8 +20,6 @@ import com.zaed.common.R
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
-import com.zaed.common.ui.components.NumberInputTextField
-import com.zaed.common.ui.components.TextInputTextField
 import com.zaed.common.ui.util.toMoneyFormat
 import java.util.UUID
 import kotlin.math.absoluteValue

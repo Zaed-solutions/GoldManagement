@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.addproductsale.components
+package com.zaed.common.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -32,8 +32,6 @@ import com.zaed.common.R
 import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.WholesaleProductSale
-import com.zaed.common.ui.components.SaveProductSheetContent
-import com.zaed.common.ui.components.SearchBar
 import com.zaed.common.ui.util.toMoneyFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -137,7 +135,6 @@ fun SelectProductsContent(
             ) {
                 selectedProduct?.let {
                     SaveProductSheetContent(
-                        modifier = Modifier.fillMaxSize(),
                         initialProduct = it,
                         onSaveProduct = {
                             onAddProduct(it)

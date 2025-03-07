@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Money
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -24,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.Sale
+import com.zaed.common.data.model.sale.StoreSale
 import com.zaed.common.data.model.sale.WholesaleGoldSale
-import com.zaed.common.data.model.sale.WholesaleProductSale
 import com.zaed.common.ui.theme.GoldManagementTheme
 import com.zaed.common.ui.theme.GoldenCustomColors
 import com.zaed.common.ui.util.DateFormat
@@ -43,6 +41,10 @@ fun SaleItem(
     val (icon, iconBackgroundColor, iconColor) = when{
         sale is WholesaleGoldSale -> Triple(R.drawable.ic_ingot, GoldenCustomColors.current.color, GoldenCustomColors.current.onColor)
         else -> Triple(R.drawable.ic_shopping, MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.onSecondary)
+    }
+    val title = when{
+        sale is StoreSale -> "CR-${sale.receiptNumber}"
+        else -> "DR-${sale.receiptNumber}"
     }
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -73,11 +75,11 @@ fun SaleItem(
                         .weight(1f)
                 ){
                     Text(
-                        text = "DR-${sale.receiptNumber}",
+                        text = title,
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal)
                     )
                     Text(
-                        text = sale.createdAt.format(DateFormat.TIME),
+                        text = sale.createdAt.format(DateFormat.SHORT_DATE_TIME),
                         style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
                     )
                 }

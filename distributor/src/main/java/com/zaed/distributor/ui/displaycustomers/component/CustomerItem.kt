@@ -20,10 +20,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.ui.components.SwipeToEditOrDeleteContainer
+import com.zaed.common.ui.components.getContainerColor
+import com.zaed.common.ui.components.getContentColor
+import com.zaed.common.ui.components.getDebtTitle
 import com.zaed.common.ui.util.toMoneyFormat
-import com.zaed.distributor.ui.customerdetails.component.getContainerColor
-import com.zaed.distributor.ui.customerdetails.component.getContentColor
-import com.zaed.distributor.ui.customerdetails.component.getDebtTitle
+
 import com.zaed.distributor.ui.theme.DistributorAppTheme
 import kotlin.math.absoluteValue
 

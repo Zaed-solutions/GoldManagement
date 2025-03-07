@@ -21,7 +21,7 @@ fun DatedSalesList(
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(vertical = 16.dp),
+            contentPadding = PaddingValues(top = 16.dp, bottom = 54.dp),
         ) {
             items(
                 items = datedSales,

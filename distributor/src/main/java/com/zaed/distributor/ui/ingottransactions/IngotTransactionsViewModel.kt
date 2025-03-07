@@ -6,15 +6,15 @@ import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.sale.IngotTransaction
-import com.zaed.common.data.model.sale.Karat
-import com.zaed.common.data.model.sale.TransactionType
 import com.zaed.common.data.model.sale.request.AddIngotTransactionRequest
 import com.zaed.common.data.model.sale.request.FetchIngotTransactionsRequest
 import com.zaed.common.data.model.sale.request.UpdateIngotTransactionRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.sale.AddIngotTransactionUseCase
+import com.zaed.common.domain.sale.ConvertIngotTransactionsToDatedUseCase
 import com.zaed.common.domain.sale.FetchIngotTransactionsUseCase
 import com.zaed.common.domain.sale.UpdateIngotTransactionUseCase
+import com.zaed.common.ui.util.DateFormat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,7 +26,8 @@ class IngotTransactionsViewModel(
     private val getCurrentUserUseCase: GetCurrentUserLoggedInUseCase,
     private val fetchTransactionUseCase: FetchIngotTransactionsUseCase,
     private val addTransactionUseCase: AddIngotTransactionUseCase,
-    private val updateTransactionUseCase: UpdateIngotTransactionUseCase
+    private val updateTransactionUseCase: UpdateIngotTransactionUseCase,
+    private val convertDataToDatedTransactions: ConvertIngotTransactionsToDatedUseCase
 ) : ViewModel() {
     private val TAG = "AddIngotTransactionViewModel"
     private val _uiState = MutableStateFlow(IngotTransactionsUiState())
@@ -64,17 +65,27 @@ class IngotTransactionsViewModel(
                 )
             ).collect { result ->
                 result.onSuccess { data ->
-                    val groupedTransaction = data.sortedByDescending { it.createdAt }.groupBy { it.type }
                     _uiState.update { oldState->
                         oldState.copy(
-                            allSaleTransactions = groupedTransaction[TransactionType.SALE] ?: emptyList(),
-                            allPurchaseTransactions = groupedTransaction[TransactionType.PURCHASE] ?: emptyList(),
-                            isLoading = false
+                            allTransactions = data,
                         )
                     }
-                    filterData()
+                    convertDataToDatedTransactions()
                 }.onFailure {
                     Log.e(TAG, "fetchTransaction: ${it.message}", it)
+                }
+            }
+        }
+    }
+
+    private fun convertDataToDatedTransactions() {
+        viewModelScope.launch(Dispatchers.Default) {
+            convertDataToDatedTransactions(_uiState.value.allTransactions, _uiState.value.dateFilter).let {
+                _uiState.update { oldState ->
+                    oldState.copy(
+                        datedTransactions = it,
+                        isLoading = false
+                    )
                 }
             }
         }
@@ -84,41 +95,18 @@ class IngotTransactionsViewModel(
         when (action) {
             is IngotTransactionsUiAction.OnSaveTransaction -> onSave(action.transaction)
             is IngotTransactionsUiAction.OnDeleteTransaction -> deleteTransaction(action.transaction)
-            is IngotTransactionsUiAction.OnUpdateSearchQuery -> updateSearchQuery(action.query)
+            is IngotTransactionsUiAction.UpdateIngotTransactionsDateFilter -> updateFilter(action.dateFormat)
             else -> Unit
         }
     }
 
-    private fun updateSearchQuery(query: String) {
-        viewModelScope.launch {
-            _uiState.update { oldState ->
-                oldState.copy(searchQuery = query)
-            }
-            filterData(query)
+    private fun updateFilter(filter:DateFormat) {
+        _uiState.update { oldState ->
+            oldState.copy(
+                dateFilter = filter
+            )
         }
-    }
-
-    private fun filterData(
-        query: String = uiState.value.searchQuery
-    ) {
-        viewModelScope.launch (Dispatchers.Default){
-            if(query.isBlank()){
-                _uiState.update { oldState ->
-                    oldState.copy(
-                        displayedSaleTransactions = uiState.value.allSaleTransactions,
-                        displayedPurchaseTransactions = uiState.value.allPurchaseTransactions
-                    )
-                }
-            } else {
-                //todo filter data based on query
-                _uiState.update { oldState ->
-                    oldState.copy(
-                        displayedPurchaseTransactions = uiState.value.allSaleTransactions,
-                        displayedSaleTransactions = uiState.value.allPurchaseTransactions
-                    )
-                }
-            }
-        }
+        convertDataToDatedTransactions()
     }
 
     private fun onSave(transaction: IngotTransaction) {

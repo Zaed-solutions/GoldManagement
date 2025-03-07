@@ -39,8 +39,8 @@ import com.zaed.common.R
 import com.zaed.common.ui.components.ProgressIndicatorTopAppBar
 import com.zaed.distributor.ui.addGoldSale.components.SelectGoldContent
 import com.zaed.distributor.ui.addGoldSale.components.SelectGoldPaymentsContent
-import com.zaed.distributor.ui.addproductsale.components.SaleSummaryContent
-import com.zaed.distributor.ui.addproductsale.components.SelectCustomerContent
+import com.zaed.common.ui.components.SaleSummaryContent
+import com.zaed.common.ui.components.SelectCustomerContent
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 

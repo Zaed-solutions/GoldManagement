@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
 import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.DeletePaymentRequest
 import com.zaed.common.data.model.payment.request.FetchCustomerPaymentsRequest
@@ -189,7 +190,11 @@ class CustomerDetailsViewModel(
                 DeletePaymentRequest(
                     paymentId = cashPayment.id,
                     customerId = uiState.value.customer.id,
-                    amount = cashPayment.amount
+                    amount = cashPayment.amount,
+                    employeeId = uiState.value.currentDistributor.id,
+                    employeeName = uiState.value.currentDistributor.fullName,
+                    type = cashPayment.type
+
                 )
             ).onSuccess {
                 _uiState.update {
@@ -274,6 +279,7 @@ class CustomerDetailsViewModel(
                         it.copy(
                             loading = false,
                             payments = data
+                                .filter { it.receiptNumber.isEmpty() || it.type == PaymentType.FUTURES }
                                 .sortedByDescending { it.createdAt }
                                 .groupBy { it.createdAt.format(DateFormat.DATE) }
                                 .mapValues { (_, value) -> value.sortedByDescending { it.createdAt.time } }

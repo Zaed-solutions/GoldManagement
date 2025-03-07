@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.addproductsale.components
+package com.zaed.common.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background

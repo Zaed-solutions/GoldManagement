@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.customerdetails.component
+package com.zaed.common.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

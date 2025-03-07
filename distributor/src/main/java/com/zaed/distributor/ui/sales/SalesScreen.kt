@@ -1,23 +1,15 @@
 package com.zaed.distributor.ui.sales
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -38,12 +30,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
 import com.zaed.common.data.model.authentication.User
-import com.zaed.common.data.model.payment.PaymentStatus
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.WholesaleProductSale
 import com.zaed.common.ui.components.ConfirmDeleteDialog
-import com.zaed.common.ui.components.SearchBar
-import com.zaed.distributor.ui.sales.components.SalesList
+import com.zaed.common.ui.components.DatedSalesWithSearchSection
 import com.zaed.distributor.ui.theme.DistributorAppTheme
 import org.koin.androidx.compose.koinViewModel
 import java.util.Date
@@ -88,7 +78,6 @@ fun SalesScreenContent(
     state: SalesUiState,
     onAction: (SalesUiAction) -> Unit,
 ) {
-
     var selectedSale by remember { mutableStateOf("" to false) }
     var isConfirmDeleteVisible by remember { mutableStateOf(false) }
     Scaffold(
@@ -132,66 +121,24 @@ fun SalesScreenContent(
         Column(
             modifier = Modifier.padding(innerPadding)
         ) {
-            //search bar
-            SearchBar(
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
-                query = state.searchQuery,
-                onQueryChanged = { onAction(SalesUiAction.UpdateSearchQuery(it)) }
-            )
             //paid/unpaid tabs
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp)
-            ) {
-                items(PaymentStatus.entries) { status ->
-                    FilterChip(
-                        onClick = {
-                            onAction(SalesUiAction.UpdatePaymentStatusFilter(status))
-                        },
-                        label = {
-                            Text(stringResource(status.label))
-                        },
-                        shape = MaterialTheme.shapes.large,
-                        selected = state.selectedPaymentStatus == status,
-                        leadingIcon = {
-                            if (state.selectedPaymentStatus == status) {
-                                Icon(
-                                    imageVector = Icons.Filled.Done,
-                                    contentDescription = "Done icon",
-                                    modifier = Modifier.size(FilterChipDefaults.IconSize)
-                                )
-                            }
-                        },
-                    )
-                }
-            }
-            //sales list
-            SalesList(
-                sales = state.displayedSales,
+            DatedSalesWithSearchSection(
+                modifier = Modifier.fillMaxSize(),
                 isLoading = state.isLoading,
-                onDeleteSale = { saleId, isProduct ->
-                    selectedSale = saleId to isProduct
-                    isConfirmDeleteVisible = true
+                query = state.searchQuery,
+                onQueryChanged = { query ->
+                    onAction(SalesUiAction.UpdateSearchQuery(query))
                 },
-                onEditSale = { saleId, isProduct ->
-                    onAction(
-                        if (isProduct) {
-                            SalesUiAction.OnEditProductSale(saleId)
-                        } else {
-                            SalesUiAction.OnEditGoldSale(saleId)
-                        }
-                    )
+                selectedFilter = state.dateFilter,
+                onFilterClicked = { filter ->
+                    onAction(SalesUiAction.UpdateDateFilter(filter))
                 },
-                onSaleClicked = { saleId, isProduct ->
-                    onAction(
-                        if (isProduct) {
-                            SalesUiAction.OnProductSaleClicked(saleId)
-                        } else {
-                            SalesUiAction.OnGoldSaleClicked(saleId)
-                        }
-                    )
+                datedSales = state.datedSales,
+                onSaleClicked = { saleId ->
+                    SalesUiAction.OnProductSaleClicked(saleId)
                 }
             )
+
             AnimatedVisibility(isConfirmDeleteVisible) {
                 ModalBottomSheet(
                     onDismissRequest = {
@@ -230,7 +177,7 @@ private fun SalesScreenContentPreview() {
                 currentUser = User(
                     fullName = "Mohamed Mahmoud"
                 ),
-                displayedSales = listOf(
+                filteredSales = listOf(
                     WholesaleProductSale(
                         createdAt = Date(),
                         customerName = "Ali",
@@ -248,5 +195,5 @@ private fun SalesScreenContentPreview() {
             onAction = {}
         )
     }
-    
+
 }

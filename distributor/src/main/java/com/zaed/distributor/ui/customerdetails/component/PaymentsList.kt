@@ -13,6 +13,8 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.ui.components.BalanceSection
+import com.zaed.common.ui.components.PaymentItem
 
 @Composable
 fun PaymentsList(

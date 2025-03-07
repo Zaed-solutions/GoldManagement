@@ -2,8 +2,11 @@ package com.zaed.common.data.source.remote
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObjects
+import com.zaed.common.data.model.authentication.ChangeLog
+import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
@@ -32,9 +35,9 @@ class PaymentRemoteDataSourceImpl(
     override suspend fun addPayment(request: AddNewPaymentRequest): Result<String> {
         try {
             val document = moneyPaymentsCollection.document()
-            val amount = if(request.cashPayment.type == PaymentType.FUTURES){
+            val amount = if (request.cashPayment.type == PaymentType.FUTURES) {
                 request.cashPayment.amount.unaryMinus()
-            }else{
+            } else {
                 request.cashPayment.amount
             }
             document.set(
@@ -50,34 +53,39 @@ class PaymentRemoteDataSourceImpl(
                 FieldValue.increment(request.cashPayment.amount),
             ).await()
             return Result.success(document.id)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             crashlytics.recordException(e)
             return Result.failure(e)
         }
     }
+
     override fun fetchCustomerPayments(request: FetchCustomerPaymentsRequest): Flow<Result<List<Payment>>> =
         callbackFlow {
             try {
-                moneyPaymentsCollection.whereEqualTo("customerId", request.customerId)
-                    .addSnapshotListener { snapshot, error ->
-                        if (error != null) {
-                            crashlytics.recordException(error)
-                            trySend(Result.failure(error))
-                        } else {
-                            val payments = snapshot?.mapNotNull {
-                                val type = it.toObject(CashPayment::class.java).type
-                                when(type){
-                                    PaymentType.CASH -> it.toObject(CashPayment::class.java)
-                                    PaymentType.BANK_TRANSFER -> it.toObject(BankTransferPayment::class.java)
-                                    PaymentType.CHEQUE -> it.toObject(ChequePayment::class.java)
-                                    PaymentType.FUTURES -> it.toObject(FuturePayment::class.java)
-                                    PaymentType.LOSS -> it.toObject(LossPayment::class.java)
-                                    PaymentType.GOLD -> it.toObject(GoldPayment::class.java)
-                                }
-                            }?: emptyList()
-                            trySend(Result.success(payments))
-                        }
+                val result = moneyPaymentsCollection.where(
+                    Filter.and(
+                        Filter.equalTo("deleted", false),
+                        Filter.equalTo("customerId", request.customerId)
+                    )
+                ).addSnapshotListener { snapshot, error ->
+                    if (error != null) {
+                        crashlytics.recordException(error)
+                        trySend(Result.failure(error))
+                    } else {
+                        val payments = snapshot?.mapNotNull {
+                            val type = it.toObject(CashPayment::class.java).type
+                            when (type) {
+                                PaymentType.CASH -> it.toObject(CashPayment::class.java)
+                                PaymentType.BANK_TRANSFER -> it.toObject(BankTransferPayment::class.java)
+                                PaymentType.CHEQUE -> it.toObject(ChequePayment::class.java)
+                                PaymentType.FUTURES -> it.toObject(FuturePayment::class.java)
+                                PaymentType.LOSS -> it.toObject(LossPayment::class.java)
+                                PaymentType.GOLD -> it.toObject(GoldPayment::class.java)
+                            }
+                        } ?: emptyList()
+                        trySend(Result.success(payments))
                     }
+                }
             } catch (e: Exception) {
                 crashlytics.recordException(e)
                 e.printStackTrace()
@@ -88,10 +96,15 @@ class PaymentRemoteDataSourceImpl(
 
     override suspend fun fetchMoneyPaymentsByIds(request: FetchPaymentsByIdsRequest): Result<List<Payment>> {
         return try {
-            val result = moneyPaymentsCollection.whereIn("id", request.paymentsIds).get().await()
+            val result = moneyPaymentsCollection.where(
+                Filter.and(
+                    Filter.equalTo("deleted", false),
+                    Filter.inArray("id", request.paymentsIds)
+                )
+            ).get().await()
             val payments = result.map {
                 val type = it.toObject(CashPayment::class.java).type
-                when(type){
+                when (type) {
                     PaymentType.CASH -> it.toObject(CashPayment::class.java)
                     PaymentType.BANK_TRANSFER -> it.toObject(BankTransferPayment::class.java)
                     PaymentType.CHEQUE -> it.toObject(ChequePayment::class.java)
@@ -101,24 +114,28 @@ class PaymentRemoteDataSourceImpl(
                 }
             }
             Result.success(payments)
-        } catch (e: Exception){
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }
+
     override suspend fun fetchGoldPaymentsByIds(request: FetchPaymentsByIdsRequest): Result<List<GoldPayment>> {
         return try {
-            val moneyPayments = goldPaymentsCollection.whereIn("id", request.paymentsIds).get().await().toObjects<GoldPayment>()
+            val moneyPayments =
+                goldPaymentsCollection.whereIn("id", request.paymentsIds).get().await()
+                    .toObjects<GoldPayment>()
             Result.success(moneyPayments)
-        } catch (e: Exception){
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
     override suspend fun editPayment(request: EditPaymentRequest): Result<Unit> {
         try {
-            moneyPaymentsCollection.document(request.newCashPayment.id).set(request.newCashPayment).await()
+            moneyPaymentsCollection.document(request.newCashPayment.id).set(request.newCashPayment)
+                .await()
             return Result.success(Unit)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             crashlytics.recordException(e)
             e.printStackTrace()
             return Result.failure(e)
@@ -127,13 +144,24 @@ class PaymentRemoteDataSourceImpl(
 
     override suspend fun deletePayment(request: DeletePaymentRequest): Result<Unit> {
         try {
-            moneyPaymentsCollection.document(request.paymentId).delete().await()
+            moneyPaymentsCollection.document(request.paymentId).update(
+                mapOf(
+                    "deleted" to true,
+                    "logs" to FieldValue.arrayUnion(
+                        ChangeLog(
+                            employeeId = request.employeeId,
+                            employeeName = request.employeeName,
+                            type = LogType.DELETE
+                        )
+                    )
+                )
+            ).await()
             customersCollection.document(request.customerId).update(
                 "debtAmount",
-                FieldValue.increment(-request.amount),
+                FieldValue.increment(if (request.type == PaymentType.FUTURES) request.amount else request.amount.unaryMinus()),
             ).await()
             return Result.success(Unit)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             crashlytics.recordException(e)
             e.printStackTrace()
             return Result.failure(e)

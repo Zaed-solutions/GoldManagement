@@ -11,13 +11,13 @@ import com.google.firebase.firestore.SetOptions
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
+import com.zaed.common.data.model.inventory.InventoryType
+import com.zaed.common.data.model.loss.DistributorLoss
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
 import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.LossPayment
-import com.zaed.common.data.model.inventory.InventoryType
-import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.sale.IngotTransaction
 import com.zaed.common.data.model.sale.StoreSale
@@ -61,6 +61,8 @@ class SaleRemoteSourceImpl(
     private val goldPaymentsCollection = firestore.collection("gold_payments")
     private val wholesaleCustomersCollection = firestore.collection("whole_sale_customers")
     private val inventoryCollection = firestore.collection("inventory")
+    private val distributorLossesCollection = firestore.collection("distributor-losses")
+
     override fun fetchStoreSales(request: FetchStoreSalesRequest): Flow<Result<List<StoreSale>>> =
         callbackFlow {
             try {
@@ -197,7 +199,7 @@ class SaleRemoteSourceImpl(
                         date = Date(),
                         employeeId = request.employeeId,
                         employeeName = request.employeeName,
-                        action = "${request.employeeName} Changed the products with total from ${oldSale.totalAmount} to ${request.sale.totalAmount}"
+                        type = LogType.UPDATE
                     )
                 )
                 val oldProductsByCategory = oldSale.products
@@ -651,34 +653,49 @@ class SaleRemoteSourceImpl(
                 val ref = moneyPaymentCollection.document()
                 paymentsIds.add(ref.id)
 
-                val amount = if (it.type == PaymentType.FUTURES) {
+                if (it.type == PaymentType.FUTURES) {
                     val customerRef = wholesaleCustomersCollection.document(request.sale.customerId)
                     batch.update(
                         customerRef,
                         mapOf("debtAmount" to FieldValue.increment(it.amount.unaryMinus()))
                     )
-                    it.amount.unaryMinus()
+                } else if (it.type == PaymentType.LOSS) {
+                    val document = distributorLossesCollection.document()
+                    batch.set(
+                        document, DistributorLoss(
+                            id = document.id,
+                            value = it.amount,
+                            reason = "Sales Loss for $receiptNumber",
+                            userId = request.sale.distributorId,
+                            userName = request.sale.distributorName,
+                            logs = listOf(
+                                ChangeLog(
+                                    employeeId = request.sale.distributorId,
+                                    employeeName = request.sale.distributorName,
+                                    type = LogType.CREATE
+                                )
+                            )
+                        )
+                    )
                 } else {
-                    it.amount
                 }
-                when(it){
+                when (it) {
                     is CashPayment -> batch.set(
                         ref,
-                        it.copy(id = ref.id, amount = amount, receiptNumber = receiptNumber.toString())
+                        it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
                     )
+
                     is FuturePayment -> batch.set(
                         ref,
                         it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
                     )
+
                     is ChequePayment -> batch.set(
                         ref,
                         it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
                     )
+
                     is BankTransferPayment -> batch.set(
-                        ref,
-                        it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
-                    )
-                    is LossPayment -> batch.set(
                         ref,
                         it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
                     )
@@ -824,7 +841,7 @@ class SaleRemoteSourceImpl(
             ).get().await().documents.firstOrNull()?.toObject(CashPayment::class.java)
                 ?: CashPayment()
             val updatedPaymentIds = mutableListOf<String>()
-            if(request.sale.customerId.isNotBlank()) {
+            if (request.sale.customerId.isNotBlank()) {
                 val customerRef = wholesaleCustomersCollection.document(request.sale.customerId)
 
                 Log.d("finding_the_sex", "existingPayment: ${existingPayment.amount}")
@@ -842,7 +859,8 @@ class SaleRemoteSourceImpl(
                 } else {
                     val newPaymentRef = moneyPaymentCollection.document()
                     val amount = if (payment.type == PaymentType.FUTURES) {
-                        val customerRef = wholesaleCustomersCollection.document(request.sale.customerId)
+                        val customerRef =
+                            wholesaleCustomersCollection.document(request.sale.customerId)
                         batch.update(
                             customerRef,
                             mapOf("debtAmount" to FieldValue.increment(payment.amount.unaryMinus()))
@@ -851,12 +869,31 @@ class SaleRemoteSourceImpl(
                     } else {
                         payment.amount
                     }
-                    when(payment){
-                        is CashPayment -> batch.set(newPaymentRef, payment.copy(id = newPaymentRef.id, amount = amount))
-                        is FuturePayment -> batch.set(newPaymentRef, payment.copy(id = newPaymentRef.id, amount = amount))
-                        is ChequePayment -> batch.set(newPaymentRef, payment.copy(id = newPaymentRef.id, amount = amount))
-                        is BankTransferPayment -> batch.set(newPaymentRef, payment.copy(id = newPaymentRef.id, amount = amount))
-                        is LossPayment -> batch.set(newPaymentRef, payment.copy(id = newPaymentRef.id, amount = amount))
+                    when (payment) {
+                        is CashPayment -> batch.set(
+                            newPaymentRef,
+                            payment.copy(id = newPaymentRef.id, amount = amount)
+                        )
+
+                        is FuturePayment -> batch.set(
+                            newPaymentRef,
+                            payment.copy(id = newPaymentRef.id, amount = amount)
+                        )
+
+                        is ChequePayment -> batch.set(
+                            newPaymentRef,
+                            payment.copy(id = newPaymentRef.id, amount = amount)
+                        )
+
+                        is BankTransferPayment -> batch.set(
+                            newPaymentRef,
+                            payment.copy(id = newPaymentRef.id, amount = amount)
+                        )
+
+                        is LossPayment -> batch.set(
+                            newPaymentRef,
+                            payment.copy(id = newPaymentRef.id, amount = amount)
+                        )
                     }
                     updatedPaymentIds.add(newPaymentRef.id)
                 }

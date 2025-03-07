@@ -4,8 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.authentication.ChangeLog
-import com.zaed.common.data.model.payment.GoldPayment
+import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.payment.CashPayment
+import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
 import com.zaed.common.data.model.sale.ReceiptStatus
 import com.zaed.common.data.model.sale.request.DeleteWholesaleGoldSaleRequest
@@ -129,7 +130,7 @@ class GoldSaleDetailsViewModel(
                     ChangeLog(
                         employeeName = uiState.value.currentUser.fullName,
                         employeeId = uiState.value.currentUser.id,
-                        action = "Requested receipt",
+                        type = LogType.UPDATE
                     )
                 )
             }

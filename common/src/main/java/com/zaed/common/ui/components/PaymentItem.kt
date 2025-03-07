@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.customerdetails.component
+package com.zaed.common.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.payment.BankTransferPayment
@@ -27,12 +26,9 @@ import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.LossPayment
 import com.zaed.common.data.model.payment.Payment
-import com.zaed.common.ui.components.SwipeToEditOrDeleteContainer
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
 import com.zaed.common.ui.util.toMoneyFormat
-import com.zaed.distributor.ui.theme.DistributorAppTheme
-import java.util.Date
 import kotlin.math.absoluteValue
 
 @Composable
@@ -421,19 +417,4 @@ fun PaymentItem(
         }
 
     }
-}
-
-@Preview
-@Composable
-private fun PaymentItemPreview() {
-    DistributorAppTheme {
-        PaymentItem(
-            payment = CashPayment(
-                amount = 1000.0,
-                type = com.zaed.common.data.model.payment.PaymentType.FUTURES,
-                createdAt = Date(),
-            )
-        )
-    }
-
 }

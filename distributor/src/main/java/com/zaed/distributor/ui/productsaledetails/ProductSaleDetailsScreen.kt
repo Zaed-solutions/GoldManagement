@@ -23,7 +23,7 @@ import com.zaed.common.data.model.sale.Product
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
 import com.zaed.common.ui.components.ProductsTable
 import com.zaed.common.ui.components.TitledSection
-import com.zaed.distributor.ui.productsaledetails.components.CustomerInfoSection
+import com.zaed.common.ui.components.CustomerInfoSection
 import com.zaed.distributor.ui.productsaledetails.components.PaymentsTable
 import com.zaed.distributor.ui.productsaledetails.components.ProductSaleDetailsTopBar
 import com.zaed.distributor.ui.productsaledetails.components.SaleInfoSection

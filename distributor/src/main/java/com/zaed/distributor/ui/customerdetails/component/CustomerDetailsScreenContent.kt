@@ -31,10 +31,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
@@ -48,11 +50,11 @@ import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.getProductSalePayments
 import com.zaed.common.ui.components.BackIcon
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
+import com.zaed.common.ui.components.PaymentTypes
+import com.zaed.common.ui.components.SaveBankTransferPaymentBottomSheetContent
+import com.zaed.common.ui.components.SaveCashPaymentBottomSheetContent
+import com.zaed.common.ui.components.SaveChequePaymentBottomSheetContent
 import com.zaed.common.ui.util.toMoneyFormat
-import com.zaed.distributor.ui.addproductsale.components.PaymentTypes
-import com.zaed.distributor.ui.addproductsale.components.SaveBankTransferPaymentBottomSheetContent
-import com.zaed.distributor.ui.addproductsale.components.SaveCashPaymentBottomSheetContent
-import com.zaed.distributor.ui.addproductsale.components.SaveChequePaymentBottomSheetContent
 import com.zaed.distributor.ui.customerdetails.CustomerDetailsUiAction
 import com.zaed.distributor.ui.customerdetails.CustomerDetailsUiState
 import com.zaed.distributor.ui.sales.components.SalesList
@@ -177,7 +179,7 @@ fun CustomerDetailsScreenContent(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(8.dp),
-                                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Button(
                                     modifier = Modifier
@@ -188,12 +190,12 @@ fun CustomerDetailsScreenContent(
                                         selectPaymentTypeSheet = true
                                     },
                                     colors = ButtonDefaults.filledTonalButtonColors(
-                                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                                        contentColor = MaterialTheme.colorScheme.error
+                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                        contentColor = MaterialTheme.colorScheme.onPrimary
                                     ),
                                     shape = RoundedCornerShape(4.dp)
                                 ) {
-                                    Text(text = "أخذت")
+                                    Text(text = stringResource(com.zaed.common.R.string.taken))
                                 }
                                 Button(
                                     modifier = Modifier
@@ -205,11 +207,11 @@ fun CustomerDetailsScreenContent(
                                         selectPaymentTypeSheet = true
                                     },
                                     colors = ButtonDefaults.filledTonalButtonColors(
-                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                        contentColor = MaterialTheme.colorScheme.onPrimary
+                                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                                        contentColor = MaterialTheme.colorScheme.error
                                     )
                                 ) {
-                                    Text(text = "أعطيت")
+                                    Text(text = stringResource(com.zaed.common.R.string.given))
                                 }
                             }
                         }
