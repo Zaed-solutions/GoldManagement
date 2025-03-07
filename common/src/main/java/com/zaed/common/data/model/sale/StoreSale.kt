@@ -18,8 +18,8 @@ data class StoreSale(
     val discount: Discount = Discount(),
     override val deleted: Boolean = false,
     override val logs: List<ChangeLog> = emptyList(),
-    override val customerId: String,
-    override val customerPhone: String
+    override val customerId: String="",
+    override val customerPhone: String=""
 ): Sale() {
     @Transient
     override val totalAmount

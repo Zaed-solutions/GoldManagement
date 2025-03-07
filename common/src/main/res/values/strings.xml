@@ -208,4 +208,11 @@
     <string name="ingot_of_karat">Ingot of karat %1$s</string>
     <string name="units_placeholder">%1$s units</string>
     <string name="search_by_receipt_number">Search by receipt number</string>
+    <string name="sender_name">Sender Name</string>
+    <string name="receiver_name">Receiver Name</string>
+    <string name="cheque_for">Cheque For</string>
+    <string name="note">Notes</string>
+    <string name="bank_Name">Bank Name</string>
+    <string name="account_number">Account Number</string>
+    <string name="account_holder_name">Account Holder Name</string>
 </resources>
