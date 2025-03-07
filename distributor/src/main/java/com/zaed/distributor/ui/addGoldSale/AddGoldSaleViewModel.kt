@@ -7,8 +7,8 @@ import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.customer.FetchWholesaleCustomersByNameRequest
 import com.zaed.common.data.model.customer.WholeSaleCustomer
+import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.GoldPayment
-import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.common.data.model.payment.PaymentStatus
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
@@ -93,7 +93,7 @@ class AddGoldSaleViewModel(
                 FetchPaymentsByIdsRequest(moneyPaymentsIds)
             ).onSuccess { data ->
                 _uiState.update { oldState ->
-                    oldState.copy(moneyPayments = data.filter { it.type != PaymentType.FUTURES })
+                    oldState.copy(cashPayments = data.filter { it.type != PaymentType.FUTURES })
                 }
                 Log.d(TAG, "fetchPayments: $data")
             }.onFailure {
@@ -146,14 +146,14 @@ class AddGoldSaleViewModel(
             AddGoldSaleUiAction.OnSubmitClicked -> onSubmit()
             is AddGoldSaleUiAction.OnAddPayment -> {
                 when (action.moneyPayment) {
-                    is MoneyPayment -> addPayment(action.moneyPayment)
+                    is CashPayment -> addPayment(action.moneyPayment)
                     is GoldPayment -> addGoldPayment(action.moneyPayment)
                 }
             }
 
             is AddGoldSaleUiAction.OnEditPayment -> {
                 when (action.moneyPayment) {
-                    is MoneyPayment -> updatePayment(action.moneyPayment)
+                    is CashPayment -> updatePayment(action.moneyPayment)
                     is GoldPayment -> updateGoldPayment(action.moneyPayment)
                 }
             }
@@ -197,22 +197,21 @@ class AddGoldSaleViewModel(
                             },
                             logs = oldState.sale.logs + updateLog
                         ),
-                        moneyPayments = oldState.moneyPayments.map { it.copy(customerId = oldState.selectedCustomer.id) }
                     )
                 }
             }
             if (uiState.value.totalPaid != (uiState.value.totalAmount + uiState.value.laborCost)) {
-                val futureMoneyPayment = MoneyPayment(
+                val futureCashPayment = CashPayment(
                     customerId = uiState.value.selectedCustomer.id,
                     type = PaymentType.FUTURES,
                     amount = (uiState.value.totalAmount - uiState.value.totalPaid) + uiState.value.laborCost
                 )
-                _uiState.update { oldState -> oldState.copy(moneyPayments = oldState.moneyPayments.filter { it.type != PaymentType.FUTURES } + futureMoneyPayment) }
+                _uiState.update { oldState -> oldState.copy(cashPayments = oldState.cashPayments.filter { it.type != PaymentType.FUTURES } + futureCashPayment) }
             }
             updateGoldSaleUseCase(
                 UpdateWholesaleGoldSaleRequest(
                     sale = uiState.value.sale,
-                    moneyPayments = uiState.value.moneyPayments,
+                    cashPayments = uiState.value.cashPayments.filterIsInstance<CashPayment>(),
                     goldPayments = uiState.value.goldPayments,
                     employeeName = uiState.value.currentUser.fullName,
                     employeeId = uiState.value.currentUser.id
@@ -268,23 +267,21 @@ class AddGoldSaleViewModel(
                             type = LogType.CREATE
                         )
                     ),
-                    moneyPayments = oldState.moneyPayments.map { it.copy(customerId = oldState.selectedCustomer.id) },
-                    goldPayments = oldState.goldPayments.map { it.copy(customerId = oldState.selectedCustomer.id) }
                 )
             }
             if (uiState.value.totalPaid != (uiState.value.totalAmount + uiState.value.laborCost)) {
-                val futureMoneyPayment = MoneyPayment(
+                val futureCashPayment = CashPayment(
                     customerId = uiState.value.selectedCustomer.id,
                     type = PaymentType.FUTURES,
                     amount = (uiState.value.totalAmount - uiState.value.totalPaid) + uiState.value.laborCost
                 )
-                _uiState.update { oldState -> oldState.copy(moneyPayments = oldState.moneyPayments.filter { it.type != PaymentType.FUTURES } + futureMoneyPayment) }
+                _uiState.update { oldState -> oldState.copy(cashPayments = oldState.cashPayments.filter { it.type != PaymentType.FUTURES } + futureCashPayment) }
             }
             Log.d(TAG, "addSale: Calling addGoldSaleUseCase with sale and payments")
             addGoldSaleUseCase(
                 AddWholesaleGoldSaleRequest(
                     sale = uiState.value.sale,
-                    moneyPayments = uiState.value.moneyPayments,
+                    cashPayments = uiState.value.cashPayments.filterIsInstance<CashPayment>(),
                     goldPayments = uiState.value.goldPayments
                 )
             ).onSuccess { id ->
@@ -378,12 +375,12 @@ class AddGoldSaleViewModel(
     }
 
 
-    private fun addPayment(moneyPayment: MoneyPayment) {
-        Log.d(TAG, "addPayment: Adding payment with ID=${moneyPayment.id}")
+    private fun addPayment(cashPayment: CashPayment) {
+        Log.d(TAG, "addPayment: Adding payment with ID=${cashPayment.id}")
         viewModelScope.launch {
             _uiState.update { oldState ->
-                Log.d(TAG, "addPayment: Adding payment ${moneyPayment.id} to moneyPayments list")
-                oldState.copy(moneyPayments = oldState.moneyPayments + moneyPayment)
+                Log.d(TAG, "addPayment: Adding payment ${cashPayment.id} to moneyPayments list")
+                oldState.copy(cashPayments = oldState.cashPayments + cashPayment)
             }
         }
     }
@@ -403,7 +400,7 @@ class AddGoldSaleViewModel(
         viewModelScope.launch {
             _uiState.update { oldState ->
                 Log.d(TAG, "removePayment: Filtering out payment $paymentId from moneyPayments")
-                oldState.copy(moneyPayments = oldState.moneyPayments.filter { it.id != paymentId }) // ملاحظة: يبدو أن هناك خطأ في الفلترة، يجب أن يكون !=
+                oldState.copy(cashPayments = oldState.cashPayments.filter { it.id != paymentId }) // ملاحظة: يبدو أن هناك خطأ في الفلترة، يجب أن يكون !=
             }
         }
     }
@@ -418,17 +415,17 @@ class AddGoldSaleViewModel(
         }
     }
 
-    private fun updatePayment(moneyPayment: MoneyPayment) {
-        Log.d(TAG, "updatePayment: Updating payment with ID=${moneyPayment.id}")
+    private fun updatePayment(cashPayment: CashPayment) {
+        Log.d(TAG, "updatePayment: Updating payment with ID=${cashPayment.id}")
         viewModelScope.launch {
             _uiState.update { oldState ->
                 Log.d(
                     TAG,
-                    "updatePayment: Replacing payment ${moneyPayment.id} in moneyPayments list"
+                    "updatePayment: Replacing payment ${cashPayment.id} in moneyPayments list"
                 )
                 oldState.copy(
-                    moneyPayments = oldState.moneyPayments.map {
-                        if (it.id == moneyPayment.id) moneyPayment else it
+                    cashPayments = oldState.cashPayments.map {
+                        if (it.id == cashPayment.id) cashPayment else it
                     }
                 )
             }

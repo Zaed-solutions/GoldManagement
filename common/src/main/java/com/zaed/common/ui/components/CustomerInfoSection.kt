@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.productsaledetails.components
+package com.zaed.common.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -22,9 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.ui.components.TitledSection
 import com.zaed.common.ui.util.toMoneyFormat
-import com.zaed.distributor.ui.theme.DistributorAppTheme
 import kotlin.math.absoluteValue
 
 @Composable
@@ -92,11 +90,10 @@ fun CustomerInfoSection(
 @Preview
 @Composable
 private fun CustomerInfoSectionPreview() {
-    DistributorAppTheme {
         CustomerInfoSection(
             customerName = "Mohamed Mahmoud",
             customerDebt = 100.0
         ){}
-    }
+
     
 }

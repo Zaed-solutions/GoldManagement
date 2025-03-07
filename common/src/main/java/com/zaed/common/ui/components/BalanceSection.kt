@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.customerdetails.component
+package com.zaed.common.ui.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,10 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.ui.util.toMoneyFormat
-import com.zaed.distributor.ui.theme.DistributorAppTheme
 import kotlin.math.absoluteValue
 
 @Composable
@@ -59,13 +57,7 @@ fun BalanceSection(
     }
 }
 
-@Preview(showSystemUi = false, showBackground = true)
-@Composable
-private fun BalanceSectionPreview() {
-    DistributorAppTheme {
-        BalanceSection(amount = 1000.0)
-    }
-}
+
 
 @Composable
 fun Double.getContainerColor() =

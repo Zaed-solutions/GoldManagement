@@ -97,7 +97,7 @@ fun ProductItem(
                 )
             }
             Text(
-                text = (product.grams * product.gramPrice * product.quantity).formatMoney(),
+                text = product.totalPriceAfterDiscount.formatMoney(),
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.End,
                 maxLines = 1,

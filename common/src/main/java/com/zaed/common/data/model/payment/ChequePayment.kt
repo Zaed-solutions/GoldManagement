@@ -1,16 +1,21 @@
 package com.zaed.common.data.model.payment
 
 import com.zaed.common.data.model.authentication.ChangeLog
+import com.zaed.common.data.model.cheque.ChequeStatus
 import java.util.Date
 
-data class GoldPayment(
+data class ChequePayment(
     override val id: String = "",
+    val senderName : String ="",
+    val paymentDate : Date = Date(),
+    val city : String = "",
+    val receiverName : String = "",
+    val chequeFor : String = "",
+    val chequeStatus : ChequeStatus = ChequeStatus.RECEIVED,
+    val notes : String = "",
     override val customerId: String = "",
-    override val type: PaymentType = PaymentType.GOLD,
+    override val type: PaymentType = PaymentType.CHEQUE,
     override val amount: Double = 0.0,
-    val givenGoldAmount: Double = 0.0,
-    val pricePerGram: Double = 0.0,
-    val givenGoldKarat: Int = 0,
     override val deleted: Boolean = false,
     override val receiptNumber: String = "",
     override val createdAt: Date = Date(),

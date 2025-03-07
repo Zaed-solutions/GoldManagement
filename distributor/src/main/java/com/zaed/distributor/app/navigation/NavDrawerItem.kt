@@ -15,6 +15,11 @@ enum class NavDrawerItem(
         icon = R.drawable.ic_money_plus,
         route = Route.SalesRoute
     ),
+    ADD_SALE(
+        title = R.string.add_sale,
+        icon = R.drawable.ic_gold,
+        route = Route.AddProductSaleRoute()
+    ),
     CUSTOMERS(
         title = R.string.customers,
         icon = R.drawable.ic_customers,
@@ -42,8 +47,10 @@ fun List<UserPermission>.mapToNavDrawerItems(): List<NavDrawerItem> {
     forEach {
         when (it) {
             UserPermission.SELL_PRODUCTS -> {
+                routes.add(NavDrawerItem.ADD_SALE)
                 routes.add(NavDrawerItem.PRODUCT_SALES)
             }
+
             UserPermission.SELL_GOLD -> {
                 routes.add(NavDrawerItem.GOLD_SALES)
             }

@@ -3,14 +3,11 @@ package com.zaed.common.data.model.payment
 import com.zaed.common.data.model.authentication.ChangeLog
 import java.util.Date
 
-data class GoldPayment(
+data class FuturePayment(
     override val id: String = "",
     override val customerId: String = "",
-    override val type: PaymentType = PaymentType.GOLD,
+    override val type: PaymentType = PaymentType.FUTURES,
     override val amount: Double = 0.0,
-    val givenGoldAmount: Double = 0.0,
-    val pricePerGram: Double = 0.0,
-    val givenGoldKarat: Int = 0,
     override val deleted: Boolean = false,
     override val receiptNumber: String = "",
     override val createdAt: Date = Date(),

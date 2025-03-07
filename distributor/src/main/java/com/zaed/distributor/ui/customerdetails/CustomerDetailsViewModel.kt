@@ -4,11 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
-import com.zaed.common.data.model.payment.MoneyPayment
+import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.DeletePaymentRequest
-import com.zaed.common.data.model.payment.request.EditPaymentRequest
 import com.zaed.common.data.model.payment.request.FetchCustomerPaymentsRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleGoldSaleRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleProductSaleRequest
@@ -28,7 +27,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.math.absoluteValue
 
 class CustomerDetailsViewModel(
     private val fetchCustomerPaymentsUseCase: FetchCustomerPaymentsUseCase,
@@ -101,17 +99,9 @@ class CustomerDetailsViewModel(
 
     fun handleUiAction(action: CustomerDetailsUiAction) {
         when (action) {
-            is CustomerDetailsUiAction.OnAmountChanged -> updateAmount(action.amount)
-            is CustomerDetailsUiAction.OnChangeValueDirection -> updateAmountDirection(action.isGiven)
-            is CustomerDetailsUiAction.DeletePayment -> deletePayment(action.moneyPayment)
-            is CustomerDetailsUiAction.EditPayment -> updateCurrentPayment(action.moneyPayment)
-            CustomerDetailsUiAction.OnConfirmEditPayment -> confirmEditPayment()
-            CustomerDetailsUiAction.OnSaveClicked -> addPayment()
-            is CustomerDetailsUiAction.OnTypeChanged -> updateType(action.type)
-
+            is CustomerDetailsUiAction.DeletePayment -> deletePayment(action.cashPayment)
             is CustomerDetailsUiAction.OnDeleteProductSale -> deleteProductSale(action.saleId)
             is CustomerDetailsUiAction.OnDeleteGoldSale -> deleteGoldSale(action.saleId)
-
             else -> {}
         }
     }
@@ -150,57 +140,61 @@ class CustomerDetailsViewModel(
         }
     }
 
-    private fun confirmEditPayment() {
-        Log.d("TAG", "confirmEditPayment: ${uiState.value.currentMoneyPayment}")
-        viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update {
-                it.copy(loading = true)
-            }
-            editPaymentUseCase(
-                request = EditPaymentRequest(
-                    customerId = uiState.value.customer.id,
-                    newMoneyPayment = uiState.value.currentMoneyPayment.copy(
-                        amount = if (uiState.value.paymentDirection) uiState.value.currentMoneyPayment.amount else uiState.value.currentMoneyPayment.amount.unaryMinus()
-                    ),
-                    oldAmount = uiState.value.tempMoneyPayment.amount
-                )
-            ).onSuccess {
-                _uiState.update {
-                    it.copy(
-                        loading = false
-                    )
-                }
-                getCustomerDetails(uiState.value.customer.id)
-            }.onFailure {
-                _uiState.update {
-                    it.copy(
-                        loading = false
-                    )
-                }
-            }
-        }
-    }
+//    private fun confirmEditPayment() {
+//        viewModelScope.launch(Dispatchers.IO) {
+//            _uiState.update {
+//                it.copy(loading = true)
+//            }
+//            editPaymentUseCase(
+//                request = EditPaymentRequest(
+//                    customerId = uiState.value.customer.id,
+//                    newCashPayment =
+//                    uiState.value.currentPayment.copy(
+//                        amount = if (uiState.value.paymentDirection) uiState.value.currentPayment.amount else uiState.value.currentPayment.amount.unaryMinus()
+//                    ),
+//                    oldAmount = uiState.value.tempPayment.amount
+//                )
+//            ).onSuccess {
+//                _uiState.update {
+//                    it.copy(
+//                        loading = false
+//                    )
+//                }
+//                getCustomerDetails(uiState.value.customer.id)
+//            }.onFailure {
+//                _uiState.update {
+//                    it.copy(
+//                        loading = false
+//                    )
+//                }
+//            }
+//        }
+//    }
 
-    private fun updateCurrentPayment(moneyPayment: MoneyPayment) {
-        _uiState.update {
-            it.copy(
-                tempMoneyPayment = moneyPayment,
-                currentMoneyPayment = moneyPayment.copy(amount = moneyPayment.amount.absoluteValue),
-                paymentDirection = moneyPayment.amount > 0
-            )
-        }
-    }
+//    private fun updateCurrentPayment(cashPayment: Payment) {
+//        _uiState.update {
+//            it.copy(
+//                tempPayment = cashPayment,
+//                currentPayment = cashPayment.copy(amount = cashPayment.amount.absoluteValue),
+//                paymentDirection = cashPayment.amount > 0
+//            )
+//        }
+//    }
 
-    private fun deletePayment(moneyPayment: MoneyPayment) {
+    private fun deletePayment(cashPayment: Payment) {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update {
                 it.copy(loading = true)
             }
             deletePaymentUseCase.invoke(
                 DeletePaymentRequest(
-                    paymentId = moneyPayment.id,
+                    paymentId = cashPayment.id,
                     customerId = uiState.value.customer.id,
-                    amount = moneyPayment.amount
+                    amount = cashPayment.amount,
+                    employeeId = uiState.value.currentDistributor.id,
+                    employeeName = uiState.value.currentDistributor.fullName,
+                    type = cashPayment.type
+
                 )
             ).onSuccess {
                 _uiState.update {
@@ -221,24 +215,20 @@ class CustomerDetailsViewModel(
         }
     }
 
-    private fun addPayment() {
+    fun addPayment(payment: Payment) {
         viewModelScope.launch(Dispatchers.IO) {
-            if (uiState.value.currentMoneyPayment.amount == 0.0) return@launch
             _uiState.update {
                 it.copy(loading = true)
             }
             addPaymentUseCase(
                 request = AddNewPaymentRequest(
                     customerId = uiState.value.customer.id,
-                    moneyPayment = uiState.value.currentMoneyPayment.copy(
-                        amount = if (uiState.value.paymentDirection) uiState.value.currentMoneyPayment.amount else uiState.value.currentMoneyPayment.amount.unaryMinus()
-                    )
+                    cashPayment = payment
                 )
             ).onSuccess {
                 _uiState.update {
                     it.copy(
                         loading = false,
-                        currentMoneyPayment = MoneyPayment()
                     )
                 }
                 getCustomerDetails(uiState.value.customer.id)
@@ -255,34 +245,26 @@ class CustomerDetailsViewModel(
         }
     }
 
-    private fun updateType(type: PaymentType) {
-        _uiState.update {
-            it.copy(
-                currentMoneyPayment = it.currentMoneyPayment.copy(
-                    type = type
-                )
-            )
-        }
-    }
+//    private fun updateType(type: PaymentType) {
+//        _uiState.update {
+//            it.copy(
+//                currentPayment = it.currentPayment.copy(
+//                    type = type
+//                )
+//            )
+//        }
+//    }
 
-    private fun updateAmountDirection(value: Boolean) {
-        Log.d("TAG", "updateAmountDirection: $value")
-        _uiState.update {
-            it.copy(
-                paymentDirection = value,
-            )
-        }
-    }
 
-    private fun updateAmount(amount: Double) {
-        _uiState.update {
-            it.copy(
-                currentMoneyPayment = it.currentMoneyPayment.copy(
-                    amount = amount
-                )
-            )
-        }
-    }
+//    private fun updateAmount(amount: Double) {
+//        _uiState.update {
+//            it.copy(
+//                currentPayment = it.currentPayment.copy(
+//                    amount = amount
+//                )
+//            )
+//        }
+//    }
 
     private fun getCustomerPayments(customerId: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -297,6 +279,7 @@ class CustomerDetailsViewModel(
                         it.copy(
                             loading = false,
                             payments = data
+                                .filter { it.receiptNumber.isEmpty() || it.type == PaymentType.FUTURES }
                                 .sortedByDescending { it.createdAt }
                                 .groupBy { it.createdAt.format(DateFormat.DATE) }
                                 .mapValues { (_, value) -> value.sortedByDescending { it.createdAt.time } }

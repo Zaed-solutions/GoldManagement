@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.addproductsale.components
+package com.zaed.common.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
@@ -47,9 +47,7 @@ import com.zaed.common.data.model.sale.Discount
 import com.zaed.common.data.model.sale.DiscountType
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.WholesaleProductSale
-import com.zaed.common.ui.components.ProductFieldsContent
 import com.zaed.common.ui.util.toMoneyFormat
-import com.zaed.distributor.ui.productsaledetails.components.CustomerInfoSection
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

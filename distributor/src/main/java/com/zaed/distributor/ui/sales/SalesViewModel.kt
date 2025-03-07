@@ -3,15 +3,16 @@ package com.zaed.distributor.ui.sales
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zaed.common.data.model.payment.PaymentStatus
 import com.zaed.common.data.model.sale.request.DeleteWholesaleGoldSaleRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.FetchDistributorSalesRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.authentication.LogoutUserUseCase
+import com.zaed.common.domain.sale.ConvertSalesToDatedSalesUseCase
 import com.zaed.common.domain.sale.DeleteWholesaleGoldSaleUseCase
 import com.zaed.common.domain.sale.DeleteWholesaleProductSaleUseCase
 import com.zaed.common.domain.sale.FetchDistributorSalesUseCase
+import com.zaed.common.ui.util.DateFormat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,14 +24,17 @@ class SalesViewModel(
     private val getCurrentUserUseCase: GetCurrentUserLoggedInUseCase,
     private val deleteProductSaleUseCase: DeleteWholesaleProductSaleUseCase,
     private val deleteGoldSaleUseCase: DeleteWholesaleGoldSaleUseCase,
+    private val convertDateFormatUseCase: ConvertSalesToDatedSalesUseCase,
     private val logOutUseCase: LogoutUserUseCase
-): ViewModel() {
+) : ViewModel() {
     private val TAG = "SalesViewModel"
     private val _uiState = MutableStateFlow(SalesUiState())
     val uiState = _uiState.asStateFlow()
+
     init {
         fetchCurrentUser()
     }
+
     private fun fetchCurrentUser() {
         viewModelScope.launch(Dispatchers.IO) {
             getCurrentUserUseCase().collect { result ->
@@ -53,15 +57,15 @@ class SalesViewModel(
                 FetchDistributorSalesRequest(
                     distributorId = uiState.value.currentUser.id
                 )
-            ).collect{ result ->
+            ).collect { result ->
                 result.onSuccess { data ->
-                    _uiState.update {oldState ->
+                    _uiState.update { oldState ->
                         oldState.copy(
                             allSales = data,
                         )
                     }
                     filterData()
-                }.onFailure { e->
+                }.onFailure { e ->
                     Log.e(TAG, "fetchSales: ${e.message}", e)
                     e.printStackTrace()
                 }
@@ -69,19 +73,19 @@ class SalesViewModel(
         }
     }
 
-    fun handleAction(action: SalesUiAction){
-        when(action){
+    fun handleAction(action: SalesUiAction) {
+        when (action) {
             is SalesUiAction.OnDeleteProductSale -> deleteProductSale(action.saleId)
             is SalesUiAction.OnDeleteGoldSale -> deleteGoldSale(action.saleId)
             SalesUiAction.OnSignOut -> signOut()
-            is SalesUiAction.UpdatePaymentStatusFilter -> updatePaymentStatusFilter(action.status)
+            is SalesUiAction.UpdateDateFilter -> updateDateFilter(action.filter)
             is SalesUiAction.UpdateSearchQuery -> updateSearchQuery(action.searchQuery)
             else -> Unit
         }
     }
 
     private fun signOut() {
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             logOutUseCase().onSuccess {
                 _uiState.update { it.copy(isSignedOut = true) }
                 Log.d(TAG, "signOut: success")
@@ -93,7 +97,7 @@ class SalesViewModel(
     }
 
     private fun deleteProductSale(saleId: String) {
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             deleteProductSaleUseCase(
                 DeleteWholesaleProductSaleRequest(
                     saleId = saleId,
@@ -103,14 +107,14 @@ class SalesViewModel(
             ).onSuccess {
                 Log.d(TAG, "deleteProductSale: success")
             }.onFailure {
-                Log.e(TAG, "deleteProductSale: ${it.message}",it )
+                Log.e(TAG, "deleteProductSale: ${it.message}", it)
                 it.printStackTrace()
             }
         }
     }
 
     private fun deleteGoldSale(saleId: String) {
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             deleteGoldSaleUseCase(
                 DeleteWholesaleGoldSaleRequest(
                     saleId = saleId,
@@ -135,45 +139,53 @@ class SalesViewModel(
         }
     }
 
-    private fun updatePaymentStatusFilter(status: PaymentStatus) {
+    private fun updateDateFilter(dateFilter: DateFormat) {
         viewModelScope.launch {
             _uiState.update { oldState ->
-                oldState.copy(isLoading = true, selectedPaymentStatus = status)
+                oldState.copy(isLoading = true, dateFilter = dateFilter)
             }
-            filterData(paymentStatus = status)
+            convertToDatedSales()
         }
     }
 
-    fun filterData(
+    private fun filterData(
         searchQuery: String = uiState.value.searchQuery,
-        paymentStatus: PaymentStatus = uiState.value.selectedPaymentStatus
     ) {
         viewModelScope.launch(Dispatchers.Default) {
-            if(searchQuery.isBlank() && paymentStatus == PaymentStatus.ALL){
+            if (searchQuery.isBlank()) {
                 //no search query and payment status is all
                 _uiState.update { oldState ->
-                    oldState.copy(isLoading = false, displayedSales = oldState.allSales)
-                }
-            } else if(searchQuery.isBlank()) {
-                //no search query & payment status is not all
-                val filteredSales = uiState.value.allSales.filter { it.paymentStatus == paymentStatus }
-                _uiState.update { oldState ->
-                    oldState.copy(isLoading = false, displayedSales = filteredSales)
-                }
-            } else if(paymentStatus == PaymentStatus.ALL) {
-                //search query is not blank & payment status is all
-                val filteredSales = uiState.value.allSales.filter { listOf(it.customerName,it.receiptNumber).any { it.contains(searchQuery, ignoreCase = true) } }
-                _uiState.update { oldState ->
-                    oldState.copy(isLoading = false, displayedSales = filteredSales)
+                    oldState.copy(isLoading = false, filteredSales = oldState.allSales)
                 }
             } else {
                 //search query is not blank & payment status is not all
-                val filteredSales = uiState.value.allSales.filter { listOf(it.customerName,it.receiptNumber).any { it.contains(searchQuery, ignoreCase = true) } && it.paymentStatus == paymentStatus }
+                val filteredSales = uiState.value.allSales.filter {
+                    listOf(
+                        it.customerName,
+                        it.receiptNumber
+                    ).any {
+                        it.contains(
+                            searchQuery,
+                            ignoreCase = true
+                        )
+                    }
+                }
                 _uiState.update { oldState ->
-                    oldState.copy(isLoading = false, displayedSales = filteredSales)
+                    oldState.copy(isLoading = false, filteredSales = filteredSales)
                 }
             }
+            convertToDatedSales()
         }
 
+    }
+
+    private fun convertToDatedSales() {
+        viewModelScope.launch(Dispatchers.Default) {
+            val datedSales =
+                convertDateFormatUseCase(uiState.value.filteredSales, uiState.value.dateFilter)
+            _uiState.update { oldState ->
+                oldState.copy(isLoading = false, datedSales = datedSales)
+            }
+        }
     }
 }

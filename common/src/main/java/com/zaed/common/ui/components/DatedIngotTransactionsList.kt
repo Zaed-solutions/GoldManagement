@@ -8,12 +8,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.zaed.common.data.model.sale.DatedIngotTransactions
+import com.zaed.common.data.model.sale.IngotTransaction
 
 @Composable
 fun DatedIngotTransactionsList(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
-    datedTransactions: List<DatedIngotTransactions>
+    datedTransactions: List<DatedIngotTransactions>,
+    isEditable: Boolean = false,
+    isDeletable: Boolean = false,
+    onEdit: (IngotTransaction) -> Unit = {},
+    onDelete: (IngotTransaction) -> Unit = {}
 ) {
     ListWithLoading(
         modifier = modifier,
@@ -29,7 +34,11 @@ fun DatedIngotTransactionsList(
             ) {
                 DatedIngotTransactionItem(
                     modifier = Modifier.animateItem(),
-                    datedTransaction = it
+                    datedTransaction = it,
+                    isEditable = isEditable,
+                    isDeletable = isDeletable,
+                    onEdit = onEdit,
+                    onDelete = onDelete
                 )
             }
         }

@@ -1,6 +1,6 @@
 package com.zaed.distributor.ui.customerdetails
 
-import com.zaed.common.data.model.payment.MoneyPayment
+import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 
 sealed interface CustomerDetailsUiAction {
@@ -11,8 +11,8 @@ sealed interface CustomerDetailsUiAction {
     data class OnAmountChanged(val amount: Double) : CustomerDetailsUiAction
     data class OnTypeChanged(val type: PaymentType) : CustomerDetailsUiAction
     data class OnChangeValueDirection(val isGiven: Boolean) : CustomerDetailsUiAction
-    data class DeletePayment(val moneyPayment: MoneyPayment) : CustomerDetailsUiAction
-    data class EditPayment(val moneyPayment: MoneyPayment) : CustomerDetailsUiAction
+    data class DeletePayment(val cashPayment: Payment) : CustomerDetailsUiAction
+    data class EditPayment(val cashPayment: Payment) : CustomerDetailsUiAction
     data object OnConfirmEditPayment : CustomerDetailsUiAction
     data class OnDeleteProductSale(val saleId: String): CustomerDetailsUiAction
     data class OnDeleteGoldSale(val saleId: String): CustomerDetailsUiAction

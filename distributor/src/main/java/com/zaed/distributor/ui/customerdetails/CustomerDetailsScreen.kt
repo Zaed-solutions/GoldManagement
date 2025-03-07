@@ -25,6 +25,11 @@ fun CustomerDetailsScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     CustomerDetailsScreenContent(
         uiState = uiState,
+        selectedCustomer = uiState.customer,
+        onAddPayment = {
+            viewModel.addPayment(it)
+        },
+        onEditPayment = {},
         onAction = { action ->
             when (action) {
                 CustomerDetailsUiAction.OnEditCustomer -> navigateToEditCustomer(uiState.customer.id)

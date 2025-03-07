@@ -19,7 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.payment.GoldPayment
-import com.zaed.common.data.model.payment.MoneyPayment
+import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.getPaymentTypeDropDownItems
@@ -63,7 +63,7 @@ fun SaveGoldPaymentBottomSheetContent(
                 PaymentType.CASH -> {
                     var payment by remember {
                         mutableStateOf(
-                            initialMoneyPayment as? MoneyPayment ?: MoneyPayment()
+                            initialMoneyPayment as? CashPayment ?: CashPayment()
                         )
                     }
                     Column {
@@ -171,14 +171,14 @@ fun SaveGoldPaymentBottomSheetContent(
 @Composable
 private fun PaymentTypeDropDownMenu(
     modifier: Modifier = Modifier,
-    moneyPayment: MoneyPayment,
+    cashPayment: CashPayment,
     onTypeChanged: (PaymentType) -> Unit
 ) {
     TitledDropDownTextField(
         modifier = modifier,
         label = stringResource(R.string.type),
         options = PaymentType.entries.map { it.name },
-        selectedValue = moneyPayment.type.name,
+        selectedValue = cashPayment.type.name,
         onValueChanged = { index ->
             onTypeChanged(PaymentType.entries[index])
         },

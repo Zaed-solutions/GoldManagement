@@ -2,7 +2,6 @@ package com.zaed.distributor.ui.ingottransactions
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -12,10 +11,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -26,23 +22,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
-import com.zaed.common.data.model.loss.DistributorLoss
 import com.zaed.common.data.model.sale.IngotTransaction
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
-import com.zaed.common.ui.components.SearchBar
+import com.zaed.common.ui.components.DatedIngotTransactionsList
+import com.zaed.common.ui.components.DatedListWithFilter
 import com.zaed.distributor.ui.ingottransactions.components.SaveIngotTransactionBottomSheet
-import com.zaed.distributor.ui.ingottransactions.components.TransactionsList
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -126,91 +115,32 @@ fun IngotTransactionsScreenContent(
             modifier = Modifier.padding(innerPadding)
         ) {
             //tab row
-            PrimaryTabRow(
-                selectedTabIndex = pagerState.currentPage,
-                indicator = {
-                    TabRowDefaults.PrimaryIndicator(
-                        modifier = Modifier
-                            .run {
-                                if (LocalLayoutDirection.current == LayoutDirection.Rtl)
-                                    scale(-1f, 1f)
-                                else
-                                    this
-                            }
-                            .tabIndicatorOffset(pagerState.currentPage, true),
-                        width = Dp.Unspecified,
+            DatedListWithFilter(
+                selectedFilter = state.dateFilter,
+                onFilterClicked = {
+                    onAction(
+                        IngotTransactionsUiAction.UpdateIngotTransactionsDateFilter(
+                            it
+                        )
+                    )
+                },
+                content = {
+                    DatedIngotTransactionsList(
+                        isLoading = state.isLoading,
+                        datedTransactions = state.datedTransactions,
+                        isEditable = true,
+                        isDeletable = true,
+                        onEdit = {
+                            selectedTransaction = it
+                            isSaveTransactionSheetVisible = true
+                        },
+                        onDelete = {
+                            selectedTransaction = it
+                            isConfirmDeleteSheetVisible = true
+                        }
                     )
                 }
-            ) {
-                Tab(
-                    selected = pagerState.currentPage == 0,
-                    onClick = {
-                        scope.launch {
-                            pagerState.animateScrollToPage(0)
-                        }
-                    },
-                    text = {
-                        Text(
-                            text = stringResource(R.string.sales),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                )
-                Tab(
-                    selected = pagerState.currentPage == 1,
-                    onClick = {
-                        scope.launch {
-                            pagerState.animateScrollToPage(1)
-                        }
-                    },
-                    text = {
-                        Text(
-                            text = stringResource(R.string.purchases),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                )
-            }
-            //horizontal pager
-            HorizontalPager(
-                state = pagerState
-            ) { page ->
-                when (page) {
-                    0 -> {
-                        //sales list
-                        TransactionsList(
-                            isLoading = state.isLoading,
-                            transactions = state.displayedSaleTransactions,
-                            onEditTransaction = {
-                                selectedTransaction = it
-                                isSaveTransactionSheetVisible = true
-                            },
-                            onDeleteTransaction = {
-                                selectedTransaction = it
-                                isConfirmDeleteSheetVisible = true
-                            }
-                        )
-                    }
-
-                    1 -> {
-                        //purchases list
-                        TransactionsList(
-                            isLoading = state.isLoading,
-                            transactions = state.displayedPurchaseTransactions,
-                            onEditTransaction = {
-                                selectedTransaction = it
-                                isSaveTransactionSheetVisible = true
-                            },
-                            onDeleteTransaction = {
-                                selectedTransaction = it
-                                isConfirmDeleteSheetVisible = true
-                            }
-                        )
-                    }
-                }
-            }
+            )
             SaveIngotTransactionBottomSheet(
                 isVisible = isSaveTransactionSheetVisible,
                 initialTransaction = selectedTransaction,

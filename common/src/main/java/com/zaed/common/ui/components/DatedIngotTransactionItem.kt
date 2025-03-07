@@ -27,12 +27,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zaed.common.data.model.sale.DatedIngotTransactions
+import com.zaed.common.data.model.sale.IngotTransaction
 import com.zaed.common.ui.util.formatMoney
 
 @Composable
 fun DatedIngotTransactionItem(
     modifier: Modifier = Modifier,
-    datedTransaction: DatedIngotTransactions
+    datedTransaction: DatedIngotTransactions,
+    isEditable: Boolean = false,
+    isDeletable: Boolean = false,
+    onEdit: (IngotTransaction) -> Unit = {},
+    onDelete: (IngotTransaction) -> Unit = {}
 ) {
     var isExpanded by remember {
         mutableStateOf(false)
@@ -93,7 +98,15 @@ fun DatedIngotTransactionItem(
                         datedTransaction.transactions.forEach { transaction ->
                             IngotTransactionItem(
                                 transaction = transaction,
-                                isDividerVisible = false
+                                isDividerVisible = false,
+                                isEditable = isEditable,
+                                isDeletable = isDeletable,
+                                onEdit = {
+                                    onEdit(transaction)
+                                },
+                                onDelete = {
+                                    onDelete(transaction)
+                                }
                             )
                         }
                     }

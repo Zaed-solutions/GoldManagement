@@ -14,6 +14,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -29,16 +31,19 @@ fun NumberInputTextField(
     placeHolder: String = "",
     supportingText: String = "",
     imageVector: ImageVector? = null,
+    enabled: Boolean = true,
+    focusRequester: FocusRequester = remember { FocusRequester()},
     @StringRes
     errorMessage: Int =0,
+    trailingIcon: @Composable (() -> Unit)? = null,
     isError: Boolean = false,
     withBorder: Boolean = false,
-    shape: RoundedCornerShape =RoundedCornerShape(32.dp) ,
+    shape: RoundedCornerShape =RoundedCornerShape(32.dp),
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) {
     var textValue by remember { mutableStateOf(value.toString()) }
     OutlinedTextField(
-        modifier = modifier,
+        modifier = modifier.focusRequester(focusRequester),
         value = if(value == 0.0) "" else textValue,
         onValueChange = { newText ->
             val formattedText = newText.replace(',', '.') // Allow comma as decimal
@@ -71,9 +76,11 @@ fun NumberInputTextField(
             }
         } else null,
         shape = shape,
+        enabled = enabled,
         isError = isError,
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+        trailingIcon = trailingIcon,
         supportingText =
             if (isError) {
                 {

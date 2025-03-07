@@ -1,5 +1,6 @@
 package com.zaed.common.data.repository
 
+import android.util.Log
 import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
 import com.zaed.common.data.model.sale.IngotTransaction
 import com.zaed.common.data.model.sale.StoreSale
@@ -70,6 +71,7 @@ class SaleRepositoryImpl(
     }
 
     override suspend fun addWholesaleProductSale(request: AddWholesaleProductSaleRequest): Result<String> {
+        Log.d("add_sale", "invoke repo: $request")
         return saleRemoteSource.addWholesaleProductSale(request)
     }
 

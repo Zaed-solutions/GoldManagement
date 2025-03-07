@@ -19,10 +19,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.ui.components.ProgressIndicatorTopAppBar
-import com.zaed.distributor.ui.addproductsale.components.PreviewSaleContent
-import com.zaed.distributor.ui.addproductsale.components.SaleSummaryContent
-import com.zaed.distributor.ui.addproductsale.components.SelectPaymentsContent
-import com.zaed.distributor.ui.addproductsale.components.SelectProductsContent
+import com.zaed.common.ui.components.PreviewSaleContent
+import com.zaed.common.ui.components.SaleSummaryContent
+import com.zaed.common.ui.components.SelectPaymentsContent
+import com.zaed.common.ui.components.SelectProductsContent
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -33,7 +33,8 @@ fun AddProductSaleScreen(
     saleId: String = "",
     onBackClicked: () -> Unit,
     onNavigateToProductSaleDetails: (saleId: String) -> Unit,
-    onNavigateToAddCustomer: () -> Unit
+    onNavigateToAddCustomer: () -> Unit,
+    onOpenDrawer: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(true) {
@@ -41,11 +42,13 @@ fun AddProductSaleScreen(
     }
     LaunchedEffect(state.isFinished) {
         if (state.isFinished) {
+            Log.d("CREATED",state.sale.id)
             onNavigateToProductSaleDetails(state.sale.id)
         }
     }
     AddProductSaleScreenContent(
         state = state,
+        onOpenDrawer = onOpenDrawer,
         onAction = { action ->
             when (action) {
                 AddProductSaleUiAction.OnAddNewCustomerClicked -> onNavigateToAddCustomer()
@@ -60,6 +63,7 @@ fun AddProductSaleScreen(
 private fun AddProductSaleScreenContent(
     modifier: Modifier = Modifier,
     state: AddProductSaleUiState,
+    onOpenDrawer: () -> Unit,
     onAction: (AddProductSaleUiAction) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -90,7 +94,9 @@ private fun AddProductSaleScreenContent(
     Scaffold(
         topBar = {
             ProgressIndicatorTopAppBar(
-                progress = progress
+                progress = progress,
+                firstScreen = pagerState.currentPage == 0,
+                onOpenDrawer = onOpenDrawer
             ) {
                 if (pagerState.currentPage > 0) {
                     scope.launch {
@@ -101,72 +107,9 @@ private fun AddProductSaleScreenContent(
                 }
             }
         },
-//        bottomBar = {
-//            BottomAppBar(
-//                contentPadding = PaddingValues(0.dp),
-//                containerColor = MaterialTheme.colorScheme.surface,
-//            ) {
-//                Surface(
-//                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-//                    shadowElevation = 8.dp
-//                ) {
-//                    Row(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(horizontal = 16.dp, vertical = 8.dp),
-//                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        FilledTonalButton(
-//                            modifier = Modifier
-//                                .weight(1f)
-//                                .heightIn(min = 48.dp),
-//                            onClick = {
-//                                scope.launch {
-//                                    pagerState.animateScrollToPage(pagerState.currentPage - 1)
-//                                }
-//                            },
-//                            enabled = pagerState.currentPage > 0
-//                        ) {
-//                            Text(
-//                                text = stringResource(R.string.previous),
-//                            )
-//                        }
-//                        Button(
-//                            modifier = Modifier
-//                                .weight(1f)
-//                                .heightIn(min = 48.dp),
-//                            enabled = !state.isLoading,
-//                            onClick = {
-//                                if (pagerState.currentPage == 3) {
+
 //                                    onAction(AddProductSaleUiAction.OnSubmitClicked)
-//                                } else {
-//                                    scope.launch {
-//                                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
-//                                    }
-//                                }
-//                            }
-//                        ) {
-//                            Row(
-//                                verticalAlignment = Alignment.CenterVertically,
-//                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-//                            ) {
-//                                Text(
-//                                    text = if (pagerState.currentPage == 3) stringResource(R.string.submit) else stringResource(
-//                                        R.string.continue_
-//                                    )
-//                                )
-//                                AnimatedVisibility(state.isLoading) {
-//                                    CircularProgressIndicator(
-//                                        modifier = Modifier.size(24.dp)
-//                                    )
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
+
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -243,8 +186,19 @@ private fun AddProductSaleScreenContent(
                     2 -> {
                         SelectPaymentsContent(
                             totalAmount = state.sale.totalAmount,
-                            totalPaid = state.totalPaid,
-                            moneyPayments = state.moneyPayments,
+                            payments = state.payments,
+                            selectedCustomer = state.selectedCustomer,
+                            query = state.customerSearchQuery,
+                            onQueryChanged = {
+                                onAction(AddProductSaleUiAction.OnCustomerSearchQueryChanged(it))
+                            },
+                            suggestedCustomers = state.suggestedCustomers,
+                            onAddNewCustomer = {
+                                onAction(AddProductSaleUiAction.OnAddNewCustomerClicked)
+                            },
+                            onCustomerSelected = {
+                                onAction(AddProductSaleUiAction.OnCustomerSelected(it))
+                            },
                             onAddPayment = {
                                 onAction(AddProductSaleUiAction.OnAddPayment(it))
                             },
@@ -253,6 +207,11 @@ private fun AddProductSaleScreenContent(
                             },
                             onRemovePayment = {
                                 onAction(AddProductSaleUiAction.OnRemovePayment(it.id))
+                            },
+                            onNext = {
+                                scope.launch {
+                                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                }
                             }
                         )
                     }
@@ -262,8 +221,13 @@ private fun AddProductSaleScreenContent(
                             customer = state.selectedCustomer,
                             products = state.sale.products,
                             totalPaid = state.totalPaid,
-                            totalAmount = state.totalAmount,
-                            moneyPayments = state.moneyPayments
+                            selectedCustomer = state.selectedCustomer,
+                            totalAmount = state.sale.totalAmount,
+                            payments = state.payments,
+                            isLoading = state.isLoading,
+                            onCreate = {
+                                onAction(AddProductSaleUiAction.OnSubmitClicked)
+                            }
                         )
                     }
                 }

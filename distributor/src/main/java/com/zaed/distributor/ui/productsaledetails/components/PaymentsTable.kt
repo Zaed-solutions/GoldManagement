@@ -22,10 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.payment.GoldPayment
-import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.common.data.model.payment.Payment
-import com.zaed.common.ui.util.formatMoney
+import com.zaed.common.ui.util.toMoneyFormat
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -87,17 +85,6 @@ fun PaymentTableItem(
     modifier: Modifier = Modifier,
     payment: Payment
 ) {
-    val amount = when(payment){
-        is MoneyPayment -> payment.amount.formatMoney()
-        is GoldPayment -> {
-            if(payment.pricePerGram!=0.0){
-                (payment.givenGoldAmount*payment.pricePerGram).formatMoney()
-            }else{
-                stringResource(R.string.specifying_karat)
-            }
-        }
-        else -> ""
-    }
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
@@ -114,7 +101,7 @@ fun PaymentTableItem(
             )
 
             Text(
-                text = amount,
+                text = payment.amount.toMoneyFormat(2),
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.End,
                 maxLines = 1,

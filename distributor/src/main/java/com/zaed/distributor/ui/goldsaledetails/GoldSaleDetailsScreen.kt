@@ -24,7 +24,7 @@ import com.zaed.common.ui.components.ProductsTable
 import com.zaed.common.ui.components.TitledSection
 import com.zaed.distributor.ui.goldsaledetails.components.GoldSaleInfoSection
 import com.zaed.distributor.ui.productsaledetails.SaleDetailsUiAction
-import com.zaed.distributor.ui.productsaledetails.components.CustomerInfoSection
+import com.zaed.common.ui.components.CustomerInfoSection
 import com.zaed.distributor.ui.productsaledetails.components.PaymentsTable
 import com.zaed.distributor.ui.productsaledetails.components.ProductSaleDetailsTopBar
 import org.koin.androidx.compose.koinViewModel

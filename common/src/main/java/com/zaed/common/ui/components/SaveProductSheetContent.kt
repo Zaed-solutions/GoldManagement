@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -65,8 +66,13 @@ fun SaveProductSheetContent(
                 product = newProduct
             },
         )
-        Spacer(modifier = Modifier.weight(1f))
-        Row() {
+        Spacer(modifier = Modifier.height(32.dp))
+        //grams
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Button(
                 modifier = Modifier
                     .weight(1f)
@@ -107,61 +113,110 @@ fun ProductFieldsContent(
     onValueChange: (Product) -> Unit,
 ) {
     Column() {
+        val focusRequester = remember { FocusRequester() }
         //grams
-        Row(
+        NumberInputTextField(
+            value = product1.grams,
+            onValueChange = { value ->
+                onValueChange(product1.copy(grams = value))
+            },
+            label = stringResource(R.string.grams),
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "عدد الجرامات",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            NumberInputTextField(
-                value = product1.grams,
-                onValueChange = { value ->
-                    onValueChange(product1.copy(grams = value))
-                },
-                label = stringResource(R.string.grams),
-                containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                modifier = Modifier.padding(start = 36.dp),
-                shape = RoundedCornerShape(4.dp),
-                withBorder = true,
-            )
-        }
+            shape = RoundedCornerShape(4.dp),
+            withBorder = true,
+        )
+
         Spacer(modifier = Modifier.height(16.dp))
         //gram price
-        Row(
+
+
+        NumberInputTextField(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "سعر الجرام",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            NumberInputTextField(
-                value = product1.gramPrice,
-                onValueChange = { value ->
-                    onValueChange(product1.copy(gramPrice = value))
-                },
-                label = stringResource(R.string.gram_price),
-                containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                modifier = Modifier.padding(start = 36.dp),
-                shape = RoundedCornerShape(4.dp),
-                withBorder = true,
-            )
-        }
+            value = product1.gramPrice,
+            onValueChange = { value ->
+                onValueChange(product1.copy(gramPrice = value))
+            },
+            label = stringResource(R.string.gram_price),
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            shape = RoundedCornerShape(4.dp),
+            withBorder = true,
+        )
+
         Spacer(modifier = Modifier.height(16.dp))
+
+        //discount
+        NumberInputTextField(
+            value = product1.discount.value,
+            onValueChange = { value ->
+                onValueChange(product1.copy(discount = product1.discount.copy(value = value)))
+            },
+            enabled = product1.discount.type != DiscountType.NONE,
+            focusRequester = focusRequester,
+            trailingIcon = {
+                Row(
+                    modifier = Modifier
+                        .padding(vertical = 4.dp, horizontal = 4.dp)
+                        .border(
+                            1.dp,
+                            MaterialTheme.colorScheme.primary,
+                            RoundedCornerShape(4.dp)
+                        ),
+                ) {
+                    //  percentage
+                    Surface(
+                        onClick = {
+                            onValueChange(product1.copy(discount = product1.discount.copy(type = DiscountType.PERCENTAGE)))
+                            focusRequester.requestFocus()
+                        },
+                        color = if (product1.discount.type == DiscountType.PERCENTAGE) MaterialTheme.colorScheme.primaryContainer.copy(
+                            alpha = 0.3f
+                        ) else MaterialTheme.colorScheme.surfaceContainer,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Percent,
+                            contentDescription = "Sale icon",
+                            tint = if (product1.discount.type == DiscountType.PERCENTAGE) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+                    //value
+                    Surface(
+                        onClick = {
+                            onValueChange(product1.copy(discount = product1.discount.copy(type = DiscountType.AMOUNT)))
+                            focusRequester.requestFocus()
+                        },
+                        color = if (product1.discount.type == DiscountType.AMOUNT) MaterialTheme.colorScheme.primaryContainer.copy(
+                            alpha = 0.3f
+                        ) else MaterialTheme.colorScheme.surfaceContainer,
+                        modifier = Modifier
+                            .padding(end = 4.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AttachMoney,
+                            contentDescription = "Sale icon",
+                            tint = if (product1.discount.type == DiscountType.AMOUNT) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+                }
+            },
+            label = stringResource(R.string.discount),
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(4.dp),
+            withBorder = true,
+        )
         //quqntity
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "الكمية",
+                text = stringResource(R.string.quantity),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -209,7 +264,7 @@ fun ProductFieldsContent(
                 },
                 color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
                 modifier = Modifier
-                    .padding(end = 4.dp)
+
                     .clip(RoundedCornerShape(4.dp))
             ) {
                 Icon(
@@ -220,92 +275,14 @@ fun ProductFieldsContent(
                 )
             }
         }
-        //discount
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = "الخصم",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .border(
-                        1.dp,
-                        MaterialTheme.colorScheme.primary,
-                        RoundedCornerShape(4.dp)
-                    ),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                //  percentage
-                Surface(
-                    onClick = {
-                        onValueChange(product1.copy(discount = product1.discount.copy(type = DiscountType.PERCENTAGE)))
-                    },
-                    color = if (product1.discount.type == DiscountType.PERCENTAGE) MaterialTheme.colorScheme.primaryContainer.copy(
-                        alpha = 0.3f
-                    ) else MaterialTheme.colorScheme.surfaceContainer,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(4.dp))
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Percent,
-                        contentDescription = "Sale icon",
-                        tint = if (product1.discount.type == DiscountType.PERCENTAGE) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
-                        modifier = Modifier.padding(8.dp)
-                    )
-                }
-                //value
-                Surface(
-                    onClick = {
-                        onValueChange(product1.copy(discount = product1.discount.copy(type = DiscountType.AMOUNT)))
-                    },
-                    color = if (product1.discount.type == DiscountType.AMOUNT) MaterialTheme.colorScheme.primaryContainer.copy(
-                        alpha = 0.3f
-                    ) else MaterialTheme.colorScheme.surfaceContainer,
-                    modifier = Modifier
-                        .padding(end = 4.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.AttachMoney,
-                        contentDescription = "Sale icon",
-                        tint = if (product1.discount.type == DiscountType.AMOUNT) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
-                        modifier = Modifier.padding(8.dp)
-                    )
-                }
-            }
-
-            //DISCOUNT VALUE
-            NumberInputTextField(
-                value = product1.discount.value,
-                onValueChange = { value ->
-                    onValueChange(product1.copy(discount = product1.discount.copy(value = value)))
-                },
-                label = stringResource(R.string.discount),
-                containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                modifier = Modifier.padding(start = 8.dp),
-                shape = RoundedCornerShape(4.dp),
-                withBorder = true,
-            )
-
-
-        }
-
     }
 }
 
-
-@Preview(showSystemUi = true, showBackground = true, device = "id:pixel_9_pro")
+@Preview
 @Composable
-private fun Preview2() {
-    SaveProductSheetContent(
-        initialProduct = Product(),
-        onSaveProduct = {},
-        deleteProduct = {}
+private fun Previewff() {
+    ProductFieldsContent(
+        product1 = Product(),
+        {}
     )
 }

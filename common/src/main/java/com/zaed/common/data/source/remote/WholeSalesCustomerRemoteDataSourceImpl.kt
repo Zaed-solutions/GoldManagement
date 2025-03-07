@@ -13,7 +13,6 @@ import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.customer.request.EditWholeSalesCustomerRequest
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.DeletePaymentRequest
-import com.zaed.common.data.model.sale.WholesaleProductSale
 import com.zaed.common.domain.payment.UpdateCustomerDebtRequest
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -66,7 +65,7 @@ class WholeSalesCustomerRemoteDataSourceImpl(
         try {
             customersCollection.document(request.customerId).update(
                 "debtAmount",
-                FieldValue.increment(request.moneyPayment.amount),
+                FieldValue.increment(request.cashPayment.amount),
             ).await()
             return Result.success(Unit)
         } catch (e: Exception) {

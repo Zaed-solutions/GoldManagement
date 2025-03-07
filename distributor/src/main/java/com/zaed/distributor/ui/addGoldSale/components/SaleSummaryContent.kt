@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zaed.common.R
 import com.zaed.common.data.model.customer.WholeSaleCustomer
-import com.zaed.common.data.model.payment.MoneyPayment
+import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.sale.WholesaleProductSale
 import com.zaed.common.ui.components.DashedDivider
 import com.zaed.common.ui.components.DetailRow
@@ -31,7 +31,7 @@ fun SaleSummaryContent(
     modifier: Modifier = Modifier,
     customer: WholeSaleCustomer,
     sale: WholesaleProductSale,
-    moneyPayments: List<MoneyPayment>,
+    cashPayments: List<CashPayment>,
     totalAmount: Double,
     totalPaid: Double,
 ) {

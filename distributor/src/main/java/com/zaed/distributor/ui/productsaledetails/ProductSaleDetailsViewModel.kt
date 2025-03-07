@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.authentication.ChangeLog
+import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
 import com.zaed.common.data.model.sale.ReceiptStatus
 import com.zaed.common.data.model.sale.request.DeleteWholesaleProductSaleRequest
@@ -84,7 +85,7 @@ class ProductSaleDetailsViewModel(
                 FetchPaymentsByIdsRequest(paymentsIds)
             ).onSuccess { data ->
                 _uiState.update { oldState->
-                    oldState.copy(moneyPayments = data)
+                    oldState.copy(cashPayments = data)
                 }
             }.onFailure {
                 Log.e(TAG, "fetchPayments: ${it.message}",it )
@@ -109,14 +110,14 @@ class ProductSaleDetailsViewModel(
                     ChangeLog(
                         employeeName = uiState.value.currentUser.fullName,
                         employeeId = uiState.value.currentUser.id,
-                        action = "Requested receipt",
+                        type = LogType.UPDATE
                     )
                 )
             }
             updateWholesaleProductSaleUseCase(
                 UpdateWholesaleProductSaleRequest(
                     sale = sale.copy(logs = logs),
-                    moneyPayments = uiState.value.moneyPayments,
+                    payments = uiState.value.cashPayments,
                     employeeName = uiState.value.currentUser.fullName,
                     employeeId = uiState.value.currentUser.id
                 )

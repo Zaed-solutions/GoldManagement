@@ -1,6 +1,6 @@
 package com.zaed.distributor.ui.sales
 
-import com.zaed.common.data.model.payment.PaymentStatus
+import com.zaed.common.ui.util.DateFormat
 
 sealed interface SalesUiAction {
     data object AddProductSaleClicked: SalesUiAction
@@ -8,7 +8,7 @@ sealed interface SalesUiAction {
     data object OnSignOut: SalesUiAction
     data object OnShowNavDrawer: SalesUiAction
     data class UpdateSearchQuery(val searchQuery: String): SalesUiAction
-    data class UpdatePaymentStatusFilter(val status: PaymentStatus): SalesUiAction
+    data class UpdateDateFilter(val filter: DateFormat): SalesUiAction
     data class OnDeleteProductSale(val saleId: String): SalesUiAction
     data class OnDeleteGoldSale(val saleId: String): SalesUiAction
     data class OnEditProductSale(val saleId: String): SalesUiAction
