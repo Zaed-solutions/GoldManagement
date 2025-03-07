@@ -1,8 +1,8 @@
 package com.zaed.common.data.model.payment.request
 
-import com.zaed.common.data.model.payment.MoneyPayment
+import com.zaed.common.data.model.payment.Payment
 
 data class AddNewPaymentRequest(
     val customerId: String,
-    val moneyPayment: MoneyPayment
+    val cashPayment: Payment
 )

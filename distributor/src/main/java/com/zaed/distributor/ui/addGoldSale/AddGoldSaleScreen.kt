@@ -225,7 +225,7 @@ private fun AddGoldSaleScreenContent(
                             goldPayments = state.totalGoldAmount,
                             totalGoldPaid = state.totalGoldPrice,
                             totalPaid = state.totalPaid,
-                            payments = state.moneyPayments + state.goldPayments,
+                            payments = state.cashPayments + state.goldPayments,
                             onAddPayment = {
                                 onAction(AddGoldSaleUiAction.OnAddPayment(it))
                             },
@@ -239,11 +239,12 @@ private fun AddGoldSaleScreenContent(
                     }
                     3 -> {
                         SaleSummaryContent(
+                            selectedCustomer = state.selectedCustomer,
                             customer = state.selectedCustomer,
                             products = state.sale.products,
                             totalPaid = state.totalPaid ,
-                            totalAmount = state.totalAmount+ state.laborCost,
-                            moneyPayments = state.moneyPayments
+                            totalAmount = state.sale.totalAmount,
+                            payments = state.cashPayments
                         )
                     }
                 }

@@ -1,9 +1,9 @@
 package com.zaed.distributor.ui.addproductsale
 
 import com.zaed.common.data.model.Category
-import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.customer.WholeSaleCustomer
+import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.sale.WholesaleProductSale
 
 data class AddProductSaleUiState(
@@ -15,8 +15,7 @@ data class AddProductSaleUiState(
     val customerSearchQuery: String = "",
     val suggestedCustomers: List<WholeSaleCustomer> = emptyList(),
     val currentUser: User = User(),
-    val totalAmount: Double = 0.0,
     val totalPaid: Double = 0.0,
-    val moneyPayments: List<MoneyPayment> = emptyList(),
+    val payments: List<Payment> = emptyList(),
     val categories: List<Category> = emptyList()
 )

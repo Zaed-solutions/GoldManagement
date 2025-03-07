@@ -3,7 +3,7 @@ package com.zaed.distributor.ui.addGoldSale
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.GoldPayment
-import com.zaed.common.data.model.payment.MoneyPayment
+import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.sale.WholesaleGoldSale
 
@@ -16,7 +16,7 @@ data class AddGoldSaleUiState(
     val customerSearchQuery: String = "",
     val suggestedCustomers: List<WholeSaleCustomer> = emptyList(),
     val currentUser: User = User(),
-    val moneyPayments: List<MoneyPayment> = emptyList(),
+    val cashPayments: List<Payment> = emptyList(),
     val goldPayments: List<GoldPayment> = emptyList(),
 ){
     val laborCost: Double
@@ -24,7 +24,7 @@ data class AddGoldSaleUiState(
     val totalAmount: Double
         get() = sale.products.sumOf { it.grams * it.gramPrice }
     val totalMoneyPaid: Double
-        get() = moneyPayments.filter { it.type != PaymentType.FUTURES }.sumOf { it.amount }
+        get() = cashPayments.filter { it.type != PaymentType.FUTURES }.sumOf { it.amount }
     val totalGoldPrice: Double
         get() =
              goldPayments.filter { it.pricePerGram!=0.0 }.sumOf { it.pricePerGram * it.givenGoldAmount }
