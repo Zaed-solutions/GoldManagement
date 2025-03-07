@@ -6,5 +6,11 @@ data class ChangeLog(
     val date: Date = Date(),
     val employeeId: String = "",
     val employeeName: String = "",
-    val action: String = "",
+    val type: LogType = LogType.CREATE,
 )
+
+enum class LogType {
+    CREATE,
+    UPDATE,
+    DELETE
+}

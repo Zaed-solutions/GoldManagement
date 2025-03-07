@@ -23,13 +23,16 @@ import com.zaed.common.ui.util.formatMoney
 fun LossItem(
     modifier: Modifier = Modifier,
     loss: Loss,
+    isDeleteEnabled: Boolean,
     onDeleteLoss: () -> Unit,
+    isEditEnabled: Boolean,
     onUpdateLoss: () -> Unit
 ) {
     SwipeToEditOrDeleteContainer(
         modifier = modifier,
         onDelete = onDeleteLoss,
-        isEditEnabled = true,
+        isEditEnabled = isEditEnabled,
+        isDeleteEnabled = isDeleteEnabled,
         onEdit = onUpdateLoss
     ) {
         Surface (
@@ -74,6 +77,8 @@ private fun Preview() {
             reason = "Fuel"
         ),
         onDeleteLoss = {},
+        isDeleteEnabled = true,
+        isEditEnabled = true,
         onUpdateLoss = {}
     )
 }

@@ -1,11 +1,15 @@
 package com.zaed.common.data.source.remote
 
+import com.google.android.gms.tasks.Tasks.await
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.common.data.model.store.Store
 import com.zaed.common.data.model.store.request.AddStoreRequest
 import com.zaed.common.data.model.store.request.DeleteStoreRequest
+import com.zaed.common.data.model.store.request.FetchStoreByIdRequest
 import com.zaed.common.data.model.store.request.UpdateStoreRequest
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
 class StoreRemoteDataSourceImpl(
@@ -14,14 +18,22 @@ class StoreRemoteDataSourceImpl(
 ) : StoreRemoteDataSource {
     private val STORE_COLLECTION = "stores"
     private val storesCollection = firestore.collection(STORE_COLLECTION)
-    override suspend fun getStores(): Result<List<Store>> {
-        return try {
-            val snapshot = storesCollection.get().await()
-            val stores = snapshot.toObjects(Store::class.java)
-            Result.success(stores)
+    override fun getStores(): Flow<Result<List<Store>>> = callbackFlow{
+        try {
+            storesCollection.addSnapshotListener{ snapshot, e ->
+                if(e != null){
+                    crashlytics.recordException(e)
+                    trySend(Result.failure(e))
+                    return@addSnapshotListener
+                }
+                if(snapshot != null){
+                    val stores = snapshot.toObjects(Store::class.java)
+                    trySend(Result.success(stores))
+                }
+            }
         }catch (e: Exception){
             crashlytics.recordException(e)
-            Result.failure(e)
+            trySend(Result.failure(e))
         }
     }
 
@@ -50,6 +62,21 @@ class StoreRemoteDataSourceImpl(
         return try{
             storesCollection.document(request.store.id).delete().await()
             Result.success(Unit)
+        } catch (e: Exception){
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun fetchStoreById(request: FetchStoreByIdRequest): Result<Store> {
+        return try{
+            val document = storesCollection.document(request.storeId).get().await()
+            val store = document.toObject(Store::class.java)
+            if(store != null){
+                Result.success(store)
+            } else {
+                Result.failure(Exception("Store not found"))
+            }
         } catch (e: Exception){
             crashlytics.recordException(e)
             Result.failure(e)

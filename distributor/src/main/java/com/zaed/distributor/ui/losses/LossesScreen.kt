@@ -109,10 +109,12 @@ fun LossesScreenContent(
             DatedLossesList(
                 isLoading = state.isLoading,
                 datedLosses = state.datedLosses,
+                isDeleteEnabled = true,
                 onDeleteLoss = {
                     selectedLoss = it as DistributorLoss
                     isConfirmDeleteSheetVisible = true
                 },
+                isEditEnabled = true,
                 onUpdateLoss = {
                     selectedLoss = it as DistributorLoss
                     isSaveLossSheetVisible = true

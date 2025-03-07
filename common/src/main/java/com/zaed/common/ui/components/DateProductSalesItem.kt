@@ -94,7 +94,8 @@ fun DatedSalesItem(
                                 sale = sale,
                                 onSaleClicked = {
                                     onSaleClicked(sale.id)
-                                }
+                                },
+                                isDividerVisible = false
                             )
                         }
                     }

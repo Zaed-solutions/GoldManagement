@@ -1,11 +1,14 @@
 package com.zaed.common.data.source.remote
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Source
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.authentication.UserApprovalStatus
+import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.data.model.authentication.request.DeleteUserRequest
+import com.zaed.common.data.model.authentication.request.FetchDistributorRequest
 import com.zaed.common.data.model.authentication.request.LoginUserRequest
 import com.zaed.common.data.model.authentication.request.SignUpUserRequest
 import com.zaed.common.data.model.authentication.request.UpdateUserRequest
@@ -51,8 +54,6 @@ class AuthenticationRemoteSourceImpl(
             Result.failure(e)
         }
     }
-
-
 
 
     override fun fetchCurrentUser(userId: String): Flow<Result<User>> = callbackFlow {
@@ -101,16 +102,15 @@ class AuthenticationRemoteSourceImpl(
                     crashlytics.recordException(e)
                     trySend(Result.failure(e))
                 } else {
-                    val users = value?.toObjects(User::class.java)?: emptyList()
+                    val users = value?.toObjects(User::class.java) ?: emptyList()
                     trySend(Result.success(users))
                 }
             }
         } catch (e: Exception) {
             crashlytics.recordException(e)
             trySend(Result.failure(e))
-        } finally {
-            awaitClose { }
         }
+        awaitClose { }
     }
 
     override suspend fun updateUser(request: UpdateUserRequest): Result<Unit> {
@@ -124,10 +124,47 @@ class AuthenticationRemoteSourceImpl(
     }
 
     override suspend fun deleteUser(request: DeleteUserRequest): Result<Unit> {
-        return try{
+        return try {
             usersCollection.document(request.userId).delete().await()
             Result.success(Unit)
         } catch (e: Exception) {
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
+
+    override fun fetchDistributors(): Flow<Result<List<User>>> = callbackFlow {
+        try {
+            usersCollection.where(
+                Filter.and(
+                    Filter.equalTo("role", UserRole.DISTRIBUTOR),
+                    Filter.equalTo("approvalStatusType", UserApprovalStatus.APPROVED)
+                )
+            ).addSnapshotListener { value, e ->
+                if (e != null) {
+                    crashlytics.recordException(e)
+                    trySend(Result.failure(e))
+                } else {
+                    val users = value?.toObjects(User::class.java) ?: emptyList()
+                    trySend(Result.success(users))
+                }
+            }
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            trySend(Result.failure(e))
+        }
+        awaitClose { }
+    }
+
+    override suspend fun fetchDistributor(request: FetchDistributorRequest): Result<User> {
+        return try{
+            val distributor = usersCollection.document(request.distributorId).get().await().toObject(User::class.java)
+            if (distributor == null) {
+                Result.failure(Exception("Distributor not found"))
+            } else {
+                Result.success(distributor)
+            }
+        } catch(e: Exception){
             crashlytics.recordException(e)
             Result.failure(e)
         }

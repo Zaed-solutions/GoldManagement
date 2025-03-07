@@ -8,14 +8,16 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
-import com.zaed.common.data.model.InventoryType
 import com.zaed.common.data.model.authentication.ChangeLog
+import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
 import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.LossPayment
+import com.zaed.common.data.model.inventory.InventoryType
+import com.zaed.common.data.model.payment.MoneyPayment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.sale.IngotTransaction
 import com.zaed.common.data.model.sale.StoreSale
@@ -139,7 +141,7 @@ class SaleRemoteSourceImpl(
                     date = Date(),
                     employeeId = request.employeeId,
                     employeeName = request.employeeName,
-                    action = "${request.employeeName} Deleted this sale"
+                    type = LogType.DELETE
                 )
             )
             val inventoryChanges = sale.products
@@ -181,16 +183,14 @@ class SaleRemoteSourceImpl(
             val oldSale = oldSaleRef.get().await()
                 .toObject(StoreSale::class.java) ?: StoreSale()
             val logs = oldSale.logs.toMutableList()
-            if (isCustomerDifferent(oldSale, request.sale)) {
-                logs.add(
-                    ChangeLog(
-                        date = Date(),
-                        employeeId = request.employeeId,
-                        employeeName = request.employeeName,
-                        action = "${request.employeeName} Changed the customer from ${oldSale.customerName}-${oldSale.customerEmail}-${oldSale.customerPhone} to ${request.sale.customerName}-${request.sale.customerEmail}-${request.sale.customerPhone}"
-                    )
+            logs.add(
+                ChangeLog(
+                    date = Date(),
+                    employeeId = request.employeeId,
+                    employeeName = request.employeeName,
+                    type = LogType.UPDATE
                 )
-            }
+            )
             if (isProductsDifferent(oldSale, request.sale)) {
                 logs.add(
                     ChangeLog(
@@ -474,7 +474,7 @@ class SaleRemoteSourceImpl(
                     date = Date(),
                     employeeId = request.distributorId,
                     employeeName = request.distributorName,
-                    action = "Deleted this sale"
+                    type = LogType.DELETE
                 )
             )
             batch.set(saleRef, sale.copy(logs = logs, deleted = true))
@@ -487,7 +487,7 @@ class SaleRemoteSourceImpl(
                     date = Date(),
                     employeeId = request.distributorId,
                     employeeName = request.distributorName,
-                    action = "Deleted this payment"
+                    type = LogType.DELETE
                 )
                 val updatePayments = mapOf(
                     "deleted" to true,
@@ -545,7 +545,7 @@ class SaleRemoteSourceImpl(
                     date = Date(),
                     employeeId = request.distributorId,
                     employeeName = request.distributorName,
-                    action = "Deleted this sale"
+                    type = LogType.DELETE
                 )
             )
             batch.set(saleRef, sale.copy(logs = logs, deleted = true))
@@ -558,7 +558,7 @@ class SaleRemoteSourceImpl(
                     date = Date(),
                     employeeId = request.distributorId,
                     employeeName = request.distributorName,
-                    action = "Deleted this payment"
+                    type = LogType.DELETE
                 )
                 val updatePayments = mapOf(
                     "deleted" to true,
@@ -579,7 +579,7 @@ class SaleRemoteSourceImpl(
                     date = Date(),
                     employeeId = request.distributorId,
                     employeeName = request.distributorName,
-                    action = "Deleted this payment"
+                    type = LogType.DELETE
                 )
                 val updatePayments = mapOf(
                     "deleted" to true,
@@ -1012,9 +1012,6 @@ class SaleRemoteSourceImpl(
     }
 
     private companion object {
-        fun isCustomerDifferent(sale1: StoreSale, sale2: StoreSale): Boolean {
-            return sale1.customerName != sale2.customerName || sale1.customerEmail != sale2.customerEmail || sale1.customerPhone != sale2.customerPhone
-        }
 
         fun isProductsDifferent(sale1: StoreSale, sale2: StoreSale): Boolean {
             return sale1.products != sale2.products

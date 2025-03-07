@@ -3,13 +3,15 @@ package com.zaed.common.data.repository
 import com.zaed.common.data.model.store.Store
 import com.zaed.common.data.model.store.request.AddStoreRequest
 import com.zaed.common.data.model.store.request.DeleteStoreRequest
+import com.zaed.common.data.model.store.request.FetchStoreByIdRequest
 import com.zaed.common.data.model.store.request.UpdateStoreRequest
 import com.zaed.common.data.source.remote.StoreRemoteDataSource
+import kotlinx.coroutines.flow.Flow
 
 class StoreRepositoryImpl(
     private val remoteDataSource: StoreRemoteDataSource
 ) : StoreRepository {
-    override suspend fun getStores(): Result<List<Store>> {
+    override fun getStores(): Flow<Result<List<Store>>> {
         return remoteDataSource.getStores()
     }
 
@@ -23,5 +25,9 @@ class StoreRepositoryImpl(
 
     override suspend fun deleteStore(request: DeleteStoreRequest): Result<Unit> {
         return remoteDataSource.deleteStore(request)
+    }
+
+    override suspend fun fetchStoreById(request: FetchStoreByIdRequest): Result<Store> {
+        return remoteDataSource.fetchStoreById(request)
     }
 }

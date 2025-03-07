@@ -4,12 +4,14 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.common.data.model.authentication.ChangeLog
+import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.loss.DistributorLoss
 import com.zaed.common.data.model.loss.StoreLoss
 import com.zaed.common.data.model.loss.request.AddDistributorLossRequest
 import com.zaed.common.data.model.loss.request.CreateNewLossRequest
 import com.zaed.common.data.model.loss.request.DeleteLossRequest
 import com.zaed.common.data.model.loss.request.FetchDistributorLossesRequest
+import com.zaed.common.data.model.loss.request.FetchStoreLossesRequest
 import com.zaed.common.data.model.loss.request.GetStoreLossesRequest
 import com.zaed.common.data.model.loss.request.UpdateDistributorLossRequest
 import com.zaed.common.data.model.loss.request.UpdateLossRequest
@@ -35,7 +37,7 @@ class LossRemoteDataSourceImpl(
                         date = Date(),
                         employeeId = request.loss.userId,
                         employeeName = request.loss.userName,
-                        action = "${request.loss.userName} Created a new loss with value ${request.loss.value} and reason ${request.loss.reason}"
+                        type = LogType.CREATE
                     )
                 )
             )
@@ -60,17 +62,19 @@ class LossRemoteDataSourceImpl(
 
     override suspend fun deleteLoss(request: DeleteLossRequest): Result<Unit> {
         return try {
-            val loss = storeLossesCollection.document(request.lossId).get().await().toObject(StoreLoss::class.java) ?: StoreLoss()
+            val loss = storeLossesCollection.document(request.lossId).get().await()
+                .toObject(StoreLoss::class.java) ?: StoreLoss()
             val logs = loss.logs.toMutableList()
             logs.add(
                 ChangeLog(
                     date = Date(),
                     employeeId = request.employeeId,
                     employeeName = request.employeeName,
-                    action = "${request.employeeName} Deleted this loss"
+                    type = LogType.DELETE
                 )
             )
-            storeLossesCollection.document(request.lossId).set(loss.copy(logs = logs, deleted = true)).await()
+            storeLossesCollection.document(request.lossId)
+                .set(loss.copy(logs = logs, deleted = true)).await()
             Result.success(Unit)
         } catch (e: Exception) {
             crashlytics.recordException(e)
@@ -87,13 +91,13 @@ class LossRemoteDataSourceImpl(
                         Filter.equalTo("deleted", false)
                     )
                 ).addSnapshotListener { snapshot, e ->
-                        if (e != null) {
-                            crashlytics.recordException(e)
-                            trySend(Result.failure(e))
-                        }
-                        val losses = snapshot?.toObjects(StoreLoss::class.java)?: emptyList()
-                        trySend(Result.success(losses))
+                    if (e != null) {
+                        crashlytics.recordException(e)
+                        trySend(Result.failure(e))
                     }
+                    val losses = snapshot?.toObjects(StoreLoss::class.java) ?: emptyList()
+                    trySend(Result.success(losses))
+                }
             } catch (e: Exception) {
                 crashlytics.recordException(e)
                 trySend(Result.failure(e))
@@ -114,7 +118,7 @@ class LossRemoteDataSourceImpl(
                         crashlytics.recordException(e)
                         trySend(Result.failure(e))
                     }
-                    val losses = snapshot?.toObjects(DistributorLoss::class.java)?: emptyList()
+                    val losses = snapshot?.toObjects(DistributorLoss::class.java) ?: emptyList()
                     trySend(Result.success(losses))
                 }
             } catch (e: Exception) {
@@ -144,4 +148,23 @@ class LossRemoteDataSourceImpl(
             Result.failure(e)
         }
     }
+
+    override fun fetchStoreLosses(request: FetchStoreLossesRequest): Flow<Result<List<StoreLoss>>> =
+        callbackFlow {
+            try {
+                storeLossesCollection.whereEqualTo("storeId", request.storeId)
+                    .addSnapshotListener { snapshot, e ->
+                        if (e != null) {
+                            crashlytics.recordException(e)
+                            trySend(Result.failure(e))
+                        }
+                        val losses = snapshot?.toObjects(StoreLoss::class.java) ?: emptyList()
+                        trySend(Result.success(losses))
+                    }
+            } catch (e: Exception) {
+                crashlytics.recordException(e)
+                trySend(Result.failure(e))
+            }
+            awaitClose {}
+        }
 }

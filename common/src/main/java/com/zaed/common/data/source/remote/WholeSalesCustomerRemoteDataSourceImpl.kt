@@ -6,6 +6,7 @@ import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObjects
 import com.zaed.common.data.model.authentication.ChangeLog
+import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.customer.AddWholeSaleCustomerRequest
 import com.zaed.common.data.model.customer.FetchWholesaleCustomersByNameRequest
 import com.zaed.common.data.model.customer.WholeSaleCustomer
@@ -81,7 +82,7 @@ class WholeSalesCustomerRemoteDataSourceImpl(
             val deleteLog = ChangeLog(
                 employeeId = customer?.id?:"",
                 employeeName = customer?.name?:"",
-                action = "deleted this customer",
+                type = LogType.DELETE
             )
             customerRef.update(
                 mapOf(

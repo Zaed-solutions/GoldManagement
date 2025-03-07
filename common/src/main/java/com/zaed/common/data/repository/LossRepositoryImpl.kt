@@ -6,6 +6,7 @@ import com.zaed.common.data.model.loss.request.AddDistributorLossRequest
 import com.zaed.common.data.model.loss.request.CreateNewLossRequest
 import com.zaed.common.data.model.loss.request.DeleteLossRequest
 import com.zaed.common.data.model.loss.request.FetchDistributorLossesRequest
+import com.zaed.common.data.model.loss.request.FetchStoreLossesRequest
 import com.zaed.common.data.model.loss.request.GetStoreLossesRequest
 import com.zaed.common.data.model.loss.request.UpdateDistributorLossRequest
 import com.zaed.common.data.model.loss.request.UpdateLossRequest
@@ -41,5 +42,9 @@ class LossRepositoryImpl(
 
     override suspend fun updateDistributorLoss(request: UpdateDistributorLossRequest): Result<Unit> {
         return lossRemoteDataSource.updateDistributorLoss(request)
+    }
+
+    override fun fetchStoreLosses(request: FetchStoreLossesRequest): Flow<Result<List<StoreLoss>>> {
+        return lossRemoteDataSource.fetchStoreLosses(request)
     }
 }

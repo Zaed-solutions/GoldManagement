@@ -154,17 +154,18 @@ fun LossScreenContent(
                 .padding(vertical = 16.dp)
         ) {
             DatedListWithFilter(
-                isLoading = uiState.isLoading,
                 selectedFilter = uiState.groupedByFilter,
                 onFilterClicked = { onAction(LossUiAction.UpdateGroupedByFilter(it)) },
                 content = {
                     DatedLossesList(
                         isLoading = uiState.isLoading,
                         datedLosses = uiState.datedLosses,
+                        isDeleteEnabled = true,
                         onDeleteLoss = {
                             selectedLoss = it as StoreLoss
                             isDeleteLossSheetOpen = true
                         },
+                        isEditEnabled = true,
                         onUpdateLoss = {
                             selectedLoss = it as StoreLoss
                             isSaveLossSheetOpen = true

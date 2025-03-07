@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.authentication.ChangeLog
+import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.customer.FetchWholesaleCustomersByNameRequest
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.CashPayment
@@ -181,7 +182,7 @@ class AddGoldSaleViewModel(
                 val updateLog = ChangeLog(
                     employeeId = currentUser.id,
                     employeeName = currentUser.fullName,
-                    action = "updated this sale"
+                    type = LogType.UPDATE
                 )
                 _uiState.update { oldState ->
                     oldState.copy(
@@ -263,7 +264,7 @@ class AddGoldSaleViewModel(
                         logs = oldState.sale.logs + ChangeLog(
                             employeeId = distributor.id,
                             employeeName = distributor.fullName,
-                            action = "created this sale"
+                            type = LogType.CREATE
                         )
                     ),
                 )
