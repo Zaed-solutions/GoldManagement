@@ -17,54 +17,68 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.payment.MoneyPayment
-import com.zaed.common.data.model.payment.PaymentType
-import com.zaed.common.data.model.payment.getPaymentTypeDropDownItems
+import com.zaed.common.data.model.payment.BankTransferPayment
+import com.zaed.common.data.model.payment.CashPayment
+import com.zaed.common.data.model.payment.ChequePayment
 import com.zaed.common.ui.components.NumberInputTextField
-import com.zaed.common.ui.components.TitledDropDownTextField
+import com.zaed.common.ui.components.TextInputTextField
+import com.zaed.common.ui.util.toMoneyFormat
+import java.util.UUID
+import kotlin.math.absoluteValue
 
 @Composable
-fun SavePaymentBottomSheetContent(
+fun SaveCashPaymentBottomSheetContent(
     modifier: Modifier = Modifier,
-    initialMoneyPayment: MoneyPayment,
-    onSave: (MoneyPayment) -> Unit={}
+    initialPayment: CashPayment,
+    remainsAmount: Double = 0.0,
+    onSave: (CashPayment) -> Unit = {}
 ) {
-    var payment by remember { mutableStateOf(initialMoneyPayment) }
-    val dropDownOptions = remember {
-        getPaymentTypeDropDownItems()
-    }
+    var payment by remember { mutableStateOf(initialPayment) }
     Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
         Text(
-            text = stringResource(R.string.save_payment),
+            text = " طريقه الدفع : ${stringResource(initialPayment.type.titleRes)}",
             style = MaterialTheme.typography.titleLarge
         )
-        TitledDropDownTextField(
-            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
-            label = stringResource(R.string.type),
-            options = dropDownOptions.map { stringResource(it.titleRes) },
-            selectedValue = stringResource(payment.type.titleRes),
-            onValueChanged = { index->
-                payment = payment.copy(type = dropDownOptions[index])
-            },
-        )
+
         NumberInputTextField(
-            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
             label = stringResource(R.string.amount),
             value = payment.amount,
             onValueChange = {
                 payment = payment.copy(amount = it)
             },
         )
+        if (payment.amount > remainsAmount) {
+            Text(
+                text = "Remains for the client " + payment.amount.minus(remainsAmount).absoluteValue.toMoneyFormat(
+                    2
+                )
+            )
+        }
         Button(
-            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).padding(top = 24.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 48.dp)
+                .padding(top = 24.dp),
             onClick = {
+                if (payment.amount > remainsAmount) {
+                    payment = payment.copy(amount = remainsAmount)
+                } else {
+                    payment = payment.copy(
+                        id = "distributor-" + UUID.randomUUID().toString()
+                    )
+                }
                 onSave(payment)
-            }
+            },
+            enabled = payment.amount != 0.0
         ) {
             Text(
                 text = stringResource(R.string.save),
@@ -75,18 +89,216 @@ fun SavePaymentBottomSheetContent(
 }
 
 @Composable
-private fun PaymentTypeDropDownMenu(
+fun SaveChequePaymentBottomSheetContent(
     modifier: Modifier = Modifier,
-    moneyPayment: MoneyPayment,
-    onTypeChanged: (PaymentType) -> Unit
+    remainsAmount: Double = 0.0,
+    initialPayment: ChequePayment,
+    onSave: (ChequePayment) -> Unit = {}
 ) {
-    TitledDropDownTextField(
-        modifier = modifier,
-        label = stringResource(R.string.type),
-        options = PaymentType.entries.map { it.name },
-        selectedValue = moneyPayment.type.name,
-        onValueChanged = { index->
-            onTypeChanged(PaymentType.entries[index])
-        },
-    )
+    var payment by remember { mutableStateOf(initialPayment) }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Text(
+            text = " طريقه الدفع : ${stringResource(initialPayment.type.titleRes)}",
+            style = MaterialTheme.typography.titleLarge
+        )
+        //cheque for
+        TextInputTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            label = stringResource(com.zaed.common.R.string.cheque_for),
+            value = payment.chequeFor,
+            onValueChange = {
+                payment = payment.copy(chequeFor = it)
+            },
+        )
+        //receiver Name
+        TextInputTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            label = stringResource(com.zaed.common.R.string.receiver_name),
+            value = payment.receiverName,
+            onValueChange = {
+                payment = payment.copy(receiverName = it)
+            },
+        )
+        //City
+        TextInputTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            label = stringResource(com.zaed.common.R.string.city),
+            value = payment.city,
+            onValueChange = {
+                payment = payment.copy(city = it)
+            },
+        )
+        //Sender Name
+        TextInputTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            label = stringResource(com.zaed.common.R.string.sender_name),
+            value = payment.senderName,
+            onValueChange = {
+                payment = payment.copy(senderName = it)
+            },
+        )
+        //VALUE
+        NumberInputTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            label = stringResource(R.string.amount),
+            value = payment.amount,
+            onValueChange = {
+                payment = payment.copy(amount = it)
+            },
+        )
+        if (payment.amount > remainsAmount) {
+            Text(
+                text = "Remains for the client " + payment.amount.minus(remainsAmount).absoluteValue.toMoneyFormat(
+                    2
+                )
+            )
+        }
+        //Note
+        TextInputTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            label = stringResource(com.zaed.common.R.string.note),
+            value = payment.notes,
+            onValueChange = {
+                payment = payment.copy(notes = it)
+            },
+        )
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 48.dp)
+                .padding(top = 24.dp),
+            onClick = {
+                if (payment.amount > remainsAmount) {
+                    payment = payment.copy(amount = remainsAmount)
+                } else {
+                    payment = payment.copy(
+                        id = "distributor-" + UUID.randomUUID().toString()
+                    )
+                }
+                onSave(payment)
+            },
+            enabled = payment.amount != 0.0
+        ) {
+            Text(
+                text = stringResource(R.string.save),
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
+    }
 }
+
+@Composable
+fun SaveBankTransferPaymentBottomSheetContent(
+    modifier: Modifier = Modifier,
+    remainsAmount: Double = 0.0,
+    initialPayment: BankTransferPayment,
+    onSave: (BankTransferPayment) -> Unit = {}
+) {
+    var payment by remember { mutableStateOf(initialPayment) }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Text(
+            text = " طريقه الدفع : ${stringResource(initialPayment.type.titleRes)}",
+            style = MaterialTheme.typography.titleLarge
+        )
+        //Account holder name
+        TextInputTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            label = stringResource(com.zaed.common.R.string.account_holder_name),
+            value = payment.accountHolderName,
+            onValueChange = {
+                payment = payment.copy(accountHolderName = it)
+            },
+        )
+        //Account Number
+        TextInputTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            label = stringResource(com.zaed.common.R.string.account_number),
+            value = payment.accountNumber,
+            onValueChange = {
+                payment = payment.copy(accountNumber = it)
+            },
+        )
+        //BANK NAME
+        TextInputTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            label = stringResource(com.zaed.common.R.string.bank_Name),
+            value = payment.bankName,
+            onValueChange = {
+                payment = payment.copy(bankName = it)
+            },
+        )
+        //VALUE
+        NumberInputTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            label = stringResource(R.string.amount),
+            value = payment.amount,
+            onValueChange = {
+                payment = payment.copy(amount = it)
+            },
+        )
+        if (payment.amount > remainsAmount) {
+            Text(
+                text = "Remains for the client " + payment.amount.minus(remainsAmount).absoluteValue.toMoneyFormat(
+                    2
+                )
+            )
+        }
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 48.dp)
+                .padding(top = 24.dp),
+            onClick = {
+                if (payment.amount > remainsAmount) {
+                    payment = payment.copy(amount = remainsAmount)
+                } else {
+                    payment = payment.copy(
+                        id = "distributor-" + UUID.randomUUID().toString()
+                    )
+                }
+                onSave(payment)
+            },
+            enabled = payment.amount != 0.0
+        ) {
+            Text(
+                text = stringResource(R.string.save),
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
+    }
+}
+

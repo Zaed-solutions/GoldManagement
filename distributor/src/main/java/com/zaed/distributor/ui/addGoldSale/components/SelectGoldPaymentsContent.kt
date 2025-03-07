@@ -21,7 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.payment.GoldPayment
-import com.zaed.common.data.model.payment.MoneyPayment
+import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.util.formatMoney
@@ -44,7 +44,7 @@ fun SelectGoldPaymentsContent(
     totalGoldPaid: Double,
 ) {
     var isBottomSheetVisible by remember { mutableStateOf(false) }
-    var selectedPayment by remember { mutableStateOf<Payment>(MoneyPayment()) }
+    var selectedPayment by remember { mutableStateOf<Payment>(CashPayment()) }
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     Column(
         modifier = modifier
@@ -104,12 +104,12 @@ fun SelectGoldPaymentsContent(
         PaymentsList(
             payments = payments,
             onAddPayment = {
-                selectedPayment = MoneyPayment()
+                selectedPayment = CashPayment()
                 isBottomSheetVisible = true
             },
             onEditPayment = {
                 when (it) {
-                    is MoneyPayment -> selectedPayment = it
+                    is CashPayment -> selectedPayment = it
                     is GoldPayment -> selectedPayment = it
                 }
                 isBottomSheetVisible = true
@@ -128,7 +128,7 @@ fun SelectGoldPaymentsContent(
                     onSave = {
                         if (selectedPayment.id.isBlank()) {
                             when (it) {
-                                is MoneyPayment -> {
+                                is CashPayment -> {
                                     onAddPayment(
                                         it.copy(
                                             id = "distributor-" + UUID.randomUUID().toString()
@@ -146,7 +146,7 @@ fun SelectGoldPaymentsContent(
                             }
                         } else {
                             when (it) {
-                                is MoneyPayment -> {
+                                is CashPayment -> {
                                     onEditPayment(it)
                                 }
 

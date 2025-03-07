@@ -44,7 +44,7 @@ fun SelectProductsContent(
     sale: WholesaleProductSale,
     onNext: () -> Unit,
     onAddProduct: (Product) -> Unit,
-    onDeleteProduct: (Product) -> Unit
+    onDeleteProduct: (Product) -> Unit,
 
 ) {
     val categories1 by rememberUpdatedState(categories)
@@ -72,7 +72,7 @@ fun SelectProductsContent(
             style = MaterialTheme.typography.headlineMedium
         )
         SearchBar(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
             query = searchQuery,
             onQueryChanged = { searchQuery = it }
         )
@@ -119,7 +119,7 @@ fun SelectProductsContent(
                 Text(
                     text = stringResource(
                         R.string.total_placeholder,
-                        sale.totalPriceBeforeDiscount.toMoneyFormat(2)
+                        sale.totalAmount.toMoneyFormat(2)
                     ),
                     style = MaterialTheme.typography.titleMedium
                 )

@@ -35,6 +35,7 @@ fun TitledDropDownTextField(
     label: String = "",
     selectedValue: String,
     options: List<String>,
+    enabled: Boolean = true,
     onValueChanged: (Int) -> Unit = {},
     shape: Shape = MaterialTheme.shapes.large,
     containerColor: Color = MaterialTheme.colorScheme.background
@@ -55,6 +56,7 @@ fun TitledDropDownTextField(
         ) {
             OutlinedTextField(
                 readOnly = true,
+                enabled = enabled,
                 value = selectedValue,
                 onValueChange = {},
                 label = { Text(text = label) },
