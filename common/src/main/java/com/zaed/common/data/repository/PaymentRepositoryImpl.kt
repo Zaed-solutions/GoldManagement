@@ -1,8 +1,9 @@
 package com.zaed.common.data.repository
 
 import com.zaed.common.data.model.payment.GoldPayment
-import com.zaed.common.data.model.payment.MoneyPayment
+import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
+import com.zaed.common.data.model.payment.request.DeletePaymentRequest
 import com.zaed.common.data.model.payment.request.EditPaymentRequest
 import com.zaed.common.data.model.payment.request.FetchCustomerPaymentsRequest
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
@@ -16,7 +17,7 @@ class PaymentRepositoryImpl(
         return paymentDataSource.addPayment(request)
     }
 
-    override suspend fun fetchMoneyPaymentsByIds(request: FetchPaymentsByIdsRequest): Result<List<MoneyPayment>> {
+    override suspend fun fetchMoneyPaymentsByIds(request: FetchPaymentsByIdsRequest): Result<List<Payment>> {
         return paymentDataSource.fetchMoneyPaymentsByIds(request)
     }
 
@@ -25,15 +26,15 @@ class PaymentRepositoryImpl(
     }
 
 
-    override suspend fun deletePayment(id: String): Result<Unit> {
-        return paymentDataSource.deletePayment(id)
+    override suspend fun deletePayment(request: DeletePaymentRequest): Result<Unit> {
+        return paymentDataSource.deletePayment(request)
     }
 
     override suspend fun editPayment(request: EditPaymentRequest): Result<Unit> {
         return paymentDataSource.editPayment(request)
     }
 
-    override fun fetchCustomerPayments(request: FetchCustomerPaymentsRequest): Flow<Result<List<MoneyPayment>>> {
+    override fun fetchCustomerPayments(request: FetchCustomerPaymentsRequest): Flow<Result<List<Payment>>> {
         return paymentDataSource.fetchCustomerPayments(request)
     }
 }

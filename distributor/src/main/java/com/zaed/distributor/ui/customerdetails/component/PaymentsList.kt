@@ -12,20 +12,21 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.payment.MoneyPayment
+import com.zaed.common.data.model.payment.Payment
 
 @Composable
 fun PaymentsList(
+    modifier: Modifier = Modifier,
     listState: LazyListState,
-    payments: Map<String, List<MoneyPayment>>,
+    payments: Map<String, List<Payment>>,
     debtAmount: Double,
-    onPaymentClicked: (MoneyPayment) -> Unit = {},
-    onDeletePayment: (MoneyPayment) -> Unit = {},
-    onEditPayment: (MoneyPayment) -> Unit = {}
+    onPaymentClicked: (Payment) -> Unit = {},
+    onDeletePayment: (Payment) -> Unit = {},
+    onEditPayment: (Payment) -> Unit = {}
 ) {
     LazyColumn (
         state = listState,
-        modifier = Modifier.fillMaxSize().padding(vertical = 8.dp)
+        modifier = modifier.fillMaxSize().padding(vertical = 8.dp)
     ){
         item {
             BalanceSection(
@@ -67,3 +68,4 @@ fun LazyListState.isScrollingUp(): State<Boolean> {
         }
     }
 }
+

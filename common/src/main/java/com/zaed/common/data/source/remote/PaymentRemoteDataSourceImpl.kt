@@ -1,13 +1,19 @@
 package com.zaed.common.data.source.remote
 
-import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObjects
+import com.zaed.common.data.model.payment.BankTransferPayment
+import com.zaed.common.data.model.payment.CashPayment
+import com.zaed.common.data.model.payment.ChequePayment
+import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.GoldPayment
-import com.zaed.common.data.model.payment.MoneyPayment
+import com.zaed.common.data.model.payment.LossPayment
+import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
+import com.zaed.common.data.model.payment.request.DeletePaymentRequest
 import com.zaed.common.data.model.payment.request.EditPaymentRequest
 import com.zaed.common.data.model.payment.request.FetchCustomerPaymentsRequest
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
@@ -22,21 +28,26 @@ class PaymentRemoteDataSourceImpl(
 ) : PaymentRemoteDataSource {
     private val moneyPaymentsCollection = firestore.collection("money_payments")
     private val goldPaymentsCollection = firestore.collection("gold_payments")
+    private val customersCollection = firestore.collection("whole_sale_customers")
     override suspend fun addPayment(request: AddNewPaymentRequest): Result<String> {
         try {
             val document = moneyPaymentsCollection.document()
-            val amount = if(request.moneyPayment.type == PaymentType.FUTURES){
-                request.moneyPayment.amount.unaryMinus()
+            val amount = if(request.cashPayment.type == PaymentType.FUTURES){
+                request.cashPayment.amount.unaryMinus()
             }else{
-                request.moneyPayment.amount
+                request.cashPayment.amount
             }
             document.set(
-                MoneyPayment(
+                CashPayment(
                     id = document.id,
                     customerId = request.customerId,
                     amount = amount,
-                    type = request.moneyPayment.type,
+                    type = request.cashPayment.type,
                 )
+            ).await()
+            customersCollection.document(request.customerId).update(
+                "debtAmount",
+                FieldValue.increment(request.cashPayment.amount),
             ).await()
             return Result.success(document.id)
         }catch (e: Exception){
@@ -44,7 +55,7 @@ class PaymentRemoteDataSourceImpl(
             return Result.failure(e)
         }
     }
-    override fun fetchCustomerPayments(request: FetchCustomerPaymentsRequest): Flow<Result<List<MoneyPayment>>> =
+    override fun fetchCustomerPayments(request: FetchCustomerPaymentsRequest): Flow<Result<List<Payment>>> =
         callbackFlow {
             try {
                 moneyPaymentsCollection.whereEqualTo("customerId", request.customerId)
@@ -53,12 +64,20 @@ class PaymentRemoteDataSourceImpl(
                             crashlytics.recordException(error)
                             trySend(Result.failure(error))
                         } else {
-                            val payments =
-                                snapshot?.toObjects(MoneyPayment::class.java) ?: emptyList()
+                            val payments = snapshot?.mapNotNull {
+                                val type = it.toObject(CashPayment::class.java).type
+                                when(type){
+                                    PaymentType.CASH -> it.toObject(CashPayment::class.java)
+                                    PaymentType.BANK_TRANSFER -> it.toObject(BankTransferPayment::class.java)
+                                    PaymentType.CHEQUE -> it.toObject(ChequePayment::class.java)
+                                    PaymentType.FUTURES -> it.toObject(FuturePayment::class.java)
+                                    PaymentType.LOSS -> it.toObject(LossPayment::class.java)
+                                    PaymentType.GOLD -> it.toObject(GoldPayment::class.java)
+                                }
+                            }?: emptyList()
                             trySend(Result.success(payments))
                         }
                     }
-                moneyPaymentsCollection.whereEqualTo("customerId", request.customerId)
             } catch (e: Exception) {
                 crashlytics.recordException(e)
                 e.printStackTrace()
@@ -67,12 +86,21 @@ class PaymentRemoteDataSourceImpl(
             awaitClose { }
         }
 
-    override suspend fun fetchMoneyPaymentsByIds(request: FetchPaymentsByIdsRequest): Result<List<MoneyPayment>> {
+    override suspend fun fetchMoneyPaymentsByIds(request: FetchPaymentsByIdsRequest): Result<List<Payment>> {
         return try {
-            Log.d("PaymentRemoteDataSource", "fetchMoneyPaymentsByIds: ${request.paymentsIds}")
-            val moneyPayments = moneyPaymentsCollection.whereIn("id", request.paymentsIds).get().await().toObjects<MoneyPayment>()
-            Log.d("PaymentRemoteDataSource", "fetchMoneyPaymentsByIds: $moneyPayments")
-            Result.success(moneyPayments)
+            val result = moneyPaymentsCollection.whereIn("id", request.paymentsIds).get().await()
+            val payments = result.map {
+                val type = it.toObject(CashPayment::class.java).type
+                when(type){
+                    PaymentType.CASH -> it.toObject(CashPayment::class.java)
+                    PaymentType.BANK_TRANSFER -> it.toObject(BankTransferPayment::class.java)
+                    PaymentType.CHEQUE -> it.toObject(ChequePayment::class.java)
+                    PaymentType.FUTURES -> it.toObject(FuturePayment::class.java)
+                    PaymentType.LOSS -> it.toObject(LossPayment::class.java)
+                    PaymentType.GOLD -> it.toObject(GoldPayment::class.java)
+                }
+            }
+            Result.success(payments)
         } catch (e: Exception){
             Result.failure(e)
         }
@@ -88,7 +116,7 @@ class PaymentRemoteDataSourceImpl(
 
     override suspend fun editPayment(request: EditPaymentRequest): Result<Unit> {
         try {
-            moneyPaymentsCollection.document(request.newMoneyPayment.id).set(request.newMoneyPayment).await()
+            moneyPaymentsCollection.document(request.newCashPayment.id).set(request.newCashPayment).await()
             return Result.success(Unit)
         }catch (e: Exception){
             crashlytics.recordException(e)
@@ -97,9 +125,13 @@ class PaymentRemoteDataSourceImpl(
         }
     }
 
-    override suspend fun deletePayment(id: String): Result<Unit> {
+    override suspend fun deletePayment(request: DeletePaymentRequest): Result<Unit> {
         try {
-            moneyPaymentsCollection.document(id).delete().await()
+            moneyPaymentsCollection.document(request.paymentId).delete().await()
+            customersCollection.document(request.customerId).update(
+                "debtAmount",
+                FieldValue.increment(-request.amount),
+            ).await()
             return Result.success(Unit)
         }catch (e: Exception){
             crashlytics.recordException(e)

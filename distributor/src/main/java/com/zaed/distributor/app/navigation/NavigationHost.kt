@@ -28,7 +28,6 @@ fun NavigationHost(
     onShowNavDrawer: () -> Unit,
     navController: NavHostController
 ) {
-//    Log.d("CrashBugTest", "NavigationHost: reached")
     NavHost(
         modifier = Modifier.imePadding(),
         navController = navController,
@@ -158,7 +157,8 @@ fun NavigationHost(
                             inclusive = false
                         }
                     }
-                }
+                },
+                onOpenDrawer = onShowNavDrawer
             )
         }
         composable<Route.ProductSaleDetailsRoute> { backstackEntry ->
