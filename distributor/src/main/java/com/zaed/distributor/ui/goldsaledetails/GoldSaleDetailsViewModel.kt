@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.payment.GoldPayment
-import com.zaed.common.data.model.payment.MoneyPayment
+import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
 import com.zaed.common.data.model.sale.ReceiptStatus
 import com.zaed.common.data.model.sale.request.DeleteWholesaleGoldSaleRequest
@@ -136,7 +136,7 @@ class GoldSaleDetailsViewModel(
             updateWholesaleGoldSaleUseCase(
                 UpdateWholesaleGoldSaleRequest(
                     sale = sale.copy(logs = logs),
-                    moneyPayments = uiState.value.payments.filterIsInstance<MoneyPayment>(),
+                    cashPayments = uiState.value.payments.filterIsInstance<CashPayment>(),
                     goldPayments = uiState.value.payments.filterIsInstance<GoldPayment>(),
                     employeeName = uiState.value.currentUser.fullName,
                     employeeId = uiState.value.currentUser.id
