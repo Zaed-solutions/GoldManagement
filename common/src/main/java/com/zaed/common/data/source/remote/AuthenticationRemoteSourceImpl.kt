@@ -8,6 +8,7 @@ import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.authentication.UserApprovalStatus
 import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.data.model.authentication.request.DeleteUserRequest
+import com.zaed.common.data.model.authentication.request.FetchDistributorRequest
 import com.zaed.common.data.model.authentication.request.LoginUserRequest
 import com.zaed.common.data.model.authentication.request.SignUpUserRequest
 import com.zaed.common.data.model.authentication.request.UpdateUserRequest
@@ -153,6 +154,20 @@ class AuthenticationRemoteSourceImpl(
             trySend(Result.failure(e))
         }
         awaitClose { }
+    }
+
+    override suspend fun fetchDistributor(request: FetchDistributorRequest): Result<User> {
+        return try{
+            val distributor = usersCollection.document(request.distributorId).get().await().toObject(User::class.java)
+            if (distributor == null) {
+                Result.failure(Exception("Distributor not found"))
+            } else {
+                Result.success(distributor)
+            }
+        } catch(e: Exception){
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
     }
 
     override suspend fun signUpUser(request: SignUpUserRequest): Result<User> {

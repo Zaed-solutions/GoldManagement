@@ -10,6 +10,9 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import com.zaed.common.ui.theme.AppTypography
+import com.zaed.common.ui.theme.GoldenCustomColors
+import com.zaed.common.ui.theme.darkGoldColors
+import com.zaed.common.ui.theme.lightGoldColors
 
 
 private val lightScheme = lightColorScheme(
@@ -88,28 +91,7 @@ private val darkScheme = darkColorScheme(
     surfaceContainerHighest = surfaceContainerHighestDark,
 )
 
-@Immutable
-data class ColorFamily(
-    val color: Color = Color.Unspecified,
-    val onColor: Color = Color.Unspecified,
-    val colorContainer: Color = Color.Unspecified,
-    val onColorContainer: Color = Color.Unspecified
-)
 
-val lightGoldColors = ColorFamily(
-    color = Color(0xFF815600),
-    onColor = Color(0xFFFFFFFF),
-    colorContainer = Color(0xFFFFB22C),
-    onColorContainer = Color(0xFF6D4700)
-)
-val darkGoldColors = ColorFamily(
-    color = Color(0xFFFFD7A0),
-    onColor = Color(0xFF442B00),
-    colorContainer = Color(0xFFFFB22C),
-    onColorContainer = Color(0xFF6D4700)
-)
-
-val GoldenCustomColors = staticCompositionLocalOf { ColorFamily() }
 @Composable
 fun DistributorAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

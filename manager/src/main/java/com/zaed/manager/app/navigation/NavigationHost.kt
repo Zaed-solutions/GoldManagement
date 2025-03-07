@@ -15,6 +15,7 @@ import androidx.navigation.toRoute
 import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
+import com.zaed.manager.ui.distributordetails.DistributorDetailsScreen
 import com.zaed.manager.ui.distributors.DistributorsScreen
 import com.zaed.manager.ui.storedetails.StoreDetailsScreen
 import com.zaed.manager.ui.stores.StoresScreen
@@ -100,7 +101,19 @@ fun NavigationHost(
         composable<Route.DistributorsRoute> {
             DistributorsScreen(
                 onShowNavDrawer = {/*TODO*/},
-                onNavigateToDistributorDetails = {/*TODO*/}
+                onNavigateToDistributorDetails = {
+                    navController.navigate(Route.DistributorDetailsRoute(it))
+                }
+            )
+        }
+        composable<Route.DistributorDetailsRoute> {backstackEntry ->
+            val distributorId = backstackEntry.toRoute<Route.DistributorDetailsRoute>().distributorId
+            DistributorDetailsScreen(
+                distributorId = distributorId,
+                onNavigateToSaleDetails = {/*todo*/},
+                onBackPressed = {
+                    navController.popBackStack()
+                }
             )
         }
     }

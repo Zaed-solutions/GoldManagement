@@ -107,6 +107,7 @@ fun SaveInventoryBottomSheet(
                                 label = stringResource(id = R.string.quantity),
                                 value = selectedInventory.quantity,
                                 isError = isQuantityError,
+                                withBorder = true,
                                 errorMessage = R.string.quantity_cannot_be_zero,
                                 onValueChange = {
                                     isQuantityError = false

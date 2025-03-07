@@ -1,5 +1,6 @@
 package com.zaed.manager.app.di
 
+import com.zaed.manager.ui.distributordetails.DistributorDetailsViewModel
 import com.zaed.manager.ui.distributors.DistributorsViewModel
 import com.zaed.manager.ui.storedetails.StoreDetailsViewModel
 import com.zaed.manager.ui.stores.StoresViewModel
@@ -12,4 +13,5 @@ val appModule = module {
     viewModelOf(::StoresViewModel)
     viewModelOf(::StoreDetailsViewModel)
     viewModelOf(::DistributorsViewModel)
+    viewModelOf(::DistributorDetailsViewModel)
 }

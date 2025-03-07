@@ -1,9 +1,12 @@
 package com.zaed.common.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Money
 import androidx.compose.material3.HorizontalDivider
@@ -14,12 +17,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.zaed.common.R
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.Sale
+import com.zaed.common.data.model.sale.WholesaleGoldSale
 import com.zaed.common.data.model.sale.WholesaleProductSale
+import com.zaed.common.ui.theme.GoldManagementTheme
+import com.zaed.common.ui.theme.GoldenCustomColors
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
 import com.zaed.common.ui.util.formatMoney
@@ -32,6 +40,10 @@ fun SaleItem(
     onSaleClicked: () -> Unit,
     isDividerVisible: Boolean = true
 ) {
+    val (icon, iconBackgroundColor, iconColor) = when{
+        sale is WholesaleGoldSale -> Triple(R.drawable.ic_ingot, GoldenCustomColors.current.color, GoldenCustomColors.current.onColor)
+        else -> Triple(R.drawable.ic_shopping, MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.onSecondary)
+    }
     Surface(
         modifier = modifier.fillMaxWidth(),
         onClick = { onSaleClicked() },
@@ -44,8 +56,16 @@ fun SaleItem(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
-                    imageVector = Icons.Default.Money,
+                    painter = painterResource(icon),
                     contentDescription = null,
+                    tint = iconColor,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(
+                            color = iconBackgroundColor,
+                            shape = CircleShape
+                        )
+                        .padding(8.dp)
                 )
                 Column (
                     modifier = Modifier
@@ -79,31 +99,33 @@ fun SaleItem(
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 private fun Preview() {
-    SaleItem(
-        sale = WholesaleProductSale(
-            receiptNumber = "123456",
-            createdAt = Date(),
-            products = listOf(
-                Product(
-                    name = "Product 1",
-                    quantity = 1,
-                    grams = 10.0,
-                    gramPrice = 100.0
-                ),
-                Product(
-                    name = "Product 2",
-                    quantity = 2,
-                    grams = 20.0,
-                    gramPrice = 200.0
-                ),
-                Product(
-                    name = "Product 3",
-                    quantity = 3,
-                    grams = 30.0,
-                    gramPrice = 300.0
+    GoldManagementTheme {
+        SaleItem(
+            sale = WholesaleGoldSale(
+                receiptNumber = "123456",
+                createdAt = Date(),
+                products = listOf(
+                    Product(
+                        name = "Product 1",
+                        quantity = 1,
+                        grams = 10.0,
+                        gramPrice = 100.0
+                    ),
+                    Product(
+                        name = "Product 2",
+                        quantity = 2,
+                        grams = 20.0,
+                        gramPrice = 200.0
+                    ),
+                    Product(
+                        name = "Product 3",
+                        quantity = 3,
+                        grams = 30.0,
+                        gramPrice = 300.0
+                    )
                 )
-            )
-        ),
-        onSaleClicked = {}
-    )
+            ),
+            onSaleClicked = {}
+        )
+    }
 }

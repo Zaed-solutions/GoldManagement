@@ -64,7 +64,7 @@ class StoreDetailsViewModel(
                 result.onSuccess { data ->
                     _uiState.update { oldState ->
                         oldState.copy(
-                            mainInventories = data.filter { it.type == InventoryType.PRODUCT }.sortedBy { it.productName }
+                            mainInventories = data
                         )
                     }
                 }.onFailure {

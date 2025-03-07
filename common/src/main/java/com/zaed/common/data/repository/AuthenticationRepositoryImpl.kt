@@ -3,6 +3,7 @@ package com.zaed.common.data.repository
 import com.zaed.common.data.model.authentication.LocalUser
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.authentication.request.DeleteUserRequest
+import com.zaed.common.data.model.authentication.request.FetchDistributorRequest
 import com.zaed.common.data.model.authentication.request.LoginUserRequest
 import com.zaed.common.data.model.authentication.request.SignUpUserRequest
 import com.zaed.common.data.model.authentication.request.UpdateUserRequest
@@ -97,5 +98,9 @@ class AuthenticationRepositoryImpl(
 
     override fun fetchDistributors(): Flow<Result<List<User>>> {
         return remoteSource.fetchDistributors()
+    }
+
+    override suspend fun fetchDistributor(request: FetchDistributorRequest): Result<User> {
+        return remoteSource.fetchDistributor(request)
     }
 }
