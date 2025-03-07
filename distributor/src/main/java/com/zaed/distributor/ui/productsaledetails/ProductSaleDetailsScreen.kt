@@ -126,7 +126,7 @@ private fun ProductSaleDetailsContent(
                 title = stringResource(R.string.payments)
             ) {
                 PaymentsTable(
-                    payments = state.moneyPayments
+                    payments = state.cashPayments
                 )
             }
             ConfirmDeleteBottomSheet(

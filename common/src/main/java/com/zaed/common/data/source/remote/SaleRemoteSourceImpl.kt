@@ -11,7 +11,11 @@ import com.google.firebase.firestore.SetOptions
 import com.zaed.common.data.model.InventoryType
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
-import com.zaed.common.data.model.payment.MoneyPayment
+import com.zaed.common.data.model.payment.BankTransferPayment
+import com.zaed.common.data.model.payment.CashPayment
+import com.zaed.common.data.model.payment.ChequePayment
+import com.zaed.common.data.model.payment.FuturePayment
+import com.zaed.common.data.model.payment.LossPayment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.sale.IngotTransaction
 import com.zaed.common.data.model.sale.StoreSale
@@ -89,7 +93,10 @@ class SaleRemoteSourceImpl(
                 Query.Direction.DESCENDING
             ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")
                 ?.toLongOrNull() ?: 0
-            batch.set(docRef, request.sale.copy(id = docRef.id, receiptNumber = (receiptNumber + 1).toString()))
+            batch.set(
+                docRef,
+                request.sale.copy(id = docRef.id, receiptNumber = (receiptNumber + 1).toString())
+            )
             val categoryUpdates = request.sale.products
                 .groupBy { it.categoryId }
                 .mapValues { (_, products) -> products.sumOf { it.grams } }
@@ -190,7 +197,7 @@ class SaleRemoteSourceImpl(
                         date = Date(),
                         employeeId = request.employeeId,
                         employeeName = request.employeeName,
-                        action = "${request.employeeName} Changed the products with total from ${oldSale.totalPrice} to ${request.sale.totalPrice}"
+                        action = "${request.employeeName} Changed the products with total from ${oldSale.totalAmount} to ${request.sale.totalAmount}"
                     )
                 )
                 val oldProductsByCategory = oldSale.products
@@ -406,7 +413,8 @@ class SaleRemoteSourceImpl(
                                     request.transaction.grams.unaryMinus()
                                 else
                                     request.transaction.grams
-                            ))
+                            )
+                        )
                     batch.update(ref, updates)
                 }
             batch.set(docRef, request.transaction.copy(id = docRef.id))
@@ -423,7 +431,8 @@ class SaleRemoteSourceImpl(
             val batch = firestore.batch()
             val oldTransactionRef = ingotTransactionsCollection.document(request.transaction.id)
             val oldTransaction =
-                oldTransactionRef.get().await().toObject(IngotTransaction::class.java) ?: IngotTransaction()
+                oldTransactionRef.get().await().toObject(IngotTransaction::class.java)
+                    ?: IngotTransaction()
             inventoryCollection
                 .where(
                     Filter.and(
@@ -432,11 +441,13 @@ class SaleRemoteSourceImpl(
                         Filter.equalTo("ownerId", request.transaction.distributorId)
                     )
                 ).get().await().documents.firstOrNull()?.reference?.let { ref ->
-                    val oldAmount = if(oldTransaction.type == TransactionType.SALE) oldTransaction.grams.unaryMinus() else oldTransaction.grams
-                    val newAmount = if(request.transaction.type == TransactionType.SALE) request.transaction.grams.unaryMinus() else request.transaction.grams
+                    val oldAmount =
+                        if (oldTransaction.type == TransactionType.SALE) oldTransaction.grams.unaryMinus() else oldTransaction.grams
+                    val newAmount =
+                        if (request.transaction.type == TransactionType.SALE) request.transaction.grams.unaryMinus() else request.transaction.grams
                     val updates = mapOf(
                         "quantity" to FieldValue.increment(
-                            if(request.transaction.deleted) oldAmount else newAmount - oldAmount
+                            if (request.transaction.deleted) oldAmount else newAmount - oldAmount
                         )
                     )
                     batch.update(ref, updates)
@@ -471,7 +482,7 @@ class SaleRemoteSourceImpl(
             var totalPaymentDeleted = 0.0
             sale.paymentsIds.forEach {
                 val paymentRef = moneyPaymentCollection.document(it)
-                val payment = paymentRef.get().await().toObject(MoneyPayment::class.java)
+                val payment = paymentRef.get().await().toObject(CashPayment::class.java)
                 val log = ChangeLog(
                     date = Date(),
                     employeeId = request.distributorId,
@@ -488,7 +499,7 @@ class SaleRemoteSourceImpl(
                 }
             }
             val inventoryChanges = sale.products
-                    .groupBy { it.categoryId }
+                .groupBy { it.categoryId }
                 .mapValues { (_, products) -> products.sumOf { it.grams } }
             val distributorId = sale.distributorId
             val inventoryRefs = inventoryCollection
@@ -542,7 +553,7 @@ class SaleRemoteSourceImpl(
             var totalPaymentDeleted = 0.0
             sale.moneyPaymentsIds.forEach {
                 val paymentRef = moneyPaymentCollection.document(it)
-                val payment = paymentRef.get().await().toObject(MoneyPayment::class.java)
+                val payment = paymentRef.get().await().toObject(CashPayment::class.java)
                 val log = ChangeLog(
                     date = Date(),
                     employeeId = request.distributorId,
@@ -620,6 +631,7 @@ class SaleRemoteSourceImpl(
 
     override suspend fun addWholesaleProductSale(request: AddWholesaleProductSaleRequest): Result<String> {
         return try {
+            Log.d("add_sale", "invoke remote: $request")
             val batch = firestore.batch()
             val docRef = wholesaleProductSalesCollection.document()
             val paymentsIds = mutableListOf<String>()
@@ -634,12 +646,13 @@ class SaleRemoteSourceImpl(
             ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")
                 ?.toLongOrNull() ?: 0
             val receiptNumber = maxOf(maxProductReceipt, maxGoldReceiptNumber) + 1
-            val customerRef = wholesaleCustomersCollection.document(request.sale.customerId)
-            request.moneyPayments.forEach {
+
+            request.payments.forEach {
                 val ref = moneyPaymentCollection.document()
                 paymentsIds.add(ref.id)
 
                 val amount = if (it.type == PaymentType.FUTURES) {
+                    val customerRef = wholesaleCustomersCollection.document(request.sale.customerId)
                     batch.update(
                         customerRef,
                         mapOf("debtAmount" to FieldValue.increment(it.amount.unaryMinus()))
@@ -648,11 +661,30 @@ class SaleRemoteSourceImpl(
                 } else {
                     it.amount
                 }
-                batch.set(
-                    ref,
-                    it.copy(id = ref.id, amount = amount, receiptNumber = receiptNumber.toString())
-                )
+                when(it){
+                    is CashPayment -> batch.set(
+                        ref,
+                        it.copy(id = ref.id, amount = amount, receiptNumber = receiptNumber.toString())
+                    )
+                    is FuturePayment -> batch.set(
+                        ref,
+                        it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
+                    )
+                    is ChequePayment -> batch.set(
+                        ref,
+                        it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
+                    )
+                    is BankTransferPayment -> batch.set(
+                        ref,
+                        it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
+                    )
+                    is LossPayment -> batch.set(
+                        ref,
+                        it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
+                    )
+                }
             }
+            Log.d("add_sale", "invoke remote2: $request")
             val categoryUpdates = request.sale.products
                 .groupBy { it.categoryId }
                 .mapValues { (_, products) -> products.sumOf { it.grams } }
@@ -675,7 +707,7 @@ class SaleRemoteSourceImpl(
                     batch.update(inventoryDoc.reference, updates)
                 }
             }
-
+            Log.d("add_sale", "invoke remote3: $receiptNumber, $paymentsIds")
             batch.set(
                 docRef,
                 request.sale.copy(
@@ -684,12 +716,11 @@ class SaleRemoteSourceImpl(
                     receiptNumber = receiptNumber.toString()
                 )
             )
-
-
             batch.commit().await()
             Result.success(docRef.id)
         } catch (e: Exception) {
             crashlytics.recordException(e)
+            e.printStackTrace()
             Result.failure(e)
         }
     }
@@ -712,7 +743,7 @@ class SaleRemoteSourceImpl(
                 ?.toLongOrNull() ?: 0
             val receiptNumber = maxOf(maxProductReceipt, maxGoldReceiptNumber) + 1
             val customerRef = wholesaleCustomersCollection.document(request.sale.customerId)
-            request.moneyPayments.forEach {
+            request.cashPayments.forEach {
                 val ref = moneyPaymentCollection.document()
                 moneyPaymentsIds.add(ref.id)
                 val amount = if (it.type == PaymentType.FUTURES) {
@@ -790,16 +821,19 @@ class SaleRemoteSourceImpl(
                     Filter.inArray("id", existingPaymentIds),
                     Filter.equalTo("type", PaymentType.FUTURES)
                 )
-            ).get().await().documents.firstOrNull()?.toObject(MoneyPayment::class.java)
-                ?: MoneyPayment()
+            ).get().await().documents.firstOrNull()?.toObject(CashPayment::class.java)
+                ?: CashPayment()
             val updatedPaymentIds = mutableListOf<String>()
-            val customerRef = wholesaleCustomersCollection.document(request.sale.customerId)
-            Log.d("finding_the_sex", "existingPayment: ${existingPayment.amount}")
-            batch.update(
-                customerRef,
-                mapOf("debtAmount" to FieldValue.increment(existingPayment.amount.unaryMinus()))
-            )
-            request.moneyPayments.forEach { payment ->
+            if(request.sale.customerId.isNotBlank()) {
+                val customerRef = wholesaleCustomersCollection.document(request.sale.customerId)
+
+                Log.d("finding_the_sex", "existingPayment: ${existingPayment.amount}")
+                batch.update(
+                    customerRef,
+                    mapOf("debtAmount" to FieldValue.increment(existingPayment.amount.unaryMinus()))
+                )
+            }
+            request.payments.forEach { payment ->
 
                 if (payment.id.isNotEmpty() && existingPaymentIds.contains(payment.id)) {
                     val paymentRef = moneyPaymentCollection.document(payment.id)
@@ -808,6 +842,7 @@ class SaleRemoteSourceImpl(
                 } else {
                     val newPaymentRef = moneyPaymentCollection.document()
                     val amount = if (payment.type == PaymentType.FUTURES) {
+                        val customerRef = wholesaleCustomersCollection.document(request.sale.customerId)
                         batch.update(
                             customerRef,
                             mapOf("debtAmount" to FieldValue.increment(payment.amount.unaryMinus()))
@@ -816,7 +851,13 @@ class SaleRemoteSourceImpl(
                     } else {
                         payment.amount
                     }
-                    batch.set(newPaymentRef, payment.copy(id = newPaymentRef.id, amount = amount))
+                    when(payment){
+                        is CashPayment -> batch.set(newPaymentRef, payment.copy(id = newPaymentRef.id, amount = amount))
+                        is FuturePayment -> batch.set(newPaymentRef, payment.copy(id = newPaymentRef.id, amount = amount))
+                        is ChequePayment -> batch.set(newPaymentRef, payment.copy(id = newPaymentRef.id, amount = amount))
+                        is BankTransferPayment -> batch.set(newPaymentRef, payment.copy(id = newPaymentRef.id, amount = amount))
+                        is LossPayment -> batch.set(newPaymentRef, payment.copy(id = newPaymentRef.id, amount = amount))
+                    }
                     updatedPaymentIds.add(newPaymentRef.id)
                 }
 
@@ -885,8 +926,8 @@ class SaleRemoteSourceImpl(
                     Filter.inArray("id", existingMoneyPaymentIds),
                     Filter.equalTo("type", PaymentType.FUTURES)
                 )
-            ).get().await().documents.firstOrNull()?.toObject(MoneyPayment::class.java)
-                ?: MoneyPayment()
+            ).get().await().documents.firstOrNull()?.toObject(CashPayment::class.java)
+                ?: CashPayment()
             val existingGoldPaymentIds = existingSale.goldPaymentsIds
             val updatedMoneyPaymentIds = mutableListOf<String>()
             val updatedGoldPaymentIds = mutableListOf<String>()
@@ -895,7 +936,7 @@ class SaleRemoteSourceImpl(
                 customerRef,
                 mapOf("debtAmount" to FieldValue.increment(existingPayment.amount.unaryMinus()))
             )
-            request.moneyPayments.forEach { payment ->
+            request.cashPayments.forEach { payment ->
                 if (payment.id.isNotEmpty() && existingMoneyPaymentIds.contains(payment.id)) {
                     val paymentRef = moneyPaymentCollection.document(payment.id)
                     batch.set(paymentRef, payment, SetOptions.merge())

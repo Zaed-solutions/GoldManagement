@@ -2,7 +2,7 @@ package com.zaed.distributor.ui.productsaledetails
 
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.customer.WholeSaleCustomer
-import com.zaed.common.data.model.payment.MoneyPayment
+import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.sale.WholesaleProductSale
 
 data class ProductSaleDetailsUiState(
@@ -11,5 +11,5 @@ data class ProductSaleDetailsUiState(
     val currentUser: User = User(),
     val customer: WholeSaleCustomer = WholeSaleCustomer(),
     val sale: WholesaleProductSale = WholesaleProductSale(),
-    val moneyPayments: List<MoneyPayment> = emptyList()
+    val cashPayments: List<Payment> = emptyList()
 )

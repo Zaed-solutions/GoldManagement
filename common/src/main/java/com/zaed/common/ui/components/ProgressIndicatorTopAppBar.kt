@@ -3,8 +3,7 @@ package com.zaed.common.ui.components
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,8 +19,10 @@ import androidx.compose.ui.unit.dp
 fun ProgressIndicatorTopAppBar(
     modifier: Modifier = Modifier,
     progress: Float,
+    firstScreen: Boolean = false,
+    onOpenDrawer: () -> Unit = {},
     onBackClicked: () -> Unit,
-) {
+    ) {
     TopAppBar(
         modifier = modifier,
         title = {
@@ -34,15 +35,19 @@ fun ProgressIndicatorTopAppBar(
             )
         },
         navigationIcon = {
-            IconButton(
-                onClick = {
-                    onBackClicked()
+            if(!firstScreen)
+            BackIcon {
+                onBackClicked()
+            }
+            else {
+                IconButton(
+                    onClick = onOpenDrawer,
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Menu,
+                        contentDescription = null
+                    )
                 }
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "back"
-                )
             }
         }
     )

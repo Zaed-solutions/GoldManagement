@@ -84,7 +84,7 @@ class ProductSaleDetailsViewModel(
                 FetchPaymentsByIdsRequest(paymentsIds)
             ).onSuccess { data ->
                 _uiState.update { oldState->
-                    oldState.copy(moneyPayments = data)
+                    oldState.copy(cashPayments = data)
                 }
             }.onFailure {
                 Log.e(TAG, "fetchPayments: ${it.message}",it )
@@ -116,7 +116,7 @@ class ProductSaleDetailsViewModel(
             updateWholesaleProductSaleUseCase(
                 UpdateWholesaleProductSaleRequest(
                     sale = sale.copy(logs = logs),
-                    moneyPayments = uiState.value.moneyPayments,
+                    payments = uiState.value.cashPayments,
                     employeeName = uiState.value.currentUser.fullName,
                     employeeId = uiState.value.currentUser.id
                 )

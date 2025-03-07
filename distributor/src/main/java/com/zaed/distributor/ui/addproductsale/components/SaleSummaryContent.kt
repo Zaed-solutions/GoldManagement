@@ -2,9 +2,16 @@ package com.zaed.distributor.ui.addproductsale.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zaed.common.R
 import com.zaed.common.data.model.customer.WholeSaleCustomer
-import com.zaed.common.data.model.payment.MoneyPayment
+import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.ui.components.DashedDivider
 import com.zaed.common.ui.components.DetailRow
@@ -26,15 +33,20 @@ import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
 import java.util.Date
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SaleSummaryContent(
     modifier: Modifier = Modifier,
     customer: WholeSaleCustomer,
     products : List<Product>,
-    moneyPayments: List<MoneyPayment>,
+    selectedCustomer: WholeSaleCustomer?,
+    payments: List<Payment>,
     totalAmount: Double,
     totalPaid: Double,
+    onCreate: () -> Unit = {},
+    isLoading: Boolean = false
 ) {
+
     Column(
         modifier = modifier
             .padding(horizontal = 16.dp)
@@ -93,6 +105,30 @@ fun SaleSummaryContent(
             title = stringResource(R.string.total),
             price = totalAmount
         )
+        Button(
+            onClick = onCreate,
+            modifier = Modifier.fillMaxWidth().padding(8.dp),
+            shape = RoundedCornerShape(4.dp),
+            enabled = !isLoading
+
+            ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    "تنفيذ",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                if (isLoading) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    CircularProgressIndicator()
+                }
+            }
+        }
+
     }
 
 }
