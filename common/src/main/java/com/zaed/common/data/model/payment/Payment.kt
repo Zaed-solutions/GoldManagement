@@ -4,12 +4,12 @@ import com.zaed.common.data.model.authentication.ChangeLog
 import java.util.Date
 
 abstract class Payment(
-    open val id: String = "",
+    open var id: String = "",
     open val customerId: String = "",
     open val type: PaymentType,
-    open val amount: Double = 0.0,
+    open var amount: Double = 0.0,
     open val deleted: Boolean = false,
-    open val receiptNumber: String = "",
+    open var receiptNumber: String = "",
     open val createdAt: Date = Date(),
     open val logs: List<ChangeLog> = emptyList()
 )

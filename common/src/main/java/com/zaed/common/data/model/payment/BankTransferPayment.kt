@@ -4,15 +4,15 @@ import com.zaed.common.data.model.authentication.ChangeLog
 import java.util.Date
 
 data class BankTransferPayment(
-    override val id: String = "",
+    override var id: String = "",
     val bankName : String ="",
     val accountNumber : String ="",
     val accountHolderName : String ="",
-    override val amount: Double = 0.0,
+    override var amount: Double = 0.0,
     override val customerId: String = "",
     override val type: PaymentType = PaymentType.BANK_TRANSFER,
     override val deleted: Boolean = false,
-    override val receiptNumber: String = "",
+    override var receiptNumber: String = "",
     override val createdAt: Date = Date(),
     override val logs: List<ChangeLog> = emptyList()
 ) : Payment(id, customerId, type,amount, deleted, receiptNumber, createdAt, logs)

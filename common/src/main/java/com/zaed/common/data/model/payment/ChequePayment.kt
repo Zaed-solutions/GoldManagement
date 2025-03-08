@@ -5,7 +5,7 @@ import com.zaed.common.data.model.cheque.ChequeStatus
 import java.util.Date
 
 data class ChequePayment(
-    override val id: String = "",
+    override var id: String = "",
     val senderName : String ="",
     val paymentDate : Date = Date(),
     val city : String = "",
@@ -15,9 +15,9 @@ data class ChequePayment(
     val notes : String = "",
     override val customerId: String = "",
     override val type: PaymentType = PaymentType.CHEQUE,
-    override val amount: Double = 0.0,
+    override var amount: Double = 0.0,
     override val deleted: Boolean = false,
-    override val receiptNumber: String = "",
+    override var receiptNumber: String = "",
     override val createdAt: Date = Date(),
     override val logs: List<ChangeLog> = emptyList()
 ) : Payment(id, customerId, type,amount, deleted, receiptNumber, createdAt, logs)

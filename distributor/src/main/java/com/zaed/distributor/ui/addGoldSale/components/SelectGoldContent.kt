@@ -3,8 +3,12 @@ package com.zaed.distributor.ui.addGoldSale.components
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -19,17 +23,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.zaed.common.R
 import com.zaed.common.data.model.sale.Product
+import com.zaed.common.data.model.sale.WholesaleGoldSale
 import com.zaed.common.ui.components.ProductsList
+import com.zaed.common.ui.util.toMoneyFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectGoldContent(
     modifier: Modifier = Modifier,
-    sale: List<Product>,
+    sale: WholesaleGoldSale,
     onAddGold: (Product) -> Unit,
     onEditGold: (Product) -> Unit,
     onRemoveGold: (id: String) -> Unit,
+    onNext: () -> Unit,
 ) {
 
     var isAddProductSheetVisible by remember { mutableStateOf(false) }
@@ -49,7 +57,7 @@ fun SelectGoldContent(
         )
         ProductsList(
             modifier = Modifier.padding(horizontal = 8.dp),
-            products = sale,
+            products = sale.products,
             onAddProduct = { isAddProductSheetVisible = true },
             onRemoveProduct = onRemoveGold,
             label = stringResource(com.zaed.common.R.string.gold),
@@ -58,6 +66,31 @@ fun SelectGoldContent(
                 isAddProductSheetVisible = true
             }
         )
+        Spacer(modifier = Modifier.weight(1f))
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            onClick = onNext,
+            enabled = sale.products.isNotEmpty(),
+            shape = RoundedCornerShape(4.dp)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = stringResource(com.zaed.common.R.string.sell),
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = stringResource(
+                        R.string.total_placeholder,
+                        sale.totalAmount.toMoneyFormat(2)
+                    ),
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+        }
         AnimatedVisibility(isAddProductSheetVisible) {
             ModalBottomSheet(
                 sheetState = bottomSheetState2,

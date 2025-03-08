@@ -220,4 +220,5 @@
     <string name="select_inventory">Select Inventory</string>
     <string name="enter_added_quantity">Enter added quantity</string>
     <string name="distributors">Distributors</string>
+    <string name="not_specified_yet">"  Not Specified yet"</string>
 </resources>

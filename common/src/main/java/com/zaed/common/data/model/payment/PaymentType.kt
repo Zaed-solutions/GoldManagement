@@ -23,3 +23,9 @@ fun getProductSalePayments() = listOf(
     PaymentType.BANK_TRANSFER,
     PaymentType.CHEQUE,
 )
+fun getGoldSalePayments() = listOf(
+    PaymentType.CASH,
+    PaymentType.BANK_TRANSFER,
+    PaymentType.CHEQUE,
+    PaymentType.GOLD
+)

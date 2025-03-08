@@ -200,4 +200,5 @@
     <string name="total_placeholder">المجموع %1$s</string>
     <string name="sell">بيع</string>
     <string name="x">%1$s × %2$s</string>
+    <string name="not_specified_yet">لم يتم تحديد العيار بعد</string>
 </resources>

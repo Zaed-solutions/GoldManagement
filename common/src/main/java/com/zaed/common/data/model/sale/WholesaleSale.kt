@@ -4,18 +4,20 @@ import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.payment.PaymentStatus
 import java.util.Date
 
-sealed class WholesaleSale: Sale() {
-//    abstract val id: String
-//    abstract val customerId: String
-//    abstract val customerName: String
-//    abstract val customerPhone: String
-    abstract val distributorId: String
-    abstract val distributorName: String
-//    abstract val createdAt: Date
-//    abstract val logs: List<ChangeLog>
-//    abstract val receiptNumber: String
-//    abstract val deleted: Boolean
-    abstract val paymentStatus: PaymentStatus
-}
+open class WholesaleSale(
+    override val id: String,
+    override val customerId: String,
+    override val customerName: String,
+    override val customerPhone: String,
+    override val createdAt: Date,
+    override val receiptNumber: String,
+    override val logs: List<ChangeLog>,
+    override val deleted: Boolean,
+    override val totalAmount: Double,
+    override val products: List<Product>,
+    open val paymentStatus: PaymentStatus,
+    open val distributorId: String,
+    open val distributorName: String
+) : Sale()
 
 
