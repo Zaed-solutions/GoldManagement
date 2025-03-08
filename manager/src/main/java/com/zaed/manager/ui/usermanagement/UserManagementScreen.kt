@@ -19,9 +19,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zaed.common.R
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.ui.components.SearchBar
-import com.zaed.common.R
 import com.zaed.manager.ui.theme.ManagerTheme
 import com.zaed.manager.ui.usermanagement.components.RejectsList
 import com.zaed.manager.ui.usermanagement.components.RequestsList
@@ -37,11 +37,17 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun UserManagementScreen(
     modifier: Modifier = Modifier,
-    viewModel: UserManagementViewModel = koinViewModel()
+    viewModel: UserManagementViewModel = koinViewModel(),
+    onShowNavDrawer: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     UserManagementScreenContent(
-        onAction = { viewModel.handleAction(it) },
+        onAction = { action ->
+            when (action) {
+                UserManagementUiAction.ShowNavDrawer -> onShowNavDrawer()
+                else -> viewModel.handleAction(action)
+            }
+        },
         state = state
     )
 
@@ -59,10 +65,14 @@ private fun UserManagementScreenContent(
     var isDeleteBottomSheetVisible by remember { mutableStateOf(false) }
     var selectedUser: User? by remember { mutableStateOf(null) }
     val pagerState = rememberPagerState(pageCount = { UserManagementTab.entries.size })
-    Scaffold (
+    Scaffold(
         modifier = modifier,
         topBar = {
-            UserManagementTopBar()
+            UserManagementTopBar(
+                onShowNavDrawer = {
+                    onAction(UserManagementUiAction.ShowNavDrawer)
+                }
+            )
         }
     ) { innerPadding ->
         Column(
@@ -72,7 +82,9 @@ private fun UserManagementScreenContent(
         ) {
             //search bar
             SearchBar(
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
                 query = state.searchQuery,
                 placeHolder = stringResource(R.string.search_users),
                 onQueryChanged = { onAction(UserManagementUiAction.UpdateSearchQuery(it)) }
@@ -90,7 +102,7 @@ private fun UserManagementScreenContent(
             HorizontalPager(
                 state = pagerState
             ) { page ->
-                when(page){
+                when (page) {
                     UserManagementTab.Users.ordinal -> {
                         //users list
                         UsersList(
@@ -108,15 +120,22 @@ private fun UserManagementScreenContent(
                             }
                         )
                     }
+
                     UserManagementTab.Requests.ordinal -> {
                         //requests list
                         RequestsList(
                             requests = state.displayedRequests,
                             onRespondToRequest = { userId, isAccepted ->
-                                onAction(UserManagementUiAction.ChangeApprovedStatus(userId, isAccepted))
+                                onAction(
+                                    UserManagementUiAction.ChangeApprovedStatus(
+                                        userId,
+                                        isAccepted
+                                    )
+                                )
                             }
                         )
                     }
+
                     UserManagementTab.Rejects.ordinal -> {
                         RejectsList(
                             rejects = state.displayedRejects,

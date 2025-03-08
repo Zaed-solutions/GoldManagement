@@ -25,12 +25,13 @@ import com.zaed.manager.ui.usermanagement.UserManagementScreen
 fun NavigationHost(
     modifier: Modifier = Modifier,
     startDestination: Route,
-    navController: NavHostController
+    navController: NavHostController,
+    onShowNavDrawer: () -> Unit
 ) {
     NavHost (
+        modifier= modifier,
         navController = navController,
-//        startDestination =startDestination,
-        startDestination =Route.DistributorsRoute,
+        startDestination =startDestination,
     ){
         composable<Route.LoginRoute> {
             LoginScreen(
@@ -42,7 +43,7 @@ fun NavigationHost(
                     navController.navigate(Route.SignUpRoute)
                 },
                 onNavigateToHomeScreen = {
-                    navController.navigate(Route.HomeRoute){
+                    navController.navigate(Route.UserManagementRoute){
                         popUpTo(Route.LoginRoute){
                             inclusive = true
                         }
@@ -61,28 +62,14 @@ fun NavigationHost(
                 }
             )
         }
-        composable<Route.HomeRoute> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Button(
-                    onClick = {
-                        navController.navigate(Route.UserManagementRoute)
-                    }
-                ) {
-                    Text(text = "Go to User Management")
-                }
-            }
-        }
         composable<Route.UserManagementRoute> {
-            UserManagementScreen()
+            UserManagementScreen(
+                onShowNavDrawer = onShowNavDrawer
+            )
         }
         composable<Route.StoresRoute> {
             StoresScreen(
-                onShowNavDrawer = {
-//                    TODO()
-                },
+                onShowNavDrawer = onShowNavDrawer,
                 onNavigateToStoreDetails = {
                     navController.navigate(Route.StoreDetailsRoute(it))
                 }
@@ -100,7 +87,7 @@ fun NavigationHost(
         }
         composable<Route.DistributorsRoute> {
             DistributorsScreen(
-                onShowNavDrawer = {/*TODO*/},
+                onShowNavDrawer = onShowNavDrawer,
                 onNavigateToDistributorDetails = {
                     navController.navigate(Route.DistributorDetailsRoute(it))
                 }
