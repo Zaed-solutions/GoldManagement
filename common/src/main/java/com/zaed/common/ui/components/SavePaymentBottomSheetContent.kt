@@ -20,8 +20,8 @@ import com.zaed.common.R
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
+import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.ui.util.toMoneyFormat
-import java.util.UUID
 import kotlin.math.absoluteValue
 
 @Composable
@@ -68,10 +68,8 @@ fun SaveCashPaymentBottomSheetContent(
                 .padding(top = 24.dp),
             onClick = {
                 if (payment.amount > remainsAmount) {
-                    payment = payment.copy(amount = remainsAmount)
-                } else {
                     payment = payment.copy(
-                        id = "distributor-" + UUID.randomUUID().toString()
+                        amount = remainsAmount,
                     )
                 }
                 onSave(payment)
@@ -85,6 +83,89 @@ fun SaveCashPaymentBottomSheetContent(
         }
     }
 }
+
+@Composable
+fun SaveGoldPaymentBottomSheetContent(
+    modifier: Modifier = Modifier,
+    initialPayment: GoldPayment,
+    remainsAmount: Double = 0.0,
+    onSave: (GoldPayment) -> Unit = {}
+) {
+    var payment by remember { mutableStateOf(initialPayment) }
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Text(
+            text = " طريقه الدفع : ${stringResource(initialPayment.type.titleRes)}",
+            style = MaterialTheme.typography.titleLarge
+        )
+
+        NumberInputTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            label = stringResource(R.string.grams),
+            value = payment.givenGoldAmount,
+            onValueChange = {
+                payment = payment.copy(givenGoldAmount = it)
+            },
+        )
+        NumberInputTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            label = stringResource(R.string.gram_price),
+            value = payment.pricePerGram,
+            onValueChange = {
+                payment = payment.copy(pricePerGram = it)
+            },
+        )
+        NumberInputTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            label = stringResource(R.string.karat),
+            value = payment.givenGoldKarat.toDouble(),
+            onValueChange = {
+                payment = payment.copy(givenGoldKarat = it.toInt())
+            },
+        )
+        if (payment.amount > remainsAmount) {
+            Text(
+                text = "Remains for the client " + payment.amount.minus(remainsAmount).absoluteValue.toMoneyFormat(
+                    2
+                )
+            )
+        }
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 48.dp)
+                .padding(top = 24.dp),
+            onClick = {
+                if (payment.amount > remainsAmount) {
+                    payment = payment.copy(
+                        amount = remainsAmount,
+                    )
+                }else{
+                    payment=payment.copy(amount = (payment.givenGoldAmount*payment.pricePerGram))
+                }
+                onSave(payment)
+            },
+            enabled = payment.givenGoldAmount != 0.0
+        ) {
+            Text(
+                text = stringResource(R.string.save),
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
+    }
+}
+
 
 @Composable
 fun SaveChequePaymentBottomSheetContent(
@@ -186,10 +267,8 @@ fun SaveChequePaymentBottomSheetContent(
                 .padding(top = 24.dp),
             onClick = {
                 if (payment.amount > remainsAmount) {
-                    payment = payment.copy(amount = remainsAmount)
-                } else {
                     payment = payment.copy(
-                        id = "distributor-" + UUID.randomUUID().toString()
+                        amount = remainsAmount,
                     )
                 }
                 onSave(payment)
@@ -282,10 +361,8 @@ fun SaveBankTransferPaymentBottomSheetContent(
                 .padding(top = 24.dp),
             onClick = {
                 if (payment.amount > remainsAmount) {
-                    payment = payment.copy(amount = remainsAmount)
-                } else {
                     payment = payment.copy(
-                        id = "distributor-" + UUID.randomUUID().toString()
+                        amount = remainsAmount,
                     )
                 }
                 onSave(payment)

@@ -4,12 +4,12 @@ import com.zaed.common.data.model.authentication.ChangeLog
 import java.util.Date
 
 data class CashPayment(
-    override val id: String = "",
+    override var id: String = "",
     override val customerId: String = "",
     override val type: PaymentType = PaymentType.CASH,
-    override val amount: Double = 0.0,
+    override var amount: Double = 0.0,
     override val deleted: Boolean = false,
-    override val receiptNumber: String = "",
+    override var receiptNumber: String = "",
     override val createdAt: Date = Date(),
     override val logs: List<ChangeLog> = emptyList()
 ) : Payment(id, customerId, type,amount, deleted, receiptNumber, createdAt, logs)

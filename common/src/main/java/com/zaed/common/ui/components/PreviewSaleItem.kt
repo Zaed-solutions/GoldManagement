@@ -30,6 +30,9 @@ fun PreviewSaleItem(
     product: Product,
     onShowProductDetails: (Product) -> Unit = {}
 ) {
+    val name = product.name.ifEmpty {
+        "${product.grams} g"
+    }
     Surface(
         onClick = { onShowProductDetails(product) },
     ) {
@@ -40,7 +43,7 @@ fun PreviewSaleItem(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = product.name,
+                    text = name,
                     style = MaterialTheme.typography.titleLarge
                 )
                 Text(
@@ -50,7 +53,7 @@ fun PreviewSaleItem(
                         R.string.x,
                         product.quantity,
                         product.priceForItem
-                    ),
+                    ) +if(product.laborCost > 0) " + ${product.laborCost.toMoneyFormat(2)}" else "",
                     color = MaterialTheme.colorScheme.outline
                 )
             }

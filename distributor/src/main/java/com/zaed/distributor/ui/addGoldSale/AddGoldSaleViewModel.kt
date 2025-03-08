@@ -7,8 +7,7 @@ import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.customer.FetchWholesaleCustomersByNameRequest
 import com.zaed.common.data.model.customer.WholeSaleCustomer
-import com.zaed.common.data.model.payment.CashPayment
-import com.zaed.common.data.model.payment.GoldPayment
+import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentStatus
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
@@ -17,9 +16,9 @@ import com.zaed.common.data.model.sale.request.AddWholesaleGoldSaleRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleGoldSaleRequest
 import com.zaed.common.data.model.sale.request.UpdateWholesaleGoldSaleRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
+import com.zaed.common.domain.category.FetchAllCategoriesUseCase
 import com.zaed.common.domain.customer.FetchWholesaleCustomersByNameUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
-import com.zaed.common.domain.payment.FetchGoldPaymentsByIdsUseCase
 import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
 import com.zaed.common.domain.sale.AddGoldSaleUseCase
 import com.zaed.common.domain.sale.FetchWholesaleGoldSaleUseCase
@@ -29,44 +28,43 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.Date
 
 class AddGoldSaleViewModel(
-    private val fetchGoldSaleUseCase: FetchWholesaleGoldSaleUseCase,
+    private val fetchAllCategoriesUseCase: FetchAllCategoriesUseCase,
+    private val fetchProductSaleUseCase: FetchWholesaleGoldSaleUseCase,
     private val getCurrentUserUseCase: GetCurrentUserLoggedInUseCase,
     private val getCurrentWholeSalesCustomerUseCase: GetWholeSalesCustomerUseCase,
     private val fetchCustomersByNameUseCase: FetchWholesaleCustomersByNameUseCase,
     private val fetchMoneyPaymentsByIdsUseCase: FetchMoneyPaymentsByIdsUseCase,
-    private val fetchGoldPaymentsByIdsUseCase: FetchGoldPaymentsByIdsUseCase,
-    private val addGoldSaleUseCase: AddGoldSaleUseCase,
-    private val updateGoldSaleUseCase: UpdateWholesaleGoldSaleUseCase
+    private val addProductSaleUseCase: AddGoldSaleUseCase,
+    private val updateProductSaleUseCase: UpdateWholesaleGoldSaleUseCase
 ) : ViewModel() {
-    private val TAG = "GoldSaleViewModel"
+    private val TAG: String = "AddProductSaleVM"
     private val _uiState = MutableStateFlow(AddGoldSaleUiState())
     val uiState = _uiState.asStateFlow()
     fun init(saleId: String) {
         if (saleId.isNotBlank()) {
             fetchSale(saleId)
         }
+        fetchAllCategories()
         fetchCurrentUser()
     }
 
     private fun fetchSale(saleId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            fetchGoldSaleUseCase(
+            fetchProductSaleUseCase(
                 FetchWholesaleGoldSaleRequest(
                     saleId = saleId
                 )
             ).onSuccess { data ->
                 _uiState.update { oldState ->
                     oldState.copy(
-                        initialSale = data,
-                        sale = data
+                        initialSale = data, sale = data
                     )
                 }
                 fetchCustomer(data.customerId)
-                fetchPayments(data.moneyPaymentsIds, data.goldPaymentsIds)
+                fetchPayments(data.paymentsIds)
             }.onFailure { e ->
                 Log.e(TAG, "fetchSale: ${e.message}", e)
                 e.printStackTrace()
@@ -74,30 +72,19 @@ class AddGoldSaleViewModel(
         }
     }
 
-    private fun fetchPayments(
-        moneyPaymentsIds: List<String>,
-        goldPaymentsIds: List<String>
-    ) {
+    private fun fetchPayments(paymentsIds: List<String>) {
         viewModelScope.launch(Dispatchers.IO) {
-            fetchGoldPaymentsByIdsUseCase(
-                FetchPaymentsByIdsRequest(goldPaymentsIds)
-            ).onSuccess { data ->
-                _uiState.update { oldState ->
-                    oldState.copy(goldPayments = data)
-                }
-                Log.d(TAG, "fetchPayments: $data")
-            }.onFailure {
-                Log.e(TAG, "fetchPayments: ${it.message}", it)
-            }
             fetchMoneyPaymentsByIdsUseCase(
-                FetchPaymentsByIdsRequest(moneyPaymentsIds)
+                FetchPaymentsByIdsRequest(
+                    paymentsIds = paymentsIds
+                )
             ).onSuccess { data ->
                 _uiState.update { oldState ->
-                    oldState.copy(cashPayments = data.filter { it.type != PaymentType.FUTURES })
+                    oldState.copy(payments = data.filter { it.type != PaymentType.FUTURES })
                 }
-                Log.d(TAG, "fetchPayments: $data")
-            }.onFailure {
-                Log.e(TAG, "fetchPayments: ${it.message}", it)
+                updateTotalAmounts()
+            }.onFailure { e ->
+                Log.e(TAG, "fetchPayments: ${e.message}", e)
             }
         }
     }
@@ -117,6 +104,24 @@ class AddGoldSaleViewModel(
         }
     }
 
+    private fun fetchAllCategories() {
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchAllCategoriesUseCase().collect { result ->
+                result.onSuccess { data ->
+                    _uiState.update { oldState ->
+                        oldState.copy(categories = data)
+                    }
+                }.onFailure { e ->
+                    Log.e(TAG, "fetchAllCategories: ${e.message}", e)
+                    e.printStackTrace()
+                }
+                Log.d(
+                    "find the issue", "fetchAllCategories: $result"
+                )
+            }
+        }
+    }
+
     private fun fetchCurrentUser() {
         viewModelScope.launch(Dispatchers.IO) {
             getCurrentUserUseCase().collect { result ->
@@ -129,8 +134,7 @@ class AddGoldSaleViewModel(
                     e.printStackTrace()
                 }
                 Log.d(
-                    "find the issue",
-                    "fetchCurrentUser: $result"
+                    "find the issue", "fetchCurrentUser: $result"
                 )
             }
         }
@@ -143,23 +147,20 @@ class AddGoldSaleViewModel(
             is AddGoldSaleUiAction.OnCustomerSelected -> updateCustomer(action.customer)
             is AddGoldSaleUiAction.OnEditProduct -> updateProduct(action.product)
             is AddGoldSaleUiAction.OnRemoveProduct -> removeProduct(action.productId)
+            is AddGoldSaleUiAction.OnDeleteProduct -> deleteProduct(action.product)
             AddGoldSaleUiAction.OnSubmitClicked -> onSubmit()
-            is AddGoldSaleUiAction.OnAddPayment -> {
-                when (action.moneyPayment) {
-                    is CashPayment -> addPayment(action.moneyPayment)
-                    is GoldPayment -> addGoldPayment(action.moneyPayment)
-                }
-            }
-
-            is AddGoldSaleUiAction.OnEditPayment -> {
-                when (action.moneyPayment) {
-                    is CashPayment -> updatePayment(action.moneyPayment)
-                    is GoldPayment -> updateGoldPayment(action.moneyPayment)
-                }
-            }
-
+            is AddGoldSaleUiAction.OnAddPayment -> addPayment(action.payment)
+            is AddGoldSaleUiAction.OnEditPayment -> updatePayment(action.payment)
             is AddGoldSaleUiAction.OnRemovePayment -> removePayment(action.paymentId)
+            is AddGoldSaleUiAction.OnUpdateProducts -> updateProductsSale(action.products)
+            AddGoldSaleUiAction.OnDeleteAllProducts -> updateProductsSale(emptyList())
             else -> Unit
+        }
+    }
+
+    private fun updateProductsSale(products: List<Product>) {
+        _uiState.update { oldState ->
+            oldState.copy(sale = oldState.sale.copy(products = products))
         }
     }
 
@@ -190,29 +191,16 @@ class AddGoldSaleViewModel(
                             customerId = customer.id,
                             customerName = customer.name,
                             customerPhone = customer.phone,
-                            paymentStatus = when {
-                                uiState.value.goldPayments.any { it.pricePerGram == 0.0 } -> PaymentStatus.SPECIFYING_KARAT
-                                totalPaid == (totalAmount + laborCost) -> PaymentStatus.PAID
-                                else -> PaymentStatus.UNPAID
-                            },
+                            paymentStatus = if ((uiState.value.sale.totalAmount - uiState.value.totalPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID,
                             logs = oldState.sale.logs + updateLog
                         ),
                     )
                 }
             }
-            if (uiState.value.totalPaid != (uiState.value.totalAmount + uiState.value.laborCost)) {
-                val futureCashPayment = CashPayment(
-                    customerId = uiState.value.selectedCustomer.id,
-                    type = PaymentType.FUTURES,
-                    amount = (uiState.value.totalAmount - uiState.value.totalPaid) + uiState.value.laborCost
-                )
-                _uiState.update { oldState -> oldState.copy(cashPayments = oldState.cashPayments.filter { it.type != PaymentType.FUTURES } + futureCashPayment) }
-            }
-            updateGoldSaleUseCase(
+            updateProductSaleUseCase(
                 UpdateWholesaleGoldSaleRequest(
                     sale = uiState.value.sale,
-                    cashPayments = uiState.value.cashPayments.filterIsInstance<CashPayment>(),
-                    goldPayments = uiState.value.goldPayments,
+                    payments = uiState.value.payments,
                     employeeName = uiState.value.currentUser.fullName,
                     employeeId = uiState.value.currentUser.id
                 )
@@ -230,17 +218,15 @@ class AddGoldSaleViewModel(
     }
 
     private fun addSale() {
-        Log.d(TAG, "addSale: Starting sale addition process")
+        Log.d(TAG, "addSale: ${uiState.value.sale}")
         _uiState.update {
-            Log.d(TAG, "addSale: Setting isLoading to true")
             it.copy(isLoading = true)
         }
+        val customer = uiState.value.selectedCustomer
+        val distributor = uiState.value.currentUser
         viewModelScope.launch(Dispatchers.IO) {
-            val customer = uiState.value.selectedCustomer
-            val distributor = uiState.value.currentUser
-            Log.d(TAG, "addSale: Customer=${customer.name}, Distributor=${distributor.fullName}")
+
             _uiState.update { oldState ->
-                Log.d(TAG, "addSale: Updating sale with customer and distributor details")
                 oldState.copy(
                     sale = oldState.sale.copy(
                         customerId = customer.id,
@@ -249,16 +235,11 @@ class AddGoldSaleViewModel(
                         distributorId = distributor.id,
                         distributorName = distributor.fullName,
                         createdAt = Date(),
-                        paymentStatus = when {
-                            uiState.value.goldPayments.any { it.pricePerGram == 0.0 } -> PaymentStatus.SPECIFYING_KARAT
-                            uiState.value.totalPaid == (uiState.value.totalAmount + uiState.value.laborCost) -> PaymentStatus.PAID
-                            else -> PaymentStatus.UNPAID
-                        },
+                        paymentStatus = if ((uiState.value.sale.totalAmount - uiState.value.totalPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID
                     )
                 )
             }
             _uiState.update { oldState ->
-                Log.d(TAG, "addSale: Adding creation log to sale")
                 oldState.copy(
                     sale = oldState.sale.copy(
                         logs = oldState.sale.logs + ChangeLog(
@@ -269,37 +250,21 @@ class AddGoldSaleViewModel(
                     ),
                 )
             }
-            if (uiState.value.totalPaid != (uiState.value.totalAmount + uiState.value.laborCost)) {
-                val futureCashPayment = CashPayment(
-                    customerId = uiState.value.selectedCustomer.id,
-                    type = PaymentType.FUTURES,
-                    amount = (uiState.value.totalAmount - uiState.value.totalPaid) + uiState.value.laborCost
-                )
-                _uiState.update { oldState -> oldState.copy(cashPayments = oldState.cashPayments.filter { it.type != PaymentType.FUTURES } + futureCashPayment) }
-            }
-            Log.d(TAG, "addSale: Calling addGoldSaleUseCase with sale and payments")
-            addGoldSaleUseCase(
+            addProductSaleUseCase(
                 AddWholesaleGoldSaleRequest(
                     sale = uiState.value.sale,
-                    cashPayments = uiState.value.cashPayments.filterIsInstance<CashPayment>(),
-                    goldPayments = uiState.value.goldPayments
+                    payments = uiState.value.payments,
                 )
             ).onSuccess { id ->
                 _uiState.update { oldState ->
-                    Log.d(
-                        TAG,
-                        "addSale: Successfully added sale with ID=$id, setting isLoading=false, isFinished=true"
-                    )
                     oldState.copy(
-                        sale = oldState.sale.copy(id = id),
-                        isLoading = false,
-                        isFinished = true
+                        sale = oldState.sale.copy(id = id), isLoading = false, isFinished = true
                     )
                 }
+                Log.d(TAG, "addSale success: $id")
             }.onFailure {
-                Log.e(TAG, "addSale: Failed to add sale - ${it.message}", it)
+                Log.e(TAG, "addSale failed: ${it.message}", it)
                 _uiState.update { oldState ->
-                    Log.d(TAG, "addSale: Setting isLoading to false due to failure")
                     oldState.copy(isLoading = false)
                 }
             }
@@ -307,153 +272,141 @@ class AddGoldSaleViewModel(
     }
 
     private fun updateSearchQuery(query: String) {
-        Log.d(TAG, "updateSearchQuery: Updating search query to '$query'")
         viewModelScope.launch {
             _uiState.update { oldState ->
-                Log.d(TAG, "updateSearchQuery: Setting customerSearchQuery to '$query'")
-                oldState.copy(customerSearchQuery = query)
+                oldState.copy(
+                    customerSearchQuery = query,
+                )
             }
-            Log.d(TAG, "updateSearchQuery: Triggering fetchCustomersSuggestions")
             fetchCustomersSuggestions()
         }
     }
 
     private fun fetchCustomersSuggestions() {
-        Log.d(TAG, "fetchCustomersSuggestions: Starting to fetch customer suggestions")
         viewModelScope.launch(Dispatchers.IO) {
-            Log.d(
-                TAG,
-                "fetchCustomersSuggestions: Fetching customers with query '${uiState.value.customerSearchQuery}'"
-            )
             fetchCustomersByNameUseCase(
                 FetchWholesaleCustomersByNameRequest(
                     name = uiState.value.customerSearchQuery,
                     distributorId = uiState.value.currentUser.id
                 )
             ).onSuccess { data ->
-                withContext(Dispatchers.Main) {
+                launch(Dispatchers.Main) {
                     _uiState.update { oldState ->
-                        Log.d(
-                            TAG,
-                            "fetchCustomersSuggestions: Successfully fetched ${data.size} customers, updating suggestedCustomers"
-                        )
                         oldState.copy(suggestedCustomers = data)
                     }
                 }
             }.onFailure { e ->
-                Log.e(TAG, "fetchCustomersSuggestions: Failed to fetch customers - ${e.message}", e)
+                Log.e(TAG, "fetchCustomersSuggestions: ${e.message}", e)
                 e.printStackTrace()
             }
         }
     }
 
     private fun updateCustomer(customer: WholeSaleCustomer) {
-        Log.d(TAG, "updateCustomer: Updating selected customer to ${customer.name}")
         viewModelScope.launch {
             _uiState.update { oldState ->
-                Log.d(TAG, "updateCustomer: Setting selectedCustomer to ${customer.name}")
                 oldState.copy(selectedCustomer = customer)
             }
         }
     }
 
     private fun addProduct(product: Product) {
-        Log.d(TAG, "addProduct: Adding product with ID=${product.grams * product.gramPrice}")
         viewModelScope.launch {
             _uiState.update { oldState ->
-                oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products + product))
+                if (oldState.sale.products.any { it.name == product.name }) {
+                    oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products.map {
+                        if (it.name == product.name) {
+                            product
+                        } else {
+                            it
+                        }
+                    }))
+                } else {
+                    oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products + product))
+                }
             }
-            Log.d(
-                TAG,
-                "addProduct: Product added successfully with ID=${uiState.value.totalAmount}"
-            )
-            Log.d(
-                TAG,
-                "addProduct: Product added successfully with ID=${uiState.value.sale.products.sumOf { it.grams * it.gramPrice }}"
-            )
+            updateTotalAmounts()
         }
     }
 
-
-    private fun addPayment(cashPayment: CashPayment) {
-        Log.d(TAG, "addPayment: Adding payment with ID=${cashPayment.id}")
-        viewModelScope.launch {
-            _uiState.update { oldState ->
-                Log.d(TAG, "addPayment: Adding payment ${cashPayment.id} to moneyPayments list")
-                oldState.copy(cashPayments = oldState.cashPayments + cashPayment)
+    private fun updateTotalAmounts() {
+        viewModelScope.launch(Dispatchers.Default) {
+            val totalAmount = uiState.value.sale.products.sumOf { it.grams * it.gramPrice }
+            val totalPaid =
+                uiState.value.payments.filter { it.type != PaymentType.FUTURES }.sumOf { it.amount }
+            _uiState.update {
+                it.copy(totalPaid = totalPaid)
             }
+            Log.d(TAG, "updateTotalAmounts: totalAmount: $totalAmount, totalPaid: $totalPaid")
         }
     }
 
-    private fun addGoldPayment(moneyPayment: GoldPayment) {
-        Log.d(TAG, "addPayment: Adding payment with ID=${moneyPayment.id}")
+    private fun addPayment(payment: Payment) {
         viewModelScope.launch {
             _uiState.update { oldState ->
-                Log.d(TAG, "addPayment: Adding payment ${moneyPayment.id} to moneyPayments list")
-                oldState.copy(goldPayments = oldState.goldPayments + moneyPayment)
+                oldState.copy(payments = oldState.payments + payment)
             }
+            updateTotalAmounts()
         }
     }
+
 
     private fun removePayment(paymentId: String) {
-        Log.d(TAG, "removePayment: Removing payment with ID=$paymentId")
+        Log.d(TAG, "paymentSent: $paymentId")
         viewModelScope.launch {
             _uiState.update { oldState ->
-                Log.d(TAG, "removePayment: Filtering out payment $paymentId from moneyPayments")
-                oldState.copy(cashPayments = oldState.cashPayments.filter { it.id != paymentId }) // ملاحظة: يبدو أن هناك خطأ في الفلترة، يجب أن يكون !=
+                oldState.copy(payments = oldState.payments.filter { it.id != paymentId })
             }
+            updateTotalAmounts()
         }
     }
 
     private fun removeProduct(productId: String) {
-        Log.d(TAG, "removeProduct: Removing product with ID=$productId")
         viewModelScope.launch {
             _uiState.update { oldState ->
-                Log.d(TAG, "removeProduct: Filtering out product $productId from sale products")
                 oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products.filter { it.id != productId }))
             }
+            updateTotalAmounts()
         }
     }
 
-    private fun updatePayment(cashPayment: CashPayment) {
-        Log.d(TAG, "updatePayment: Updating payment with ID=${cashPayment.id}")
+    private fun deleteProduct(product: Product) {
         viewModelScope.launch {
             _uiState.update { oldState ->
-                Log.d(
-                    TAG,
-                    "updatePayment: Replacing payment ${cashPayment.id} in moneyPayments list"
-                )
-                oldState.copy(
-                    cashPayments = oldState.cashPayments.map {
-                        if (it.id == cashPayment.id) cashPayment else it
-                    }
-                )
+                oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products.filter { it != product }))
             }
+            updateTotalAmounts()
         }
     }
 
-    private fun updateGoldPayment(goldPayment: GoldPayment) {
-        Log.d(TAG, "updatePayment: Updating payment with ID=${goldPayment}")
+    private fun updatePayment(payment: Payment) {
         viewModelScope.launch {
             _uiState.update { oldState ->
-                oldState.copy(
-                    goldPayments = oldState.goldPayments.map {
-                        if (it.id == goldPayment.id) goldPayment else it
+                oldState.copy(payments = oldState.payments.map {
+                    if (it.id == payment.id) {
+                        payment
+                    } else {
+                        it
                     }
-                )
+                })
             }
+            updateTotalAmounts()
         }
     }
+
 
     private fun updateProduct(product: Product) {
-        Log.d(TAG, "updateProduct: Updating product with ID=${product.id}")
         viewModelScope.launch {
             _uiState.update { oldState ->
-                Log.d(TAG, "updateProduct: Replacing product ${product.id} in sale products list")
                 oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products.map {
-                    if (it.id == product.id) product else it
+                    if (it.id == product.id) {
+                        product
+                    } else {
+                        it
+                    }
                 }))
             }
+            updateTotalAmounts()
         }
     }
 }

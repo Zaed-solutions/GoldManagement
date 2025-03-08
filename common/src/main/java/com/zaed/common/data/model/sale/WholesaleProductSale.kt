@@ -16,14 +16,28 @@ data class WholesaleProductSale(
     override val logs: List<ChangeLog> = emptyList(),
     override val deleted: Boolean = false,
     val receiptStatus: ReceiptStatus = ReceiptStatus.NOT_REQUESTED,
-    val products: List<Product> = emptyList(),
+    override val products: List<Product> = emptyList(),
     val paymentsIds: List<String> = emptyList(),
     override val paymentStatus: PaymentStatus = PaymentStatus.UNPAID,
     override val receiptNumber: String = "",
-) : WholesaleSale(){
+) : WholesaleSale(
+    id = id,
+    customerId = customerId,
+    customerName = customerName,
+    customerPhone = customerPhone,
+    createdAt = createdAt,
+    logs = logs,
+    deleted = deleted,
+    paymentStatus = paymentStatus,
+    receiptNumber = receiptNumber,
+    totalAmount = products.sumOf { it.grams * it.gramPrice * it.quantity } - products.sumOf { it.discountAmount },
+    distributorId = distributorId,
+    distributorName = distributorName,
+    products = products
+) {
     @Transient
     val totalPriceBeforeDiscount
-        get() = products.sumOf { it.grams*it.gramPrice *it.quantity}
+        get() = products.sumOf { it.grams * it.gramPrice * it.quantity }
     override val totalAmount
         get() = totalPriceBeforeDiscount - products.sumOf { it.discountAmount }
 }

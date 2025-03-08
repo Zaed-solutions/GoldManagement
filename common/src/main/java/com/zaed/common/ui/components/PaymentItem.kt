@@ -239,6 +239,8 @@ fun PaymentItem(
                 ) {
                     val chipColor =
                         if (payment.givenGoldAmount >= 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                    val tag1 = if (payment.givenGoldAmount >= 0) stringResource(R.string.taken) else stringResource(R.string.given)
+                    val tag2 = if(payment.pricePerGram == 0.0) stringResource(R.string.not_specified_yet) else ""
                     Column(
                         modifier = Modifier.padding(12.dp)
                     ) {
@@ -257,9 +259,7 @@ fun PaymentItem(
                             )
                             Spacer(modifier = Modifier.weight(1f))
                             Text(
-                                text = if (payment.givenGoldAmount >= 0) stringResource(R.string.taken) else stringResource(
-                                    R.string.given
-                                ),
+                                text ="$tag1 $tag2"   ,
                                 style = MaterialTheme.typography.titleMedium
                             )
                         }
@@ -276,7 +276,7 @@ fun PaymentItem(
                                 text = stringResource(
                                     R.string.grams_placeholder,
                                     payment.givenGoldAmount.absoluteValue.toString()
-                                ),
+                                ) ,
                                 style = MaterialTheme.typography.titleLarge,
                                 color = chipColor,
                                 fontWeight = FontWeight.Bold

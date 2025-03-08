@@ -9,11 +9,14 @@ sealed interface AddGoldSaleUiAction {
     data object OnSubmitClicked : AddGoldSaleUiAction
     data object OnAddNewCustomerClicked : AddGoldSaleUiAction
     data class OnRemoveProduct(val productId: String) : AddGoldSaleUiAction
+    data class OnDeleteProduct(val product: Product) : AddGoldSaleUiAction
     data class OnAddProduct(val product: Product) : AddGoldSaleUiAction
     data class OnEditProduct(val product: Product) : AddGoldSaleUiAction
     data class OnCustomerSearchQueryChanged(val query: String) : AddGoldSaleUiAction
     data class OnCustomerSelected(val customer: WholeSaleCustomer) : AddGoldSaleUiAction
-    data class OnAddPayment(val moneyPayment: Payment): AddGoldSaleUiAction
-    data class OnEditPayment(val moneyPayment: Payment): AddGoldSaleUiAction
+    data class OnAddPayment(val payment: Payment): AddGoldSaleUiAction
+    data class OnEditPayment(val payment: Payment): AddGoldSaleUiAction
     data class OnRemovePayment(val paymentId: String): AddGoldSaleUiAction
+    data class OnUpdateProducts(val products: List<Product>): AddGoldSaleUiAction
+    data object OnDeleteAllProducts: AddGoldSaleUiAction
 }

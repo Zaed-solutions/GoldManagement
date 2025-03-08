@@ -46,11 +46,13 @@ import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
 import com.zaed.common.data.model.payment.FuturePayment
+import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.LossPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.getProductSalePayments
 import com.zaed.common.ui.util.toMoneyFormat
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,6 +65,7 @@ fun SelectPaymentsContent(
     onEditPayment: (Payment) -> Unit = {},
     onAddNewCustomer: () -> Unit,
     query: String,
+    paymentsTypes: List<PaymentType> = remember {  getProductSalePayments()},
     onQueryChanged: (String) -> Unit,
     selectedCustomer: WholeSaleCustomer,
     onCustomerSelected: (WholeSaleCustomer) -> Unit,
@@ -114,19 +117,23 @@ fun SelectPaymentsContent(
             style = MaterialTheme.typography.headlineSmall
         )
         PaymentTypes(
-            types = getProductSalePayments(),
+            types = paymentsTypes,
             onPaymentTypeSelected = {type->
                 when(type){
                     PaymentType.CASH -> {
-                        selectedPayment = CashPayment(type = type)
+                        selectedPayment = CashPayment(type = type,id= "Destributor-" + UUID.randomUUID().toString())
                         simplePaymentBottomSheet = true
                     }
                     PaymentType.BANK_TRANSFER -> {
-                        selectedPayment = BankTransferPayment(type = type)
+                        selectedPayment = BankTransferPayment(type = type,id= "Destributor-" +UUID.randomUUID().toString())
                         simplePaymentBottomSheet = true
                     }
                     PaymentType.CHEQUE -> {
-                        selectedPayment = ChequePayment(type = type)
+                        selectedPayment = ChequePayment(type = type,id="Destributor-" + UUID.randomUUID().toString())
+                        simplePaymentBottomSheet = true
+                    }
+                    PaymentType.GOLD ->{
+                        selectedPayment = GoldPayment(type = type,id="Destributor-" + UUID.randomUUID().toString())
                         simplePaymentBottomSheet = true
                     }
                     else -> {}
@@ -175,36 +182,58 @@ fun SelectPaymentsContent(
                             SaveCashPaymentBottomSheetContent(
                                 initialPayment = selectedPayment as CashPayment,
                                 remainsAmount = remainsAmount,
-                                onSave = {
-                                    if (selectedPayment!!.id.isBlank()) {
+                                onSave = {newPayment->
+                                    if (selectedPayment!!.id.startsWith("Destributor")) {
                                         onAddPayment(
-                                            it.copy(
+                                            newPayment.copy(
+                                                id = "Payment-" + UUID.randomUUID().toString(),
                                                 customerId = selectedCustomer.id,
                                             )
                                         )
                                     } else {
-                                        onEditPayment(it)
+                                        onEditPayment(newPayment)
                                     }
                                     simplePaymentBottomSheet = false
                                 }
                             )
                         }
                     }
-
+                    PaymentType.GOLD -> {
+                        selectedPayment?.let {
+                            SaveGoldPaymentBottomSheetContent(
+                                initialPayment = selectedPayment as GoldPayment,
+                                remainsAmount = remainsAmount,
+                                onSave = {newPayment->
+                                    if (selectedPayment!!.id.startsWith("Destributor")) {
+                                        onAddPayment(
+                                            newPayment.copy(
+                                                id = "Payment-" + UUID.randomUUID().toString(),
+                                                customerId = selectedCustomer.id,
+                                            )
+                                        )
+                                    } else {
+                                        onEditPayment(newPayment)
+                                    }
+                                    simplePaymentBottomSheet = false
+                                }
+                            )
+                        }
+                    }
                     PaymentType.CHEQUE -> {
                         selectedPayment?.let {
                             SaveChequePaymentBottomSheetContent(
                                 initialPayment = selectedPayment as ChequePayment,
                                 remainsAmount = remainsAmount,
-                                onSave = {
-                                    if (selectedPayment!!.id.isBlank()) {
+                                onSave = {newPayment->
+                                    if (selectedPayment!!.id.startsWith("Destributor")) {
                                         onAddPayment(
-                                            it.copy(
-                                                customerId = selectedCustomer!!.id,
+                                            newPayment.copy(
+                                                id = "Payment-" + UUID.randomUUID().toString(),
+                                                customerId = selectedCustomer.id,
                                             )
                                         )
                                     } else {
-                                        onEditPayment(it)
+                                        onEditPayment(newPayment)
                                     }
                                     simplePaymentBottomSheet = false
                                 }
@@ -216,15 +245,16 @@ fun SelectPaymentsContent(
                             SaveBankTransferPaymentBottomSheetContent(
                                 initialPayment = selectedPayment as BankTransferPayment,
                                 remainsAmount = remainsAmount,
-                                onSave = {
-                                    if (selectedPayment!!.id.isBlank()) {
+                                onSave = {newPayment->
+                                    if (selectedPayment!!.id.startsWith("Destributor")) {
                                         onAddPayment(
-                                            it.copy(
-                                                customerId = selectedCustomer!!.id,
+                                            newPayment.copy(
+                                                id = "Payment-" + UUID.randomUUID().toString(),
+                                                customerId = selectedCustomer.id,
                                             )
                                         )
                                     } else {
-                                        onEditPayment(it)
+                                        onEditPayment(newPayment)
                                     }
                                     simplePaymentBottomSheet = false
                                 }
@@ -351,7 +381,6 @@ fun PaymentTypes(
                             .padding(8.dp)
                             .clip(CircleShape)
                             .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f))
-
                     ) {
                         Icon(
                             painter = painterResource(paymentType.iconRes),

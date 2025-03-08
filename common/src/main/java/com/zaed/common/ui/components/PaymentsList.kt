@@ -15,6 +15,7 @@ import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
 import com.zaed.common.data.model.payment.FuturePayment
+import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.LossPayment
 import com.zaed.common.data.model.payment.Payment
 
@@ -41,6 +42,18 @@ fun PaymentsList(
                 Log.d("find the issue", "paymentSent: $payment")
                 when (payment) {
                     is CashPayment-> {
+                        PaymentItem(
+                            payment = payment,
+                            onEdit = {
+                                onEditPayment(payment)
+                            },
+                            onDelete = {
+                                Log.d("find the issue", "paymentSent: $payment")
+                                onRemovePayment(payment)
+                            }
+                        )
+                    }
+                    is GoldPayment-> {
                         PaymentItem(
                             payment = payment,
                             onEdit = {

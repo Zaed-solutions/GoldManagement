@@ -5,8 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
-import com.zaed.common.data.model.payment.CashPayment
-import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
 import com.zaed.common.data.model.sale.ReceiptStatus
 import com.zaed.common.data.model.sale.request.DeleteWholesaleGoldSaleRequest
@@ -67,7 +65,7 @@ class GoldSaleDetailsViewModel(
                 _uiState.update { oldState->
                     oldState.copy(sale = data)
                 }
-                fetchPayments(data.moneyPaymentsIds,data.goldPaymentsIds)
+                fetchPayments(data.paymentsIds)
                 fetchCustomer(data.customerId)
             }.onFailure {
                 Log.e(TAG, "fetchSale: ${it.message}", it)
@@ -87,19 +85,8 @@ class GoldSaleDetailsViewModel(
 
     private fun fetchPayments(
         moneyPaymentsIds: List<String>,
-        goldPaymentsIds: List<String>
     ) {
         viewModelScope.launch (Dispatchers.IO){
-            fetchGoldPaymentsUseCase(
-                FetchPaymentsByIdsRequest(goldPaymentsIds)
-            ).onSuccess { data ->
-                _uiState.update { oldState->
-                    oldState.copy(payments =oldState.payments+ data)
-                }
-                Log.d(TAG, "fetchPayments: $data")
-            }.onFailure {
-                Log.e(TAG, "fetchPayments: ${it.message}",it )
-            }
             fetchMoneyPaymentsUseCase(
                 FetchPaymentsByIdsRequest(moneyPaymentsIds)
             ).onSuccess { data ->
@@ -137,8 +124,7 @@ class GoldSaleDetailsViewModel(
             updateWholesaleGoldSaleUseCase(
                 UpdateWholesaleGoldSaleRequest(
                     sale = sale.copy(logs = logs),
-                    cashPayments = uiState.value.payments.filterIsInstance<CashPayment>(),
-                    goldPayments = uiState.value.payments.filterIsInstance<GoldPayment>(),
+                    payments = uiState.value.payments,
                     employeeName = uiState.value.currentUser.fullName,
                     employeeId = uiState.value.currentUser.id
                 )

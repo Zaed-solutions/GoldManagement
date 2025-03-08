@@ -47,13 +47,14 @@ import com.zaed.common.data.model.sale.Discount
 import com.zaed.common.data.model.sale.DiscountType
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.WholesaleProductSale
+import com.zaed.common.data.model.sale.WholesaleSale
 import com.zaed.common.ui.util.toMoneyFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PreviewSaleContent(
     modifier: Modifier = Modifier,
-    sale: WholesaleProductSale = WholesaleProductSale(),
+    sale: WholesaleSale,
     onUpdateProduct: (product: Product) -> Unit = {},
     onDeleteProduct: (product: Product) -> Unit = {},
     deleteAllProducts: () -> Unit = {},

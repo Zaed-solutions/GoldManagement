@@ -192,7 +192,8 @@ fun NavigationHost(
                 },
                 onNavigateToAddCustomer = {
                     navController.navigate(Route.AddCustomers())
-                }
+                },
+                onOpenDrawer = onShowNavDrawer
             )
         }
         composable<Route.GoldSaleDetailsRoute> { backstackEntry ->
