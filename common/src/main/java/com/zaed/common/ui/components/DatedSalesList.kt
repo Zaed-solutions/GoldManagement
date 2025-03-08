@@ -15,7 +15,7 @@ fun DatedSalesList(
     modifier: Modifier = Modifier,
     isLoading : Boolean,
     datedSales: List<DatedSales>,
-    onSaleClicked: (String) -> Unit,
+    onSaleClicked: (String,String) -> Unit,
     isEditable: Boolean = false,
     onEdit: (Sale) -> Unit= {},
     isDeletable: Boolean = false,

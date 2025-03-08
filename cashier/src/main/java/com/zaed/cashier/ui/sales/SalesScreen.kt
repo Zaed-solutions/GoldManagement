@@ -4,11 +4,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,15 +29,10 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.zaed.cashier.ui.saledetails.component.DateFilter
 import com.zaed.common.R
 import com.zaed.common.data.model.sale.StoreSale
 import com.zaed.common.ui.components.ConfirmDeleteDialog
-import com.zaed.common.ui.components.DatePickerModal
 import com.zaed.common.ui.components.DatedSalesWithSearchSection
-import com.zaed.common.ui.components.MoreDropDownMenu
-import com.zaed.common.ui.components.MoreDropdownItem
-import com.zaed.common.ui.components.SearchBar
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -136,7 +128,7 @@ private fun SalesScreenContent(
                     onAction(SalesUiAction.UpdateSelectedDate(filter))
                 },
                 datedSales = state.datedSales,
-                onSaleClicked = { saleId ->
+                onSaleClicked = { saleId,type ->
                     onAction(SalesUiAction.OnSaleClicked(saleId))
                 },
                 isEditable = true,

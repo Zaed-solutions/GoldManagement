@@ -1,6 +1,5 @@
 package com.zaed.manager.ui.storedetails
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -216,7 +215,7 @@ fun StoreDetailsScreenContent(
                                 onAction(StoreDetailsUiAction.UpdateSalesDateFilter(filter))
                             },
                             datedSales = state.datedSales,
-                            onSaleClicked = { saleId ->
+                            onSaleClicked = { saleId ,type->
                                 onAction(StoreDetailsUiAction.OnSaleClicked(saleId))
                             }
                         )

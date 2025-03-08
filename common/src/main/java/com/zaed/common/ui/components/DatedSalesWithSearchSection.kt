@@ -8,10 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.sale.DatedSales
-import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.R
+import com.zaed.common.data.model.sale.DatedSales
 import com.zaed.common.data.model.sale.Sale
+import com.zaed.common.ui.util.DateFormat
 
 @Composable
 fun DatedSalesWithSearchSection(
@@ -22,7 +22,7 @@ fun DatedSalesWithSearchSection(
     selectedFilter: DateFormat,
     onFilterClicked: (DateFormat) -> Unit,
     datedSales: List<DatedSales>,
-    onSaleClicked: (String) -> Unit,
+    onSaleClicked: (String,String) -> Unit,
     isEditable: Boolean = false,
     onEdit: (Sale) -> Unit= {},
     isDeletable: Boolean = false,
@@ -46,7 +46,7 @@ fun DatedSalesWithSearchSection(
             DatedSalesList(
                 isLoading = isLoading,
                 datedSales = datedSales,
-                onSaleClicked = { onSaleClicked(it) },
+                onSaleClicked = onSaleClicked,
                 isEditable = isEditable,
                 onEdit = onEdit,
                 isDeletable = isDeletable,
