@@ -1,6 +1,5 @@
 package com.zaed.common.ui.components
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -30,8 +29,6 @@ import com.zaed.common.data.model.sale.Product
 fun ProductsTable(
     modifier: Modifier = Modifier,
     products: List<Product>,
-    onEditProduct: (Product) -> Unit ={},
-    onRemoveProduct: (id: String) -> Unit={},
     isModifyEnabled: Boolean = true
 ) {
     Surface(
@@ -58,7 +55,7 @@ fun ProductsTable(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if(products.firstOrNull()?.name?.isNotEmpty() == true) {
+                        if (products.firstOrNull()?.name?.isNotEmpty() == true) {
                             Text(
                                 text = stringResource(R.string.product),
                                 style = MaterialTheme.typography.titleMedium,
@@ -73,7 +70,7 @@ fun ProductsTable(
                             modifier = Modifier.weight(3f),
                             textAlign = TextAlign.Center
                         )
-                        if(products.firstOrNull()?.name?.isEmpty() == true) {
+                        if (products.firstOrNull()?.name?.isEmpty() == true) {
                             Text(
                                 text = stringResource(R.string.labor_cost),
                                 style = MaterialTheme.typography.titleMedium,
@@ -96,22 +93,13 @@ fun ProductsTable(
             items(products) {
                 when (isModifyEnabled) {
                     true -> {
-                        SwipeToEditOrDeleteContainer(
-                            onDelete = {
-                                onRemoveProduct(it.id)
-                            },
-                            isEditEnabled = true,
-                            onEdit = {
-                                onEditProduct(it)
-                            }
-                        ) {
-                            ProductItem(
-                                modifier = Modifier
-                                    .animateItem(),
-                                product = it,
-                            )
-                        }
+                        ProductItem(
+                            modifier = Modifier
+                                .animateItem(),
+                            product = it,
+                        )
                     }
+
                     false -> {
                         ProductItem(
                             modifier = Modifier

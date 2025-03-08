@@ -2,24 +2,30 @@ package com.zaed.manager.ui.stores.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.zaed.common.R
 import com.zaed.common.data.model.store.Store
 import com.zaed.common.ui.components.ListWithLoading
-import com.zaed.common.ui.components.SwipeToEditOrDeleteContainer
+import com.zaed.common.ui.components.MoreDropDownMenu
+import com.zaed.common.ui.components.MoreDropdownItem
 
 @Composable
 fun StoresList(
@@ -34,22 +40,17 @@ fun StoresList(
         modifier = modifier,
         isLoading = isLoading,
     ) {
-        LazyColumn (
+        LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(vertical = 16.dp)
-        ){
-            items(stores){ store ->
-                SwipeToEditOrDeleteContainer(
-                    modifier = Modifier.animateItem(),
-                    onDelete = { onDeleteStore(store) },
+        ) {
+            items(stores) { store ->
+                StoreItem(
+                    store = store,
+                    onStoreClicked = { onStoreClicked(store) },
                     onEdit = { onEditStore(store) },
-                    isEditEnabled = true
-                ) {
-                    StoreItem(
-                        store = store,
-                        onStoreClicked = { onStoreClicked(store) }
-                    )
-                }
+                    onDelete = { onDeleteStore(store) }
+                )
             }
         }
     }
@@ -61,26 +62,53 @@ fun StoreItem(
     modifier: Modifier = Modifier,
     store: Store,
     onStoreClicked: () -> Unit,
-    ){
+    onEdit: () -> Unit = {},
+    onDelete: () -> Unit = {}
+) {
     Surface(
         modifier = modifier,
         onClick = onStoreClicked,
     ) {
-        Column (
+        Column(
             modifier = Modifier.fillMaxWidth()
-        ){
-            Text(
-                text = store.name,
-                style = MaterialTheme.typography.titleLarge,
-                maxLines = 1,
-                modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 8.dp)
-            )
-            Text(
-                text = store.location,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
-            )
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 8.dp, bottom = 8.dp, end = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column (
+                    modifier = Modifier.weight(1f)
+                ){
+                    Text(
+                        text = store.name,
+                        style = MaterialTheme.typography.titleLarge,
+                        maxLines = 1,
+                        modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 8.dp)
+                    )
+                    Text(
+                        text = store.location,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
+                    )
+                }
+                MoreDropDownMenu(
+                    items = listOf(
+                        MoreDropdownItem(
+                            onClick = { onEdit()},
+                            title = stringResource(R.string.edit),
+                            tint = MaterialTheme.colorScheme.primary,
+                            icon = Icons.Default.Edit
+                        ),
+                        MoreDropdownItem(
+                            onClick = { onDelete()},
+                            title = stringResource(R.string.delete),
+                            tint = MaterialTheme.colorScheme.error,
+                            icon = Icons.Default.Delete
+                        )
+                    )
+                )
+            }
             HorizontalDivider(thickness = 1.dp)
         }
     }
