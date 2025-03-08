@@ -299,9 +299,7 @@ private fun AddGoldSaleScreenContent(
                             customer = state.selectedCustomer,
                             products = state.sale.products,
                             totalPaid = state.totalPaid,
-                            selectedCustomer = state.selectedCustomer,
                             totalAmount = state.sale.totalAmount,
-                            payments = state.payments,
                             isLoading = state.isLoading,
                             onCreate = {
                                 onAction(AddGoldSaleUiAction.OnSubmitClicked)

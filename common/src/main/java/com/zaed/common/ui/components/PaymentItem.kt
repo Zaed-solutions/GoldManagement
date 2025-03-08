@@ -1,11 +1,14 @@
 package com.zaed.common.ui.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
@@ -13,8 +16,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -37,29 +42,47 @@ fun PaymentItem(
     payment: Payment,
     onClick: () -> Unit = {},
     onDelete: () -> Unit = {},
-    onEdit: () -> Unit = {}
+    onEdit: () -> Unit = {},
+    isEditable: Boolean = true,
+    isDeletable: Boolean = true,
 ) {
+    val context = LocalContext.current
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val errorColor = MaterialTheme.colorScheme.error
+    val moreOptions = remember(isEditable, isDeletable) {
+        val list = mutableListOf<MoreDropdownItem>()
+        if (isEditable) {
+            list.add(
+                MoreDropdownItem(
+                    onClick = onEdit,
+                    icon = Icons.Default.Edit,
+                    title = context.getString(R.string.edit),
+                    tint = primaryColor,
+                )
+            )
+        }
+        if (isDeletable) {
+            list.add(
+                MoreDropdownItem(
+                    onClick = onDelete,
+                    icon = Icons.Default.Delete,
+                    title = context.getString(R.string.delete),
+                    tint = errorColor,
+                )
+            )
+        }
+        list
+    }
     when (payment) {
         is CashPayment -> {
-            SwipeToEditOrDeleteContainer(
-                modifier = modifier,
-                onDelete = onDelete,
-                onEdit = onEdit,
-                isEditEnabled = true,
-            ) {
                 Surface(
-                    modifier = Modifier.padding(8.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     onClick = onClick,
-                    border = BorderStroke(
-                        1.dp,
-                        MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                    ),
-                    shape = MaterialTheme.shapes.medium
                 ) {
                     val chipColor =
                         if (payment.amount >= 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
                     Column(
-                        modifier = Modifier.padding(12.dp)
+                        modifier = Modifier.padding(horizontal = 12.dp)
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
@@ -81,6 +104,12 @@ fun PaymentItem(
                                 ),
                                 style = MaterialTheme.typography.titleMedium
                             )
+                            if(moreOptions.isNotEmpty()){
+                                MoreDropDownMenu(
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    items = moreOptions
+                                )
+                            }
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(
@@ -102,26 +131,17 @@ fun PaymentItem(
                     }
                 }
             }
-        }
+
+
         is LossPayment -> {
-            SwipeToEditOrDeleteContainer(
-                modifier = modifier,
-                onDelete = onDelete,
-                onEdit = onEdit,
-                isEditEnabled = true,
+
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onClick,
             ) {
-                Surface(
-                    modifier = Modifier.padding(8.dp),
-                    onClick = onClick,
-                    border = BorderStroke(
-                        1.dp,
-                        MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                    ),
-                    shape = MaterialTheme.shapes.medium
-                ) {
-                    val chipColor =MaterialTheme.colorScheme.error
+                    val chipColor = MaterialTheme.colorScheme.error
                     Column(
-                        modifier = Modifier.padding(12.dp)
+                        modifier = Modifier.padding(horizontal = 12.dp)
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
@@ -140,6 +160,12 @@ fun PaymentItem(
                             Text(
                                 text = "خسارة مبيعات"
                             )
+                            if(moreOptions.isNotEmpty()){
+                                MoreDropDownMenu(
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    items = moreOptions
+                                )
+                            }
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(
@@ -161,26 +187,16 @@ fun PaymentItem(
                     }
                 }
             }
-        }
+
         is FuturePayment -> {
-            SwipeToEditOrDeleteContainer(
-                modifier = modifier,
-                onDelete = onDelete,
-                onEdit = onEdit,
-                isEditEnabled = true,
+
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onClick,
             ) {
-                Surface(
-                    modifier = Modifier.padding(8.dp),
-                    onClick = onClick,
-                    border = BorderStroke(
-                        1.dp,
-                        MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                    ),
-                    shape = MaterialTheme.shapes.medium
-                ) {
-                    val chipColor =MaterialTheme.colorScheme.error
+                    val chipColor = MaterialTheme.colorScheme.error
                     Column(
-                        modifier = Modifier.padding(12.dp)
+                        modifier = Modifier.padding(horizontal = 12.dp)
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
@@ -199,6 +215,12 @@ fun PaymentItem(
                             Text(
                                 text = "مدفوعات آجله"
                             )
+                            if(moreOptions.isNotEmpty()){
+                                MoreDropDownMenu(
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    items = moreOptions
+                                )
+                            }
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(
@@ -218,31 +240,25 @@ fun PaymentItem(
 
                         }
                     }
-                }
+
             }
         }
+
         is GoldPayment -> {
-            SwipeToEditOrDeleteContainer(
-                modifier = modifier,
-                onDelete = onDelete,
-                onEdit = onEdit,
-                isEditEnabled = true,
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onClick,
             ) {
-                Surface(
-                    modifier = Modifier.padding(8.dp),
-                    onClick = onClick,
-                    border = BorderStroke(
-                        1.dp,
-                        MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                    ),
-                    shape = MaterialTheme.shapes.medium
-                ) {
                     val chipColor =
                         if (payment.givenGoldAmount >= 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
-                    val tag1 = if (payment.givenGoldAmount >= 0) stringResource(R.string.taken) else stringResource(R.string.given)
-                    val tag2 = if(payment.pricePerGram == 0.0) stringResource(R.string.not_specified_yet) else ""
+                    val tag1 =
+                        if (payment.givenGoldAmount >= 0) stringResource(R.string.taken) else stringResource(
+                            R.string.given
+                        )
+                    val tag2 =
+                        if (payment.pricePerGram == 0.0) stringResource(R.string.not_specified_yet) else ""
                     Column(
-                        modifier = Modifier.padding(12.dp)
+                        modifier = Modifier.padding(horizontal = 12.dp)
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
@@ -259,9 +275,15 @@ fun PaymentItem(
                             )
                             Spacer(modifier = Modifier.weight(1f))
                             Text(
-                                text ="$tag1 $tag2"   ,
+                                text = "$tag1 $tag2",
                                 style = MaterialTheme.typography.titleMedium
                             )
+                            if(moreOptions.isNotEmpty()){
+                                MoreDropDownMenu(
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    items = moreOptions
+                                )
+                            }
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(
@@ -276,37 +298,28 @@ fun PaymentItem(
                                 text = stringResource(
                                     R.string.grams_placeholder,
                                     payment.givenGoldAmount.absoluteValue.toString()
-                                ) ,
+                                ),
                                 style = MaterialTheme.typography.titleLarge,
                                 color = chipColor,
                                 fontWeight = FontWeight.Bold
                             )
 
                         }
-                    }
+
                 }
             }
         }
+
         is ChequePayment -> {
-            SwipeToEditOrDeleteContainer(
-                modifier = modifier,
-                onDelete = onDelete,
-                onEdit = onEdit,
-                isEditEnabled = true,
+
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onClick,
             ) {
-                Surface(
-                    modifier = Modifier.padding(8.dp),
-                    onClick = onClick,
-                    border = BorderStroke(
-                        1.dp,
-                        MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                    ),
-                    shape = MaterialTheme.shapes.medium
-                ) {
                     val chipColor =
                         if (payment.amount >= 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
                     Column(
-                        modifier = Modifier.padding(12.dp)
+                        modifier = Modifier.padding(horizontal = 12.dp)
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
@@ -328,6 +341,12 @@ fun PaymentItem(
                                 ),
                                 style = MaterialTheme.typography.titleMedium
                             )
+                            if(moreOptions.isNotEmpty()){
+                                MoreDropDownMenu(
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    items = moreOptions
+                                )
+                            }
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(
@@ -340,38 +359,27 @@ fun PaymentItem(
                             Spacer(modifier = Modifier.weight(1f))
                             Text(
                                 text =
-                                    payment.amount.toMoneyFormat(2)
-                                ,
+                                payment.amount.toMoneyFormat(2),
                                 style = MaterialTheme.typography.titleLarge,
                                 color = chipColor,
                                 fontWeight = FontWeight.Bold
                             )
 
                         }
-                    }
+
                 }
             }
         }
+
         is BankTransferPayment -> {
-            SwipeToEditOrDeleteContainer(
-                modifier = modifier,
-                onDelete = onDelete,
-                onEdit = onEdit,
-                isEditEnabled = true,
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onClick,
             ) {
-                Surface(
-                    modifier = Modifier.padding(8.dp),
-                    onClick = onClick,
-                    border = BorderStroke(
-                        1.dp,
-                        MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                    ),
-                    shape = MaterialTheme.shapes.medium
-                ) {
                     val chipColor =
                         if (payment.amount >= 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
                     Column(
-                        modifier = Modifier.padding(12.dp)
+                        modifier = Modifier.padding(horizontal = 12.dp)
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
@@ -393,6 +401,12 @@ fun PaymentItem(
                                 ),
                                 style = MaterialTheme.typography.titleMedium
                             )
+                            if(moreOptions.isNotEmpty()){
+                                MoreDropDownMenu(
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    items = moreOptions
+                                )
+                            }
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(
@@ -411,7 +425,7 @@ fun PaymentItem(
                             )
 
                         }
-                    }
+
                 }
             }
         }
