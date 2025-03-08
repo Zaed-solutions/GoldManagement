@@ -166,7 +166,13 @@ fun NavigationHost(
             ProductSaleDetailsScreen(
                 saleId = saleId,
                 onBackClicked = {
-                    navController.popBackStack()
+                    val previousDestination =
+                        navController.previousBackStackEntry?.destination?.route?.substringBefore("?")
+                    if (previousDestination == Route.AddProductSaleRoute::class.qualifiedName) {
+                        navController.navigate(Route.AddProductSaleRoute())
+                    } else {
+                        navController.popBackStack()
+                    }
                 },
                 onNavigateToEditSale = {
                     navController.navigate(Route.AddProductSaleRoute(it))
@@ -184,8 +190,8 @@ fun NavigationHost(
                     navController.popBackStack()
                 },
                 onNavigateToGoldSaleDetails = {
-                    navController.navigate(Route.GoldSaleDetailsRoute(it)){
-                        popUpTo<Route.SalesRoute>{
+                    navController.navigate(Route.GoldSaleDetailsRoute(it)) {
+                        popUpTo<Route.SalesRoute> {
                             inclusive = false
                         }
                     }
@@ -201,7 +207,13 @@ fun NavigationHost(
             GoldSaleDetailsScreen(
                 saleId = saleId,
                 onBackClicked = {
-                    navController.popBackStack()
+                    val previousDestination =
+                        navController.previousBackStackEntry?.destination?.route?.substringBefore("?")
+                    if (previousDestination == Route.AddGoldSaleRoute::class.qualifiedName) {
+                        navController.navigate(Route.AddGoldSaleRoute())
+                    } else {
+                        navController.popBackStack()
+                    }
                 },
                 onNavigateToEditSale = {
                     navController.navigate(Route.AddGoldSaleRoute(it))

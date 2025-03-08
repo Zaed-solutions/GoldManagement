@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
-import com.zaed.common.data.model.sale.DiscountType
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.request.AddStoreSaleRequest
 import com.zaed.common.data.model.sale.request.UpdateStoreSaleRequest
@@ -82,6 +81,19 @@ class AddSaleViewModel(
             }
         }
     }
+    private fun updateProduct(product: Product) {
+        viewModelScope.launch {
+            _uiState.update { oldState ->
+                oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products.map {
+                    if (it.id == product.id) {
+                        product
+                    } else {
+                        it
+                    }
+                }))
+            }
+        }
+    }
 
     fun handleAction(action: AddSaleUiAction) {
         when (action) {
@@ -89,6 +101,7 @@ class AddSaleViewModel(
             is AddSaleUiAction.OnAddProduct -> addProduct(action.product)
             is AddSaleUiAction.OnDeleteProduct -> deleteProduct(action.product)
             AddSaleUiAction.OnDeleteAllProducts -> deleteAllProducts()
+            is AddSaleUiAction.OnUpdateProduct -> updateProduct(action.product)
             is AddSaleUiAction.OnUpdateCustomerName -> updateCustomerName(action.name)
             is AddSaleUiAction.OnUpdateCustomerPhone -> updateCustomerPhone(action.phone)
             is AddSaleUiAction.OnUpdateCustomerEmail -> updateCustomerEmail(action.email)

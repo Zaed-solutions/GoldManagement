@@ -91,8 +91,8 @@ fun PreviewSaleContent(
                 PreviewSaleItem(
                     product = product,
                     onShowProductDetails = {
-                        editProductSheet = true
                         selectedProduct = it
+                        editProductSheet = true
                     }
                 )
                 HorizontalDivider()
