@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.getGoldSalePayments
 import com.zaed.common.ui.components.PreviewSaleContent
 import com.zaed.common.ui.components.ProgressIndicatorTopAppBar
@@ -299,6 +300,7 @@ private fun AddGoldSaleScreenContent(
                             customer = state.selectedCustomer,
                             products = state.sale.products,
                             totalPaid = state.totalPaid,
+                            isKaratUnSpecified = state.payments.filterIsInstance<GoldPayment>().any { it.pricePerGram==0.0 },
                             totalAmount = state.sale.totalAmount,
                             isLoading = state.isLoading,
                             onCreate = {

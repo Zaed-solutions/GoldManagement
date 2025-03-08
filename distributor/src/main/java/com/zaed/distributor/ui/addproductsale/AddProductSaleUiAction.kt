@@ -19,5 +19,6 @@ sealed interface AddProductSaleUiAction {
     data class OnRemovePayment(val paymentId: String): AddProductSaleUiAction
     data class OnUpdateProducts(val products: List<Product>): AddProductSaleUiAction
     data object OnDeleteAllProducts: AddProductSaleUiAction
+    data object OpenDrawer: AddProductSaleUiAction
 
 }
