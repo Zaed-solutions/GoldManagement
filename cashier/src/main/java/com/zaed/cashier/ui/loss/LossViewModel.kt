@@ -93,7 +93,6 @@ class LossViewModel(
             is LossUiAction.OnDeleteLoss -> deleteLoss(action.id)
             LossUiAction.ResetError -> resetError()
             LossUiAction.ResetSuccess -> resetSuccessState()
-            LossUiAction.OnSignOut -> signOut()
             is LossUiAction.UpdateGroupedByFilter -> updateGroupedByFilter(action.format)
             else -> {}
         }
@@ -103,20 +102,6 @@ class LossViewModel(
         viewModelScope.launch {
             _uiState.update { oldState -> oldState.copy(isLoading = true, groupedByFilter = format) }
             convertToDatedLosses()
-        }
-    }
-
-    private fun signOut() {
-        viewModelScope.launch (Dispatchers.IO){
-            logOutUseCase().onSuccess {
-                _uiState.update { oldState ->
-                    oldState.copy(isSignedOut = true)
-                }
-                Log.d(TAG, "signOut: success")
-            }.onFailure {
-                Log.e(TAG, "signOut: ${it.message}", it)
-                it.printStackTrace()
-            }
         }
     }
 

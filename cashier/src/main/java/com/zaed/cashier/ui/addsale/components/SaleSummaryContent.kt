@@ -2,12 +2,19 @@ package com.zaed.cashier.ui.addsale.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -15,8 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.zaed.common.R
 import com.zaed.cashier.ui.theme.CashierAppTheme
+import com.zaed.common.R
 import com.zaed.common.data.model.sale.Discount
 import com.zaed.common.data.model.sale.DiscountType
 import com.zaed.common.data.model.sale.Product
@@ -33,7 +40,15 @@ import java.util.Date
 fun SaleSummaryContent(
     modifier: Modifier = Modifier,
     sale: StoreSale,
+    onSubmit: () -> Unit = {},
+    isLoading: Boolean = false,
 ) {
+    val discount = remember(sale) {
+        sale.products.sumOf { it.discountAmount }
+    }
+    val subtotal = remember(sale) {
+        sale.products.sumOf { it.totalPriceBeforeDiscount }
+    }
     Column(
         modifier = modifier
             .padding(horizontal = 16.dp)
@@ -70,31 +85,54 @@ fun SaleSummaryContent(
         DashedDivider(
             thickness = 2.dp,
         )
-        if(sale.discount.type != DiscountType.NONE){
-            PriceCalculationItem(
-                modifier = Modifier.padding(top = 8.dp),
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal, fontSize = 18.sp),
-                title = stringResource(R.string.subtotal),
-                price = sale.products.sumOf { it.gramPrice * it.grams }
-            )
-            PriceCalculationItem(
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal, fontSize = 18.sp),
-                title = stringResource(R.string.discount),
-                isNegative = true,
-                price = when(sale.discount.type){
-                    DiscountType.NONE -> 0.0
-                    DiscountType.PERCENTAGE -> sale.products.sumOf { it.grams * it.gramPrice } * (sale.discount.value/100.0)
-                    DiscountType.AMOUNT -> sale.discount.value
-                }
-            )
-
-        }
+        PriceCalculationItem(
+            modifier = Modifier.padding(top = 8.dp),
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Normal,
+                fontSize = 18.sp
+            ),
+            title = stringResource(R.string.subtotal),
+            price = subtotal
+        )
+        PriceCalculationItem(
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Normal,
+                fontSize = 18.sp
+            ),
+            title = stringResource(R.string.discount),
+            isNegative = true,
+            price = discount
+        )
         PriceCalculationItem(
             modifier = Modifier.padding(vertical = 16.dp),
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold),
             title = stringResource(R.string.total),
-            price = sale.totalPrice
+            price = sale.totalAmount
         )
+        Button(
+            onClick = onSubmit,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 24.dp),
+            shape = RoundedCornerShape(4.dp),
+            enabled = !isLoading
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(R.string.submit),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                if (isLoading) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    CircularProgressIndicator()
+                }
+            }
+        }
     }
 }
 
@@ -124,7 +162,8 @@ private fun Preview() {
         )
         SaleSummaryContent(
             modifier = Modifier.padding(vertical = 64.dp),
-            sale = sale)
+            sale = sale
+        )
     }
 
 }

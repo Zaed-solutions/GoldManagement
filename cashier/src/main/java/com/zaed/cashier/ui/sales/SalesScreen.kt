@@ -3,15 +3,18 @@ package com.zaed.cashier.ui.sales
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -30,11 +33,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.cashier.ui.saledetails.component.DateFilter
-import com.zaed.cashier.ui.sales.components.SalesList
 import com.zaed.common.R
 import com.zaed.common.data.model.sale.StoreSale
 import com.zaed.common.ui.components.ConfirmDeleteDialog
 import com.zaed.common.ui.components.DatePickerModal
+import com.zaed.common.ui.components.DatedSalesWithSearchSection
 import com.zaed.common.ui.components.MoreDropDownMenu
 import com.zaed.common.ui.components.MoreDropdownItem
 import com.zaed.common.ui.components.SearchBar
@@ -44,16 +47,11 @@ import org.koin.androidx.compose.koinViewModel
 fun SalesScreen(
     modifier: Modifier = Modifier,
     viewModel: SalesViewModel = koinViewModel(),
+    onShowNavDrawer: () -> Unit,
     onNavigateToSaleDetails: (String) -> Unit,
     onNavigateToAddSale: (saleId: String) -> Unit,
-    onNavigateToLogin: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect (state.isSignedOut){
-        if(state.isSignedOut){
-            onNavigateToLogin()
-        }
-    }
     SalesScreenContent(
         modifier = modifier,
         state = state,
@@ -62,6 +60,7 @@ fun SalesScreen(
                 is SalesUiAction.OnSaleClicked -> onNavigateToSaleDetails(action.saleId)
                 is SalesUiAction.AddSaleClicked -> onNavigateToAddSale("")
                 is SalesUiAction.OnEditSale -> onNavigateToAddSale(action.sale.id)
+                SalesUiAction.ShowNavDrawer -> onShowNavDrawer()
                 else -> viewModel.handleAction(action)
             }
         }
@@ -82,9 +81,6 @@ private fun SalesScreenContent(
     var selectedSale by remember {
         mutableStateOf(StoreSale())
     }
-    var isDatePickerVisible by remember {
-        mutableStateOf(false)
-    }
 
     Scaffold (
         modifier = modifier,
@@ -93,21 +89,21 @@ private fun SalesScreenContent(
             TopAppBar(
                 title= {
                     Text(
-                        text = stringResource(com.zaed.cashier.R.string.app_name),
+                        text = stringResource(R.string.sales),
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
-                actions = {
-                    MoreDropDownMenu(
-                        items = listOf(
-                            MoreDropdownItem(
-                                onClick = { onAction(SalesUiAction.OnSignOut) },
-                                title = stringResource(R.string.sign_out),
-                                icon = Icons.AutoMirrored.Filled.Logout,
-                                tint = MaterialTheme.colorScheme.error
-                            )
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            onAction(SalesUiAction.ShowNavDrawer)
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Menu,
+                            contentDescription = null
                         )
-                    )
+                    }
                 }
             )
         },
@@ -128,30 +124,29 @@ private fun SalesScreenContent(
         Column (
             modifier = Modifier.padding(innerPadding)
        ){
-            //search bar
-            SearchBar(
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
-                query = state.searchQuery,
-                onQueryChanged = { onAction(SalesUiAction.UpdateSearchQuery(it)) }
-            )
-            DateFilter(
-                date = state.selectedDate,
-            ) {
-                isDatePickerVisible = true
-            }
-            //sales list
-            SalesList(
+            DatedSalesWithSearchSection(
+                modifier = Modifier.fillMaxSize(),
                 isLoading = state.isLoading,
-                sales = state.displaySales,
-                onSaleClicked = {
-                    onAction(SalesUiAction.OnSaleClicked(it))
+                query = state.searchQuery,
+                onQueryChanged = { query ->
+                    onAction(SalesUiAction.UpdateSearchQuery(query))
                 },
-                onDeleteSale = {
-                    selectedSale = it
+                selectedFilter = state.selectedDateFilter,
+                onFilterClicked = { filter ->
+                    onAction(SalesUiAction.UpdateSelectedDate(filter))
+                },
+                datedSales = state.datedSales,
+                onSaleClicked = { saleId ->
+                    onAction(SalesUiAction.OnSaleClicked(saleId))
+                },
+                isEditable = true,
+                onEdit = {
+                    onAction(SalesUiAction.OnEditSale(it as StoreSale))
+                },
+                isDeletable = true,
+                onDelete = {
+                    selectedSale = (it as StoreSale)
                     isConfirmDeleteSaleSheetVisible = true
-                },
-                onEditSale = {
-                    onAction(SalesUiAction.OnEditSale(it))
                 }
             )
             AnimatedVisibility(isConfirmDeleteSaleSheetVisible) {
@@ -175,18 +170,6 @@ private fun SalesScreenContent(
                         },
                     )
                 }
-            }
-            androidx.compose.animation.AnimatedVisibility(isDatePickerVisible) {
-                DatePickerModal(
-                    initialDate = state.selectedDate,
-                    onDateSelected = {
-                        onAction(SalesUiAction.UpdateSelectedDate(it))
-                        isDatePickerVisible = false
-                    },
-                    onDismiss = {
-                        isDatePickerVisible = false
-                    }
-                )
             }
         }
     }

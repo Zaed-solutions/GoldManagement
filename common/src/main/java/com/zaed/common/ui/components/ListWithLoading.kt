@@ -19,12 +19,13 @@ fun ListWithLoading(
     Box(
         modifier = modifier.fillMaxSize(),
     ) {
-        AnimatedVisibility(isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 64.dp)
-            )
+        AnimatedVisibility(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 64.dp),
+            visible = isLoading
+        ) {
+            CircularProgressIndicator()
         }
         content()
     }

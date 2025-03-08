@@ -107,9 +107,6 @@ private fun AddProductSaleScreenContent(
                 }
             }
         },
-
-//                                    onAction(AddProductSaleUiAction.OnSubmitClicked)
-
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -221,9 +218,7 @@ private fun AddProductSaleScreenContent(
                             customer = state.selectedCustomer,
                             products = state.sale.products,
                             totalPaid = state.totalPaid,
-                            selectedCustomer = state.selectedCustomer,
                             totalAmount = state.sale.totalAmount,
-                            payments = state.payments,
                             isLoading = state.isLoading,
                             onCreate = {
                                 onAction(AddProductSaleUiAction.OnSubmitClicked)

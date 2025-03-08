@@ -7,14 +7,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,7 +41,11 @@ fun SaleItem(
     modifier: Modifier = Modifier,
     sale: Sale,
     onSaleClicked: () -> Unit,
-    isDividerVisible: Boolean = true
+    isDividerVisible: Boolean = true,
+    isEditable: Boolean = false,
+    onEdit: () -> Unit= {},
+    isDeletable: Boolean = false,
+    onDelete: () -> Unit = {},
 ) {
     val (icon, iconBackgroundColor, iconColor) = when{
         sale is WholesaleGoldSale -> Triple(R.drawable.ic_ingot, GoldenCustomColors.current.color, GoldenCustomColors.current.onColor)
@@ -45,6 +54,33 @@ fun SaleItem(
     val title = when{
         sale is StoreSale -> "CR-${sale.receiptNumber}"
         else -> "DR-${sale.receiptNumber}"
+    }
+    val context = LocalContext.current
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val errorColor = MaterialTheme.colorScheme.error
+    val moreOptions = remember(isEditable, isDeletable) {
+        val list = mutableListOf<MoreDropdownItem>()
+        if (isEditable) {
+            list.add(
+                MoreDropdownItem(
+                    onClick = onEdit,
+                    icon = Icons.Default.Edit,
+                    title = context.getString(R.string.edit),
+                    tint = primaryColor ,
+                )
+            )
+        }
+        if (isDeletable) {
+            list.add(
+                MoreDropdownItem(
+                    onClick = onDelete,
+                    icon = Icons.Default.Delete,
+                    title = context.getString(R.string.delete),
+                    tint = errorColor ,
+                )
+            )
+        }
+        list
     }
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -90,6 +126,12 @@ fun SaleItem(
                         fontWeight = FontWeight.Bold
                     )
                 )
+                if(moreOptions.isNotEmpty()){
+                    MoreDropDownMenu(
+                        modifier = Modifier.padding(start = 8.dp),
+                        items = moreOptions
+                    )
+                }
             }
             if(isDividerVisible) {
                 HorizontalDivider(thickness = 1.dp)

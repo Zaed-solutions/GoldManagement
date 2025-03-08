@@ -6,11 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.sale.request.DeleteStoreSaleRequest
 import com.zaed.common.data.model.sale.request.FetchStoreSalesRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
-import com.zaed.common.domain.authentication.LogoutUserUseCase
+import com.zaed.common.domain.sale.ConvertSalesToDatedSalesUseCase
 import com.zaed.common.domain.sale.DeleteStoreSaleUseCase
 import com.zaed.common.domain.sale.FetchStoreSalesUseCase
 import com.zaed.common.ui.util.DateFormat
-import com.zaed.common.ui.util.format
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +21,7 @@ class SalesViewModel(
     private val fetchStoreSalesUseCase: FetchStoreSalesUseCase,
     private val deleteStoreSaleUseCase: DeleteStoreSaleUseCase,
     private val getCurrentUserUseCase: GetCurrentUserLoggedInUseCase,
-    private val logOutUseCase: LogoutUserUseCase
+    private val convertSalesToDatedSalesUseCase: ConvertSalesToDatedSalesUseCase,
 ) : ViewModel() {
     private val TAG: String = "SalesViewModel"
     private val _uiState = MutableStateFlow(SalesUiState())
@@ -59,7 +58,8 @@ class SalesViewModel(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            sales = data.sortedByDescending { date -> date.createdAt })
+                            allSales = data
+                        )
                     }
                     filterData()
                 }.onFailure { e ->
@@ -74,17 +74,15 @@ class SalesViewModel(
         when (action) {
             is SalesUiAction.UpdateSearchQuery -> updateSearchQuery(action.query)
             is SalesUiAction.OnDeleteSale -> deleteSale(action.saleId)
-            is SalesUiAction.UpdateSelectedDate -> updateSelectedDate(action.date)
-            SalesUiAction.OnSignOut -> signOut()
+            is SalesUiAction.UpdateSelectedDate -> updateDateFilter(action.filter)
             else -> Unit
         }
     }
 
-    private fun updateSelectedDate(date: Date) {
+    private fun updateDateFilter(filter: DateFormat) {
         viewModelScope.launch {
-            _uiState.update { it.copy(selectedDate = date) }
-            filterData(
-            )
+            _uiState.update { it.copy(selectedDateFilter = filter) }
+            convertToDatedSales()
         }
     }
 
@@ -105,18 +103,6 @@ class SalesViewModel(
         }
     }
 
-    private fun signOut() {
-        viewModelScope.launch(Dispatchers.IO) {
-            logOutUseCase().onSuccess {
-                _uiState.update { it.copy(isSignedOut = true) }
-                Log.d(TAG, "signOut: success")
-            }.onFailure {
-                Log.e(TAG, "signOut: ${it.message}", it)
-                it.printStackTrace()
-            }
-        }
-    }
-
     private fun updateSearchQuery(query: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(searchQuery = query) }
@@ -126,16 +112,11 @@ class SalesViewModel(
 
     private fun filterData(
         query: String = uiState.value.searchQuery,
-        selectedDate: Date = uiState.value.selectedDate
     ) {
         viewModelScope.launch(Dispatchers.Default) {
-            with(uiState.value.sales) {
-
-                val formatedDate = selectedDate.format(DateFormat.DATE)
+            with(uiState.value.allSales) {
                 if (query.isBlank()) {
-                    val filteredSales =
-                        filter { it.createdAt.format(DateFormat.DATE) == formatedDate }
-                    _uiState.update { it.copy(displaySales = filteredSales) }
+                    _uiState.update { it.copy(filteredSales = this) }
                 } else {
                     val filteredSales =
                         filter {
@@ -144,9 +125,23 @@ class SalesViewModel(
                                     query,
                                     ignoreCase = true
                                 )
-                            } && it.createdAt.format(DateFormat.DATE) == formatedDate
+                            }
                         }
-                    _uiState.update { it.copy(displaySales = filteredSales) }
+                    _uiState.update { it.copy(filteredSales = filteredSales) }
+                }
+            }
+            convertToDatedSales()
+        }
+    }
+
+    private fun convertToDatedSales() {
+        viewModelScope.launch (Dispatchers.Default){
+            convertSalesToDatedSalesUseCase(
+                _uiState.value.filteredSales,
+                _uiState.value.selectedDateFilter
+            ).let{
+                _uiState.update { oldState ->
+                    oldState.copy(datedSales = it)
                 }
             }
         }

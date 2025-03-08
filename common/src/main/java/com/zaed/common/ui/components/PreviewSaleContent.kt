@@ -1,6 +1,7 @@
 package com.zaed.common.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -46,6 +47,7 @@ import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.sale.Discount
 import com.zaed.common.data.model.sale.DiscountType
 import com.zaed.common.data.model.sale.Product
+import com.zaed.common.data.model.sale.Sale
 import com.zaed.common.data.model.sale.WholesaleProductSale
 import com.zaed.common.data.model.sale.WholesaleSale
 import com.zaed.common.ui.util.toMoneyFormat
@@ -54,16 +56,17 @@ import com.zaed.common.ui.util.toMoneyFormat
 @Composable
 fun PreviewSaleContent(
     modifier: Modifier = Modifier,
+    isSelectCustomerEnabled: Boolean = true,
     sale: WholesaleSale,
     onUpdateProduct: (product: Product) -> Unit = {},
     onDeleteProduct: (product: Product) -> Unit = {},
     deleteAllProducts: () -> Unit = {},
-    onAddNewCustomer: () -> Unit,
-    query: String,
-    onQueryChanged: (String) -> Unit,
-    selectedCustomer: WholeSaleCustomer,
-    onCustomerSelected: (WholeSaleCustomer) -> Unit,
-    suggestedCustomers: List<WholeSaleCustomer>,
+    onAddNewCustomer: () -> Unit = {},
+    query: String = "",
+    onQueryChanged: (String) -> Unit = {},
+    selectedCustomer: WholeSaleCustomer = WholeSaleCustomer(),
+    onCustomerSelected: (WholeSaleCustomer) -> Unit = {},
+    suggestedCustomers: List<WholeSaleCustomer> = emptyList(),
     onNext: () -> Unit = {},
 ) {
     Column(
@@ -126,29 +129,31 @@ fun PreviewSaleContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     //customer
-                    OutlinedButton(
-                        onClick = {
-                            showCustomerSheet = true
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(end = 8.dp),
-                        shape = RoundedCornerShape(4.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                    if(isSelectCustomerEnabled) {
+                        OutlinedButton(
+                            onClick = {
+                                showCustomerSheet = true
+                            },
+                            modifier = Modifier
+                                .weight(1f),
+                            shape = RoundedCornerShape(4.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Outlined.PersonAdd,
-                                contentDescription = null
-                            )
-                            Text(
-                                text = if (selectedCustomer.id.isNotBlank()) "تعديل عميل" else "اضافة عميل"
-                            )
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.PersonAdd,
+                                    contentDescription = null
+                                )
+                                Text(
+                                    text = if (selectedCustomer.id.isNotBlank()) "تعديل عميل" else "اضافة عميل"
+                                )
+                            }
                         }
                     }
                     //delete all
@@ -161,8 +166,7 @@ fun PreviewSaleContent(
                             containerColor = MaterialTheme.colorScheme.errorContainer,
                         ),
                         modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 8.dp),
+                            .weight(1f),
                         shape = RoundedCornerShape(4.dp)
                     ) {
                         Column(
