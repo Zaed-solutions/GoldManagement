@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.authentication.UserApprovalStatus
+import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.data.model.authentication.request.DeleteUserRequest
 import com.zaed.common.data.model.authentication.request.UpdateUserRequest
 import com.zaed.common.domain.authentication.DeleteUserUseCase
@@ -49,7 +50,19 @@ class UserManagementViewModel(
             is UserManagementUiAction.ChangeApprovedStatus -> updateApprovedStatus(action.userId, action.isAccepted)
             is UserManagementUiAction.DeleteUser -> deleteUser(action.userId)
             is UserManagementUiAction.UpdateUser -> updateUser(action.user)
+            is UserManagementUiAction.UpdateUserRoleFilter -> updateSelectedUserRoleAndFilter(role = action.role)
             else -> Unit
+        }
+    }
+
+    private fun updateSelectedUserRoleAndFilter(role: UserRole) {
+        viewModelScope.launch {
+            _uiState.update {oldState ->
+                oldState.copy(
+                    selectedRole = if(role == uiState.value.selectedRole) null else role
+                )
+            }
+            filterData()
         }
     }
 
@@ -115,8 +128,9 @@ class UserManagementViewModel(
 
     private fun filterData(searchQuery: String = "") {
         viewModelScope.launch (Dispatchers.Default){
+            val role = uiState.value.selectedRole
             with(uiState.value.allUsers){
-                if(searchQuery.isBlank()){
+                if(searchQuery.isBlank() && role == null){
                     val displayedUsers = filter { it.approvalStatusType == UserApprovalStatus.APPROVED }
                     val displayedRequests = filter { it.approvalStatusType == UserApprovalStatus.PENDING }
                     val displayedRejects = filter { it.approvalStatusType == UserApprovalStatus.REJECTED }
@@ -127,8 +141,32 @@ class UserManagementViewModel(
                             displayedRejects = displayedRejects
                         )
                     }
-                } else {
+                } else if(role == null){
                     val filteredUsers = filter { it.fullName.contains(searchQuery, ignoreCase = true) }
+                    val displayedUsers = filteredUsers.filter { it.approvalStatusType == UserApprovalStatus.APPROVED }
+                    val displayedRequests = filteredUsers.filter { it.approvalStatusType == UserApprovalStatus.PENDING }
+                    val displayedRejects = filteredUsers.filter { it.approvalStatusType == UserApprovalStatus.REJECTED }
+                    _uiState.update {
+                        it.copy(
+                            displayedUsers = displayedUsers,
+                            displayedRequests = displayedRequests,
+                            displayedRejects = displayedRejects
+                        )
+                    }
+                } else if(searchQuery.isBlank()){
+                    val filteredUsers = filter { it.role == role }
+                    val displayedUsers = filteredUsers.filter { it.approvalStatusType == UserApprovalStatus.APPROVED }
+                    val displayedRequests = filteredUsers.filter { it.approvalStatusType == UserApprovalStatus.PENDING }
+                    val displayedRejects = filteredUsers.filter { it.approvalStatusType == UserApprovalStatus.REJECTED }
+                    _uiState.update {
+                        it.copy(
+                            displayedUsers = displayedUsers,
+                            displayedRequests = displayedRequests,
+                            displayedRejects = displayedRejects
+                        )
+                    }
+                } else {
+                    val filteredUsers = filter { it.fullName.contains(searchQuery, ignoreCase = true) && it.role == role }
                     val displayedUsers = filteredUsers.filter { it.approvalStatusType == UserApprovalStatus.APPROVED }
                     val displayedRequests = filteredUsers.filter { it.approvalStatusType == UserApprovalStatus.PENDING }
                     val displayedRejects = filteredUsers.filter { it.approvalStatusType == UserApprovalStatus.REJECTED }
