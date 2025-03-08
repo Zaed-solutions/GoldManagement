@@ -1,6 +1,7 @@
 package com.zaed.manager.ui.usermanagement
 
 import com.zaed.common.data.model.authentication.User
+import com.zaed.common.data.model.authentication.UserRole
 
 data class UserManagementUiState(
     val isLoading: Boolean = true,
@@ -9,4 +10,5 @@ data class UserManagementUiState(
     val displayedRequests: List<User> = emptyList(),
     val displayedRejects: List<User> = emptyList(),
     val searchQuery: String = "",
+    val selectedRole: UserRole? = null
 )

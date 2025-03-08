@@ -221,4 +221,7 @@
     <string name="enter_added_quantity">Enter added quantity</string>
     <string name="distributors">Distributors</string>
     <string name="not_specified_yet">"  Not Specified yet"</string>
+    <string name="sell_products">Sell Products</string>
+    <string name="sell_gold">Sell Gold</string>
+    <string name="sell_ingots">Sell Ingots</string>
 </resources>

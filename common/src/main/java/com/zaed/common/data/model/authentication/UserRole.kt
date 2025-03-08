@@ -4,7 +4,7 @@ import androidx.annotation.StringRes
 import com.zaed.common.R
 
 enum class UserRole(@StringRes val value: Int){
-    NONE(0),
+    NONE(R.string.none),
     CASHIER(R.string.cashier),
     MANAGER(R.string.manager),
     ACCOUNTANT(R.string.accountant),

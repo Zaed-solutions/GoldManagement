@@ -28,6 +28,7 @@ import com.zaed.manager.ui.usermanagement.components.RequestsList
 import com.zaed.manager.ui.usermanagement.components.UserManagementBottomSheet
 import com.zaed.manager.ui.usermanagement.components.UserManagementTab
 import com.zaed.manager.ui.usermanagement.components.UserManagementTopBar
+import com.zaed.manager.ui.usermanagement.components.UserRoleFilterRow
 import com.zaed.manager.ui.usermanagement.components.UsersList
 import com.zaed.manager.ui.usermanagement.components.UsersTabRow
 import kotlinx.coroutines.CoroutineScope
@@ -96,6 +97,13 @@ private fun UserManagementScreenContent(
                     scope.launch {
                         pagerState.animateScrollToPage(index)
                     }
+                }
+            )
+            UserRoleFilterRow(
+                modifier = Modifier.padding(top = 8.dp),
+                selectedRole = state.selectedRole,
+                onFilterClicked = { role ->
+                    onAction(UserManagementUiAction.UpdateUserRoleFilter(role))
                 }
             )
             //horizontal pager
