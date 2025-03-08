@@ -70,7 +70,8 @@ class UserManagementViewModel(
             val updates = mapOf(
                 "fullName" to user.fullName,
                 "userName" to user.userName,
-                "password" to user.password
+                "password" to user.password,
+                "permissions" to user.permissions
             )
             updateUserUseCase(
                 UpdateUserRequest(
