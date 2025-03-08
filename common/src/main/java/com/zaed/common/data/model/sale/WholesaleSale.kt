@@ -14,7 +14,7 @@ open class WholesaleSale(
     override val logs: List<ChangeLog>,
     override val deleted: Boolean,
     override val totalAmount: Double,
-    open val products: List<Product>,
+    override val products: List<Product>,
     open val paymentStatus: PaymentStatus,
     open val distributorId: String,
     open val distributorName: String
