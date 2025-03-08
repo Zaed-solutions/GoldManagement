@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.sale.Product
+import com.zaed.common.data.model.sale.Sale
 import com.zaed.common.data.model.sale.WholesaleProductSale
 import com.zaed.common.ui.util.toMoneyFormat
 
@@ -39,12 +40,12 @@ import com.zaed.common.ui.util.toMoneyFormat
 fun SelectProductsContent(
     modifier: Modifier = Modifier,
     categories: List<Category>,
-    sale: WholesaleProductSale,
+    sale: Sale,
     onNext: () -> Unit,
     onAddProduct: (Product) -> Unit,
     onDeleteProduct: (Product) -> Unit,
 
-) {
+    ) {
     val categories1 by rememberUpdatedState(categories)
     var searchQuery by remember { mutableStateOf("") }
     val displayedCategory by remember {

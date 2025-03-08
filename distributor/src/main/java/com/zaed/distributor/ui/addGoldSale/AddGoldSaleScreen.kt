@@ -239,12 +239,10 @@ private fun AddGoldSaleScreenContent(
                     }
                     3 -> {
                         SaleSummaryContent(
-                            selectedCustomer = state.selectedCustomer,
                             customer = state.selectedCustomer,
                             products = state.sale.products,
                             totalPaid = state.totalPaid ,
                             totalAmount = state.sale.totalAmount,
-                            payments = state.cashPayments
                         )
                     }
                 }

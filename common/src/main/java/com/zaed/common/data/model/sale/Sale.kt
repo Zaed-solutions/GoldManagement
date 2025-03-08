@@ -14,4 +14,5 @@ abstract class Sale {
     abstract val logs: List<ChangeLog>
     abstract val deleted: Boolean
     abstract val totalAmount: Double
+    abstract val products: List<Product>
 }

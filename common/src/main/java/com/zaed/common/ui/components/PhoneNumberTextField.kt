@@ -3,6 +3,9 @@ package com.zaed.common.ui.components
 import androidx.annotation.StringRes
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -45,6 +48,12 @@ fun PhoneNumberTextField(
             Text(
                 text = "+212-",
                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.ExtraBold)
+            )
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Phone,
+                contentDescription = null
             )
         },
         shape = RoundedCornerShape(32.dp),

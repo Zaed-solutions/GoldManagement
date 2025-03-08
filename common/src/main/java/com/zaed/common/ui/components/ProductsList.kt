@@ -54,8 +54,6 @@ fun ProductsList(
         }
         ProductsTable(
             products = products,
-            onEditProduct = onEditProduct,
-            onRemoveProduct = onRemoveProduct
         )
 
     }
@@ -68,7 +66,6 @@ fun ProductItem(
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
         tonalElevation = 2.dp
     ) {
         Row (

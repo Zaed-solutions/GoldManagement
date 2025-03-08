@@ -9,7 +9,6 @@ import com.zaed.common.data.model.loss.StoreLoss
 import com.zaed.common.ui.util.DateFormat
 
 data class LossUiState(
-    val isSignedOut: Boolean = false,
     val losses: List<StoreLoss> = emptyList(),
     val currentUser: User = User(),
     val isLoading: Boolean = false,

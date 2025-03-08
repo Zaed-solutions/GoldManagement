@@ -14,7 +14,7 @@ data class WholesaleGoldSale(
     override val receiptNumber: String ="",
     val moneyPaymentsIds: List<String> = emptyList(),
     val goldPaymentsIds: List<String> = emptyList(),
-    val products :List<Product> = emptyList(),
+    override val products :List<Product> = emptyList(),
     val receiptStatus: ReceiptStatus = ReceiptStatus.NOT_REQUESTED,
     override val createdAt: Date = Date(),
     override val logs: List<ChangeLog> = emptyList(),
