@@ -361,7 +361,7 @@ fun SaleDetailsPreview(
                             )
                             Spacer(modifier = Modifier.weight(1f))
                             Text(
-                                text = sale.totalPrice.toMoneyFormat(),
+                                text = sale.totalAmount.toMoneyFormat(),
                                 style = MaterialTheme.typography.titleMedium,
                             )
                         }

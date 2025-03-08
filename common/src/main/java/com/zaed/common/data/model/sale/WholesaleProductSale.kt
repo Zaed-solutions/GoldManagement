@@ -16,7 +16,7 @@ data class WholesaleProductSale(
     override val logs: List<ChangeLog> = emptyList(),
     override val deleted: Boolean = false,
     val receiptStatus: ReceiptStatus = ReceiptStatus.NOT_REQUESTED,
-    val products: List<Product> = emptyList(),
+    override val products: List<Product> = emptyList(),
     val paymentsIds: List<String> = emptyList(),
     override val paymentStatus: PaymentStatus = PaymentStatus.UNPAID,
     override val receiptNumber: String = "",

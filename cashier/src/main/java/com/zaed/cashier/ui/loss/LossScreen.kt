@@ -10,17 +10,17 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun LossScreen(
     viewModel: LossViewModel = koinViewModel(),
-    onNavigateToLogin: () -> Unit
+    onShowNavDrawer: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect (uiState.isSignedOut){
-        if (uiState.isSignedOut) {
-            onNavigateToLogin()
-        }
-    }
     LossScreenContent(
         uiState = uiState,
-        onAction = viewModel::handleAction,
+        onAction = { action ->
+            when (action) {
+                LossUiAction.ShowNavDrawer -> onShowNavDrawer()
+                else -> viewModel.handleAction(action)
+            }
+        }
     )
 }
 

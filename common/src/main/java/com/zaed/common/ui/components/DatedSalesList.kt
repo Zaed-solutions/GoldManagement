@@ -8,15 +8,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.zaed.common.data.model.sale.DatedSales
+import com.zaed.common.data.model.sale.Sale
 
 @Composable
 fun DatedSalesList(
     modifier: Modifier = Modifier,
     isLoading : Boolean,
     datedSales: List<DatedSales>,
-    onSaleClicked: (String) -> Unit
+    onSaleClicked: (String) -> Unit,
+    isEditable: Boolean = false,
+    onEdit: (Sale) -> Unit= {},
+    isDeletable: Boolean = false,
+    onDelete: (Sale) -> Unit = {},
 ) {
     ListWithLoading(
+        modifier = modifier,
         isLoading = isLoading,
     ) {
         LazyColumn(
@@ -30,7 +36,11 @@ fun DatedSalesList(
                 DatedSalesItem(
                     modifier = Modifier.animateItem(),
                     datedSale = it,
-                    onSaleClicked = onSaleClicked
+                    onSaleClicked = onSaleClicked,
+                    isEditable = isEditable,
+                    onEdit = onEdit,
+                    isDeletable = isDeletable,
+                    onDelete = onDelete
                 )
             }
         }

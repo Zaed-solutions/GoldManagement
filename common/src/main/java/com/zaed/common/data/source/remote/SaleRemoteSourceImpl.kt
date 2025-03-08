@@ -93,7 +93,7 @@ class SaleRemoteSourceImpl(
             val batch = firestore.batch()
             val docRef = storeSalesCollection.document()
             val receiptNumber = storeSalesCollection.orderBy(
-                "receiptNumber",
+                "createdAt",
                 Query.Direction.DESCENDING
             ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")
                 ?.toLongOrNull() ?: 0
@@ -638,7 +638,7 @@ class SaleRemoteSourceImpl(
             val docRef = wholesaleProductSalesCollection.document()
             val paymentsIds = mutableListOf<String>()
             val maxProductReceipt = wholesaleProductSalesCollection.orderBy(
-                "receiptNumber",
+                "createdAt",
                 Query.Direction.DESCENDING
             ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")
                 ?.toLongOrNull() ?: 0
@@ -749,7 +749,7 @@ class SaleRemoteSourceImpl(
             val moneyPaymentsIds = mutableListOf<String>()
             val goldPaymentsIds = mutableListOf<String>()
             val maxProductReceipt = wholesaleProductSalesCollection.orderBy(
-                "receiptNumber",
+                "createdAt",
                 Query.Direction.DESCENDING
             ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")
                 ?.toLongOrNull() ?: 0

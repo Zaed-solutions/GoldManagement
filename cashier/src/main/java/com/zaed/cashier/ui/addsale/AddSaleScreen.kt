@@ -1,5 +1,6 @@
 package com.zaed.cashier.ui.addsale
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,14 +18,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.zaed.cashier.ui.addsale.components.AddSaleBottomBar
 import com.zaed.cashier.ui.addsale.components.SaleSummaryContent
 import com.zaed.cashier.ui.addsale.components.SelectCustomerContent
-import com.zaed.cashier.ui.addsale.components.SelectProductsContent
 import com.zaed.cashier.ui.theme.CashierAppTheme
+import com.zaed.common.ui.components.PreviewSaleContent
 import com.zaed.common.ui.components.ProgressIndicatorTopAppBar
+import com.zaed.common.ui.components.SelectProductsContent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -34,15 +34,15 @@ fun AddSaleScreen(
     modifier: Modifier = Modifier,
     viewModel: AddSaleViewModel = koinViewModel(),
     saleId: String = "",
-    onBackClicked: () -> Unit,
+    onShowNavDrawer: () -> Unit,
     onNavigateToSaleDetails: (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect (true) {
+    LaunchedEffect(true) {
         viewModel.init(saleId)
     }
-    LaunchedEffect (state.isFinished){
-        if(state.isFinished){
+    LaunchedEffect(state.isFinished) {
+        if (state.isFinished) {
             onNavigateToSaleDetails(state.sale.id)
         }
     }
@@ -50,15 +50,14 @@ fun AddSaleScreen(
         state = state,
         onAction = { action ->
             when (action) {
-                AddSaleUiAction.OnBackClicked -> {
-                    onBackClicked()
+                AddSaleUiAction.OnShowNavDrawer -> {
+                    onShowNavDrawer()
                 }
 
                 else -> viewModel.handleAction(action)
             }
         }
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,7 +68,7 @@ private fun AddSaleScreenContent(
     onAction: (AddSaleUiAction) -> Unit,
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
-    val pagerState = rememberPagerState { 3 }
+    val pagerState = rememberPagerState { 4 }
     val progress by remember {
         derivedStateOf {
             (pagerState.currentPage + 1).toFloat() / (pagerState.pageCount + 1)
@@ -81,31 +80,27 @@ private fun AddSaleScreenContent(
             label = "linear progress indicator"
         )
     }
+    BackHandler {
+        if(pagerState.currentPage > 0) {
+            scope.launch {
+                pagerState.animateScrollToPage(pagerState.currentPage - 1)
+            }
+        }
+    }
     Scaffold(
         modifier = modifier,
         topBar = {
             ProgressIndicatorTopAppBar(
-                progress = progress
-            ) { onAction(AddSaleUiAction.OnBackClicked) }
-        },
-        bottomBar = {
-            AddSaleBottomBar(
-                currentPage = pagerState.currentPage,
-                customerName = state.sale.customerName,
-                onPreviousClicked = {
-                    scope.launch {
-                        pagerState.animateScrollToPage(pagerState.currentPage - 1)
-                    }
-                },
-                onContinueClicked = {
-                    scope.launch {
-                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                    }
-                },
-                onAddClicked = {
-                    onAction(AddSaleUiAction.OnSubmitClicked)
+                progress = progress,
+                firstScreen = pagerState.currentPage == 0,
+                onOpenDrawer = {
+                    onAction(AddSaleUiAction.OnShowNavDrawer)
                 }
-            )
+            ) {
+                scope.launch {
+                    pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                }
+            }
         }
     ) { innerPadding ->
         Column(
@@ -114,65 +109,80 @@ private fun AddSaleScreenContent(
                 .padding(innerPadding)
         ) {
             HorizontalPager(
-                modifier = Modifier.padding(top = 16.dp),
                 state = pagerState,
                 userScrollEnabled = false,
             ) { page ->
                 when (page) {
                     0 -> {
-                        SelectCustomerContent(
-                            sale = state.sale,
-                            onUpdateCustomerName = {
-                                onAction(
-                                    AddSaleUiAction.OnUpdateCustomerName(
-                                        it
-                                    )
-                                )
-                            },
-                            onUpdateCustomerPhone = {
-                                onAction(
-                                    AddSaleUiAction.OnUpdateCustomerPhone(
-                                        it
-                                    )
-                                )
-                            },
-                            onUpdateCustomerEmail = {
-                                onAction(
-                                    AddSaleUiAction.OnUpdateCustomerEmail(
-                                        it
-                                    )
-                                )
-                            }
-                        )
-                    }
-
-                    1 -> {
+                        //add products
                         SelectProductsContent(
                             categories = state.categories,
                             sale = state.sale,
                             onAddProduct = {
                                 onAction(AddSaleUiAction.OnAddProduct(it))
                             },
-                            onRemoveProduct = {
-                                onAction(AddSaleUiAction.OnRemoveProduct(it))
-                            },
-                            onUpdateDiscountType = {
-                                onAction(AddSaleUiAction.OnUpdateDiscountType(it))
-                            },
-                            onUpdateDiscountValue = {
-                                onAction(AddSaleUiAction.OnUpdateDiscountValue(it))
-                            },
-                            onEditProduct = {
-                                onAction(AddSaleUiAction.OnEditProduct(it))
+                            onNext = {
+                                scope.launch {
+                                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                }
                             },
                             onDeleteProduct = {
                                 onAction(AddSaleUiAction.OnDeleteProduct(it))
                             }
                         )
                     }
+
+                    1 -> {
+                        PreviewSaleContent(
+                            sale = state.sale,
+                            isSelectCustomerEnabled = false,
+                            onUpdateProduct = {
+                                onAction(AddSaleUiAction.OnAddProduct(it))
+                            },
+                            onDeleteProduct = {
+                                onAction(AddSaleUiAction.OnDeleteProduct(it))
+                            },
+                            deleteAllProducts = {
+                                onAction(AddSaleUiAction.OnDeleteAllProducts)
+                                scope.launch {
+                                    pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                                }
+                            },
+                            onNext = {
+                                scope.launch {
+                                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                }
+                            }
+                        )
+                    }
+
                     2 -> {
+                        SelectCustomerContent(
+                            sale = state.sale,
+                            onUpdateCustomerName = {
+                                onAction(AddSaleUiAction.OnUpdateCustomerName(it))
+                            },
+                            onUpdateCustomerEmail = {
+                                onAction(AddSaleUiAction.OnUpdateCustomerEmail(it))
+                            },
+                            onUpdateCustomerPhone = {
+                                onAction(AddSaleUiAction.OnUpdateCustomerPhone(it))
+                            },
+                            onContinue = {
+                                scope.launch {
+                                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                }
+                            }
+                        )
+                    }
+
+                    3 -> {
                         SaleSummaryContent(
-                            sale = state.sale
+                            sale = state.sale,
+                            onSubmit = {
+                                onAction(AddSaleUiAction.OnSubmitClicked)
+                            },
+                            isLoading = state.isLoading
                         )
                     }
                 }
@@ -184,7 +194,8 @@ private fun AddSaleScreenContent(
 
 }
 
-@Preview(showSystemUi = true, showBackground = true,
+@Preview(
+    showSystemUi = true, showBackground = true,
     device = "spec:parent=pixel_9_pro,navigation=buttons"
 )
 @Composable

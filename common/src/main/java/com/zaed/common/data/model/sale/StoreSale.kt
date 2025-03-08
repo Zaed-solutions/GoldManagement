@@ -14,7 +14,7 @@ data class StoreSale(
     override val customerName: String = "",
     override val receiptNumber: String = "",
     val customerEmail: String = "",
-    val products: List<Product> = emptyList(),
+    override val products: List<Product> = emptyList(),
     val discount: Discount = Discount(),
     override val deleted: Boolean = false,
     override val logs: List<ChangeLog> = emptyList(),
@@ -23,9 +23,5 @@ data class StoreSale(
 ): Sale() {
     @Transient
     override val totalAmount
-        get() = products.sumOf { it.gramPrice * it.grams } - when (discount.type) {
-            DiscountType.NONE -> 0.0
-            DiscountType.PERCENTAGE -> products.sumOf { it.grams * it.gramPrice } * (discount.value / 100.0)
-            DiscountType.AMOUNT -> discount.value
-        }
+        get() = products.sumOf { it.totalPriceAfterDiscount }
 }

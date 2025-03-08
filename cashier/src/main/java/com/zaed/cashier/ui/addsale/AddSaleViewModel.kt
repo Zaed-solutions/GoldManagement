@@ -86,16 +86,21 @@ class AddSaleViewModel(
     fun handleAction(action: AddSaleUiAction) {
         when (action) {
             AddSaleUiAction.OnSubmitClicked -> onSubmit()
-            is AddSaleUiAction.OnUpdateCustomerName -> updateCustomerName(action.customerName)
-            is AddSaleUiAction.OnUpdateCustomerEmail -> updateCustomerEmail(action.customerEmail)
-            is AddSaleUiAction.OnUpdateCustomerPhone -> updateCustomerPhone(action.customerPhoneNumber)
-            is AddSaleUiAction.OnEditProduct -> updateProduct(action.product)
-            is AddSaleUiAction.OnRemoveProduct -> removeProduct(action.productId)
             is AddSaleUiAction.OnAddProduct -> addProduct(action.product)
-            is AddSaleUiAction.OnUpdateDiscountType -> updateDiscountType(action.discountType)
-            is AddSaleUiAction.OnUpdateDiscountValue -> updateDiscountValue(action.discountValue)
             is AddSaleUiAction.OnDeleteProduct -> deleteProduct(action.product)
+            AddSaleUiAction.OnDeleteAllProducts -> deleteAllProducts()
+            is AddSaleUiAction.OnUpdateCustomerName -> updateCustomerName(action.name)
+            is AddSaleUiAction.OnUpdateCustomerPhone -> updateCustomerPhone(action.phone)
+            is AddSaleUiAction.OnUpdateCustomerEmail -> updateCustomerEmail(action.email)
             else -> Unit
+        }
+    }
+
+    private fun deleteAllProducts() {
+        viewModelScope.launch {
+            _uiState.update { oldState ->
+                oldState.copy(sale = oldState.sale.copy(products = emptyList()))
+            }
         }
     }
 
@@ -106,6 +111,7 @@ class AddSaleViewModel(
     }
 
     private fun onSubmit() {
+        _uiState.update { it.copy(isLoading = true) }
         if (uiState.value.sale.id.isNotBlank()) {
             updateSale()
         } else {
@@ -130,20 +136,6 @@ class AddSaleViewModel(
             }.onFailure { e ->
                 Log.e(TAG, "updateSale: ${e.message}", e)
                 e.printStackTrace()
-            }
-        }
-    }
-
-    private fun updateProduct(product: Product) {
-        viewModelScope.launch {
-            _uiState.update { oldState ->
-                oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products.map {
-                    if (it.id == product.id) {
-                        product
-                    } else {
-                        it
-                    }
-                }))
             }
         }
     }
@@ -181,36 +173,13 @@ class AddSaleViewModel(
         }
     }
 
-
-    private fun removeProduct(productId: String) {
-        viewModelScope.launch {
-            _uiState.update { oldState ->
-                oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products.filter { it.id != productId }))
-            }
-        }
-    }
-
     private fun addProduct(product: Product) {
         viewModelScope.launch {
+            Log.d(TAG, "addProduct: $product")
             _uiState.update { oldState ->
                 oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products + product))
             }
-        }
-    }
-
-    private fun updateDiscountType(discountType: DiscountType) {
-        viewModelScope.launch {
-            _uiState.update { oldState ->
-                oldState.copy(sale = oldState.sale.copy(discount = oldState.sale.discount.copy(type = discountType)))
-            }
-        }
-    }
-
-    private fun updateDiscountValue(discountValue: Double) {
-        viewModelScope.launch {
-            _uiState.update { oldState ->
-                oldState.copy(sale = oldState.sale.copy(discount = oldState.sale.discount.copy(value = discountValue)))
-            }
+            Log.d(TAG, "addProduct: ${_uiState.value.sale.products}")
         }
     }
 

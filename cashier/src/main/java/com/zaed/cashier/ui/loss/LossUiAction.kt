@@ -4,6 +4,7 @@ import com.zaed.common.data.model.loss.StoreLoss
 import com.zaed.common.ui.util.DateFormat
 
 sealed interface LossUiAction {
+    data object ShowNavDrawer : LossUiAction
     data class OnCreateLoss(
         val loss: StoreLoss,
     ) : LossUiAction
@@ -15,7 +16,6 @@ sealed interface LossUiAction {
     ) : LossUiAction
     data object ResetError : LossUiAction
     data object ResetSuccess : LossUiAction
-    data object OnSignOut : LossUiAction
     data class UpdateGroupedByFilter(
         val format: DateFormat
     ) : LossUiAction

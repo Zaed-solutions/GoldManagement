@@ -1,9 +1,6 @@
 package com.zaed.cashier.app.navigation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -11,8 +8,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.zaed.cashier.ui.addsale.AddSaleScreen
 import com.zaed.cashier.ui.loss.LossScreen
-import com.zaed.cashier.ui.sales.SalesScreen
 import com.zaed.cashier.ui.saledetails.SaleDetailsScreen
+import com.zaed.cashier.ui.sales.SalesScreen
 import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
@@ -21,14 +18,15 @@ import kotlinx.serialization.Serializable
 @Composable
 fun NavigationHost(
     modifier: Modifier = Modifier,
+    onShowNavDrawer: () -> Unit,
     navController: NavHostController,
     startDestination: Route,
 ) {
-    NavHost (
+    NavHost(
         modifier = modifier,
         navController = navController,
         startDestination = startDestination,
-    ){
+    ) {
         composable<Route.SignUpRoute> {
             SignUpScreen(
                 role = UserRole.CASHIER,
@@ -50,8 +48,8 @@ fun NavigationHost(
                     navController.navigate(Route.SignUpRoute)
                 },
                 onNavigateToHomeScreen = {
-                    navController.navigate(Route.SalesRoute){
-                        popUpTo(Route.LoginRoute){
+                    navController.navigate(Route.SalesRoute) {
+                        popUpTo(Route.LoginRoute) {
                             inclusive = true
                         }
                     }
@@ -60,19 +58,13 @@ fun NavigationHost(
         }
         composable<Route.SalesRoute> {
             SalesScreen(
+                onShowNavDrawer = onShowNavDrawer,
                 onNavigateToSaleDetails = {
                     navController.navigate(Route.SaleDetailsRoute(it))
                 },
                 onNavigateToAddSale = {
                     navController.navigate(Route.AddSaleRoute(it))
                 },
-                onNavigateToLogin = {
-                    navController.navigate(Route.LoginRoute){
-                        popUpTo(Route.LoginRoute){
-                            inclusive = true
-                        }
-                    }
-                }
             )
         }
         composable<Route.SaleDetailsRoute> { backstackEntry ->
@@ -80,40 +72,30 @@ fun NavigationHost(
             SaleDetailsScreen(
                 saleId = saleId,
                 onBack = {
-                    navController.popBackStack()
+                    val previousDestination = navController.previousBackStackEntry?.destination?.route?.substringBefore("?")
+                    if (previousDestination == Route.AddSaleRoute::class.qualifiedName) {
+                        navController.navigate(Route.AddSaleRoute())
+                    } else {
+                        navController.popBackStack()
+                    }
                 },
-
             )
         }
         composable<Route.AddSaleRoute> { backstackEntry ->
             val saleId = backstackEntry.toRoute<Route.AddSaleRoute>().saleId
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ){
-                AddSaleScreen(
-                    onBackClicked = { navController.popBackStack() },
-                    saleId = saleId,
-                    onNavigateToSaleDetails = { saleId ->
-                        navController.navigate(Route.SaleDetailsRoute(saleId)){
-                            popUpTo(Route.SalesRoute){
-                                inclusive = false
-                            }
-                        }
-                    }
-                )
-            }
+
+            AddSaleScreen(
+                onShowNavDrawer = onShowNavDrawer,
+                saleId = saleId,
+                onNavigateToSaleDetails = {
+                    navController.navigate(Route.SaleDetailsRoute(it))
+                }
+            )
         }
 
         composable<Route.LossRoute> {
             LossScreen(
-                onNavigateToLogin = {
-                    navController.navigate(Route.LoginRoute){
-                        popUpTo(Route.LoginRoute){
-                            inclusive = true
-                        }
-                    }
-                }
+                onShowNavDrawer = onShowNavDrawer
             )
         }
 
@@ -121,21 +103,22 @@ fun NavigationHost(
 }
 
 
+sealed interface Route {
+    @Serializable
+    data object SignUpRoute : Route
 
+    @Serializable
+    data object LoginRoute : Route
 
+    @Serializable
+    data object SalesRoute : Route
 
+    @Serializable
+    data object LossRoute : Route
 
-sealed interface Route{
     @Serializable
-    data object SignUpRoute: Route
+    data class SaleDetailsRoute(val saleId: String) : Route
+
     @Serializable
-    data object LoginRoute: Route
-    @Serializable
-    data object SalesRoute: Route
-    @Serializable
-    data object LossRoute: Route
-    @Serializable
-    data class SaleDetailsRoute(val saleId: String): Route
-    @Serializable
-    data class AddSaleRoute(val saleId: String = ""): Route
+    data class AddSaleRoute(val saleId: String = "") : Route
 }

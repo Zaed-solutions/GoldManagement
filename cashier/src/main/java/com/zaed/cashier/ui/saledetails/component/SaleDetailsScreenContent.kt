@@ -1,5 +1,6 @@
 package com.zaed.cashier.ui.saledetails.component
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -23,6 +24,9 @@ fun SaleDetailsScreenContent(
     uiState: SaleDetailsUiState,
     onAction: (SaleDetailsUiAction) -> Unit
 ) {
+    BackHandler {
+        onAction(SaleDetailsUiAction.OnBack)
+    }
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(

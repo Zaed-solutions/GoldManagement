@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zaed.common.R
@@ -35,8 +36,6 @@ fun SaleSummaryContent(
     modifier: Modifier = Modifier,
     customer: WholeSaleCustomer,
     products : List<Product>,
-    selectedCustomer: WholeSaleCustomer?,
-    payments: List<Payment>,
     totalAmount: Double,
     totalPaid: Double,
     onCreate: () -> Unit = {},
@@ -103,7 +102,9 @@ fun SaleSummaryContent(
         )
         Button(
             onClick = onCreate,
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
             shape = RoundedCornerShape(4.dp),
             enabled = !isLoading
 
@@ -124,7 +125,35 @@ fun SaleSummaryContent(
                 }
             }
         }
-
     }
+}
+
+@Preview(showSystemUi = true, showBackground = true, device = "id:pixel_9_pro")
+@Composable
+private fun Preview() {
+    SaleSummaryContent(
+        customer = WholeSaleCustomer(
+            id = "1",
+            name = "محمد",
+            phone = "1234567890",
+            email = ""
+        ),
+        products = listOf(
+            Product(
+                id = "1",
+                name = "منتج 1",
+                grams = 100.0,
+                gramPrice = 10.0
+            ),
+            Product(
+                id = "2",
+                name = "منتج 2",
+                grams = 200.0,
+                gramPrice = 20.0
+            )
+        ),
+        totalAmount = 1253.0,
+        totalPaid = 1243.0
+    )
 
 }
