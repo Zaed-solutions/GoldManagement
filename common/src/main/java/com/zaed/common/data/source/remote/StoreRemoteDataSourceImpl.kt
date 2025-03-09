@@ -8,6 +8,7 @@ import com.zaed.common.data.model.store.request.AddStoreRequest
 import com.zaed.common.data.model.store.request.DeleteStoreRequest
 import com.zaed.common.data.model.store.request.FetchStoreByIdRequest
 import com.zaed.common.data.model.store.request.UpdateStoreRequest
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
@@ -35,6 +36,7 @@ class StoreRemoteDataSourceImpl(
             crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
+        awaitClose {  }
     }
 
     override suspend fun addStore(request: AddStoreRequest): Result<Unit> {

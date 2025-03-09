@@ -58,7 +58,8 @@ class SaleRemoteSourceImpl(
     private val paymentsCollection = firestore.collection("payments")
     private val ingotTransactionsCollection = firestore.collection("ingot_transactions")
     private val moneyPaymentCollection = firestore.collection("money_payments")
-//    private val goldPaymentsCollection = firestore.collection("gold_payments")
+
+    //    private val goldPaymentsCollection = firestore.collection("gold_payments")
     private val wholesaleCustomersCollection = firestore.collection("whole_sale_customers")
     private val inventoryCollection = firestore.collection("inventory")
     private val distributorLossesCollection = firestore.collection("distributor-losses")
@@ -462,6 +463,29 @@ class SaleRemoteSourceImpl(
             Result.failure(e)
         }
     }
+
+    override fun fetchAllStoreSales(): Flow<Result<List<StoreSale>>> =
+        callbackFlow {
+            try {
+                storeSalesCollection
+                    .orderBy(
+                        "createdAt",
+                        Query.Direction.DESCENDING
+                    ).addSnapshotListener { snapshot, e ->
+                        if (e != null) {
+                            crashlytics.recordException(e)
+                            trySend(Result.failure(e))
+                            return@addSnapshotListener
+                        }
+                        val storeSales = snapshot?.toObjects(StoreSale::class.java) ?: emptyList()
+                        trySend(Result.success(storeSales))
+                    }
+            } catch (e: Exception) {
+                crashlytics.recordException(e)
+                trySend(Result.failure(e))
+            }
+            awaitClose { }
+        }
 
 
     override suspend fun deleteWholesaleProductSale(request: DeleteWholesaleProductSaleRequest): Result<Unit> {

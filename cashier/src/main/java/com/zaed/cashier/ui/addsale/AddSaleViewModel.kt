@@ -150,6 +150,7 @@ class AddSaleViewModel(
                         employeeId = uiState.value.currentUser.id,
                         storeId = uiState.value.currentUser.storeId,
                         storeName = uiState.value.currentUser.storeName,
+                        storeLocation = uiState.value.currentUser.storeLocation,
                         logs = listOf(
                             ChangeLog(
                                 employeeId = uiState.value.currentUser.id,
