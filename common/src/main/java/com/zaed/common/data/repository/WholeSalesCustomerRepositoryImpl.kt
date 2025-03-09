@@ -44,6 +44,10 @@ class WholeSalesCustomerRepositoryImpl(
         return wholeSalesCustomerRemoteDataSource.editWholeSalesCustomer(request)
     }
 
+    override fun fetchAllWholeCustomers(): Flow<Result<List<WholeSaleCustomer>>> {
+        return wholeSalesCustomerRemoteDataSource.fetchAllWholeCustomers()
+    }
+
     override suspend fun addNewPayment(request: AddNewPaymentRequest): Result<Unit> {
         return wholeSalesCustomerRemoteDataSource.addNewPayment(request)
     }

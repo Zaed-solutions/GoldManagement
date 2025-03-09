@@ -118,6 +118,26 @@ class WholeSalesCustomerRemoteDataSourceImpl(
         }
     }
 
+    override fun fetchAllWholeCustomers(): Flow<Result<List<WholeSaleCustomer>>> = callbackFlow {
+        try {
+            customersCollection.addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    crashlytics.recordException(error)
+                    trySend(Result.failure(error))
+                } else {
+                    val customers =
+                        snapshot?.toObjects(WholeSaleCustomer::class.java) ?: emptyList()
+                    trySend(Result.success(customers))
+                }
+            }
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            e.printStackTrace()
+            trySend(Result.failure(e))
+        }
+        awaitClose { }
+    }
+
     override suspend fun deletePayment(request: DeletePaymentRequest): Result<Unit> {
         try {
             customersCollection.document(request.payment.id).update(

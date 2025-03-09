@@ -66,6 +66,7 @@ import com.zaed.common.domain.cheque.UpdateSalesChequeUseCase
 import com.zaed.common.domain.customer.AddWholeSaleCustomerUseCase
 import com.zaed.common.domain.customer.DeleteWholeSaleCustomerUseCase
 import com.zaed.common.domain.customer.EditWholeSalesCustomerUseCase
+import com.zaed.common.domain.customer.FetchAllWholeCustomersUseCase
 import com.zaed.common.domain.customer.FetchWholesaleCustomerSalesUseCase
 import com.zaed.common.domain.customer.FetchWholesaleCustomersByNameUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
@@ -97,6 +98,7 @@ import com.zaed.common.domain.sale.ConvertSalesToDatedSalesUseCase
 import com.zaed.common.domain.sale.DeleteStoreSaleUseCase
 import com.zaed.common.domain.sale.DeleteWholesaleGoldSaleUseCase
 import com.zaed.common.domain.sale.DeleteWholesaleProductSaleUseCase
+import com.zaed.common.domain.sale.FetchAllDistributorsSalesUseCase
 import com.zaed.common.domain.sale.FetchAllStoreSalesUseCase
 import com.zaed.common.domain.sale.FetchDistributorSalesUseCase
 import com.zaed.common.domain.sale.FetchIngotTransactionsUseCase
@@ -196,6 +198,8 @@ val useCaseModule = module {
     singleOf(::FetchDistributorUseCase)
     singleOf(::ConvertIngotTransactionsToDatedUseCase)
     singleOf(::FetchAllStoreSalesUseCase)
+    singleOf(::FetchAllDistributorsSalesUseCase)
+    singleOf(::FetchAllWholeCustomersUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }

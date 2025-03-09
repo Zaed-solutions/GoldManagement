@@ -18,6 +18,7 @@ import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
 import com.zaed.manager.ui.distributordetails.DistributorDetailsScreen
 import com.zaed.manager.ui.distributors.DistributorsScreen
+import com.zaed.manager.ui.distributorssales.DistributorsSalesScreen
 import com.zaed.manager.ui.storedetails.StoreDetailsScreen
 import com.zaed.manager.ui.stores.StoresScreen
 import com.zaed.manager.ui.storessales.StoresSalesScreen
@@ -107,6 +108,14 @@ fun NavigationHost(
         }
         composable<Route.StoresSalesRoute> {
             StoresSalesScreen(
+                onShowNavDrawer = onShowNavDrawer,
+                onNavigateToSaleDetails = {
+                    /*TODO*/
+                }
+            )
+        }
+        composable<Route.DistributorsSalesRoute> {
+            DistributorsSalesScreen(
                 onShowNavDrawer = onShowNavDrawer,
                 onNavigateToSaleDetails = {
                     /*TODO*/
