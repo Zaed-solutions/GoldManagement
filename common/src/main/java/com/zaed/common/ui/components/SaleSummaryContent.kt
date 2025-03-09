@@ -111,7 +111,7 @@ fun SaleSummaryContent(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    "تنفيذ",
+                    stringResource(R.string.process),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
