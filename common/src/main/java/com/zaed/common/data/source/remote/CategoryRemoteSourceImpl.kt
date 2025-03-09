@@ -13,20 +13,22 @@ class CategoryRemoteSourceImpl(
 ) : CategoryRemoteSource {
     private val categoriesCollection = firestore.collection("categories")
     override fun fetchAllCategories(): Flow<Result<List<Category>>> = callbackFlow {
-        try{
-            categoriesCollection.addSnapshotListener { value, error ->
-                if (error != null) {
-                    crashlytics.recordException(error)
-                    trySend(Result.failure(error))
+        try {
+            categoriesCollection
+                .orderBy(
+                    "name"
+                ).addSnapshotListener { value, error ->
+                    if (error != null) {
+                        crashlytics.recordException(error)
+                        trySend(Result.failure(error))
+                    }
+                    val products = value?.toObjects(Category::class.java) ?: emptyList()
+                    trySend(Result.success(products))
                 }
-                val products = value?.toObjects(Category::class.java)?: emptyList()
-                trySend(Result.success(products))
-            }
         } catch (e: Exception) {
             crashlytics.recordException(e)
             trySend(Result.failure(e))
-        } finally {
-            awaitClose {  }
         }
+        awaitClose { }
     }
 }

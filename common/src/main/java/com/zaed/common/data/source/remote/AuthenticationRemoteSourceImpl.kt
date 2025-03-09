@@ -9,6 +9,7 @@ import com.zaed.common.data.model.authentication.UserApprovalStatus
 import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.data.model.authentication.request.DeleteUserRequest
 import com.zaed.common.data.model.authentication.request.FetchDistributorRequest
+import com.zaed.common.data.model.authentication.request.FetchUsersByRoleRequest
 import com.zaed.common.data.model.authentication.request.LoginUserRequest
 import com.zaed.common.data.model.authentication.request.SignUpUserRequest
 import com.zaed.common.data.model.authentication.request.UpdateUserRequest
@@ -97,7 +98,7 @@ class AuthenticationRemoteSourceImpl(
 
     override fun fetchUsers(): Flow<Result<List<User>>> = callbackFlow {
         try {
-            usersCollection.addSnapshotListener { value, e ->
+            usersCollection.orderBy("fullName").addSnapshotListener { value, e ->
                 if (e != null) {
                     crashlytics.recordException(e)
                     trySend(Result.failure(e))
@@ -133,14 +134,14 @@ class AuthenticationRemoteSourceImpl(
         }
     }
 
-    override fun fetchDistributors(): Flow<Result<List<User>>> = callbackFlow {
+    override fun fetchUsersByRole(request: FetchUsersByRoleRequest): Flow<Result<List<User>>> = callbackFlow {
         try {
             usersCollection.where(
                 Filter.and(
-                    Filter.equalTo("role", UserRole.DISTRIBUTOR),
+                    Filter.equalTo("role", request.role),
                     Filter.equalTo("approvalStatusType", UserApprovalStatus.APPROVED)
                 )
-            ).addSnapshotListener { value, e ->
+            ).orderBy("fullName").addSnapshotListener { value, e ->
                 if (e != null) {
                     crashlytics.recordException(e)
                     trySend(Result.failure(e))
@@ -189,7 +190,8 @@ class AuthenticationRemoteSourceImpl(
                     approvalStatusType = UserApprovalStatus.PENDING,
                     role = request.role,
                     storeName = request.store.name,
-                    storeId = request.store.id
+                    storeId = request.store.id,
+                    storeLocation = request.store.location
                 )
 
                 document.set(user).await()

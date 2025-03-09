@@ -224,4 +224,14 @@
     <string name="sell_products">Sell Products</string>
     <string name="sell_gold">Sell Gold</string>
     <string name="sell_ingots">Sell Ingots</string>
+    <string name="stores_sales">Stores Sales</string>
+    <string name="filter">Filter</string>
+    <string name="start_date">Start date</string>
+    <string name="from">From</string>
+    <string name="end_date">End date</string>
+    <string name="employees">Employees</string>
+    <string name="categories">Categories</string>
+    <string name="show_more">Show more</string>
+    <string name="show_less">Show less</string>
+    <string name="dd_mm_yyyy">dd/mm/yyyy</string>
 </resources>

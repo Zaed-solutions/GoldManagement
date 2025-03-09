@@ -95,6 +95,10 @@ class SaleRepositoryImpl(
         return saleRemoteSource.updateIngotTransaction(transaction)
     }
 
+    override fun fetchAllStoreSales(): Flow<Result<List<StoreSale>>> {
+        return saleRemoteSource.fetchAllStoreSales()
+    }
+
     override fun fetchWholesaleCustomerSales(request: FetchWholesaleCustomerSalesRequest): Flow<Result<List<WholesaleSale>>> {
         return saleRemoteSource.fetchWholesaleCustomerSales(request)
     }
