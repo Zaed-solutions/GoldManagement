@@ -234,6 +234,8 @@
     <string name="show_more">Show more</string>
     <string name="show_less">Show less</string>
     <string name="dd_mm_yyyy">dd/mm/yyyy</string>
+    <string name="distributors_sales">Distributors Sales</string>
+    <string name="clear_all">Clear all</string>
     <string name="the_amount_to_be_paid">The amount to be paid</string>
     <string name="remaining_amount_from">Remaining amount from %1$s</string>
     <string name="select_payment_method">Select payment method</string>

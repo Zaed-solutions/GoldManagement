@@ -19,4 +19,5 @@ interface WholeSalesCustomerRemoteDataSource {
     suspend fun addNewPayment(request: AddNewPaymentRequest): Result<Unit>
     suspend fun deleteCustomer(customerId: String): Result<Unit>
     suspend fun editWholeSalesCustomer(request: EditWholeSalesCustomerRequest): Result<Unit>
+    fun fetchAllWholeCustomers(): Flow<Result<List<WholeSaleCustomer>>>
 }

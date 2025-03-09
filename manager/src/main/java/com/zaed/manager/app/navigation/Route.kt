@@ -18,5 +18,7 @@ sealed interface Route {
     @Serializable
     data object DistributorsRoute : Route
     @Serializable
+    data object DistributorsSalesRoute: Route
+    @Serializable
     data class DistributorDetailsRoute(val distributorId: String) : Route
 }

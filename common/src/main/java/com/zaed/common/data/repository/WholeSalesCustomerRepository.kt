@@ -19,4 +19,5 @@ interface WholeSalesCustomerRepository {
     suspend fun fetchWholesaleCustomersByName(request: FetchWholesaleCustomersByNameRequest): Result<List<WholeSaleCustomer>>
     suspend fun deleteCustomer(customerId: String): Result<Unit>
     suspend fun editWholeSalesCustomer(request: EditWholeSalesCustomerRequest): Result<Unit>
+    fun fetchAllWholeCustomers(): Flow<Result<List<WholeSaleCustomer>>>
 }
