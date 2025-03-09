@@ -9,6 +9,6 @@ data class CustomerDetailsUiState(
     val loading: Boolean = false,
     val customer: WholeSaleCustomer = WholeSaleCustomer(),
     val currentDistributor: User = User(),
-    val payments: Map<String, List<Payment>> = emptyMap(),
+    val payments:  List<Payment> = emptyList(),
     val sales : List<WholesaleSale> = emptyList(),
 )
