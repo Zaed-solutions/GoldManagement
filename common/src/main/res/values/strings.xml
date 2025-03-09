@@ -234,4 +234,12 @@
     <string name="show_more">Show more</string>
     <string name="show_less">Show less</string>
     <string name="dd_mm_yyyy">dd/mm/yyyy</string>
+    <string name="the_amount_to_be_paid">The amount to be paid</string>
+    <string name="remaining_amount_from">Remaining amount from %1$s</string>
+    <string name="select_payment_method">Select payment method</string>
+    <string name="continue_word">Continue</string>
+    <string name="the_invoice_amount_has_not_been_paid_in_full">The invoice amount has not been paid in full</string>
+    <string name="do_you_want_to_record_it_on_the_customer_or_register_it_as_a_sales_loss">Do you want to record it on the customer or register it as a sales loss?</string>
+    <string name="register_as_a_sales_loss">Register as a sales loss</string>
+    <string name="record_on_the_customer">Record on the customer</string>
 </resources>

@@ -20,13 +20,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
+import com.zaed.common.ui.components.CustomerInfoSection
 import com.zaed.common.ui.components.ProductsTable
 import com.zaed.common.ui.components.TitledSection
-import com.zaed.distributor.ui.goldsaledetails.components.GoldSaleInfoSection
 import com.zaed.distributor.ui.productsaledetails.SaleDetailsUiAction
-import com.zaed.common.ui.components.CustomerInfoSection
 import com.zaed.distributor.ui.productsaledetails.components.PaymentsTable
 import com.zaed.distributor.ui.productsaledetails.components.ProductSaleDetailsTopBar
+import com.zaed.distributor.ui.productsaledetails.components.SaleInfoSection
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -94,9 +94,10 @@ private fun GoldSaleDetailsContent(
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             // sale info
-            GoldSaleInfoSection(
+            SaleInfoSection(
                 receiptNumber = state.sale.receiptNumber,
                 createdAt = state.sale.createdAt,
+                totalPrice = state.sale.totalAmount,
                 paymentStatus = state.sale.paymentStatus,
                 receiptStatus = state.sale.receiptStatus,
                 onRequestReceipt = {

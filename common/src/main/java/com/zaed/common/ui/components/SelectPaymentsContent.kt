@@ -1,29 +1,19 @@
 package com.zaed.common.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -35,12 +25,11 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.zaed.common.R
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
@@ -65,7 +54,7 @@ fun SelectPaymentsContent(
     onEditPayment: (Payment) -> Unit = {},
     onAddNewCustomer: () -> Unit,
     query: String,
-    paymentsTypes: List<PaymentType> = remember {  getProductSalePayments()},
+    paymentsTypes: List<PaymentType> = remember { getProductSalePayments() },
     onQueryChanged: (String) -> Unit,
     selectedCustomer: WholeSaleCustomer,
     onCustomerSelected: (WholeSaleCustomer) -> Unit,
@@ -75,7 +64,6 @@ fun SelectPaymentsContent(
     var simplePaymentBottomSheet by remember { mutableStateOf(false) }
     var selectedPayment by remember { mutableStateOf<Payment?>(null) }
     val simplePaymentBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var warningNoCustomerSelectedSheet by remember { mutableStateOf(false) }
     var warningnNotFullyPaidSheet by remember { mutableStateOf(false) }
     var selectCustomerSheet by remember { mutableStateOf(false) }
     val totalPaid by rememberUpdatedState(payments.sumOf { it.amount })
@@ -88,7 +76,7 @@ fun SelectPaymentsContent(
         horizontalAlignment = Alignment.Start
     ) {
         Text(
-            text = "المبلغ الواجب دفعه",
+            text = stringResource(R.string.the_amount_to_be_paid),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.outline
@@ -99,9 +87,9 @@ fun SelectPaymentsContent(
             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
             color = MaterialTheme.colorScheme.primary
         )
-        if(totalPaid>0){
+        if (totalPaid > 0) {
             Text(
-                text = "المبلغ المتبقي من ${totalAmount}",
+                text = stringResource(R.string.remaining_amount_from, totalAmount),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.outline
@@ -113,29 +101,45 @@ fun SelectPaymentsContent(
             )
         }
         Text(
-            text = "حدد طريقة الدفع",
+            text = stringResource(R.string.select_payment_method),
             style = MaterialTheme.typography.headlineSmall
         )
         PaymentTypes(
             types = paymentsTypes,
-            onPaymentTypeSelected = {type->
-                when(type){
+            onPaymentTypeSelected = { type ->
+                when (type) {
                     PaymentType.CASH -> {
-                        selectedPayment = CashPayment(type = type,id= "Destributor-" + UUID.randomUUID().toString())
+                        selectedPayment = CashPayment(
+                            type = type,
+                            id = "Destributor-" + UUID.randomUUID().toString()
+                        )
                         simplePaymentBottomSheet = true
                     }
+
                     PaymentType.BANK_TRANSFER -> {
-                        selectedPayment = BankTransferPayment(type = type,id= "Destributor-" +UUID.randomUUID().toString())
+                        selectedPayment = BankTransferPayment(
+                            type = type,
+                            id = "Destributor-" + UUID.randomUUID().toString()
+                        )
                         simplePaymentBottomSheet = true
                     }
+
                     PaymentType.CHEQUE -> {
-                        selectedPayment = ChequePayment(type = type,id="Destributor-" + UUID.randomUUID().toString())
+                        selectedPayment = ChequePayment(
+                            type = type,
+                            id = "Destributor-" + UUID.randomUUID().toString()
+                        )
                         simplePaymentBottomSheet = true
                     }
-                    PaymentType.GOLD ->{
-                        selectedPayment = GoldPayment(type = type,id="Destributor-" + UUID.randomUUID().toString())
+
+                    PaymentType.GOLD -> {
+                        selectedPayment = GoldPayment(
+                            type = type,
+                            id = "Destributor-" + UUID.randomUUID().toString()
+                        )
                         simplePaymentBottomSheet = true
                     }
+
                     else -> {}
                 }
             }
@@ -153,9 +157,12 @@ fun SelectPaymentsContent(
 
         Button(
             onClick = {
-                if(remainsAmount>0){
+                if( payments.filterIsInstance<GoldPayment>().any { it.pricePerGram == 0.0 } && selectedCustomer.id.isBlank()){
+                    selectCustomerSheet = true
+                }
+                else if (remainsAmount > 0 && payments.filterIsInstance<GoldPayment>().none { it.pricePerGram == 0.0 }) {
                     warningnNotFullyPaidSheet = true
-                }else{
+                } else {
                     onNext()
                 }
             },
@@ -165,7 +172,7 @@ fun SelectPaymentsContent(
             shape = RoundedCornerShape(4.dp),
         ) {
             Text(
-                "متابعة",
+                text = stringResource(R.string.continue_word),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -176,34 +183,36 @@ fun SelectPaymentsContent(
                 sheetState = simplePaymentBottomSheetState,
                 onDismissRequest = { simplePaymentBottomSheet = false },
             ) {
-                when(selectedPayment?.type){
+                when (selectedPayment?.type) {
                     PaymentType.CASH -> {
                         selectedPayment?.let {
                             SaveCashPaymentBottomSheetContent(
                                 initialPayment = selectedPayment as CashPayment,
                                 remainsAmount = remainsAmount,
-                                onSave = {newPayment->
+                                onSave = { newPayment ->
+                                    val cashPayment = newPayment as CashPayment
                                     if (selectedPayment!!.id.startsWith("Destributor")) {
                                         onAddPayment(
-                                            newPayment.copy(
+                                            cashPayment.copy(
                                                 id = "Payment-" + UUID.randomUUID().toString(),
                                                 customerId = selectedCustomer.id,
                                             )
                                         )
                                     } else {
-                                        onEditPayment(newPayment)
+                                        onEditPayment(cashPayment)
                                     }
                                     simplePaymentBottomSheet = false
                                 }
                             )
                         }
                     }
+
                     PaymentType.GOLD -> {
                         selectedPayment?.let {
                             SaveGoldPaymentBottomSheetContent(
                                 initialPayment = selectedPayment as GoldPayment,
                                 remainsAmount = remainsAmount,
-                                onSave = {newPayment->
+                                onSave = { newPayment ->
                                     if (selectedPayment!!.id.startsWith("Destributor")) {
                                         onAddPayment(
                                             newPayment.copy(
@@ -219,12 +228,13 @@ fun SelectPaymentsContent(
                             )
                         }
                     }
+
                     PaymentType.CHEQUE -> {
                         selectedPayment?.let {
                             SaveChequePaymentBottomSheetContent(
                                 initialPayment = selectedPayment as ChequePayment,
                                 remainsAmount = remainsAmount,
-                                onSave = {newPayment->
+                                onSave = { newPayment ->
                                     if (selectedPayment!!.id.startsWith("Destributor")) {
                                         onAddPayment(
                                             newPayment.copy(
@@ -240,12 +250,13 @@ fun SelectPaymentsContent(
                             )
                         }
                     }
+
                     PaymentType.BANK_TRANSFER -> {
                         selectedPayment?.let {
                             SaveBankTransferPaymentBottomSheetContent(
                                 initialPayment = selectedPayment as BankTransferPayment,
                                 remainsAmount = remainsAmount,
-                                onSave = {newPayment->
+                                onSave = { newPayment ->
                                     if (selectedPayment!!.id.startsWith("Destributor")) {
                                         onAddPayment(
                                             newPayment.copy(
@@ -261,7 +272,8 @@ fun SelectPaymentsContent(
                             )
                         }
                     }
-                    else->{}
+
+                    else -> {}
                 }
 
             }
@@ -281,52 +293,54 @@ fun SelectPaymentsContent(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "لم يتم تسديد قيمه الفاتوره بالكامل",
+                        text = stringResource(R.string.the_invoice_amount_has_not_been_paid_in_full),
                         style = MaterialTheme.typography.titleLarge,
                     )
                     Spacer(modifier = Modifier.padding(8.dp))
                     Text(
-                        text = "هل تريد تسجيلها على العميل ام تسجيلها كخسارة مبيعات",
-                        style = MaterialTheme.typography.titleMedium,
+                        text = stringResource(R.string.do_you_want_to_record_it_on_the_customer_or_register_it_as_a_sales_loss),
+                                style = MaterialTheme.typography.titleMedium,
                     )
                     Spacer(modifier = Modifier.padding(8.dp))
-                    Row (
+                    Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ){
-                        OutlinedButton (
+                    ) {
+                        OutlinedButton(
                             shape = RoundedCornerShape(4.dp),
                             onClick = {
                                 onAddPayment(
                                     LossPayment(
-                                        customerId = selectedCustomer?.id?:"",
+                                        customerId = selectedCustomer.id,
                                         amount = remainsAmount,
+                                        given = true,
                                         type = PaymentType.LOSS
                                     )
                                 )
                                 warningnNotFullyPaidSheet = false
                             },
-                        ){
-                            Text(text = "تسجيل كخسارة مبيعات")
+                        ) {
+                            Text(text = stringResource(R.string.register_as_a_sales_loss))
                         }
                         Button(
                             shape = RoundedCornerShape(4.dp),
                             onClick = {
-                                if(selectedCustomer?.id?.isNotBlank() == true){
+                                if (selectedCustomer.id.isNotBlank()) {
                                     onAddPayment(
                                         FuturePayment(
-                                            customerId = selectedCustomer?.id?:"",
+                                            customerId = selectedCustomer.id,
                                             amount = remainsAmount,
+                                            given = true,
                                             type = PaymentType.FUTURES
                                         )
                                     )
-                                }else{
+                                } else {
                                     selectCustomerSheet = true
                                 }
                                 warningnNotFullyPaidSheet = false
 
                             }
-                        ){
-                            Text(text = "تسجيل على العميل")
+                        ) {
+                            Text(text = stringResource(R.string.record_on_the_customer))
                         }
                     }
 
@@ -345,7 +359,9 @@ fun SelectPaymentsContent(
                 dragHandle = {}
             ) {
                 SelectCustomerContent(
-                    modifier = Modifier.fillMaxSize().padding(vertical = TopAppBarDefaults.TopAppBarExpandedHeight),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(vertical = TopAppBarDefaults.TopAppBarExpandedHeight),
                     onAddNewCustomer = onAddNewCustomer,
                     query = query,
                     onQueryChanged = onQueryChanged,
@@ -358,50 +374,6 @@ fun SelectPaymentsContent(
                 )
             }
         }
-
-    }
-}
-
-@Composable
-fun PaymentTypes(
-     types : List<PaymentType> = getProductSalePayments(),
-     onPaymentTypeSelected: (PaymentType) -> Unit = {}
-) {
-    LazyColumn {
-        items(types) { paymentType ->
-            Surface(
-                onClick = { onPaymentTypeSelected(paymentType) }
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        Modifier
-                            .padding(8.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f))
-                    ) {
-                        Icon(
-                            painter = painterResource(paymentType.iconRes),
-                            modifier = Modifier.size(36.dp).padding(8.dp),
-                            tint = MaterialTheme.colorScheme.primary,
-                            contentDescription = null
-                        )
-                    }
-                    Text(
-                        text = stringResource(paymentType.titleRes),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Default.ArrowForwardIos,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-        }
     }
 }
 
@@ -412,15 +384,15 @@ private fun SelectPaymentsContentPreview() {
         totalAmount = 1000.0,
         payments = listOf(
             ChequePayment(
-                id="1",
+                id = "1",
                 amount = 50.0,
             ),
             CashPayment(
-                id="2",
+                id = "2",
                 amount = 500.0,
             ),
             BankTransferPayment(
-                id="3",
+                id = "3",
                 amount = 500.0,
             )
         ),

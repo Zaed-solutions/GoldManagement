@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,19 +23,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zaed.common.R
 import com.zaed.common.data.model.customer.WholeSaleCustomer
-import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
 import java.util.Date
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SaleSummaryContent(
     modifier: Modifier = Modifier,
     customer: WholeSaleCustomer,
     products : List<Product>,
     totalAmount: Double,
+    isKaratUnSpecified : Boolean = false,
     totalPaid: Double,
     onCreate: () -> Unit = {},
     isLoading: Boolean = false
@@ -90,7 +88,7 @@ fun SaleSummaryContent(
                 fontSize = 18.sp
             ),
             title = stringResource(R.string.future),
-            price = totalAmount - totalPaid
+            price = if(isKaratUnSpecified) 0.0 else (totalAmount - totalPaid)
         )
         PriceCalculationItem(
             modifier = Modifier.padding(vertical = 16.dp),

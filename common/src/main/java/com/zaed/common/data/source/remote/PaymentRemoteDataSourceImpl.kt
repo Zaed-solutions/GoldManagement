@@ -20,6 +20,7 @@ import com.zaed.common.data.model.payment.request.DeletePaymentRequest
 import com.zaed.common.data.model.payment.request.EditPaymentRequest
 import com.zaed.common.data.model.payment.request.FetchCustomerPaymentsRequest
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
+import com.zaed.common.data.model.payment.signedAmount
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -35,22 +36,42 @@ class PaymentRemoteDataSourceImpl(
     override suspend fun addPayment(request: AddNewPaymentRequest): Result<String> {
         try {
             val document = moneyPaymentsCollection.document()
-            val amount = if (request.cashPayment.type == PaymentType.FUTURES) {
-                request.cashPayment.amount.unaryMinus()
-            } else {
-                request.cashPayment.amount
+            when(request.payment){
+                is CashPayment->{
+                    document.set(
+                        request.payment.copy(id = document.id, customerId = request.customerId)
+                    ).await()
+                }
+                is BankTransferPayment->{
+                    document.set(
+                        request.payment.copy(id = document.id, customerId = request.customerId)
+                    ).await()
+                }
+                is ChequePayment->{
+                    document.set(
+                        request.payment.copy(id = document.id, customerId = request.customerId)
+                    ).await()
+                }
+                is FuturePayment->{
+                    document.set(
+                        request.payment.copy(id = document.id, customerId = request.customerId)
+                    ).await()
+                }
+                is LossPayment->{
+                    document.set(
+                        request.payment.copy(id = document.id, customerId = request.customerId)
+                    ).await()
+                }
+                is GoldPayment->{
+                    document.set(
+                        request.payment.copy(id = document.id, customerId = request.customerId)
+                    ).await()
+                }
+                else->{}
             }
-            document.set(
-                CashPayment(
-                    id = document.id,
-                    customerId = request.customerId,
-                    amount = amount,
-                    type = request.cashPayment.type,
-                )
-            ).await()
             customersCollection.document(request.customerId).update(
                 "debtAmount",
-                FieldValue.increment(request.cashPayment.amount),
+                FieldValue.increment(request.payment.signedAmount()),
             ).await()
             return Result.success(document.id)
         } catch (e: Exception) {
@@ -62,7 +83,7 @@ class PaymentRemoteDataSourceImpl(
     override fun fetchCustomerPayments(request: FetchCustomerPaymentsRequest): Flow<Result<List<Payment>>> =
         callbackFlow {
             try {
-                val result = moneyPaymentsCollection.where(
+                moneyPaymentsCollection.where(
                     Filter.and(
                         Filter.equalTo("deleted", false),
                         Filter.equalTo("customerId", request.customerId)
@@ -132,8 +153,12 @@ class PaymentRemoteDataSourceImpl(
 
     override suspend fun editPayment(request: EditPaymentRequest): Result<Unit> {
         try {
-            moneyPaymentsCollection.document(request.newCashPayment.id).set(request.newCashPayment)
+            moneyPaymentsCollection.document(request.oldPayment.id).set(request.newPayment)
                 .await()
+            customersCollection.document(request.customerId).update(
+                "debtAmount",
+                FieldValue.increment(request.diff),
+            ).await()
             return Result.success(Unit)
         } catch (e: Exception) {
             crashlytics.recordException(e)
@@ -144,7 +169,7 @@ class PaymentRemoteDataSourceImpl(
 
     override suspend fun deletePayment(request: DeletePaymentRequest): Result<Unit> {
         try {
-            moneyPaymentsCollection.document(request.paymentId).update(
+            moneyPaymentsCollection.document(request.payment.id).update(
                 mapOf(
                     "deleted" to true,
                     "logs" to FieldValue.arrayUnion(
@@ -156,9 +181,9 @@ class PaymentRemoteDataSourceImpl(
                     )
                 )
             ).await()
-            customersCollection.document(request.customerId).update(
+            customersCollection.document(request.payment.customerId).update(
                 "debtAmount",
-                FieldValue.increment(if (request.type == PaymentType.FUTURES) request.amount else request.amount.unaryMinus()),
+                FieldValue.increment(request.payment.signedAmount().unaryMinus()),
             ).await()
             return Result.success(Unit)
         } catch (e: Exception) {

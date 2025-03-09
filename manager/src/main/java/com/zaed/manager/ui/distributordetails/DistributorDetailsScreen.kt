@@ -41,7 +41,6 @@ import com.zaed.common.ui.components.DatedListWithFilter
 import com.zaed.common.ui.components.DatedLossesList
 import com.zaed.common.ui.components.DatedSalesWithSearchSection
 import com.zaed.common.ui.components.StoreInventorySection
-import com.zaed.manager.ui.storedetails.StoreDetailsUiAction
 import com.zaed.manager.ui.storedetails.components.SaveInventoryBottomSheet
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -161,7 +160,7 @@ fun DistributorScreenContent(
                                 onAction(DistributorDetailsUiAction.UpdateSalesDateFilter(filter))
                             },
                             datedSales = state.datedSales,
-                            onSaleClicked = { saleId ->
+                            onSaleClicked = { saleId , type ->
                                 onAction(DistributorDetailsUiAction.OnSaleClicked(saleId))
                             }
                         )
