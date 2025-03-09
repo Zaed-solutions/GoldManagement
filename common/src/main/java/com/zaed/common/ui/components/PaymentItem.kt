@@ -24,13 +24,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
 import com.zaed.common.ui.util.toMoneyFormat
-import kotlin.math.absoluteValue
 
 @Composable
 fun PaymentItem(
@@ -45,57 +43,68 @@ fun PaymentItem(
     val context = LocalContext.current
     val primaryColor = MaterialTheme.colorScheme.primary
     val errorColor = MaterialTheme.colorScheme.error
-    val tag1 = remember (payment){if (payment.amount >= 0) context.getString(R.string.taken) else context.getString(R.string.given)}
-    val (color,title,price) = remember(payment){
-        when{
-            payment is GoldPayment -> {
-              Triple(
-                  primaryColor,
-                  "$tag1 " +if (payment.pricePerGram == 0.0) context.getString(R.string.not_specified_yet) else "" ,
-                  context.getString(R.string.grams_placeholder, payment.givenGoldAmount.absoluteValue.toString())
-              )
-            }
-            payment is FuturePayment ->{
+    val tag1 = remember(payment) {
+        if (!payment.given) context.getString(R.string.taken) else context.getString(R.string.given)
+    }
+    val (color, title, price) = remember(payment) {
+        when (payment) {
+            is GoldPayment -> {
                 Triple(
-                    errorColor,
-                    tag1,
-                    payment.amount.absoluteValue.toMoneyFormat(2)
-
+                    if (payment.given) errorColor else primaryColor,
+                    "$tag1 " + if (payment.pricePerGram == 0.0) context.getString(R.string.not_specified_yet) else "",
+                    context.getString(
+                        R.string.grams_placeholder,
+                        payment.givenGoldAmount.toString()
+                    )
                 )
             }
-            payment.amount >= 0.0  -> {
-                Triple(primaryColor, tag1, payment.amount.absoluteValue.toMoneyFormat(2))
-            }
-            else->{
-                Triple(errorColor , tag1, payment.amount.absoluteValue.toMoneyFormat(2))
+
+            else -> {
+                Triple(
+                    if (payment.given) errorColor else primaryColor,
+                    tag1,
+                    payment.amount.toMoneyFormat(2)
+                )
             }
         }
     }
-    val moreOptions = remember(isEditable, isDeletable) {
-        val list = mutableListOf<MoreDropdownItem>()
-        if (isEditable) {
-            list.add(
+    val moreOptions =
+        if (isEditable && !isDeletable) {
+             listOf(
                 MoreDropdownItem(
-                    onClick = onEdit,
+                    onClick = { onEdit() },
                     icon = Icons.Default.Edit,
                     title = context.getString(R.string.edit),
                     tint = primaryColor,
                 )
             )
-        }
-        if (isDeletable) {
-            list.add(
+        }  else if(isDeletable && !isEditable) {
+            listOf(
                 MoreDropdownItem(
-                    onClick = onDelete,
+                    onClick = { onDelete() },
                     icon = Icons.Default.Delete,
                     title = context.getString(R.string.delete),
                     tint = errorColor,
                 )
             )
+        }else if (isEditable && isDeletable) {
+            listOf(
+                MoreDropdownItem(
+                    onClick = { onEdit() },
+                    icon = Icons.Default.Edit,
+                    title = context.getString(R.string.edit),
+                    tint = primaryColor,
+                ),
+                MoreDropdownItem(
+                    onClick = { onDelete() },
+                    icon = Icons.Default.Delete,
+                    title = context.getString(R.string.delete),
+                    tint = errorColor,
+                )
+            )
+        }else{
+            emptyList()
         }
-        list
-    }
-
     Surface(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,

@@ -37,13 +37,8 @@ fun PaymentsList(
                 Log.d("find the issue", "paymentSent: $payment")
                 PaymentItem(
                     payment = payment,
-                    onEdit = {
-                        onEditPayment(payment)
-                    },
-                    onDelete = {
-                        Log.d("find the issue", "paymentSent: $payment")
-                        onRemovePayment(payment)
-                    }
+                    onEdit = { onEditPayment(payment) },
+                    onDelete = { onRemovePayment(payment) }
                 )
                 HorizontalDivider()
             }
