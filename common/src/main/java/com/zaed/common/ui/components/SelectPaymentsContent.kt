@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
@@ -318,8 +319,12 @@ fun SelectPaymentsContent(
                                 )
                                 warningnNotFullyPaidSheet = false
                             },
+                            modifier = Modifier.weight(1f)
                         ) {
-                            Text(text = stringResource(R.string.register_as_a_sales_loss))
+                            Text(
+                                text = stringResource(R.string.register_as_a_sales_loss),
+                                textAlign = TextAlign.Center
+                            )
                         }
                         Button(
                             shape = RoundedCornerShape(4.dp),
@@ -338,9 +343,13 @@ fun SelectPaymentsContent(
                                 }
                                 warningnNotFullyPaidSheet = false
 
-                            }
+                            },
+                            modifier = Modifier.weight(1f)
                         ) {
-                            Text(text = stringResource(R.string.record_on_the_customer))
+                            Text(
+                                text = stringResource(R.string.record_on_the_customer),
+                                textAlign = TextAlign.Center
+                            )
                         }
                     }
 

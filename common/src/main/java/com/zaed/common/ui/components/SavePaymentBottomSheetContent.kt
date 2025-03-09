@@ -54,23 +54,30 @@ fun SaveCashPaymentBottomSheetContent(
             onValueChange = {
                 payment = payment.copy(amount = it)
             },
+            supportingText =
+                if (initialPayment.amount ==0.0 && payment.amount > remainsAmount) {
+                    "Remains for the client " + payment.amount.minus(remainsAmount).absoluteValue.toMoneyFormat(2)
+                }else if (initialPayment.amount !=0.0 && payment.amount > (remainsAmount+initialPayment.amount)) {
+                    "Remains for the client " + payment.amount.minus(remainsAmount+initialPayment.amount).absoluteValue.toMoneyFormat(2)
+                }else{
+                    ""
+                }
+
         )
-        if (payment.amount > remainsAmount) {
-            Text(
-                text = "Remains for the client " + payment.amount.minus(remainsAmount).absoluteValue.toMoneyFormat(
-                    2
-                )
-            )
-        }
+
         Button(
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = 48.dp)
                 .padding(top = 24.dp),
             onClick = {
-                if (payment.amount > remainsAmount) {
+                if (initialPayment.amount ==0.0 && payment.amount > remainsAmount) {
                     payment = payment.copy(
-                        amount = remainsAmount,
+                        amount = remainsAmount ,
+                    )
+                }else if (initialPayment.amount !=0.0 && payment.amount > (remainsAmount+initialPayment.amount)) {
+                    payment = payment.copy(
+                        amount = remainsAmount + initialPayment.amount,
                     )
                 }
                 onSave(payment)
