@@ -487,6 +487,50 @@ class SaleRemoteSourceImpl(
             awaitClose { }
         }
 
+    override fun fetchAllDistributorsSales(): Flow<Result<List<WholesaleSale>>> = callbackFlow {
+        var goldSalesListener: ListenerRegistration? = null
+        var productSalesListener: ListenerRegistration? = null
+        try {
+            var latestGoldSales: List<WholesaleGoldSale> = emptyList()
+            var latestProductSales: List<WholesaleProductSale> = emptyList()
+            val updateAndSend = {
+                val combinedSales = (latestGoldSales + latestProductSales)
+                    .sortedByDescending { it.createdAt } // Sort by date
+                trySend(Result.success(combinedSales))
+            }
+
+            goldSalesListener = wholesaleGoldSalesCollection.addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                latestGoldSales = snapshot?.documents?.mapNotNull { doc ->
+                    doc.toObject(WholesaleGoldSale::class.java)?.copy(id = doc.id)
+                } ?: emptyList()
+                updateAndSend()
+            }
+
+            productSalesListener = wholesaleProductSalesCollection.addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                latestProductSales = snapshot?.documents?.mapNotNull { doc ->
+                    doc.toObject(WholesaleProductSale::class.java)?.copy(id = doc.id)
+                } ?: emptyList()
+                updateAndSend()
+            }
+
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            trySend(Result.failure(e))
+        }
+        awaitClose {
+            goldSalesListener?.remove()
+            productSalesListener?.remove()
+        }
+    }
+
 
     override suspend fun deleteWholesaleProductSale(request: DeleteWholesaleProductSaleRequest): Result<Unit> {
         return try {

@@ -44,4 +44,5 @@ interface SaleRepository {
     suspend fun addIngotTransaction(transaction: AddIngotTransactionRequest): Result<String>
     suspend fun updateIngotTransaction(transaction: UpdateIngotTransactionRequest): Result<Unit>
     fun fetchAllStoreSales(): Flow<Result<List<StoreSale>>>
+    fun fetchAllDistributorsSales(): Flow<Result<List<WholesaleSale>>>
 }

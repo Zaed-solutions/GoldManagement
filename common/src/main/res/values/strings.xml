@@ -234,4 +234,6 @@
     <string name="show_more">Show more</string>
     <string name="show_less">Show less</string>
     <string name="dd_mm_yyyy">dd/mm/yyyy</string>
+    <string name="distributors_sales">Distributors Sales</string>
+    <string name="clear_all">Clear all</string>
 </resources>

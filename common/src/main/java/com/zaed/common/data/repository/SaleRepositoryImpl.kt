@@ -99,6 +99,10 @@ class SaleRepositoryImpl(
         return saleRemoteSource.fetchAllStoreSales()
     }
 
+    override fun fetchAllDistributorsSales(): Flow<Result<List<WholesaleSale>>> {
+        return saleRemoteSource.fetchAllDistributorsSales()
+    }
+
     override fun fetchWholesaleCustomerSales(request: FetchWholesaleCustomerSalesRequest): Flow<Result<List<WholesaleSale>>> {
         return saleRemoteSource.fetchWholesaleCustomerSales(request)
     }

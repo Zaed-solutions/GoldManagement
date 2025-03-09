@@ -28,5 +28,10 @@ enum class NavDrawerItem(
         title = R.string.losses,
         icon = R.drawable.ic_users,
         route = Route.DistributorsRoute
+    ),
+    DISTRIBUTORS_SALES(
+        title = R.string.distributors_sales,
+        icon = R.drawable.ic_money_plus,
+        route = Route.DistributorsSalesRoute
     )
 }

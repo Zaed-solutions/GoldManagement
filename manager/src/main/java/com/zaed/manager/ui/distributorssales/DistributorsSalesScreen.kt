@@ -1,4 +1,4 @@
-package com.zaed.manager.ui.storessales
+package com.zaed.manager.ui.distributorssales
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -34,37 +34,40 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
 import com.zaed.common.ui.components.PriceCalculationItem
 import com.zaed.common.ui.components.SearchBar
+import com.zaed.manager.ui.distributorssales.components.DistributorSalesFilterBottomSheet
+import com.zaed.manager.ui.distributorssales.components.DistributorsSalesList
 import com.zaed.manager.ui.storessales.components.StoreSalesFilterBottomSheet
 import com.zaed.manager.ui.storessales.components.StoresSalesList
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun StoresSalesScreen(
+fun DistributorsSalesScreen(
     modifier: Modifier = Modifier,
     onShowNavDrawer: () -> Unit,
     onNavigateToSaleDetails: (String) -> Unit,
-    viewModel: StoresSalesViewModel = koinViewModel()
-) {
+    viewModel: DistributorsSalesViewModel = koinViewModel()
+){
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    StoresSalesScreenContent(
+    DistributorsSalesScreenContent(
         state = state,
         onAction = {action->
             when(action){
-                is StoresSalesUiAction.OnSaleClicked -> onNavigateToSaleDetails(action.saleId)
-                StoresSalesUiAction.OnShowNavDrawer -> onShowNavDrawer()
+                is DistributorsSalesUiAction.OnSaleClicked -> onNavigateToSaleDetails(action.saleId)
+                DistributorsSalesUiAction.OnShowNavDrawer -> onShowNavDrawer()
                 else -> viewModel.handleAction(action)
             }
         }
     )
+    
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun StoresSalesScreenContent(
+fun DistributorsSalesScreenContent(
     modifier: Modifier = Modifier,
-    state: StoresSalesUiState,
-    onAction: (StoresSalesUiAction) -> Unit
-) {
+    state: DistributorsSalesUiState,
+    onAction: (DistributorsSalesUiAction) -> Unit
+){
     var isFilterSheetVisible by remember{
         mutableStateOf(false)
     }
@@ -74,14 +77,14 @@ private fun StoresSalesScreenContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(R.string.stores_sales),
+                        text = stringResource(R.string.distributors_sales),
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            onAction(StoresSalesUiAction.OnShowNavDrawer)
+                            onAction(DistributorsSalesUiAction.OnShowNavDrawer)
                         }
                     ) {
                         Icon(
@@ -111,7 +114,7 @@ private fun StoresSalesScreenContent(
                     placeHolder = stringResource(R.string.search_by_receipt_number),
                     query = state.searchQuery,
                     onQueryChanged = {
-                        onAction(StoresSalesUiAction.UpdateSearchQuery(it))
+                        onAction(DistributorsSalesUiAction.UpdateSearchQuery(it))
                     }
                 )
                 BadgedBox(
@@ -155,22 +158,22 @@ private fun StoresSalesScreenContent(
                 style = MaterialTheme.typography.titleMedium
             )
             //stores sales
-            StoresSalesList(
+            DistributorsSalesList(
                 isLoading = state.isLoading,
                 sales = state.filteredSales,
                 onSaleClicked = {
-                    onAction(StoresSalesUiAction.OnSaleClicked(it.id))
+                    onAction(DistributorsSalesUiAction.OnSaleClicked(it.id))
                 }
             )
             //filter bottom sheet
-            StoreSalesFilterBottomSheet(
+            DistributorSalesFilterBottomSheet(
                 isVisible = isFilterSheetVisible,
                 onDismiss = {
                     isFilterSheetVisible = false
                 },
                 onSubmitFilter = {
+                    onAction(DistributorsSalesUiAction.UpdateFilter(it))
                     isFilterSheetVisible = false
-                    onAction(StoresSalesUiAction.UpdateFilter(it))
                 },
                 initialFilter = state.filter,
                 categories = state.categories,
