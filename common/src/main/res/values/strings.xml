@@ -234,6 +234,8 @@
     <string name="show_more">Show more</string>
     <string name="show_less">Show less</string>
     <string name="dd_mm_yyyy">dd/mm/yyyy</string>
+    <string name="remains_for_the_client">"Remains for the client "</string>
+    <string name="the_value_is_bigger_than_the_remains_amount">The value is Bigger Than The Remains Amount</string>
     <string name="distributors_sales">Distributors Sales</string>
     <string name="clear_all">Clear all</string>
     <string name="the_amount_to_be_paid">The amount to be paid</string>
@@ -244,4 +246,7 @@
     <string name="do_you_want_to_record_it_on_the_customer_or_register_it_as_a_sales_loss">Do you want to record it on the customer or register it as a sales loss?</string>
     <string name="register_as_a_sales_loss">Register as a sales loss</string>
     <string name="record_on_the_customer">Record on the customer</string>
+    <string name="clear_all">Clear All</string>
+    <string name="edit_customer">Edit Customer</string>
+    <string name="process">Process</string>
 </resources>

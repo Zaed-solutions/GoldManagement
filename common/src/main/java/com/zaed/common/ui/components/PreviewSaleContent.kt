@@ -39,10 +39,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.zaed.common.R
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.sale.Discount
 import com.zaed.common.data.model.sale.DiscountType
@@ -111,7 +113,7 @@ fun PreviewSaleContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "المجموع",
+                        text = stringResource(R.string.total),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
@@ -150,7 +152,7 @@ fun PreviewSaleContent(
                                     contentDescription = null
                                 )
                                 Text(
-                                    text = if (selectedCustomer.id.isNotBlank()) "تعديل عميل" else "اضافة عميل"
+                                    text = if (selectedCustomer.id.isNotBlank()) stringResource(R.string.edit_customer) else stringResource(R.string.add_customer)
                                 )
                             }
                         }
@@ -178,7 +180,7 @@ fun PreviewSaleContent(
                                 tint = MaterialTheme.colorScheme.error
                             )
                             Text(
-                                text = "افراغ السلة",
+                                text = stringResource(R.string.clear_all),
                                 color = MaterialTheme.colorScheme.error
                             )
                         }
@@ -192,7 +194,7 @@ fun PreviewSaleContent(
 
                     ) {
                     Text(
-                        "تأكيد البيع",
+                        stringResource(R.string.confirm),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
@@ -305,7 +307,9 @@ fun PreviewSaleContent(
                 dragHandle = {}
             ) {
                 SelectCustomerContent(
-                    modifier = Modifier.fillMaxSize().padding(vertical = TopAppBarDefaults.TopAppBarExpandedHeight),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(vertical = TopAppBarDefaults.TopAppBarExpandedHeight),
                     onAddNewCustomer = onAddNewCustomer,
                     query = query,
                     onQueryChanged = onQueryChanged,
