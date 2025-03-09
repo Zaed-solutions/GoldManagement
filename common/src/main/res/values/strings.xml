@@ -242,4 +242,5 @@
     <string name="do_you_want_to_record_it_on_the_customer_or_register_it_as_a_sales_loss">Do you want to record it on the customer or register it as a sales loss?</string>
     <string name="register_as_a_sales_loss">Register as a sales loss</string>
     <string name="record_on_the_customer">Record on the customer</string>
+    <string name="remains_for_the_client">"Remains for the client "</string>
 </resources>
