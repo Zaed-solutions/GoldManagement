@@ -134,8 +134,11 @@ fun SalesScreenContent(
                     onAction(SalesUiAction.UpdateDateFilter(filter))
                 },
                 datedSales = state.datedSales,
-                onSaleClicked = { saleId ->
-                    SalesUiAction.OnProductSaleClicked(saleId)
+                onSaleClicked = { saleId , type ->
+                    when(type){
+                        WholesaleProductSale::class.qualifiedName -> onAction(SalesUiAction.OnProductSaleClicked(saleId))
+                        else -> onAction(SalesUiAction.OnGoldSaleClicked(saleId))
+                    }
                 }
             )
 

@@ -10,12 +10,12 @@ enum class NavDrawerItem(
     val route: Route
 ) {
     USER_MANAGEMENT(
-        title = R.string.add_sale,
+        title = R.string.user_management,
         icon = R.drawable.ic_users,
         route = Route.UserManagementRoute
     ),
     STORES(
-        title = R.string.sales,
+        title = com.zaed.manager.R.string.stores,
         icon = R.drawable.ic_store,
         route = Route.StoresRoute
     ),
@@ -25,7 +25,7 @@ enum class NavDrawerItem(
         route = Route.StoresSalesRoute
     ),
     DISTRIBUTORS(
-        title = R.string.losses,
+        title = R.string.distributors,
         icon = R.drawable.ic_users,
         route = Route.DistributorsRoute
     ),

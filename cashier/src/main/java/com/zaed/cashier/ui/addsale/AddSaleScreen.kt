@@ -137,7 +137,7 @@ private fun AddSaleScreenContent(
                             sale = state.sale,
                             isSelectCustomerEnabled = false,
                             onUpdateProduct = {
-                                onAction(AddSaleUiAction.OnAddProduct(it))
+                                onAction(AddSaleUiAction.OnUpdateProduct(it))
                             },
                             onDeleteProduct = {
                                 onAction(AddSaleUiAction.OnDeleteProduct(it))

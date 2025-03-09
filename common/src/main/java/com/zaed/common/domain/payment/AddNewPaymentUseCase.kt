@@ -6,7 +6,6 @@ import com.zaed.common.data.repository.WholeSalesCustomerRepository
 
 class AddNewPaymentUseCase(
     private val paymentRepository: PaymentRepository,
-    private val wholeSalesCustomerRepository: WholeSalesCustomerRepository,
 ) {
     suspend operator fun invoke(request: AddNewPaymentRequest): Result<Unit> {
         paymentRepository.addPayment(request)

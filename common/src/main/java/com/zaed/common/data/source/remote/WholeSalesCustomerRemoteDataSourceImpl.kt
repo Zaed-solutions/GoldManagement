@@ -13,6 +13,7 @@ import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.customer.request.EditWholeSalesCustomerRequest
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.DeletePaymentRequest
+import com.zaed.common.data.model.payment.signedAmount
 import com.zaed.common.domain.payment.UpdateCustomerDebtRequest
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -65,7 +66,7 @@ class WholeSalesCustomerRemoteDataSourceImpl(
         try {
             customersCollection.document(request.customerId).update(
                 "debtAmount",
-                FieldValue.increment(request.cashPayment.amount),
+                FieldValue.increment(request.payment.amount),
             ).await()
             return Result.success(Unit)
         } catch (e: Exception) {
@@ -139,9 +140,9 @@ class WholeSalesCustomerRemoteDataSourceImpl(
 
     override suspend fun deletePayment(request: DeletePaymentRequest): Result<Unit> {
         try {
-            customersCollection.document(request.customerId).update(
+            customersCollection.document(request.payment.id).update(
                 "debtAmount",
-                FieldValue.increment(-request.amount),
+                FieldValue.increment(request.payment.signedAmount()),
             ).await()
             return Result.success(Unit)
         } catch (e: Exception) {

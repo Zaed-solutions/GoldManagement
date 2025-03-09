@@ -18,8 +18,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.zaed.common.ui.components.ProgressIndicatorTopAppBar
 import com.zaed.common.ui.components.PreviewSaleContent
+import com.zaed.common.ui.components.ProgressIndicatorTopAppBar
 import com.zaed.common.ui.components.SaleSummaryContent
 import com.zaed.common.ui.components.SelectPaymentsContent
 import com.zaed.common.ui.components.SelectProductsContent
@@ -48,11 +48,11 @@ fun AddProductSaleScreen(
     }
     AddProductSaleScreenContent(
         state = state,
-        onOpenDrawer = onOpenDrawer,
         onAction = { action ->
             when (action) {
                 AddProductSaleUiAction.OnAddNewCustomerClicked -> onNavigateToAddCustomer()
                 AddProductSaleUiAction.OnBackClicked -> onBackClicked()
+                AddProductSaleUiAction.OpenDrawer -> onOpenDrawer()
                 else -> viewModel.handleAction(action)
             }
         }
@@ -63,7 +63,6 @@ fun AddProductSaleScreen(
 private fun AddProductSaleScreenContent(
     modifier: Modifier = Modifier,
     state: AddProductSaleUiState,
-    onOpenDrawer: () -> Unit,
     onAction: (AddProductSaleUiAction) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -96,7 +95,7 @@ private fun AddProductSaleScreenContent(
             ProgressIndicatorTopAppBar(
                 progress = progress,
                 firstScreen = pagerState.currentPage == 0,
-                onOpenDrawer = onOpenDrawer
+                onOpenDrawer = {onAction(AddProductSaleUiAction.OpenDrawer)}
             ) {
                 if (pagerState.currentPage > 0) {
                     scope.launch {

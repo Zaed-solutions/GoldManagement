@@ -24,17 +24,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.payment.BankTransferPayment
-import com.zaed.common.data.model.payment.CashPayment
-import com.zaed.common.data.model.payment.ChequePayment
-import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.GoldPayment
-import com.zaed.common.data.model.payment.LossPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
 import com.zaed.common.ui.util.toMoneyFormat
-import kotlin.math.absoluteValue
 
 @Composable
 fun PaymentItem(
@@ -49,386 +43,123 @@ fun PaymentItem(
     val context = LocalContext.current
     val primaryColor = MaterialTheme.colorScheme.primary
     val errorColor = MaterialTheme.colorScheme.error
-    val moreOptions = remember(isEditable, isDeletable) {
-        val list = mutableListOf<MoreDropdownItem>()
-        if (isEditable) {
-            list.add(
+    val tag1 = remember(payment) {
+        if (!payment.given) context.getString(R.string.taken) else context.getString(R.string.given)
+    }
+    val (color, title, price) =
+        when (payment) {
+            is GoldPayment -> {
+                Triple(
+                    if (payment.given) errorColor else primaryColor,
+                    "$tag1 " + if (payment.pricePerGram == 0.0) context.getString(R.string.not_specified_yet) else "",
+                    context.getString(
+                        R.string.grams_placeholder,
+                        payment.givenGoldAmount.toString()
+                    )
+                )
+            }
+
+            else -> {
+                Triple(
+                    if (payment.given) errorColor else primaryColor,
+                    tag1,
+                    payment.amount.toMoneyFormat(2)
+                )
+            }
+        }
+
+    val moreOptions =
+        if (isEditable && !isDeletable) {
+             listOf(
                 MoreDropdownItem(
-                    onClick = onEdit,
+                    onClick = { onEdit() },
                     icon = Icons.Default.Edit,
                     title = context.getString(R.string.edit),
                     tint = primaryColor,
                 )
             )
-        }
-        if (isDeletable) {
-            list.add(
+        }  else if(isDeletable && !isEditable) {
+            listOf(
                 MoreDropdownItem(
-                    onClick = onDelete,
+                    onClick = { onDelete() },
                     icon = Icons.Default.Delete,
                     title = context.getString(R.string.delete),
                     tint = errorColor,
                 )
             )
+        }else if (isEditable && isDeletable) {
+            listOf(
+                MoreDropdownItem(
+                    onClick = { onEdit() },
+                    icon = Icons.Default.Edit,
+                    title = context.getString(R.string.edit),
+                    tint = primaryColor,
+                ),
+                MoreDropdownItem(
+                    onClick = { onDelete() },
+                    icon = Icons.Default.Delete,
+                    title = context.getString(R.string.delete),
+                    tint = errorColor,
+                )
+            )
+        }else{
+            emptyList()
         }
-        list
-    }
-    when (payment) {
-        is CashPayment -> {
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = onClick,
-                ) {
-                    val chipColor =
-                        if (payment.amount >= 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
-                    Column(
-                        modifier = Modifier.padding(horizontal = 12.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            FilterChip(
-                                modifier = Modifier.height(FilterChipDefaults.Height - 8.dp),
-                                selected = true,
-                                onClick = {},
-                                label = { Text(text = stringResource(payment.type.titleRes)) },
-                                colors = FilterChipDefaults.filterChipColors(
-                                    selectedContainerColor = chipColor,
-                                    selectedLabelColor = contentColorFor(chipColor)
-                                )
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(
-                                text = if (payment.amount >= 0) stringResource(R.string.taken) else stringResource(
-                                    R.string.given
-                                ),
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            if(moreOptions.isNotEmpty()){
-                                MoreDropDownMenu(
-                                    modifier = Modifier.padding(start = 8.dp),
-                                    items = moreOptions
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = payment.createdAt.format(DateFormat.TIME),
-                                style = MaterialTheme.typography.titleLarge
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(
-                                text = payment.amount.absoluteValue.toMoneyFormat(2),
-                                style = MaterialTheme.typography.titleLarge,
-                                color = chipColor,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                        }
-                    }
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 12.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                FilterChip(
+                    modifier = Modifier.height(FilterChipDefaults.Height - 8.dp),
+                    selected = true,
+                    onClick = {},
+                    label = { Text(text = stringResource(payment.type.titleRes)) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = color,
+                        selectedLabelColor = contentColorFor(color)
+                    )
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = title, style = MaterialTheme.typography.titleMedium
+                )
+                if (moreOptions.isNotEmpty()) {
+                    MoreDropDownMenu(
+                        modifier = Modifier.padding(start = 8.dp), items = moreOptions
+                    )
                 }
             }
-
-
-        is LossPayment -> {
-
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onClick,
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                    val chipColor = MaterialTheme.colorScheme.error
-                    Column(
-                        modifier = Modifier.padding(horizontal = 12.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            FilterChip(
-                                modifier = Modifier.height(FilterChipDefaults.Height - 8.dp),
-                                selected = true,
-                                onClick = {},
-                                label = { Text(text = stringResource(payment.type.titleRes)) },
-                                colors = FilterChipDefaults.filterChipColors(
-                                    selectedContainerColor = chipColor,
-                                    selectedLabelColor = contentColorFor(chipColor)
-                                )
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(
-                                text = "خسارة مبيعات"
-                            )
-                            if(moreOptions.isNotEmpty()){
-                                MoreDropDownMenu(
-                                    modifier = Modifier.padding(start = 8.dp),
-                                    items = moreOptions
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = payment.createdAt.format(DateFormat.TIME),
-                                style = MaterialTheme.typography.titleLarge
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(
-                                text = payment.amount.absoluteValue.toMoneyFormat(2),
-                                style = MaterialTheme.typography.titleLarge,
-                                color = chipColor,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                        }
-                    }
-                }
-            }
-
-        is FuturePayment -> {
-
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onClick,
-            ) {
-                    val chipColor = MaterialTheme.colorScheme.error
-                    Column(
-                        modifier = Modifier.padding(horizontal = 12.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            FilterChip(
-                                modifier = Modifier.height(FilterChipDefaults.Height - 8.dp),
-                                selected = true,
-                                onClick = {},
-                                label = { Text(text = stringResource(payment.type.titleRes)) },
-                                colors = FilterChipDefaults.filterChipColors(
-                                    selectedContainerColor = chipColor,
-                                    selectedLabelColor = contentColorFor(chipColor)
-                                )
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(
-                                text = "مدفوعات آجله"
-                            )
-                            if(moreOptions.isNotEmpty()){
-                                MoreDropDownMenu(
-                                    modifier = Modifier.padding(start = 8.dp),
-                                    items = moreOptions
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = payment.createdAt.format(DateFormat.TIME),
-                                style = MaterialTheme.typography.titleLarge
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(
-                                text = payment.amount.absoluteValue.toMoneyFormat(2),
-                                style = MaterialTheme.typography.titleLarge,
-                                color = chipColor,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                        }
-                    }
+                Text(
+                    text = payment.createdAt.format(DateFormat.TIME),
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = price,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = color,
+                    fontWeight = FontWeight.Bold
+                )
 
             }
         }
-
-        is GoldPayment -> {
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onClick,
-            ) {
-                    val chipColor =
-                        if (payment.givenGoldAmount >= 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
-                    val tag1 =
-                        if (payment.givenGoldAmount >= 0) stringResource(R.string.taken) else stringResource(
-                            R.string.given
-                        )
-                    val tag2 =
-                        if (payment.pricePerGram == 0.0) stringResource(R.string.not_specified_yet) else ""
-                    Column(
-                        modifier = Modifier.padding(horizontal = 12.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            FilterChip(
-                                modifier = Modifier.height(FilterChipDefaults.Height - 8.dp),
-                                selected = true,
-                                onClick = {},
-                                label = { Text(text = stringResource(payment.type.titleRes)) },
-                                colors = FilterChipDefaults.filterChipColors(
-                                    selectedContainerColor = chipColor,
-                                    selectedLabelColor = contentColorFor(chipColor)
-                                )
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(
-                                text = "$tag1 $tag2",
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            if(moreOptions.isNotEmpty()){
-                                MoreDropDownMenu(
-                                    modifier = Modifier.padding(start = 8.dp),
-                                    items = moreOptions
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = payment.createdAt.format(DateFormat.TIME),
-                                style = MaterialTheme.typography.titleLarge
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(
-                                text = stringResource(
-                                    R.string.grams_placeholder,
-                                    payment.givenGoldAmount.absoluteValue.toString()
-                                ),
-                                style = MaterialTheme.typography.titleLarge,
-                                color = chipColor,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                        }
-
-                }
-            }
-        }
-
-        is ChequePayment -> {
-
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onClick,
-            ) {
-                    val chipColor =
-                        if (payment.amount >= 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
-                    Column(
-                        modifier = Modifier.padding(horizontal = 12.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            FilterChip(
-                                modifier = Modifier.height(FilterChipDefaults.Height - 8.dp),
-                                selected = true,
-                                onClick = {},
-                                label = { Text(text = stringResource(payment.type.titleRes)) },
-                                colors = FilterChipDefaults.filterChipColors(
-                                    selectedContainerColor = chipColor,
-                                    selectedLabelColor = contentColorFor(chipColor)
-                                )
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(
-                                text = if (payment.amount >= 0) stringResource(R.string.taken) else stringResource(
-                                    R.string.given
-                                ),
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            if(moreOptions.isNotEmpty()){
-                                MoreDropDownMenu(
-                                    modifier = Modifier.padding(start = 8.dp),
-                                    items = moreOptions
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = payment.createdAt.format(DateFormat.TIME),
-                                style = MaterialTheme.typography.titleLarge
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(
-                                text =
-                                payment.amount.toMoneyFormat(2),
-                                style = MaterialTheme.typography.titleLarge,
-                                color = chipColor,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                        }
-
-                }
-            }
-        }
-
-        is BankTransferPayment -> {
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onClick,
-            ) {
-                    val chipColor =
-                        if (payment.amount >= 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
-                    Column(
-                        modifier = Modifier.padding(horizontal = 12.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            FilterChip(
-                                modifier = Modifier.height(FilterChipDefaults.Height - 8.dp),
-                                selected = true,
-                                onClick = {},
-                                label = { Text(text = stringResource(payment.type.titleRes)) },
-                                colors = FilterChipDefaults.filterChipColors(
-                                    selectedContainerColor = chipColor,
-                                    selectedLabelColor = contentColorFor(chipColor)
-                                )
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(
-                                text = if (payment.amount >= 0) stringResource(R.string.taken) else stringResource(
-                                    R.string.given
-                                ),
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            if(moreOptions.isNotEmpty()){
-                                MoreDropDownMenu(
-                                    modifier = Modifier.padding(start = 8.dp),
-                                    items = moreOptions
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = payment.createdAt.format(DateFormat.TIME),
-                                style = MaterialTheme.typography.titleLarge
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(
-                                text = payment.amount.absoluteValue.toMoneyFormat(2),
-                                style = MaterialTheme.typography.titleLarge,
-                                color = chipColor,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                        }
-
-                }
-            }
-        }
-
     }
 }
+
+
+
+
+
+
+
+

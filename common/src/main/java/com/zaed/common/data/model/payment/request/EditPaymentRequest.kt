@@ -1,12 +1,13 @@
 package com.zaed.common.data.model.payment.request
 
 import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.data.model.payment.signedAmount
 
 data class EditPaymentRequest(
-    val newCashPayment: Payment,
-    val oldAmount: Double,
+    val newPayment: Payment,
+    val oldPayment: Payment,
     val customerId: String,
 ) {
     val diff: Double
-        get() = newCashPayment.amount - oldAmount
+        get() = newPayment.signedAmount() - oldPayment.signedAmount()
 }

@@ -1,6 +1,5 @@
 package com.zaed.common.data.source.remote
 
-import com.google.android.gms.tasks.Tasks.await
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.common.data.model.store.Store

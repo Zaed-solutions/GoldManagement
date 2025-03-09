@@ -12,7 +12,8 @@ data class GoldPayment(
     val pricePerGram: Double = 0.0,
     val givenGoldKarat: Int = 0,
     override val deleted: Boolean = false,
+    override var given :Boolean = false,
     override var receiptNumber: String = "",
     override val createdAt: Date = Date(),
     override val logs: List<ChangeLog> = emptyList()
-) : Payment(id, customerId, type,amount = (givenGoldAmount * pricePerGram), deleted, receiptNumber, createdAt, logs)
+) : Payment(id, customerId, type,amount = (givenGoldAmount * pricePerGram), deleted,given, receiptNumber, createdAt, logs)

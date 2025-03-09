@@ -28,13 +28,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zaed.common.data.model.sale.DatedSales
 import com.zaed.common.data.model.sale.Sale
+import com.zaed.common.data.model.sale.StoreSale
+import com.zaed.common.data.model.sale.WholesaleGoldSale
+import com.zaed.common.data.model.sale.WholesaleProductSale
 import com.zaed.common.ui.util.formatMoney
 
 @Composable
 fun DatedSalesItem(
     modifier: Modifier = Modifier,
     datedSale: DatedSales,
-    onSaleClicked: (String) -> Unit,
+    onSaleClicked: (String,String) -> Unit,
     isEditable: Boolean = false,
     onEdit: (Sale) -> Unit= {},
     isDeletable: Boolean = false,
@@ -98,7 +101,11 @@ fun DatedSalesItem(
                             SaleItem(
                                 sale = sale,
                                 onSaleClicked = {
-                                    onSaleClicked(sale.id)
+                                    when(sale){
+                                        is WholesaleProductSale -> onSaleClicked(sale.id,sale::class.qualifiedName?:"")
+                                        is WholesaleGoldSale -> onSaleClicked(sale.id,sale::class.qualifiedName?:"")
+                                        is StoreSale -> onSaleClicked(sale.id,sale::class.qualifiedName?:"")
+                                    }
                                 },
                                 isDividerVisible = false,
                                 isEditable = isEditable,

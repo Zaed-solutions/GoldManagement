@@ -8,6 +8,7 @@ import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.DeletePaymentRequest
+import com.zaed.common.data.model.payment.request.EditPaymentRequest
 import com.zaed.common.data.model.payment.request.FetchCustomerPaymentsRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleGoldSaleRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleProductSaleRequest
@@ -20,8 +21,6 @@ import com.zaed.common.domain.payment.EditPaymentUseCase
 import com.zaed.common.domain.payment.FetchCustomerPaymentsUseCase
 import com.zaed.common.domain.sale.DeleteWholesaleGoldSaleUseCase
 import com.zaed.common.domain.sale.DeleteWholesaleProductSaleUseCase
-import com.zaed.common.ui.util.DateFormat
-import com.zaed.common.ui.util.format
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -140,46 +139,33 @@ class CustomerDetailsViewModel(
         }
     }
 
-//    private fun confirmEditPayment() {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            _uiState.update {
-//                it.copy(loading = true)
-//            }
-//            editPaymentUseCase(
-//                request = EditPaymentRequest(
-//                    customerId = uiState.value.customer.id,
-//                    newCashPayment =
-//                    uiState.value.currentPayment.copy(
-//                        amount = if (uiState.value.paymentDirection) uiState.value.currentPayment.amount else uiState.value.currentPayment.amount.unaryMinus()
-//                    ),
-//                    oldAmount = uiState.value.tempPayment.amount
-//                )
-//            ).onSuccess {
-//                _uiState.update {
-//                    it.copy(
-//                        loading = false
-//                    )
-//                }
-//                getCustomerDetails(uiState.value.customer.id)
-//            }.onFailure {
-//                _uiState.update {
-//                    it.copy(
-//                        loading = false
-//                    )
-//                }
-//            }
-//        }
-//    }
-
-//    private fun updateCurrentPayment(cashPayment: Payment) {
-//        _uiState.update {
-//            it.copy(
-//                tempPayment = cashPayment,
-//                currentPayment = cashPayment.copy(amount = cashPayment.amount.absoluteValue),
-//                paymentDirection = cashPayment.amount > 0
-//            )
-//        }
-//    }
+     fun confirmEditPayment(oldPayment: Payment, newPayment: Payment) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update {
+                it.copy(loading = true)
+            }
+            editPaymentUseCase(
+                request = EditPaymentRequest(
+                    customerId = uiState.value.customer.id,
+                    oldPayment = oldPayment,
+                    newPayment = newPayment
+                )
+            ).onSuccess {
+                _uiState.update {
+                    it.copy(
+                        loading = false
+                    )
+                }
+                getCustomerDetails(uiState.value.customer.id)
+            }.onFailure {
+                _uiState.update {
+                    it.copy(
+                        loading = false
+                    )
+                }
+            }
+        }
+    }
 
     private fun deletePayment(cashPayment: Payment) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -188,13 +174,9 @@ class CustomerDetailsViewModel(
             }
             deletePaymentUseCase.invoke(
                 DeletePaymentRequest(
-                    paymentId = cashPayment.id,
-                    customerId = uiState.value.customer.id,
-                    amount = cashPayment.amount,
+                    payment = cashPayment,
                     employeeId = uiState.value.currentDistributor.id,
                     employeeName = uiState.value.currentDistributor.fullName,
-                    type = cashPayment.type
-
                 )
             ).onSuccess {
                 _uiState.update {
@@ -223,7 +205,7 @@ class CustomerDetailsViewModel(
             addPaymentUseCase(
                 request = AddNewPaymentRequest(
                     customerId = uiState.value.customer.id,
-                    cashPayment = payment
+                    payment = payment
                 )
             ).onSuccess {
                 _uiState.update {
@@ -275,14 +257,12 @@ class CustomerDetailsViewModel(
                 request = FetchCustomerPaymentsRequest(customerId)
             ).collect { result ->
                 result.onSuccess { data ->
-                    _uiState.update {
-                        it.copy(
+                    _uiState.update {oldState->
+                        oldState.copy(
                             loading = false,
                             payments = data
                                 .filter { it.receiptNumber.isEmpty() || it.type == PaymentType.FUTURES }
                                 .sortedByDescending { it.createdAt }
-                                .groupBy { it.createdAt.format(DateFormat.DATE) }
-                                .mapValues { (_, value) -> value.sortedByDescending { it.createdAt.time } }
                         )
                     }
                 }.onFailure {
