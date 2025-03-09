@@ -195,15 +195,9 @@ fun SaveGoldPaymentBottomSheetContent(
                 payment = payment.copy(givenGoldAmount = it)
             },
             supportingText =
-            if (initialPayment.amount == 0.0 && payment.amount > remainsAmount) {
-                stringResource(R.string.remains_for_the_client) + payment.amount.minus(remainsAmount).absoluteValue.toMoneyFormat(
-                    2
-                )
-            } else if (initialPayment.amount != 0.0 && payment.amount > (remainsAmount + initialPayment.amount)) {
-                stringResource(R.string.remains_for_the_client) + payment.amount.minus(remainsAmount + initialPayment.amount).absoluteValue.toMoneyFormat(
-                    2
-                )
-            } else {
+            if(((payment.givenGoldAmount * payment.pricePerGram) > (remainsAmount+(initialPayment.amount)))){
+                stringResource(R.string.the_value_is_bigger_than_the_remains_amount)
+            }else{
                 ""
             }
         )
@@ -216,6 +210,12 @@ fun SaveGoldPaymentBottomSheetContent(
             onValueChange = {
                 payment = payment.copy(pricePerGram = it)
             },
+            supportingText =
+            if(((payment.givenGoldAmount * payment.pricePerGram) > (remainsAmount+(initialPayment.amount)))){
+                stringResource(R.string.the_value_is_bigger_than_the_remains_amount)
+            }else{
+                ""
+            }
         )
         NumberInputTextField(
             modifier = Modifier
@@ -234,19 +234,9 @@ fun SaveGoldPaymentBottomSheetContent(
                 .heightIn(min = 48.dp)
                 .padding(top = 24.dp),
             onClick = {
-
-                if ((initialPayment.givenGoldAmount * initialPayment.pricePerGram) == 0.0 && (payment.givenGoldAmount * payment.pricePerGram) > remainsAmount) {
-                    payment = payment.copy(
-                        amount = remainsAmount,
-                    )
-                } else if ((initialPayment.givenGoldAmount * initialPayment.pricePerGram) != 0.0 && (payment.givenGoldAmount * payment.pricePerGram) > (remainsAmount + (initialPayment.givenGoldAmount * initialPayment.pricePerGram))) {
-                    payment = payment.copy(
-                        amount = remainsAmount + (initialPayment.givenGoldAmount * initialPayment.pricePerGram),
-                    )
-                }
-                onSave(payment)
+                onSave(payment.copy(amount = payment.givenGoldAmount * payment.pricePerGram))
             },
-            enabled = payment.givenGoldAmount != 0.0
+            enabled = payment.givenGoldAmount != 0.0 &&((payment.givenGoldAmount * payment.pricePerGram) <= remainsAmount+(initialPayment.amount))
         ) {
             Text(
                 text = stringResource(R.string.save),
