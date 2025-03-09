@@ -19,6 +19,7 @@ import com.zaed.common.data.model.payment.ChequePayment
 import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.LossPayment
 import com.zaed.common.data.model.payment.PaymentType
+import com.zaed.common.data.model.payment.signedAmount
 import com.zaed.common.data.model.sale.IngotTransaction
 import com.zaed.common.data.model.sale.StoreSale
 import com.zaed.common.data.model.sale.TransactionType
@@ -52,14 +53,10 @@ class SaleRemoteSourceImpl(
     private val crashlytics: FirebaseCrashlytics
 ) : SaleRemoteSource {
     private val storeSalesCollection = firestore.collection("store_sales")
-    private val categoriesCollection = firestore.collection("categories")
     private val wholesaleProductSalesCollection = firestore.collection("wholesale_product_sales")
     private val wholesaleGoldSalesCollection = firestore.collection("wholesale_gold_sales")
-    private val paymentsCollection = firestore.collection("payments")
     private val ingotTransactionsCollection = firestore.collection("ingot_transactions")
     private val moneyPaymentCollection = firestore.collection("money_payments")
-
-    //    private val goldPaymentsCollection = firestore.collection("gold_payments")
     private val wholesaleCustomersCollection = firestore.collection("whole_sale_customers")
     private val inventoryCollection = firestore.collection("inventory")
     private val distributorLossesCollection = firestore.collection("distributor-losses")
@@ -842,7 +839,7 @@ class SaleRemoteSourceImpl(
                 Log.d("finding_the_sex", "existingPayment: ${existingPayment.amount}")
                 batch.update(
                     customerRef,
-                    mapOf("debtAmount" to FieldValue.increment(existingPayment.amount.unaryMinus()))
+                    mapOf("debtAmount" to FieldValue.increment(existingPayment.signedAmount().unaryMinus()))
                 )
             }
             request.payments.forEach { payment ->
@@ -858,9 +855,9 @@ class SaleRemoteSourceImpl(
                             wholesaleCustomersCollection.document(request.sale.customerId)
                         batch.update(
                             customerRef,
-                            mapOf("debtAmount" to FieldValue.increment(payment.amount.unaryMinus()))
+                            mapOf("debtAmount" to FieldValue.increment(payment.signedAmount()))
                         )
-                        payment.amount.unaryMinus()
+                        payment.amount
                     } else {
                         payment.amount
                     }
@@ -965,7 +962,7 @@ class SaleRemoteSourceImpl(
                 val customerRef = wholesaleCustomersCollection.document(request.sale.customerId)
                 batch.update(
                     customerRef,
-                    mapOf("debtAmount" to FieldValue.increment(existingPayment.amount.unaryMinus()))
+                    mapOf("debtAmount" to FieldValue.increment(existingPayment.signedAmount().unaryMinus()))
                 )
             }
             request.payments.forEach { payment ->
@@ -980,9 +977,9 @@ class SaleRemoteSourceImpl(
                             wholesaleCustomersCollection.document(request.sale.customerId)
                         batch.update(
                             customerRef,
-                            mapOf("debtAmount" to FieldValue.increment(payment.amount.unaryMinus()))
+                            mapOf("debtAmount" to FieldValue.increment(payment.signedAmount()))
                         )
-                        payment.amount.unaryMinus()
+                        payment.amount
                     } else {
                         payment.amount
                     }
