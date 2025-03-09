@@ -4,6 +4,7 @@ import com.zaed.common.data.model.authentication.LocalUser
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.authentication.request.DeleteUserRequest
 import com.zaed.common.data.model.authentication.request.FetchDistributorRequest
+import com.zaed.common.data.model.authentication.request.FetchUsersByRoleRequest
 import com.zaed.common.data.model.authentication.request.LoginUserRequest
 import com.zaed.common.data.model.authentication.request.SignUpUserRequest
 import com.zaed.common.data.model.authentication.request.UpdateUserRequest
@@ -96,8 +97,8 @@ class AuthenticationRepositoryImpl(
         return remoteSource.deleteUser(request)
     }
 
-    override fun fetchDistributors(): Flow<Result<List<User>>> {
-        return remoteSource.fetchDistributors()
+    override fun fetchUsersByRole(request: FetchUsersByRoleRequest): Flow<Result<List<User>>> {
+        return remoteSource.fetchUsersByRole(request)
     }
 
     override suspend fun fetchDistributor(request: FetchDistributorRequest): Result<User> {

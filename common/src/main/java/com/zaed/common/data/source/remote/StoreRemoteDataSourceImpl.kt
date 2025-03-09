@@ -35,7 +35,7 @@ class StoreRemoteDataSourceImpl(
             crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
-        awaitClose{}
+        awaitClose {  }
     }
 
     override suspend fun addStore(request: AddStoreRequest): Result<Unit> {

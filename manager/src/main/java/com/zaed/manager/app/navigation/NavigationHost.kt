@@ -1,5 +1,6 @@
 package com.zaed.manager.app.navigation
 
+import android.util.Log
 import androidx.compose.compiler.plugins.kotlin.EmptyFunctionMetrics.composable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +20,7 @@ import com.zaed.manager.ui.distributordetails.DistributorDetailsScreen
 import com.zaed.manager.ui.distributors.DistributorsScreen
 import com.zaed.manager.ui.storedetails.StoreDetailsScreen
 import com.zaed.manager.ui.stores.StoresScreen
+import com.zaed.manager.ui.storessales.StoresSalesScreen
 import com.zaed.manager.ui.usermanagement.UserManagementScreen
 
 @Composable
@@ -100,6 +102,14 @@ fun NavigationHost(
                 onNavigateToSaleDetails = {/*todo*/},
                 onBackPressed = {
                     navController.popBackStack()
+                }
+            )
+        }
+        composable<Route.StoresSalesRoute> {
+            StoresSalesScreen(
+                onShowNavDrawer = onShowNavDrawer,
+                onNavigateToSaleDetails = {
+                    /*TODO*/
                 }
             )
         }

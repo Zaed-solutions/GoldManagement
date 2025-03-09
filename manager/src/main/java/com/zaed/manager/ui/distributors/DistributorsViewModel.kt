@@ -3,7 +3,9 @@ package com.zaed.manager.ui.distributors
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zaed.common.domain.authentication.FetchDistributorsUseCase
+import com.zaed.common.data.model.authentication.UserRole
+import com.zaed.common.data.model.authentication.request.FetchUsersByRoleRequest
+import com.zaed.common.domain.authentication.FetchUsersByRoleUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,7 +13,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class DistributorsViewModel(
-    private val fetchDistributorsUseCase: FetchDistributorsUseCase
+    private val fetchDistributorsUseCase: FetchUsersByRoleUseCase
 ): ViewModel() {
     private val TAG: String = DistributorsViewModel::class.java.simpleName
     private val _uiState = MutableStateFlow(DistributorsUiState())
@@ -22,7 +24,11 @@ class DistributorsViewModel(
 
     private fun fetchDistributors() {
         viewModelScope.launch (Dispatchers.IO){
-            fetchDistributorsUseCase().collect{ result ->
+            fetchDistributorsUseCase(
+                FetchUsersByRoleRequest(
+                    role = UserRole.DISTRIBUTOR
+                )
+            ).collect{ result ->
                 result.onSuccess { data ->
                     _uiState.update { oldState ->
                         oldState.copy(isLoading = false, allDistributors = data)

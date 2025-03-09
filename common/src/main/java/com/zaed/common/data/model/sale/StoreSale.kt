@@ -9,6 +9,7 @@ data class StoreSale(
     override val createdAt: Date = Date(),
     val storeId: String = "",
     val storeName: String = "",
+    val storeLocation: String = "",
     val employeeName: String = "",
     val employeeId: String = "",
     override val customerName: String = "",

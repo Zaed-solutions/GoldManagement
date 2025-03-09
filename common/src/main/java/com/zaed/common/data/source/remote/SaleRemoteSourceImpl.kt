@@ -464,6 +464,29 @@ class SaleRemoteSourceImpl(
         }
     }
 
+    override fun fetchAllStoreSales(): Flow<Result<List<StoreSale>>> =
+        callbackFlow {
+            try {
+                storeSalesCollection
+                    .orderBy(
+                        "createdAt",
+                        Query.Direction.DESCENDING
+                    ).addSnapshotListener { snapshot, e ->
+                        if (e != null) {
+                            crashlytics.recordException(e)
+                            trySend(Result.failure(e))
+                            return@addSnapshotListener
+                        }
+                        val storeSales = snapshot?.toObjects(StoreSale::class.java) ?: emptyList()
+                        trySend(Result.success(storeSales))
+                    }
+            } catch (e: Exception) {
+                crashlytics.recordException(e)
+                trySend(Result.failure(e))
+            }
+            awaitClose { }
+        }
+
 
     override suspend fun deleteWholesaleProductSale(request: DeleteWholesaleProductSaleRequest): Result<Unit> {
         return try {

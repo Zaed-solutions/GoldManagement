@@ -3,6 +3,7 @@ package com.zaed.common.data.model.authentication
 data class User(
     val storeId: String = "",
     val storeName: String = "",
+    val storeLocation: String = "",
     val id : String = "",
     val fullName :String = "",
     val userName: String = "",
