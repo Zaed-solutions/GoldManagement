@@ -46,7 +46,7 @@ fun PaymentItem(
     val tag1 = remember(payment) {
         if (!payment.given) context.getString(R.string.taken) else context.getString(R.string.given)
     }
-    val (color, title, price) = remember(payment) {
+    val (color, title, price) =
         when (payment) {
             is GoldPayment -> {
                 Triple(
@@ -67,7 +67,7 @@ fun PaymentItem(
                 )
             }
         }
-    }
+
     val moreOptions =
         if (isEditable && !isDeletable) {
              listOf(

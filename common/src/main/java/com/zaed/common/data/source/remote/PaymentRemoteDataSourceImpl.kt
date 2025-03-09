@@ -158,7 +158,7 @@ class PaymentRemoteDataSourceImpl(
             customersCollection.document(request.customerId).update(
                 "debtAmount",
                 FieldValue.increment(request.diff),
-            )
+            ).await()
             return Result.success(Unit)
         } catch (e: Exception) {
             crashlytics.recordException(e)

@@ -20,6 +20,7 @@ import com.zaed.common.R
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
+import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.ui.util.toMoneyFormat
 import kotlin.math.absoluteValue
@@ -30,6 +31,65 @@ fun SaveCashPaymentBottomSheetContent(
     initialPayment: CashPayment,
     remainsAmount: Double = 0.0,
     onSave: (CashPayment) -> Unit = {}
+) {
+    var payment by remember { mutableStateOf(initialPayment) }
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Text(
+            text = " طريقه الدفع : ${stringResource(initialPayment.type.titleRes)}",
+            style = MaterialTheme.typography.titleLarge
+        )
+
+        NumberInputTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            label = stringResource(R.string.amount),
+            value = payment.amount,
+            onValueChange = {
+                payment = payment.copy(amount = it)
+            },
+        )
+        if (payment.amount > remainsAmount) {
+            Text(
+                text = "Remains for the client " + payment.amount.minus(remainsAmount).absoluteValue.toMoneyFormat(
+                    2
+                )
+            )
+        }
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 48.dp)
+                .padding(top = 24.dp),
+            onClick = {
+                if (payment.amount > remainsAmount) {
+                    payment = payment.copy(
+                        amount = remainsAmount,
+                    )
+                }
+                onSave(payment)
+            },
+            enabled = payment.amount != 0.0
+        ) {
+            Text(
+                text = stringResource(R.string.save),
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
+    }
+}
+@Composable
+fun SaveFuturePaymentBottomSheetContent(
+    modifier: Modifier = Modifier,
+    initialPayment: FuturePayment,
+    remainsAmount: Double = 0.0,
+    onSave: (FuturePayment) -> Unit = {}
 ) {
     var payment by remember { mutableStateOf(initialPayment) }
     Column(

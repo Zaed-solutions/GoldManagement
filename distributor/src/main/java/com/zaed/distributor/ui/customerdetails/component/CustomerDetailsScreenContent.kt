@@ -46,6 +46,7 @@ import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
+import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.getProductSalePayments
@@ -57,6 +58,7 @@ import com.zaed.common.ui.components.PaymentsList
 import com.zaed.common.ui.components.SaveBankTransferPaymentBottomSheetContent
 import com.zaed.common.ui.components.SaveCashPaymentBottomSheetContent
 import com.zaed.common.ui.components.SaveChequePaymentBottomSheetContent
+import com.zaed.common.ui.components.SaveFuturePaymentBottomSheetContent
 import com.zaed.common.ui.util.toMoneyFormat
 import com.zaed.distributor.ui.customerdetails.CustomerDetailsUiAction
 import com.zaed.distributor.ui.customerdetails.CustomerDetailsUiState
@@ -82,6 +84,7 @@ fun CustomerDetailsScreenContent(
     val pagerState = rememberPagerState { 2 }
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    Log.d("TAG", "CustomerDetailsScreenContent: ${uiState.customer.debtAmount}")
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(title = {
@@ -322,6 +325,33 @@ fun CustomerDetailsScreenContent(
                                 })
                         }
                     }
+
+                    PaymentType.FUTURES -> {
+                        selectedPayment?.let {
+                            SaveFuturePaymentBottomSheetContent(
+                                initialPayment = selectedPayment as FuturePayment,
+                                remainsAmount = Double.MAX_VALUE,
+                                onSave = { updatedPayment ->
+                                    if (selectedPayment!!.id.isBlank()) {
+                                        onAddPayment(
+                                            updatedPayment.copy(
+                                                customerId = selectedCustomer.id,
+                                                amount = updatedPayment.amount,
+                                                given = !isTaken
+                                            )
+                                        )
+                                    } else {
+                                        onEditPayment(
+                                            selectedPayment as FuturePayment,
+                                            updatedPayment
+                                        )
+                                    }
+                                    selectedPayment = null
+                                    addPaymentBottomSheetVisible = false
+                                })
+                        }
+                    }
+
 
                     else -> {}
                 }

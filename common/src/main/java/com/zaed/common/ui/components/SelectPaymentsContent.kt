@@ -1,29 +1,19 @@
 package com.zaed.common.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -35,12 +25,11 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.zaed.common.R
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
@@ -87,7 +76,7 @@ fun SelectPaymentsContent(
         horizontalAlignment = Alignment.Start
     ) {
         Text(
-            text = "المبلغ الواجب دفعه",
+            text = stringResource(R.string.the_amount_to_be_paid),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.outline
@@ -100,7 +89,7 @@ fun SelectPaymentsContent(
         )
         if (totalPaid > 0) {
             Text(
-                text = "المبلغ المتبقي من ${totalAmount}",
+                text = stringResource(R.string.remaining_amount_from, totalAmount),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.outline
@@ -112,7 +101,7 @@ fun SelectPaymentsContent(
             )
         }
         Text(
-            text = "حدد طريقة الدفع",
+            text = stringResource(R.string.select_payment_method),
             style = MaterialTheme.typography.headlineSmall
         )
         PaymentTypes(
@@ -183,7 +172,7 @@ fun SelectPaymentsContent(
             shape = RoundedCornerShape(4.dp),
         ) {
             Text(
-                "متابعة",
+                text = stringResource(R.string.continue_word),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -201,15 +190,16 @@ fun SelectPaymentsContent(
                                 initialPayment = selectedPayment as CashPayment,
                                 remainsAmount = remainsAmount,
                                 onSave = { newPayment ->
+                                    val cashPayment = newPayment as CashPayment
                                     if (selectedPayment!!.id.startsWith("Destributor")) {
                                         onAddPayment(
-                                            newPayment.copy(
+                                            cashPayment.copy(
                                                 id = "Payment-" + UUID.randomUUID().toString(),
                                                 customerId = selectedCustomer.id,
                                             )
                                         )
                                     } else {
-                                        onEditPayment(newPayment)
+                                        onEditPayment(cashPayment)
                                     }
                                     simplePaymentBottomSheet = false
                                 }
@@ -303,13 +293,13 @@ fun SelectPaymentsContent(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "لم يتم تسديد قيمه الفاتوره بالكامل",
+                        text = stringResource(R.string.the_invoice_amount_has_not_been_paid_in_full),
                         style = MaterialTheme.typography.titleLarge,
                     )
                     Spacer(modifier = Modifier.padding(8.dp))
                     Text(
-                        text = "هل تريد تسجيلها على العميل ام تسجيلها كخسارة مبيعات",
-                        style = MaterialTheme.typography.titleMedium,
+                        text = stringResource(R.string.do_you_want_to_record_it_on_the_customer_or_register_it_as_a_sales_loss),
+                                style = MaterialTheme.typography.titleMedium,
                     )
                     Spacer(modifier = Modifier.padding(8.dp))
                     Row(
@@ -320,24 +310,26 @@ fun SelectPaymentsContent(
                             onClick = {
                                 onAddPayment(
                                     LossPayment(
-                                        customerId = selectedCustomer?.id ?: "",
+                                        customerId = selectedCustomer.id,
                                         amount = remainsAmount,
+                                        given = true,
                                         type = PaymentType.LOSS
                                     )
                                 )
                                 warningnNotFullyPaidSheet = false
                             },
                         ) {
-                            Text(text = "تسجيل كخسارة مبيعات")
+                            Text(text = stringResource(R.string.register_as_a_sales_loss))
                         }
                         Button(
                             shape = RoundedCornerShape(4.dp),
                             onClick = {
-                                if (selectedCustomer?.id?.isNotBlank() == true) {
+                                if (selectedCustomer.id.isNotBlank()) {
                                     onAddPayment(
                                         FuturePayment(
-                                            customerId = selectedCustomer?.id ?: "",
+                                            customerId = selectedCustomer.id,
                                             amount = remainsAmount,
+                                            given = true,
                                             type = PaymentType.FUTURES
                                         )
                                     )
@@ -348,7 +340,7 @@ fun SelectPaymentsContent(
 
                             }
                         ) {
-                            Text(text = "تسجيل على العميل")
+                            Text(text = stringResource(R.string.record_on_the_customer))
                         }
                     }
 
@@ -380,52 +372,6 @@ fun SelectPaymentsContent(
                     },
                     suggestedCustomers = suggestedCustomers
                 )
-            }
-        }
-
-    }
-}
-
-@Composable
-fun PaymentTypes(
-    types: List<PaymentType> = getProductSalePayments(),
-    onPaymentTypeSelected: (PaymentType) -> Unit = {}
-) {
-    LazyColumn {
-        items(types) { paymentType ->
-            Surface(
-                onClick = { onPaymentTypeSelected(paymentType) }
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        Modifier
-                            .padding(8.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f))
-                    ) {
-                        Icon(
-                            painter = painterResource(paymentType.iconRes),
-                            modifier = Modifier
-                                .size(36.dp)
-                                .padding(8.dp),
-                            tint = MaterialTheme.colorScheme.primary,
-                            contentDescription = null
-                        )
-                    }
-                    Text(
-                        text = stringResource(paymentType.titleRes),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Default.ArrowForwardIos,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
             }
         }
     }
