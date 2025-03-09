@@ -29,7 +29,7 @@ fun CustomerDetailsScreen(
         onAddPayment = {
             viewModel.addPayment(it)
         },
-        onEditPayment = {},
+        onEditPayment = viewModel::confirmEditPayment,
         onAction = { action ->
             when (action) {
                 CustomerDetailsUiAction.OnEditCustomer -> navigateToEditCustomer(uiState.customer.id)

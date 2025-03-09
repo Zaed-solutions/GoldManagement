@@ -1,5 +1,6 @@
 package com.zaed.distributor.ui.customerdetails.component
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -49,8 +50,10 @@ import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.getProductSalePayments
 import com.zaed.common.ui.components.BackIcon
+import com.zaed.common.ui.components.BalanceSection
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
 import com.zaed.common.ui.components.PaymentTypes
+import com.zaed.common.ui.components.PaymentsList
 import com.zaed.common.ui.components.SaveBankTransferPaymentBottomSheetContent
 import com.zaed.common.ui.components.SaveCashPaymentBottomSheetContent
 import com.zaed.common.ui.components.SaveChequePaymentBottomSheetContent
@@ -67,14 +70,13 @@ fun CustomerDetailsScreenContent(
     uiState: CustomerDetailsUiState,
     selectedCustomer: WholeSaleCustomer,
     onAddPayment: (Payment) -> Unit = {},
-    onEditPayment: (Payment) -> Unit = {},
+    onEditPayment: (Payment, Payment) -> Unit = { _, _ -> },
     onAction: (CustomerDetailsUiAction) -> Unit = {}
 ) {
     var addPaymentBottomSheetVisible by remember { mutableStateOf(false) }
     val listState = remember { LazyListState() }
     var selectedPayment by remember { mutableStateOf<Payment?>(null) }
     var confirmDeletePaymentSheet by remember { mutableStateOf(false) }
-    var editPaymentSheet by remember { mutableStateOf(false) }
     var selectPaymentTypeSheet by remember { mutableStateOf(false) }
     var isTaken by remember { mutableStateOf(false) }
     val pagerState = rememberPagerState { 2 }
@@ -82,35 +84,27 @@ fun CustomerDetailsScreenContent(
     val scope = rememberCoroutineScope()
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = uiState.customer.name,
-                        style = MaterialTheme.typography.titleLarge,
-                        maxLines = 1,
-                        overflow = Ellipsis
-                    )
-                },
-                navigationIcon = {
-                    BackIcon {
-                        onAction(CustomerDetailsUiAction.OnBackClicked)
-                    }
-                },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            onAction(CustomerDetailsUiAction.OnEditCustomer)
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = ""
-                        )
-                    }
+            CenterAlignedTopAppBar(title = {
+                Text(
+                    text = uiState.customer.name,
+                    style = MaterialTheme.typography.titleLarge,
+                    maxLines = 1,
+                    overflow = Ellipsis
+                )
+            }, navigationIcon = {
+                BackIcon {
+                    onAction(CustomerDetailsUiAction.OnBackClicked)
                 }
-            )
-        },
-        modifier = modifier
+            }, actions = {
+                IconButton(onClick = {
+                    onAction(CustomerDetailsUiAction.OnEditCustomer)
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Person, contentDescription = ""
+                    )
+                }
+            })
+        }, modifier = modifier
     ) {
         Column(
             modifier = modifier
@@ -125,32 +119,25 @@ fun CustomerDetailsScreenContent(
                     context.getString(com.zaed.common.R.string.sales)
                 )
             }
-            PrimaryTabRow(
-                selectedTabIndex = pagerState.currentPage,
-                indicator = {
-                    TabRowDefaults.PrimaryIndicator(
-                        modifier = Modifier
-                            .run {
-                                if (LocalLayoutDirection.current == LayoutDirection.Rtl)
-                                    scale(-1f, 1f)
-                                else
-                                    this
-                            }
-                            .tabIndicatorOffset(pagerState.currentPage, true),
-                        width = Dp.Unspecified,
-                    )
-                }
-            ) {
+            PrimaryTabRow(selectedTabIndex = pagerState.currentPage, indicator = {
+                TabRowDefaults.PrimaryIndicator(
+                    modifier = Modifier
+                        .run {
+                            if (LocalLayoutDirection.current == LayoutDirection.Rtl) scale(
+                                -1f, 1f
+                            )
+                            else this
+                        }
+                        .tabIndicatorOffset(pagerState.currentPage, true),
+                    width = Dp.Unspecified,
+                )
+            }) {
                 tabs.forEachIndexed { index, title ->
-                    Tab(
-                        selected = pagerState.currentPage == index,
-                        onClick = {
-                            scope.launch {
-                                pagerState.animateScrollToPage(index)
-                            }
-                        },
-                        text = { Text(text = title) }
-                    )
+                    Tab(selected = pagerState.currentPage == index, onClick = {
+                        scope.launch {
+                            pagerState.animateScrollToPage(index)
+                        }
+                    }, text = { Text(text = title) })
                 }
             }
 
@@ -161,20 +148,21 @@ fun CustomerDetailsScreenContent(
                 when (value) {
                     0 -> {
                         Column {
-                            PaymentsList(
-                                modifier = Modifier.weight(1f),
-                                listState = listState,
-                                debtAmount = uiState.customer.debtAmount,
+                            BalanceSection(
+                                modifier = Modifier.padding(vertical = 8.dp),
+                                amount = uiState.customer.debtAmount,
+                            )
+                            PaymentsList(modifier = Modifier.weight(1f),
                                 payments = uiState.payments,
-                                onDeletePayment = { payment ->
+                                onRemovePayment = { payment ->
                                     selectedPayment = payment
                                     confirmDeletePaymentSheet = true
                                 },
                                 onEditPayment = { payment ->
-                                    onAction(CustomerDetailsUiAction.EditPayment(payment))
-                                    editPaymentSheet = true
-                                }
-                            )
+                                    selectedPayment = payment
+                                    Log.d("TAG", "CustomerDetailsScreenContent2: $selectedPayment")
+                                    addPaymentBottomSheetVisible = true
+                                })
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -184,16 +172,13 @@ fun CustomerDetailsScreenContent(
                                 Button(
                                     modifier = Modifier
                                         .weight(1f)
-                                        .padding(4.dp),
-                                    onClick = {
+                                        .padding(4.dp), onClick = {
                                         isTaken = true
                                         selectPaymentTypeSheet = true
-                                    },
-                                    colors = ButtonDefaults.filledTonalButtonColors(
+                                    }, colors = ButtonDefaults.filledTonalButtonColors(
                                         containerColor = MaterialTheme.colorScheme.primaryContainer,
                                         contentColor = MaterialTheme.colorScheme.onPrimary
-                                    ),
-                                    shape = RoundedCornerShape(4.dp)
+                                    ), shape = RoundedCornerShape(4.dp)
                                 ) {
                                     Text(text = stringResource(com.zaed.common.R.string.taken))
                                 }
@@ -218,8 +203,7 @@ fun CustomerDetailsScreenContent(
                     }
 
                     1 -> {
-                        SalesList(
-                            listState = listState,
+                        SalesList(listState = listState,
                             isLoading = uiState.loading,
                             sales = uiState.sales,
                             onDeleteSale = { saleId, isProduct ->
@@ -248,15 +232,18 @@ fun CustomerDetailsScreenContent(
                                         CustomerDetailsUiAction.OnGoldSaleClicked(saleId)
                                     }
                                 )
-                            }
-                        )
+                            })
                     }
                 }
             }
         }
         AnimatedVisibility(addPaymentBottomSheetVisible) {
+            Log.d("TAG", "CustomerDetailsScreenContent: $selectedPayment")
             ModalBottomSheet(
-                onDismissRequest = { addPaymentBottomSheetVisible = false },
+                onDismissRequest = {
+                    selectedPayment = null
+                    addPaymentBottomSheetVisible = false
+                },
             ) {
                 when (selectedPayment?.type) {
                     PaymentType.CASH -> {
@@ -269,60 +256,70 @@ fun CustomerDetailsScreenContent(
                                         onAddPayment(
                                             updatedPayment.copy(
                                                 customerId = selectedCustomer.id,
-                                                amount = if (isTaken) updatedPayment.amount else updatedPayment.amount.unaryMinus()
+                                                amount = updatedPayment.amount,
+                                                given = !isTaken
                                             )
                                         )
+
                                     } else {
-                                        onEditPayment(updatedPayment)
+                                        onEditPayment(
+                                            selectedPayment as CashPayment,
+                                            updatedPayment
+                                        )
                                     }
+                                    selectedPayment = null
                                     addPaymentBottomSheetVisible = false
-                                }
-                            )
+                                })
                         }
                     }
 
                     PaymentType.CHEQUE -> {
                         selectedPayment?.let {
-                            SaveChequePaymentBottomSheetContent(
-                                initialPayment = selectedPayment as ChequePayment,
+                            SaveChequePaymentBottomSheetContent(initialPayment = selectedPayment as ChequePayment,
                                 remainsAmount = Double.MAX_VALUE,
                                 onSave = { updatedPayment ->
                                     if (selectedPayment!!.id.isBlank()) {
                                         onAddPayment(
                                             updatedPayment.copy(
                                                 customerId = selectedCustomer.id,
-                                                amount = if (isTaken) updatedPayment.amount else updatedPayment.amount.unaryMinus()
-
+                                                amount = updatedPayment.amount,
+                                                given = !isTaken
                                             )
                                         )
                                     } else {
-                                        onEditPayment(updatedPayment)
+                                        onEditPayment(
+                                            selectedPayment as ChequePayment,
+                                            updatedPayment
+                                        )
                                     }
+                                    selectedPayment = null
                                     addPaymentBottomSheetVisible = false
-                                }
-                            )
+                                })
                         }
                     }
 
                     PaymentType.BANK_TRANSFER -> {
                         selectedPayment?.let {
-                            SaveBankTransferPaymentBottomSheetContent(
-                                initialPayment = selectedPayment as BankTransferPayment,
+                            SaveBankTransferPaymentBottomSheetContent(initialPayment = selectedPayment as BankTransferPayment,
                                 remainsAmount = Double.MAX_VALUE,
                                 onSave = { updatedPayment ->
                                     if (selectedPayment!!.id.isBlank()) {
                                         onAddPayment(
                                             updatedPayment.copy(
                                                 customerId = selectedCustomer.id,
-                                                amount = if (isTaken) updatedPayment.amount else updatedPayment.amount.unaryMinus()
+                                                amount = updatedPayment.amount,
+                                                given = !isTaken
                                             )
                                         )
                                     } else {
-                                        onEditPayment(updatedPayment)
+                                        onEditPayment(
+                                            selectedPayment as BankTransferPayment,
+                                            updatedPayment
+                                        )
                                     }
+                                    selectedPayment = null
                                     addPaymentBottomSheetVisible = false
-                                }
-                            )
+                                })
                         }
                     }
 
@@ -333,45 +330,39 @@ fun CustomerDetailsScreenContent(
         }
 
         AnimatedVisibility(selectPaymentTypeSheet) {
-            ModalBottomSheet(
-                onDismissRequest = {
-                    selectedPayment = null
-                    selectPaymentTypeSheet = false
-                }
-            ) {
-                PaymentTypes(
-                    types = getProductSalePayments(),
-                    onPaymentTypeSelected = { type ->
-                        when (type) {
-                            PaymentType.CASH -> {
-                                selectedPayment = CashPayment(type = type)
-                                selectPaymentTypeSheet = false
-                                addPaymentBottomSheetVisible = true
-                            }
+            ModalBottomSheet(onDismissRequest = {
+                selectedPayment = null
+                selectPaymentTypeSheet = false
+            }) {
+                PaymentTypes(types = getProductSalePayments(), onPaymentTypeSelected = { type ->
+                    when (type) {
+                        PaymentType.CASH -> {
+                            selectedPayment = CashPayment(type = type)
+                            selectPaymentTypeSheet = false
+                            addPaymentBottomSheetVisible = true
+                        }
 
-                            PaymentType.BANK_TRANSFER -> {
-                                selectedPayment = BankTransferPayment(type = type)
-                                selectPaymentTypeSheet = false
-                                addPaymentBottomSheetVisible = true
-                            }
+                        PaymentType.BANK_TRANSFER -> {
+                            selectedPayment = BankTransferPayment(type = type)
+                            selectPaymentTypeSheet = false
+                            addPaymentBottomSheetVisible = true
+                        }
 
-                            PaymentType.CHEQUE -> {
-                                selectedPayment = ChequePayment(type = type)
-                                selectPaymentTypeSheet = false
-                                addPaymentBottomSheetVisible = true
-                            }
+                        PaymentType.CHEQUE -> {
+                            selectedPayment = ChequePayment(type = type)
+                            selectPaymentTypeSheet = false
+                            addPaymentBottomSheetVisible = true
+                        }
 
-                            else -> {
-                                selectedPayment = null
-                                selectPaymentTypeSheet = false
-                            }
+                        else -> {
+                            selectedPayment = null
+                            selectPaymentTypeSheet = false
                         }
                     }
-                )
+                })
             }
         }
-        ConfirmDeleteBottomSheet(
-            visible = confirmDeletePaymentSheet,
+        ConfirmDeleteBottomSheet(visible = confirmDeletePaymentSheet,
             label = selectedPayment?.amount?.toMoneyFormat(2) ?: "",
             onDismiss = {
                 confirmDeletePaymentSheet = false
@@ -381,7 +372,6 @@ fun CustomerDetailsScreenContent(
                 selectedPayment?.let { onAction(CustomerDetailsUiAction.DeletePayment(it)) }
                 confirmDeletePaymentSheet = false
                 selectedPayment = null
-            }
-        )
+            })
     }
 }
