@@ -237,7 +237,6 @@
     <string name="remains_for_the_client">"Remains for the client "</string>
     <string name="the_value_is_bigger_than_the_remains_amount">The value is Bigger Than The Remains Amount</string>
     <string name="distributors_sales">Distributors Sales</string>
-    <string name="clear_all">Clear all</string>
     <string name="the_amount_to_be_paid">The amount to be paid</string>
     <string name="remaining_amount_from">Remaining amount from %1$s</string>
     <string name="select_payment_method">Select payment method</string>
@@ -249,4 +248,11 @@
     <string name="clear_all">Clear All</string>
     <string name="edit_customer">Edit Customer</string>
     <string name="process">Process</string>
+    <string name="work_losses">Work Losses</string>
+    <string name="personal_expenses">Personal Expenses</string>
+    <string name="save_work_loss">Save work loss</string>
+    <string name="update_loss">Update Loss</string>
+    <string name="add_personal_expense">Add Personal Expense</string>
+    <string name="update_personal_expense">Update Personal Expense</string>
+    <string name="personal_expense">Personal Expense</string>
 </resources>

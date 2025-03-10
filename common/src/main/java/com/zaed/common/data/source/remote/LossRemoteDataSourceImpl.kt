@@ -3,18 +3,24 @@ package com.zaed.common.data.source.remote
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.ktx.toObjects
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.loss.DistributorLoss
+import com.zaed.common.data.model.loss.ManagerLoss
 import com.zaed.common.data.model.loss.StoreLoss
 import com.zaed.common.data.model.loss.request.AddDistributorLossRequest
+import com.zaed.common.data.model.loss.request.AddManagerLossRequest
 import com.zaed.common.data.model.loss.request.CreateNewLossRequest
 import com.zaed.common.data.model.loss.request.DeleteLossRequest
+import com.zaed.common.data.model.loss.request.DeleteManagerLossRequest
 import com.zaed.common.data.model.loss.request.FetchDistributorLossesRequest
 import com.zaed.common.data.model.loss.request.FetchStoreLossesRequest
 import com.zaed.common.data.model.loss.request.GetStoreLossesRequest
 import com.zaed.common.data.model.loss.request.UpdateDistributorLossRequest
 import com.zaed.common.data.model.loss.request.UpdateLossRequest
+import com.zaed.common.data.model.loss.request.UpdateManagerLossRequest
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -27,6 +33,7 @@ class LossRemoteDataSourceImpl(
 ) : LossRemoteDataSource {
     private val storeLossesCollection = firestore.collection("store-losses")
     private val distributorLossesCollection = firestore.collection("distributor-losses")
+    private val managerLossesCollection = firestore.collection("manager-losses")
     override suspend fun createNewLoss(request: CreateNewLossRequest): Result<Unit> {
         return try {
             val document = storeLossesCollection.document()
@@ -167,4 +174,61 @@ class LossRemoteDataSourceImpl(
             }
             awaitClose {}
         }
+
+    override fun fetchManagerLosses(): Flow<Result<List<ManagerLoss>>>
+    = callbackFlow {
+        try {
+            managerLossesCollection
+                .orderBy(
+                    "date",
+                    Query.Direction.DESCENDING
+                )
+                .addSnapshotListener { value, error ->
+                    if(error != null){
+                        crashlytics.recordException(error)
+                        trySend(Result.failure(error))
+                        return@addSnapshotListener
+                    }
+                    val losses = value?.toObjects(ManagerLoss::class.java)?: emptyList()
+                    trySend(Result.success(losses))
+                }
+        } catch (e: Exception){
+            crashlytics.recordException(e)
+            trySend(Result.failure(e))
+        }
+        awaitClose {  }
+    }
+
+    override suspend fun addManagerLoss(request: AddManagerLossRequest): Result<Unit> {
+        return try{
+            val docRef = managerLossesCollection.document()
+            docRef.set(request.loss.copy(id = docRef.id)).await()
+            Result.success(Unit)
+        } catch (e: Exception){
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun updateManagerLoss(request: UpdateManagerLossRequest): Result<Unit> {
+        return try{
+            val docRef = managerLossesCollection.document(request.loss.id)
+            docRef.set(request.loss).await()
+            Result.success(Unit)
+        } catch (e: Exception){
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun deleteManagerLoss(request: DeleteManagerLossRequest): Result<Unit> {
+        return try{
+            val docRef = managerLossesCollection.document(request.loss.id)
+            docRef.delete().await()
+            Result.success(Unit)
+        } catch (e: Exception){
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
 }
