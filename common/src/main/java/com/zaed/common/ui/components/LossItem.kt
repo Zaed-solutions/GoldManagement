@@ -104,7 +104,7 @@ fun LossItem(
                 maxLines = 2,
                 text = title.ifBlank { loss.date.format(DateFormat.SHORT_DATE_TIME) },
                 style = MaterialTheme.typography.titleMedium.copy(
-                    fontSize = 20.sp,
+                    fontSize = 18.sp,
                 )
             )
             Text(
