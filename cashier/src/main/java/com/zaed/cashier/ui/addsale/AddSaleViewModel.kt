@@ -85,7 +85,7 @@ class AddSaleViewModel(
         viewModelScope.launch {
             _uiState.update { oldState ->
                 oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products.map {
-                    if (it.id == product.id) {
+                    if (it.categoryId == product.categoryId) {
                         product
                     } else {
                         it
@@ -188,12 +188,13 @@ class AddSaleViewModel(
     }
 
     private fun addProduct(product: Product) {
+        Log.d(TAG, "addNewProduct: $product")
         viewModelScope.launch {
-            Log.d(TAG, "addProduct: $product")
+            val filteredProducts = _uiState.value.sale.products.filter { it.categoryId != product.categoryId }
             _uiState.update { oldState ->
-                oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products + product))
+                oldState.copy(sale = oldState.sale.copy(products = filteredProducts + product))
             }
-            Log.d(TAG, "addProduct: ${_uiState.value.sale.products}")
+            Log.d(TAG, "addNewProduct: ${_uiState.value.sale.products}")
         }
     }
 

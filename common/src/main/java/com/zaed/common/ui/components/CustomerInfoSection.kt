@@ -33,18 +33,19 @@ fun CustomerInfoSection(
     onCustomerClicked: () -> Unit
 ) {
     TitledSection(
+        modifier = modifier,
         title = stringResource(R.string.customer)
     ) {
         Surface(
-            modifier = modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             onClick = onCustomerClicked
         ) {
             Row(
 
             ){
                 Box (
-                    modifier
-                        .padding(end = 4.dp)
+                    Modifier
+                        .padding(end = 16.dp)
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f))
 
@@ -64,6 +65,7 @@ fun CustomerInfoSection(
                     Row(){
                         Text(
                             text = stringResource(com.zaed.common.R.string.the_balance),
+                            modifier = Modifier.padding(end = 4.dp),
                             style = MaterialTheme.typography.bodyMedium
                         )
                         Text(

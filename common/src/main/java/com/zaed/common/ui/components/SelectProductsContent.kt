@@ -80,14 +80,14 @@ fun SelectProductsContent(
         ) {
             items(displayedCategory) { category ->
                 CategoryItem(
-                    count = sale.products.firstOrNull { it.name == category.name }?.quantity?:0,
-                    price = sale.products.filter { it.name == category.name }.sumOf { it.totalPriceAfterDiscount },
+                    count = sale.products.firstOrNull { it.categoryId == category.id }?.quantity?:0,
+                    price = sale.products.filter { it.categoryId == category.id }.sumOf { it.totalPriceAfterDiscount },
                     category = category,
                     onClick = {
                         selectedProduct = if(
-                            sale.products.any { it.name == category.name }
+                            sale.products.any { it.categoryId == category.id }
                         ){
-                            sale.products.first { it.name == category.name }.copy(
+                            sale.products.first { it.categoryId == category.id }.copy(
                                 name = category.name, categoryId = category.id
                             )
                         }else{
@@ -137,8 +137,8 @@ fun SelectProductsContent(
                 selectedProduct?.let {
                     SaveProductSheetContent(
                         initialProduct = it,
-                        onSaveProduct = {
-                            onAddProduct(it)
+                        onSaveProduct = {newProduct ->
+                            onAddProduct(newProduct)
                             enterProductSheetVisible = false
                             selectedProduct = null
                         },

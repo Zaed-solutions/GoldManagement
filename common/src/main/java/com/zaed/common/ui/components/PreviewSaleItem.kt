@@ -5,11 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,7 +29,7 @@ fun PreviewSaleItem(
     product: Product,
     onShowProductDetails: (Product) -> Unit = {}
 ) {
-    Log.d("PreviewSaleItem1", "product: $product")
+    Log.d("PreviewSaleContentIN", "PreviewSaleContent: $product")
     val name = product.name.ifEmpty {
         "${product.grams} g"
     }
@@ -39,7 +37,10 @@ fun PreviewSaleItem(
         onClick = { onShowProductDetails(product) },
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
         ) {
             Column(
                 modifier = Modifier.weight(1f)
@@ -55,7 +56,7 @@ fun PreviewSaleItem(
                         R.string.x,
                         product.quantity,
                         product.priceForItem
-                    ) +if(product.laborCost > 0) " + ${product.laborCost.toMoneyFormat(2)}" else "",
+                    ) + if (product.laborCost > 0) " + ${product.laborCost.toMoneyFormat(2)}" else "",
                     color = MaterialTheme.colorScheme.outline
                 )
             }
@@ -92,16 +93,12 @@ fun PreviewSaleItem(
 
             }
 
-            IconButton(
-                modifier = Modifier.size(24.dp),
-                onClick = {}
-            ) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    tint = MaterialTheme.colorScheme.primary,
-                    contentDescription = null
-                )
-            }
+            Icon(
+                imageVector = Icons.AutoMirrored.Default.ArrowForwardIos,
+                tint = MaterialTheme.colorScheme.primary,
+                contentDescription = null
+            )
+
         }
     }
 }
