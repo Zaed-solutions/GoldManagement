@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.productsaledetails.components
+package com.zaed.common.ui.saledetails.productsaledetails.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack

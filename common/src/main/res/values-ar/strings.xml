@@ -248,5 +248,6 @@
     <string name="clear_all">مسح الكل</string>
     <string name="edit_customer">تعديل العميل</string>
     <string name="process">معالجة</string>
+    <string name="change_logs">سجل التغييرات</string>
 
 </resources>

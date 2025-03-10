@@ -15,10 +15,10 @@ import com.zaed.distributor.ui.addcustomers.AddCustomersScreen
 import com.zaed.distributor.ui.addproductsale.AddProductSaleScreen
 import com.zaed.distributor.ui.customerdetails.CustomerDetailsScreen
 import com.zaed.distributor.ui.displaycustomers.DisplayCustomersScreen
-import com.zaed.distributor.ui.goldsaledetails.GoldSaleDetailsScreen
+import com.zaed.common.ui.saledetails.goldsaledetails.GoldSaleDetailsScreen
 import com.zaed.distributor.ui.ingottransactions.IngotTransactionsScreen
 import com.zaed.distributor.ui.losses.LossesScreen
-import com.zaed.distributor.ui.productsaledetails.ProductSaleDetailsScreen
+import com.zaed.common.ui.saledetails.productsaledetails.ProductSaleDetailsScreen
 import com.zaed.distributor.ui.sales.SalesScreen
 import kotlinx.serialization.Serializable
 

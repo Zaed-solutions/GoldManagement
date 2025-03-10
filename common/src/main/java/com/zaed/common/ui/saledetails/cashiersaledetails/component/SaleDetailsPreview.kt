@@ -41,10 +41,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.zaed.cashier.ui.saledetails.SaleDetailsUiAction
-import com.zaed.cashier.ui.saledetails.SaleDetailsUiState
 import com.zaed.common.R
 import com.zaed.common.data.model.sale.DiscountType
+import com.zaed.common.ui.saledetails.cashiersaledetails.SaleDetailsUiState
+import com.zaed.common.ui.saledetails.productsaledetails.SaleDetailsUiAction
 import com.zaed.common.ui.components.MultiOptionSwitch
 import com.zaed.common.ui.components.PhoneNumberTextField
 import com.zaed.common.ui.components.TextInputTextField

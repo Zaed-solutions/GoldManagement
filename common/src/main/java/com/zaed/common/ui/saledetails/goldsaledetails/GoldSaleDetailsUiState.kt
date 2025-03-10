@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.goldsaledetails
+package com.zaed.common.ui.saledetails.goldsaledetails
 
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.customer.WholeSaleCustomer

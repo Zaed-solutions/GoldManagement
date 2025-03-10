@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.goldsaledetails
+package com.zaed.common.ui.saledetails.productsaledetails
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,50 +19,56 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
+import com.zaed.common.data.model.sale.Product
+import com.zaed.common.data.model.sale.WholesaleProductSale
+import com.zaed.common.ui.components.ChangeLogList
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
 import com.zaed.common.ui.components.CustomerInfoSection
 import com.zaed.common.ui.components.ProductsTable
 import com.zaed.common.ui.components.TitledSection
-import com.zaed.distributor.ui.productsaledetails.SaleDetailsUiAction
-import com.zaed.distributor.ui.productsaledetails.components.PaymentsTable
-import com.zaed.distributor.ui.productsaledetails.components.ProductSaleDetailsTopBar
-import com.zaed.distributor.ui.productsaledetails.components.SaleInfoSection
+import com.zaed.common.ui.saledetails.productsaledetails.components.PaymentsTable
+import com.zaed.common.ui.saledetails.productsaledetails.components.ProductSaleDetailsTopBar
+import com.zaed.common.ui.saledetails.productsaledetails.components.SaleInfoSection
 import org.koin.androidx.compose.koinViewModel
+import java.util.Date
 
 @Composable
-fun GoldSaleDetailsScreen(
+fun ProductSaleDetailsScreen(
     modifier: Modifier = Modifier,
-    viewModel: GoldSaleDetailsViewModel = koinViewModel(),
+    viewModel: ProductSaleDetailsViewModel = koinViewModel(),
     onBackClicked: () -> Unit,
     onNavigateToEditSale: (String) -> Unit,
-    navigateToCustomerDetails: (String) -> Unit,
-    saleId: String = ""
+    saleId: String = "",
+    onNavigateToCustomerDetails: (String) -> Unit,
+    isAdmin: Boolean = true
 ) {
     LaunchedEffect(true) {
         viewModel.init(saleId)
     }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(state.isSaleDeleted) {
-        if(state.isSaleDeleted){
+        if (state.isSaleDeleted) {
             onBackClicked()
         }
     }
-    GoldSaleDetailsContent(
-        state = state
+    ProductSaleDetailsContent(
+        state = state,
+        isAdmin = isAdmin
     ) { action ->
         when (action) {
             SaleDetailsUiAction.OnBackClicked -> onBackClicked()
+            SaleDetailsUiAction.OnCustomerClicked -> onNavigateToCustomerDetails(state.sale.customerId)
             SaleDetailsUiAction.OnEditClicked -> onNavigateToEditSale(saleId)
-            SaleDetailsUiAction.OnCustomerClicked -> navigateToCustomerDetails(state.customer.id)
             else -> viewModel.handleAction(action)
         }
     }
 }
 
 @Composable
-private fun GoldSaleDetailsContent(
+private fun ProductSaleDetailsContent(
     modifier: Modifier = Modifier,
-    state: GoldSaleDetailsUiState,
+    state: ProductSaleDetailsUiState,
+    isAdmin: Boolean = false,
     onAction: (SaleDetailsUiAction) -> Unit,
 ) {
     var isConfirmDeleteVisible by remember { mutableStateOf(false) }
@@ -70,6 +76,7 @@ private fun GoldSaleDetailsContent(
         modifier = modifier,
         topBar = {
             ProductSaleDetailsTopBar(
+                receiptNumber = state.sale.receiptNumber,
                 onBackClicked = {
                     onAction(SaleDetailsUiAction.OnBackClicked)
                 },
@@ -78,8 +85,7 @@ private fun GoldSaleDetailsContent(
                 },
                 onDeleteClicked = {
                     isConfirmDeleteVisible = true
-                },
-                receiptNumber = state.sale.receiptNumber
+                }
             )
         }
     ) { innerPadding ->
@@ -104,14 +110,16 @@ private fun GoldSaleDetailsContent(
                     onAction(SaleDetailsUiAction.OnRequestReceipt)
                 }
             )
-            // customer info
-            CustomerInfoSection(
-                customerName = state.sale.customerName,
-                customerDebt = state.customer.debtAmount,
-                onCustomerClicked = {
-                    onAction(SaleDetailsUiAction.OnCustomerClicked)
-                }
-            )
+            if (state.customer.id.isNotBlank()) {
+                // customer info
+                CustomerInfoSection(
+                    customerName = state.sale.customerName,
+                    customerDebt = state.customer.debtAmount,
+                    onCustomerClicked = {
+                        onAction(SaleDetailsUiAction.OnCustomerClicked)
+                    }
+                )
+            }
             //products
             TitledSection(
                 title = stringResource(R.string.products)
@@ -126,8 +134,19 @@ private fun GoldSaleDetailsContent(
                 title = stringResource(R.string.payments)
             ) {
                 PaymentsTable(
-                    payments = state.payments
+                    payments = state.cashPayments
                 )
+            }
+
+            //LOGS
+            if (isAdmin && state.sale.logs.isNotEmpty()){
+                TitledSection(
+                    title = stringResource(R.string.change_logs)
+                ) {
+                    ChangeLogList(
+                        changeLogs = state.sale.logs
+                    )
+                }
             }
             ConfirmDeleteBottomSheet(
                 visible = isConfirmDeleteVisible,
@@ -146,8 +165,28 @@ private fun GoldSaleDetailsContent(
 @Preview(showSystemUi = true, showBackground = true, device = "id:pixel_9_pro")
 @Composable
 private fun Preview() {
-    GoldSaleDetailsContent(
+    ProductSaleDetailsContent(
         onAction = {},
-        state = GoldSaleDetailsUiState()
+        state = ProductSaleDetailsUiState(
+            sale = WholesaleProductSale(
+                customerName = "Ali",
+                createdAt = Date(),
+                receiptNumber = "123456",
+                products = listOf(
+                    Product(
+                        name = "Gold",
+                        quantity = 5,
+                        gramPrice = 100.0,
+                        grams = 10.0
+                    ),
+                    Product(
+                        name = "Silver",
+                        quantity = 2,
+                        gramPrice = 50.0,
+                        grams = 5.0
+                    )
+                )
+            )
+        )
     )
 }

@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.productsaledetails
+package com.zaed.common.ui.saledetails.goldsaledetails
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,50 +19,54 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
-import com.zaed.common.data.model.sale.Product
+import com.zaed.common.ui.components.ChangeLogList
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
 import com.zaed.common.ui.components.CustomerInfoSection
 import com.zaed.common.ui.components.ProductsTable
 import com.zaed.common.ui.components.TitledSection
-import com.zaed.distributor.ui.productsaledetails.components.PaymentsTable
-import com.zaed.distributor.ui.productsaledetails.components.ProductSaleDetailsTopBar
-import com.zaed.distributor.ui.productsaledetails.components.SaleInfoSection
+import com.zaed.common.ui.saledetails.productsaledetails.SaleDetailsUiAction
+import com.zaed.common.ui.saledetails.productsaledetails.components.PaymentsTable
+import com.zaed.common.ui.saledetails.productsaledetails.components.ProductSaleDetailsTopBar
+import com.zaed.common.ui.saledetails.productsaledetails.components.SaleInfoSection
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun ProductSaleDetailsScreen(
+fun GoldSaleDetailsScreen(
     modifier: Modifier = Modifier,
-    viewModel: ProductSaleDetailsViewModel = koinViewModel(),
+    viewModel: GoldSaleDetailsViewModel = koinViewModel(),
     onBackClicked: () -> Unit,
     onNavigateToEditSale: (String) -> Unit,
+    navigateToCustomerDetails: (String) -> Unit,
     saleId: String = "",
-    onNavigateToCustomerDetails: (String) -> Unit
+    isAdmin: Boolean = false
 ) {
     LaunchedEffect(true) {
         viewModel.init(saleId)
     }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(state.isSaleDeleted) {
-        if(state.isSaleDeleted){
+        if (state.isSaleDeleted) {
             onBackClicked()
         }
     }
-    ProductSaleDetailsContent(
-        state = state
+    GoldSaleDetailsContent(
+        state = state,
+        isAdmin = isAdmin
     ) { action ->
         when (action) {
             SaleDetailsUiAction.OnBackClicked -> onBackClicked()
-            SaleDetailsUiAction.OnCustomerClicked -> onNavigateToCustomerDetails(state.sale.customerId)
             SaleDetailsUiAction.OnEditClicked -> onNavigateToEditSale(saleId)
+            SaleDetailsUiAction.OnCustomerClicked -> navigateToCustomerDetails(state.customer.id)
             else -> viewModel.handleAction(action)
         }
     }
 }
 
 @Composable
-private fun ProductSaleDetailsContent(
+private fun GoldSaleDetailsContent(
     modifier: Modifier = Modifier,
-    state: ProductSaleDetailsUiState,
+    state: GoldSaleDetailsUiState,
+    isAdmin: Boolean,
     onAction: (SaleDetailsUiAction) -> Unit,
 ) {
     var isConfirmDeleteVisible by remember { mutableStateOf(false) }
@@ -70,7 +74,6 @@ private fun ProductSaleDetailsContent(
         modifier = modifier,
         topBar = {
             ProductSaleDetailsTopBar(
-                receiptNumber = state.sale.receiptNumber,
                 onBackClicked = {
                     onAction(SaleDetailsUiAction.OnBackClicked)
                 },
@@ -79,7 +82,8 @@ private fun ProductSaleDetailsContent(
                 },
                 onDeleteClicked = {
                     isConfirmDeleteVisible = true
-                }
+                },
+                receiptNumber = state.sale.receiptNumber
             )
         }
     ) { innerPadding ->
@@ -126,8 +130,17 @@ private fun ProductSaleDetailsContent(
                 title = stringResource(R.string.payments)
             ) {
                 PaymentsTable(
-                    payments = state.cashPayments
+                    payments = state.payments
                 )
+            }
+            if (isAdmin && state.sale.logs.isNotEmpty()){
+                TitledSection(
+                    title = stringResource(R.string.change_logs)
+                ) {
+                    ChangeLogList(
+                        changeLogs = state.sale.logs
+                    )
+                }
             }
             ConfirmDeleteBottomSheet(
                 visible = isConfirmDeleteVisible,
@@ -143,31 +156,12 @@ private fun ProductSaleDetailsContent(
     }
 }
 
-@Preview(showSystemUi = true, showBackground = true, device = "id:pixel_9_pro")
+@Preview(showSystemUi = true, showBackground = true)
 @Composable
 private fun Preview() {
-    ProductSaleDetailsContent(
+    GoldSaleDetailsContent(
         onAction = {},
-        state = ProductSaleDetailsUiState(
-            sale = com.zaed.common.data.model.sale.WholesaleProductSale(
-                customerName = "Ali",
-                createdAt = java.util.Date(),
-                receiptNumber = "123456",
-                products = listOf(
-                    Product(
-                        name = "Gold",
-                        quantity = 5,
-                        gramPrice = 100.0,
-                        grams = 10.0
-                    ),
-                    Product(
-                        name = "Silver",
-                        quantity = 2,
-                        gramPrice = 50.0,
-                        grams = 5.0
-                    )
-                )
-            )
-        )
+        isAdmin = true,
+        state = GoldSaleDetailsUiState()
     )
 }
