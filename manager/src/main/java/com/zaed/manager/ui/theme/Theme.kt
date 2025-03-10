@@ -8,9 +8,12 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import com.zaed.common.ui.theme.ColorFamily
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -248,6 +251,21 @@ data class ColorFamily(
     val onColorContainer: Color
 )
 
+val lightGoldColors = ColorFamily(
+    color = Color(0xFF815600),
+    onColor = Color(0xFFFFFFFF),
+    colorContainer = Color(0xFFFFB22C),
+    onColorContainer = Color(0xFF6D4700)
+)
+val darkGoldColors = ColorFamily(
+    color = Color(0xFFFFD7A0),
+    onColor = Color(0xFF442B00),
+    colorContainer = Color(0xFFFFB22C),
+    onColorContainer = Color(0xFF6D4700)
+)
+
+val GoldenCustomColors = staticCompositionLocalOf { ColorFamily() }
+
 
 @Composable
 fun ManagerTheme(
@@ -257,19 +275,18 @@ fun ManagerTheme(
     content: @Composable() () -> Unit
 ) {
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
         darkTheme -> darkScheme
         else -> lightScheme
     }
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = AppTypography,
-        content = content
-    )
+    val goldenColors = if (darkTheme) darkGoldColors else lightGoldColors
+    CompositionLocalProvider(
+        GoldenCustomColors provides goldenColors
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = AppTypography,
+            content = content
+        )
+    }
 }
 
