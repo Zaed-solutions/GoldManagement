@@ -81,6 +81,7 @@ fun PreviewSaleContent(
         var showCustomerSheet by remember { mutableStateOf(false) }
         if (selectedCustomer.id.isNotBlank()) {
             CustomerInfoSection(
+                modifier = Modifier.padding(horizontal = 16.dp),
                 customerName = selectedCustomer.name,
                 customerDebt = selectedCustomer.debtAmount,
                 onCustomerClicked = {}
@@ -105,6 +106,7 @@ fun PreviewSaleContent(
             }
         }
         Surface(
+            modifier = Modifier.padding(horizontal = 16.dp)
         ) {
             Column(
                 modifier = Modifier
