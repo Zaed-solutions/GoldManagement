@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.goldsaledetails.components
+package com.zaed.common.ui.saledetails.productsaledetails.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -22,14 +22,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.payment.CashPayment
-import com.zaed.common.ui.util.formatMoney
+import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.ui.util.toMoneyFormat
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun GoldPaymentsTable(
+fun PaymentsTable(
     modifier: Modifier = Modifier,
-    cashPayments: List<CashPayment> = emptyList()
+    payments: List<Payment> = emptyList()
 ) {
     Surface(
         border = BorderStroke(
@@ -58,22 +58,22 @@ fun GoldPaymentsTable(
                             text = stringResource(R.string.type),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.weight(5f)
+                            modifier = Modifier.weight(3f)
                         )
                         Text(
                             text = stringResource(R.string.value),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.weight(2f),
-                            textAlign = TextAlign.Center
+                            modifier = Modifier.weight(5f),
+                            textAlign = TextAlign.End
                         )
                     }
                     HorizontalDivider()
                 }
             }
-            items(cashPayments) { payment ->
-                GoldPaymentTableItem(
-                    cashPayment = payment
+            items(payments) { payment ->
+                PaymentTableItem(
+                    payment = payment
                 )
             }
         }
@@ -81,9 +81,9 @@ fun GoldPaymentsTable(
 }
 
 @Composable
-fun GoldPaymentTableItem(
+fun PaymentTableItem(
     modifier: Modifier = Modifier,
-    cashPayment: CashPayment
+    payment: Payment
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -95,16 +95,17 @@ fun GoldPaymentTableItem(
             verticalAlignment = Alignment.CenterVertically
         ){
             Text(
-                text = cashPayment.type.name,
+                text = stringResource(payment.type.titleRes),
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.weight(5f)
+                modifier = Modifier.weight(3f)
             )
+
             Text(
-                text = cashPayment.amount.formatMoney(),
+                text = payment.amount.toMoneyFormat(2),
                 style = MaterialTheme.typography.titleMedium,
-                textAlign = TextAlign.Center,
+                textAlign = TextAlign.End,
                 maxLines = 1,
-                modifier = Modifier.weight(2f)
+                modifier = Modifier.weight(5f)
             )
         }
     }

@@ -8,11 +8,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.zaed.cashier.ui.addsale.AddSaleScreen
 import com.zaed.cashier.ui.loss.LossScreen
-import com.zaed.cashier.ui.saledetails.SaleDetailsScreen
 import com.zaed.cashier.ui.sales.SalesScreen
 import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
+import com.zaed.common.ui.saledetails.cashiersaledetails.SaleDetailsScreen
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -71,6 +71,9 @@ fun NavigationHost(
             val saleId = backstackEntry.toRoute<Route.SaleDetailsRoute>().saleId
             SaleDetailsScreen(
                 saleId = saleId,
+                onNavigateToEditSale = {
+                    navController.navigate(Route.AddSaleRoute(it))
+                },
                 onBack = {
                     val previousDestination = navController.previousBackStackEntry?.destination?.route?.substringBefore("?")
                     if (previousDestination == Route.AddSaleRoute::class.qualifiedName) {

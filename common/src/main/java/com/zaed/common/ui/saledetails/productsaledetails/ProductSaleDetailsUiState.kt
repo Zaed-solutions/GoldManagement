@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.productsaledetails
+package com.zaed.common.ui.saledetails.productsaledetails
 
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.customer.WholeSaleCustomer
@@ -8,8 +8,8 @@ import com.zaed.common.data.model.sale.WholesaleProductSale
 data class ProductSaleDetailsUiState(
     val isLoading: Boolean = false,
     val isSaleDeleted: Boolean = false,
+    val sale: WholesaleProductSale = WholesaleProductSale(),
     val currentUser: User = User(),
     val customer: WholeSaleCustomer = WholeSaleCustomer(),
-    val sale: WholesaleProductSale = WholesaleProductSale(),
     val cashPayments: List<Payment> = emptyList()
 )

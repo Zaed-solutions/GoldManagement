@@ -6,9 +6,9 @@ import com.zaed.distributor.ui.ingottransactions.IngotTransactionsViewModel
 import com.zaed.distributor.ui.addproductsale.AddProductSaleViewModel
 import com.zaed.distributor.ui.customerdetails.CustomerDetailsViewModel
 import com.zaed.distributor.ui.displaycustomers.DisplayCustomersViewModel
-import com.zaed.distributor.ui.goldsaledetails.GoldSaleDetailsViewModel
+import com.zaed.common.ui.saledetails.goldsaledetails.GoldSaleDetailsViewModel
 import com.zaed.distributor.ui.losses.LossesViewModel
-import com.zaed.distributor.ui.productsaledetails.ProductSaleDetailsViewModel
+import com.zaed.common.ui.saledetails.productsaledetails.ProductSaleDetailsViewModel
 import com.zaed.distributor.ui.sales.SalesViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.dsl.module

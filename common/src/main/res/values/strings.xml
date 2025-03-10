@@ -248,6 +248,7 @@
     <string name="clear_all">Clear All</string>
     <string name="edit_customer">Edit Customer</string>
     <string name="process">Process</string>
+    <string name="change_logs">Change Logs</string>
     <string name="work_losses">Work Losses</string>
     <string name="personal_expenses">Personal Expenses</string>
     <string name="save_work_loss">Save work loss</string>
