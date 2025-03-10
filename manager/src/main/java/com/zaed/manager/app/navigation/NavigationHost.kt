@@ -19,6 +19,7 @@ import com.zaed.common.ui.auth.signup.SignUpScreen
 import com.zaed.manager.ui.distributordetails.DistributorDetailsScreen
 import com.zaed.manager.ui.distributors.DistributorsScreen
 import com.zaed.manager.ui.distributorssales.DistributorsSalesScreen
+import com.zaed.manager.ui.losses.LossesScreen
 import com.zaed.manager.ui.storedetails.StoreDetailsScreen
 import com.zaed.manager.ui.stores.StoresScreen
 import com.zaed.manager.ui.storessales.StoresSalesScreen
@@ -120,6 +121,11 @@ fun NavigationHost(
                 onNavigateToSaleDetails = {
                     /*TODO*/
                 }
+            )
+        }
+        composable<Route.LossesRoute> {
+            LossesScreen(
+                onShowNavDrawer = onShowNavDrawer
             )
         }
     }
