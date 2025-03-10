@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -86,20 +87,13 @@ fun PreviewSaleContent(
             )
             Spacer(modifier = Modifier.height(8.dp))
         }
+        val productsState by rememberUpdatedState(sale.products)
         LazyColumn(
             modifier = Modifier.weight(1f),
         ) {
             items(
-                items = sale.products,
-                key = { product ->
-                    product.id.ifBlank {
-                        "${product.name}_${product.grams}_${product.quantity}_${
-                            System.identityHashCode(
-                                product
-                            )
-                        }"
-                    }
-                }            ) { product ->
+                items = productsState,
+            ) { product ->
                 PreviewSaleItem(
                     product = product,
                     onShowProductDetails = {

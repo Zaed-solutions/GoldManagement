@@ -121,13 +121,13 @@ private fun AddSaleScreenContent(
                             onAddProduct = {
                                 onAction(AddSaleUiAction.OnAddProduct(it))
                             },
+                            onDeleteProduct = {
+                                onAction(AddSaleUiAction.OnDeleteProduct(it))
+                            },
                             onNext = {
                                 scope.launch {
                                     pagerState.animateScrollToPage(pagerState.currentPage + 1)
                                 }
-                            },
-                            onDeleteProduct = {
-                                onAction(AddSaleUiAction.OnDeleteProduct(it))
                             }
                         )
                     }
