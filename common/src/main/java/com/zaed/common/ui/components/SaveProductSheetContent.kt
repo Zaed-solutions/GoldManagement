@@ -129,8 +129,6 @@ fun ProductFieldsContent(
 
         Spacer(modifier = Modifier.height(16.dp))
         //gram price
-
-
         NumberInputTextField(
             modifier = Modifier.fillMaxWidth(),
             value = product1.gramPrice,

@@ -1,5 +1,6 @@
 package com.zaed.common.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,6 +31,7 @@ fun PreviewSaleItem(
     product: Product,
     onShowProductDetails: (Product) -> Unit = {}
 ) {
+    Log.d("PreviewSaleItem1", "product: $product")
     val name = product.name.ifEmpty {
         "${product.grams} g"
     }

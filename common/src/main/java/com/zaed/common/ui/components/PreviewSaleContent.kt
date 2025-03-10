@@ -78,7 +78,7 @@ fun PreviewSaleContent(
         var editProductSheet by remember { mutableStateOf(false) }
         var selectedProduct by remember { mutableStateOf<Product?>(null) }
         var showCustomerSheet by remember { mutableStateOf(false) }
-        if(selectedCustomer.id.isNotBlank()) {
+        if (selectedCustomer.id.isNotBlank()) {
             CustomerInfoSection(
                 customerName = selectedCustomer.name,
                 customerDebt = selectedCustomer.debtAmount,
@@ -89,7 +89,17 @@ fun PreviewSaleContent(
         LazyColumn(
             modifier = Modifier.weight(1f),
         ) {
-            items(sale.products) { product ->
+            items(
+                items = sale.products,
+                key = { product ->
+                    product.id.ifBlank {
+                        "${product.name}_${product.grams}_${product.quantity}_${
+                            System.identityHashCode(
+                                product
+                            )
+                        }"
+                    }
+                }            ) { product ->
                 PreviewSaleItem(
                     product = product,
                     onShowProductDetails = {
@@ -134,7 +144,7 @@ fun PreviewSaleContent(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     //customer
-                    if(isSelectCustomerEnabled) {
+                    if (isSelectCustomerEnabled) {
                         OutlinedButton(
                             onClick = {
                                 showCustomerSheet = true
@@ -152,7 +162,9 @@ fun PreviewSaleContent(
                                     contentDescription = null
                                 )
                                 Text(
-                                    text = if (selectedCustomer.id.isNotBlank()) stringResource(R.string.edit_customer) else stringResource(R.string.add_customer)
+                                    text = if (selectedCustomer.id.isNotBlank()) stringResource(R.string.edit_customer) else stringResource(
+                                        R.string.add_customer
+                                    )
                                 )
                             }
                         }
@@ -248,9 +260,8 @@ fun PreviewSaleContent(
                             product1 = it,
                             onValueChange = { updatedProduct ->
                                 selectedProduct = updatedProduct
-                            },
-
-                            )
+                            }
+                        )
                     }
                     Spacer(Modifier.weight(1f))
                     Row(
@@ -271,7 +282,7 @@ fun PreviewSaleContent(
                             shape = RoundedCornerShape(4.dp)
                         ) {
                             Text(
-                                text = "تأكيد"
+                                text = stringResource(R.string.confirm)
                             )
                         }
                         FilledTonalButton(
@@ -288,7 +299,7 @@ fun PreviewSaleContent(
                             shape = RoundedCornerShape(4.dp)
                         ) {
                             Text(
-                                text = "حذف"
+                                text = stringResource(R.string.delete)
                             )
                         }
                     }
