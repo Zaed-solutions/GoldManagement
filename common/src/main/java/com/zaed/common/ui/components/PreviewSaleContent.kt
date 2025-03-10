@@ -74,7 +74,7 @@ fun PreviewSaleContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(vertical = 16.dp),
     ) {
         var editProductSheet by remember { mutableStateOf(false) }
         var selectedProduct by remember { mutableStateOf<Product?>(null) }
