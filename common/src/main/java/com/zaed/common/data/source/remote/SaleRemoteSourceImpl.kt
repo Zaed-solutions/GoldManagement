@@ -496,27 +496,29 @@ class SaleRemoteSourceImpl(
                 trySend(Result.success(combinedSales))
             }
 
-            goldSalesListener = wholesaleGoldSalesCollection.addSnapshotListener { snapshot, error ->
-                if (error != null) {
-                    close(error)
-                    return@addSnapshotListener
+            goldSalesListener =
+                wholesaleGoldSalesCollection.addSnapshotListener { snapshot, error ->
+                    if (error != null) {
+                        close(error)
+                        return@addSnapshotListener
+                    }
+                    latestGoldSales = snapshot?.documents?.mapNotNull { doc ->
+                        doc.toObject(WholesaleGoldSale::class.java)?.copy(id = doc.id)
+                    } ?: emptyList()
+                    updateAndSend()
                 }
-                latestGoldSales = snapshot?.documents?.mapNotNull { doc ->
-                    doc.toObject(WholesaleGoldSale::class.java)?.copy(id = doc.id)
-                } ?: emptyList()
-                updateAndSend()
-            }
 
-            productSalesListener = wholesaleProductSalesCollection.addSnapshotListener { snapshot, error ->
-                if (error != null) {
-                    close(error)
-                    return@addSnapshotListener
+            productSalesListener =
+                wholesaleProductSalesCollection.addSnapshotListener { snapshot, error ->
+                    if (error != null) {
+                        close(error)
+                        return@addSnapshotListener
+                    }
+                    latestProductSales = snapshot?.documents?.mapNotNull { doc ->
+                        doc.toObject(WholesaleProductSale::class.java)?.copy(id = doc.id)
+                    } ?: emptyList()
+                    updateAndSend()
                 }
-                latestProductSales = snapshot?.documents?.mapNotNull { doc ->
-                    doc.toObject(WholesaleProductSale::class.java)?.copy(id = doc.id)
-                } ?: emptyList()
-                updateAndSend()
-            }
 
         } catch (e: Exception) {
             crashlytics.recordException(e)
@@ -545,24 +547,30 @@ class SaleRemoteSourceImpl(
                 )
             )
             batch.set(saleRef, sale.copy(logs = logs, deleted = true))
-            val customerRef = wholesaleCustomersCollection.document(sale.customerId)
-            var totalPaymentDeleted = 0.0
-            sale.paymentsIds.forEach {
-                val paymentRef = moneyPaymentCollection.document(it)
-                val payment = paymentRef.get().await().toObject(CashPayment::class.java)
-                val log = ChangeLog(
-                    date = Date(),
-                    employeeId = request.distributorId,
-                    employeeName = request.distributorName,
-                    type = LogType.DELETE
-                )
-                val updatePayments = mapOf(
-                    "deleted" to true,
-                    "logs" to FieldValue.arrayUnion(log)
-                )
-                batch.update(paymentRef, updatePayments)
-                if (payment?.type == PaymentType.FUTURES) {
-                    totalPaymentDeleted += payment.amount
+            if (sale.customerId.isNotEmpty()) {
+                val customerRef = wholesaleCustomersCollection.document(sale.customerId)
+                var totalPaymentDeleted = 0.0
+                sale.paymentsIds.forEach {
+                    val paymentRef = moneyPaymentCollection.document(it)
+                    val payment = paymentRef.get().await().toObject(CashPayment::class.java)
+                    val log = ChangeLog(
+                        date = Date(),
+                        employeeId = request.distributorId,
+                        employeeName = request.distributorName,
+                        type = LogType.DELETE
+                    )
+                    val updatePayments = mapOf(
+                        "deleted" to true,
+                        "logs" to FieldValue.arrayUnion(log)
+                    )
+                    batch.update(paymentRef, updatePayments)
+                    if (payment?.type == PaymentType.FUTURES) {
+                        totalPaymentDeleted += payment.amount
+                    }
+                    batch.update(
+                        customerRef,
+                        mapOf("debtAmount" to FieldValue.increment(totalPaymentDeleted))
+                    )
                 }
             }
             val inventoryChanges = sale.products
@@ -588,10 +596,7 @@ class SaleRemoteSourceImpl(
                     batch.update(inventoryDoc.reference, updates)
                 }
             }
-            batch.update(
-                customerRef,
-                mapOf("debtAmount" to FieldValue.increment(totalPaymentDeleted.unaryMinus()))
-            )
+
             batch.commit().await()
             Result.success(Unit)
         } catch (e: Exception) {
@@ -616,30 +621,33 @@ class SaleRemoteSourceImpl(
                 )
             )
             batch.set(saleRef, sale.copy(logs = logs, deleted = true))
-            val customerRef = wholesaleCustomersCollection.document(sale.customerId)
-            var totalPaymentDeleted = 0.0
-            sale.paymentsIds.forEach {
-                val paymentRef = moneyPaymentCollection.document(it)
-                val payment = paymentRef.get().await().toObject(CashPayment::class.java)
-                val log = ChangeLog(
-                    date = Date(),
-                    employeeId = request.distributorId,
-                    employeeName = request.distributorName,
-                    type = LogType.DELETE
-                )
-                val updatePayments = mapOf(
-                    "deleted" to true,
-                    "logs" to FieldValue.arrayUnion(log)
-                )
-                batch.update(paymentRef, updatePayments)
-                if (payment?.type == PaymentType.FUTURES) {
-                    totalPaymentDeleted += payment.amount
+            if (sale.customerId.isNotEmpty()) {
+                val customerRef = wholesaleCustomersCollection.document(sale.customerId)
+                var totalPaymentDeleted = 0.0
+                sale.paymentsIds.forEach {
+                    val paymentRef = moneyPaymentCollection.document(it)
+                    val payment = paymentRef.get().await().toObject(CashPayment::class.java)
+                    val log = ChangeLog(
+                        date = Date(),
+                        employeeId = request.distributorId,
+                        employeeName = request.distributorName,
+                        type = LogType.DELETE
+                    )
+                    val updatePayments = mapOf(
+                        "deleted" to true,
+                        "logs" to FieldValue.arrayUnion(log)
+                    )
+                    batch.update(paymentRef, updatePayments)
+                    if (payment?.type == PaymentType.FUTURES) {
+                        totalPaymentDeleted += payment.amount
+                    }
                 }
+
+                batch.update(
+                    customerRef,
+                    mapOf("debtAmount" to FieldValue.increment(totalPaymentDeleted))
+                )
             }
-            batch.update(
-                customerRef,
-                mapOf("debtAmount" to FieldValue.increment(totalPaymentDeleted.unaryMinus()))
-            )
             val goldAmount = sale.products.sumOf { it.grams }
             inventoryCollection
                 .where(
@@ -883,7 +891,11 @@ class SaleRemoteSourceImpl(
                 Log.d("finding_the_sex", "existingPayment: ${existingPayment.amount}")
                 batch.update(
                     customerRef,
-                    mapOf("debtAmount" to FieldValue.increment(existingPayment.signedAmount().unaryMinus()))
+                    mapOf(
+                        "debtAmount" to FieldValue.increment(
+                            existingPayment.signedAmount().unaryMinus()
+                        )
+                    )
                 )
             }
             request.payments.forEach { payment ->
@@ -1006,7 +1018,11 @@ class SaleRemoteSourceImpl(
                 val customerRef = wholesaleCustomersCollection.document(request.sale.customerId)
                 batch.update(
                     customerRef,
-                    mapOf("debtAmount" to FieldValue.increment(existingPayment.signedAmount().unaryMinus()))
+                    mapOf(
+                        "debtAmount" to FieldValue.increment(
+                            existingPayment.signedAmount().unaryMinus()
+                        )
+                    )
                 )
             }
             request.payments.forEach { payment ->

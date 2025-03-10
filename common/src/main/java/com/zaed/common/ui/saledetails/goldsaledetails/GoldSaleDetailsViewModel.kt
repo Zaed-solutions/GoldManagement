@@ -139,6 +139,7 @@ class GoldSaleDetailsViewModel(
     }
 
     private fun deleteSale() {
+        Log.d("zarea2", "deleteSale: ")
         viewModelScope.launch (Dispatchers.IO){
             deleteWholesaleGoldSaleUseCase(
                 DeleteWholesaleGoldSaleRequest(
