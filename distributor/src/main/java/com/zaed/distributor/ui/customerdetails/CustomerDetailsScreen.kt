@@ -16,7 +16,6 @@ fun CustomerDetailsScreen(
     onNavigateToGoldSaleDetails: (String) -> Unit,
     onNavigateToAddProductSale: (String) -> Unit,
     onNavigateToAddGoldSale: (String) -> Unit,
-
     onBack: () -> Unit
 ) {
     LaunchedEffect(Unit) {

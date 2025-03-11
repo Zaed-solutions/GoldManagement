@@ -10,15 +10,15 @@ enum class NavDrawerItem(
     @DrawableRes val icon: Int?,
     val route: Route
 ) {
-    PRODUCT_SALES(
-        title = R.string.sales,
-        icon = R.drawable.ic_money_plus,
-        route = Route.SalesRoute
-    ),
     ADD_SALE(
         title = R.string.add_sale,
         icon = R.drawable.ic_gold,
         route = Route.AddProductSaleRoute()
+    ),
+    PRODUCT_SALES(
+        title = R.string.sales,
+        icon = R.drawable.ic_money_plus,
+        route = Route.SalesRoute
     ),
     CUSTOMERS(
         title = R.string.customers,
@@ -36,7 +36,7 @@ enum class NavDrawerItem(
         route = Route.AddGoldSaleRoute()
     ),
     INGOTS_SALES(
-        title = R.string.ingots_sales,
+        title = R.string.ingots_transactions,
         icon = R.drawable.ic_ingot,
         route = Route.IngotTransactionsRoute
     ),
@@ -44,7 +44,7 @@ enum class NavDrawerItem(
 
 fun List<UserPermission>.mapToNavDrawerItems(): List<NavDrawerItem> {
     val routes = mutableListOf<NavDrawerItem>()
-    forEach {
+    this.sortedBy { it.ordinal }.forEach {
         when (it) {
             UserPermission.SELL_PRODUCTS -> {
                 routes.add(NavDrawerItem.ADD_SALE)

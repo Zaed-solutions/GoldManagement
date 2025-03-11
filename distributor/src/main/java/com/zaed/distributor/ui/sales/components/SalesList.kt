@@ -3,19 +3,16 @@ package com.zaed.distributor.ui.sales.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.sale.WholesaleGoldSale
 import com.zaed.common.data.model.sale.WholesaleProductSale
 import com.zaed.common.data.model.sale.WholesaleSale
 import com.zaed.common.ui.components.ListWithLoading
-import com.zaed.common.ui.components.SwipeToEditOrDeleteContainer
+import com.zaed.common.ui.components.SaleItem
 
 @Composable
 fun SalesList(
@@ -40,46 +37,22 @@ fun SalesList(
                 items = sales,
                 key = { it.id }
             ) { sale ->
-                when(sale){
-                    is WholesaleProductSale -> {
-                        SwipeToEditOrDeleteContainer(
-                            modifier = Modifier.animateItem(),
-                            onDelete = {
-                                onDeleteSale(sale.id, true)
-                            },
-                            isEditEnabled = true,
-                            onEdit = {
-                                onEditSale(sale.id, true)
-                            }
-                        ) {
-                            ProductSaleItem(
-                                modifier = Modifier.padding(horizontal = 8.dp),
-                                sale = sale,
-                                onSaleClicked = { onSaleClicked(sale.id, true) }
-                            )
-                        }
-                    }
-                    is WholesaleGoldSale -> {
-                        SwipeToEditOrDeleteContainer(
-                            modifier = Modifier.animateItem(),
-                            onDelete = {
-                                onDeleteSale(sale.id, false)
-                            },
-                            isEditEnabled = true,
-                            onEdit = {
-                                onEditSale(sale.id, false)
-                            }
-                        ) {
-                            GoldSaleItem(
-                                sale = sale,
-                                onSaleClicked = {
-                                    onSaleClicked(sale.id, false)
-                                }
-                            )
-                        }
-                    }
-                }
-                HorizontalDivider()
+                SaleItem(
+                    modifier = Modifier.animateItem(),
+                    sale = sale,
+                    onSaleClicked = {
+                        onSaleClicked(sale.id, sale is WholesaleProductSale)
+                    },
+                    onDelete = {
+                        onDeleteSale(sale.id, sale is WholesaleProductSale)
+                    },
+                    onEdit = {
+                        onEditSale(sale.id, sale is WholesaleProductSale)
+                    },
+                    isDeletable = true,
+                    isEditable = true,
+                    isDividerVisible = true
+                )
             }
         }
     }

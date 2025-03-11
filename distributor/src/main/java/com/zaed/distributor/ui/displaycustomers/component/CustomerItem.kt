@@ -1,6 +1,7 @@
 package com.zaed.distributor.ui.displaycustomers.component
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -43,67 +45,68 @@ fun CustomerItem(
     Surface(
         modifier = Modifier
             .fillMaxWidth(),
-        shadowElevation = 4.dp,
         onClick = onClick,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
-        shape = MaterialTheme.shapes.medium
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-        ) {
-            Row {
-                Text(
-                    text = customer.name,
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = customer.phone,
-                )
-                MoreDropDownMenu(
-                    items = listOf(
-                        MoreDropdownItem(
-                            onClick = { onEdit()},
-                            title = stringResource(R.string.edit),
-                            tint = MaterialTheme.colorScheme.primary,
-                            icon = Icons.Default.Edit
-                        ),
-                        MoreDropdownItem(
-                            onClick = { onDelete()},
-                            title = stringResource(R.string.delete),
-                            tint = MaterialTheme.colorScheme.error,
-                            icon = Icons.Default.Delete
+        Column {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, top = 8.dp, bottom = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Row (
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Text(
+                        text = customer.name,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = customer.phone,
+                    )
+                    MoreDropDownMenu(
+                        items = listOf(
+                            MoreDropdownItem(
+                                onClick = { onEdit() },
+                                title = stringResource(R.string.edit),
+                                tint = MaterialTheme.colorScheme.primary,
+                                icon = Icons.Default.Edit
+                            ),
+                            MoreDropdownItem(
+                                onClick = { onDelete() },
+                                title = stringResource(R.string.delete),
+                                tint = MaterialTheme.colorScheme.error,
+                                icon = Icons.Default.Delete
+                            )
                         )
                     )
-                )
+                }
+                Row {
+                    Text(
+                        text = customer.debtAmount.absoluteValue.toMoneyFormat(2),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = customer.debtAmount.getContainerColor()
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    FilterChip(
+                        modifier = Modifier.height(FilterChipDefaults.Height - 4.dp).padding(end = 16.dp),
+                        selected = true,
+                        onClick = {},
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = customer.debtAmount.getContainerColor(),
+                            selectedLabelColor = customer.debtAmount.getContentColor()
+                        ),
+                        label = {
+                            Text(
+                                text = customer.debtAmount.getDebtTitle()
+                            )
+                        }
+                    )
+                }
             }
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
-            Row {
-                val chipColor =
-                    if (customer.inDebt) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-                Text(
-                    text = customer.debtAmount.absoluteValue.toMoneyFormat(2),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = customer.debtAmount.getContainerColor()
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                FilterChip(
-                    modifier = Modifier.height(FilterChipDefaults.Height - 4.dp),
-                    selected = true,
-                    onClick = {},
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = customer.debtAmount.getContainerColor(),
-                        selectedLabelColor = customer.debtAmount.getContentColor()
-                    ),
-                    label = {
-                        Text(
-                            text = customer.debtAmount.getDebtTitle()
-                        )
-                    }
-                )
-            }
+            HorizontalDivider(thickness = 1.dp)
         }
     }
 }
