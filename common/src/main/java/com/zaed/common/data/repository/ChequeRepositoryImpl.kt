@@ -1,10 +1,10 @@
 package com.zaed.common.data.repository
 
 import com.zaed.common.data.model.cheque.ManagerCheque
-import com.zaed.common.data.model.cheque.SalesCheque
 import com.zaed.common.data.model.cheque.request.AddNewManagerChequeRequest
 import com.zaed.common.data.model.cheque.request.AddNewSalesChequeRequest
 import com.zaed.common.data.model.cheque.request.UpdateChequeStatusRequest
+import com.zaed.common.data.model.payment.ChequePayment
 import com.zaed.common.data.source.remote.ChequeRemoteSource
 import kotlinx.coroutines.flow.Flow
 
@@ -39,7 +39,7 @@ class ChequeRepositoryImpl(
         return chequeRemoteSource.fetchManagerCheques()
     }
 
-    override fun fetchSalesCheques(): Flow<Result<List<SalesCheque>>> {
+    override fun fetchSalesCheques(): Flow<Result<List<ChequePayment>>> {
         return chequeRemoteSource.fetchSalesCheques()
     }
 }

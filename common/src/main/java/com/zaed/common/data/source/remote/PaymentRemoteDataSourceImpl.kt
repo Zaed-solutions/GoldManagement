@@ -31,7 +31,6 @@ class PaymentRemoteDataSourceImpl(
     private val crashlytics: FirebaseCrashlytics
 ) : PaymentRemoteDataSource {
     private val moneyPaymentsCollection = firestore.collection("money_payments")
-    private val goldPaymentsCollection = firestore.collection("gold_payments")
     private val customersCollection = firestore.collection("whole_sale_customers")
     override suspend fun addPayment(request: AddNewPaymentRequest): Result<String> {
         try {
@@ -143,7 +142,7 @@ class PaymentRemoteDataSourceImpl(
     override suspend fun fetchGoldPaymentsByIds(request: FetchPaymentsByIdsRequest): Result<List<GoldPayment>> {
         return try {
             val moneyPayments =
-                goldPaymentsCollection.whereIn("id", request.paymentsIds).get().await()
+                moneyPaymentsCollection.whereIn("id", request.paymentsIds).get().await()
                     .toObjects<GoldPayment>()
             Result.success(moneyPayments)
         } catch (e: Exception) {

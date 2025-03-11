@@ -15,7 +15,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.data.model.store.Store
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
-import com.zaed.manager.R
 import com.zaed.manager.ui.stores.components.SaveStoreBottomSheet
 import com.zaed.manager.ui.stores.components.StoresList
 import org.koin.androidx.compose.koinViewModel
@@ -69,7 +67,7 @@ fun StoresScreenContent(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(R.string.stores)) },
+                title = { Text(text = stringResource(com.zaed.common.R.string.stores)) },
                 navigationIcon = {
                     IconButton(
                         onClick = {

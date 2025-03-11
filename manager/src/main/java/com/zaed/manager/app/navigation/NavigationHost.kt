@@ -7,8 +7,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.zaed.common.data.model.authentication.UserRole
+import com.zaed.common.ui.addcustomers.AddCustomersScreen
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
+import com.zaed.common.ui.customerdetails.CustomerDetailsScreen
+import com.zaed.common.ui.displaycustomers.DisplayCustomersScreen
+import com.zaed.common.ui.ingottransactions.IngotTransactionsScreen
 import com.zaed.common.ui.saledetails.cashiersaledetails.SaleDetailsScreen
 import com.zaed.common.ui.saledetails.goldsaledetails.GoldSaleDetailsScreen
 import com.zaed.common.ui.saledetails.productsaledetails.ProductSaleDetailsScreen
@@ -50,6 +54,62 @@ fun NavigationHost(
                         }
                     }
                 }
+            )
+        }
+        composable<Route.WholeSaleCustomers> {
+            DisplayCustomersScreen(
+                onShowNavDrawer = onShowNavDrawer,
+                navigateToAddCustomer = {
+                    navController.navigate(Route.AddCustomers())
+                },
+                navigateToCustomerDetails = { customerId ->
+                    navController.navigate(Route.CustomerDetails(customerId))
+                },
+                navigateToEditCustomer = { customerId ->
+                    navController.navigate(
+                        Route.AddCustomers(
+                            customerId = customerId
+                        )
+                    )
+                }
+            )
+        }
+        composable<Route.AddCustomers> {
+            val customerId = it.toRoute<Route.AddCustomers>().customerId
+            AddCustomersScreen(
+                customerId = customerId,
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable<Route.CustomerDetails> {
+            val customerId = it.toRoute<Route.CustomerDetails>().customerId
+            CustomerDetailsScreen(
+                customerId = customerId,
+                onNavigateToProductSaleDetails = {
+                    navController.navigate(Route.ProductSaleDetailsRoute(it))
+                },
+                onNavigateToGoldSaleDetails = {
+                    navController.navigate(Route.GoldSaleDetailsRoute(it))
+                },
+                onBack = {
+                    navController.popBackStack()
+                },
+                navigateToEditCustomer = { id ->
+                    navController.navigate(Route.AddCustomers(id))
+                },
+//                onNavigateToAddGoldSale = {
+//                    navController.navigate(Route.AddGoldSaleRoute(it))
+//                },
+//                onNavigateToAddProductSale = {
+//                    navController.navigate(Route.AddProductSaleRoute(it))
+//                },
+            )
+        }
+        composable<Route.IngotTransactionsRoute> {
+            IngotTransactionsScreen(
+                onShowNavDrawer = onShowNavDrawer
             )
         }
         composable<Route.SignUpRoute> {

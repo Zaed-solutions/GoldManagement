@@ -20,7 +20,7 @@ enum class NavDrawerItem(
         route = Route.ManufacturerOrdersRoute
     ),
     STORES(
-        title = com.zaed.manager.R.string.stores,
+        title = com.zaed.common.R.string.stores,
         icon = R.drawable.ic_store,
         route = Route.StoresRoute
     ),
@@ -28,6 +28,11 @@ enum class NavDrawerItem(
         title = R.string.stores_sales,
         icon = R.drawable.ic_money_plus,
         route = Route.StoresSalesRoute
+    ),
+    CUSTOMERS(
+        title = R.string.customers,
+        icon = R.drawable.ic_customers,
+        route = Route.WholeSaleCustomers
     ),
     DISTRIBUTORS(
         title = R.string.distributors,
@@ -43,5 +48,10 @@ enum class NavDrawerItem(
         title = R.string.losses,
         icon = R.drawable.ic_money_minus,
         route = Route.LossesRoute
-    )
+    ),
+    INGOTS_SALES(
+        title = R.string.ingots_transactions,
+        icon = R.drawable.ic_ingot,
+        route = Route.IngotTransactionsRoute
+    ),
 }

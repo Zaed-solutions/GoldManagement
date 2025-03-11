@@ -127,9 +127,16 @@ import com.zaed.common.domain.store.DeleteStoreUseCase
 import com.zaed.common.domain.store.FetchStoreByIdUseCase
 import com.zaed.common.domain.store.GetStoresUseCase
 import com.zaed.common.domain.store.UpdateStoreUseCase
+import com.zaed.common.ui.addcustomers.AddCustomersViewModel
 import com.zaed.common.ui.auth.MainViewModel
 import com.zaed.common.ui.auth.login.LoginViewModel
 import com.zaed.common.ui.auth.signup.SignUpViewModel
+import com.zaed.common.ui.customerdetails.CustomerDetailsViewModel
+import com.zaed.common.ui.displaycustomers.DisplayCustomersViewModel
+import com.zaed.common.ui.ingottransactions.IngotTransactionsViewModel
+import com.zaed.common.ui.saledetails.cashiersaledetails.SaleDetailsViewModel
+import com.zaed.common.ui.saledetails.goldsaledetails.GoldSaleDetailsViewModel
+import com.zaed.common.ui.saledetails.productsaledetails.ProductSaleDetailsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
@@ -237,6 +244,15 @@ val viewModelModule = module {
     viewModelOf(::SignUpViewModel)
     viewModelOf(::LoginViewModel)
     viewModelOf(::MainViewModel)
+    viewModelOf(::DisplayCustomersViewModel)
+    viewModelOf(::AddCustomersViewModel)
+    viewModelOf(::CustomerDetailsViewModel)
+    viewModelOf(::IngotTransactionsViewModel)
+    viewModelOf(::DisplayCustomersViewModel)
+    viewModelOf(::AddCustomersViewModel)
+    viewModelOf(::ProductSaleDetailsViewModel)
+    viewModelOf(::GoldSaleDetailsViewModel)
+    viewModelOf(::SaleDetailsViewModel)
 }
 val remoteSourceModule = module {
     singleOf(::AuthenticationRemoteSourceImpl) { bind<AuthenticationRemoteSource>() }

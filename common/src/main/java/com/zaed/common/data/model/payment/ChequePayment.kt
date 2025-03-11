@@ -9,7 +9,6 @@ data class ChequePayment(
     val senderName : String ="",
     val paymentDate : Date = Date(),
     val city : String = "",
-
     val receiverName : String = "",
     val chequeFor : String = "",
     val chequeStatus : ChequeStatus = ChequeStatus.RECEIVED,
