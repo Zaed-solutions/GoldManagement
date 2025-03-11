@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,7 +61,7 @@ fun IngotTransactionItem(
                     onClick = onEdit,
                     icon = Icons.Default.Edit,
                     title = context.getString(R.string.edit),
-                    tint = primaryColor ,
+                    tint = primaryColor,
                 )
             )
         }
@@ -70,7 +71,7 @@ fun IngotTransactionItem(
                     onClick = onDelete,
                     icon = Icons.Default.Delete,
                     title = context.getString(R.string.delete),
-                    tint = errorColor ,
+                    tint = errorColor,
                 )
             )
         }
@@ -132,25 +133,19 @@ fun IngotTransactionItem(
                         )
                     }
                 }
-                Column (
-                    horizontalAlignment = Alignment.End,
-                ){
-                    if (moreOptions.isNotEmpty()) {
-                        MoreDropDownMenu(
-                            items = moreOptions,
-                            isVertical = false
-                        )
-                    }
-                    Text(
-                        text = transaction.totalEarning.formatMoney(),
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            color = MaterialTheme.colorScheme.primary,
-                            fontSize = 20.sp
-                        ),
-                        modifier = Modifier.padding(end = 16.dp)
+                Text(
+                    text = transaction.totalEarning.formatMoney(),
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 18.sp
+                    ),
+                )
+                if (moreOptions.isNotEmpty()) {
+                    MoreDropDownMenu(
+                        items = moreOptions,
                     )
                 }
-
             }
             if (isDividerVisible) {
                 HorizontalDivider(thickness = 1.dp)
@@ -173,7 +168,9 @@ private fun Preview() {
                 buyingGramPrice = 200.0,
                 karat = Karat.K24,
                 type = TransactionType.SALE
-            )
+            ),
+            isEditable = true,
+            isDeletable = true
         )
     }
 }

@@ -36,6 +36,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
 import com.zaed.common.data.model.authentication.UserPermission
 import com.zaed.common.data.model.inventory.Inventory
+import com.zaed.common.data.model.sale.WholesaleProductSale
 import com.zaed.common.ui.components.DatedIngotTransactionsList
 import com.zaed.common.ui.components.DatedListWithFilter
 import com.zaed.common.ui.components.DatedLossesList
@@ -50,7 +51,8 @@ fun DistributorDetailsScreen(
     modifier: Modifier = Modifier,
     distributorId: String,
     onBackPressed: () -> Unit,
-    onNavigateToSaleDetails: (String) -> Unit,
+    onNavigateToProductSaleDetails: (String) -> Unit,
+    onNavigateToGoldSaleDetails: (String) -> Unit,
     viewModel: DistributorDetailsViewModel = koinViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -62,7 +64,13 @@ fun DistributorDetailsScreen(
         onAction = { action ->
             when(action){
                 DistributorDetailsUiAction.OnBackClicked -> onBackPressed()
-                is DistributorDetailsUiAction.OnSaleClicked -> onNavigateToSaleDetails(action.saleId)
+                is DistributorDetailsUiAction.OnSaleClicked -> {
+                    if(action.type == WholesaleProductSale::class.qualifiedName){
+                        onNavigateToProductSaleDetails(action.saleId)
+                    } else {
+                        onNavigateToGoldSaleDetails(action.saleId)
+                    }
+                }
                 else -> viewModel.handleAction(action)
             }
         }
@@ -161,7 +169,7 @@ fun DistributorScreenContent(
                             },
                             datedSales = state.datedSales,
                             onSaleClicked = { saleId , type ->
-                                onAction(DistributorDetailsUiAction.OnSaleClicked(saleId))
+                                onAction(DistributorDetailsUiAction.OnSaleClicked(saleId, type))
                             }
                         )
                     }

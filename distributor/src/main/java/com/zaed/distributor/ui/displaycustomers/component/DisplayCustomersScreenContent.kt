@@ -1,6 +1,7 @@
 package com.zaed.distributor.ui.displaycustomers.component
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -89,7 +90,8 @@ fun DisplayCustomersScreenContent(
 
             )
             LazyColumn(
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(vertical = 16.dp)
             ) {
                 itemsIndexed(uiState.displayedCustomers) { index, customer ->
                     CustomerItem(

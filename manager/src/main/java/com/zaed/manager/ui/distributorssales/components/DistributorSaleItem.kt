@@ -23,7 +23,7 @@ import com.zaed.common.R
 import com.zaed.common.data.model.sale.StoreSale
 import com.zaed.common.data.model.sale.WholesaleGoldSale
 import com.zaed.common.data.model.sale.WholesaleSale
-import com.zaed.common.ui.theme.GoldenCustomColors
+import com.zaed.manager.ui.theme.GoldenCustomColors
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
 import com.zaed.common.ui.util.formatMoney

@@ -256,4 +256,24 @@
     <string name="add_personal_expense">Add Personal Expense</string>
     <string name="update_personal_expense">Update Personal Expense</string>
     <string name="personal_expense">Personal Expense</string>
+    <string name="manufacturer_orders">Manufacturer Orders</string>
+    <string name="processing_fee_template">Processing Fee: %1$.2f(Paid: %2$.2f)</string>
+    <string name="sent_template">Sent: %1$s</string>
+    <string name="received_template">Received: %1$s</string>
+    <string name="order_title_template">MO-%1$s (Sent: %2$.2f g | Received: %3$s)</string>
+    <string name="manufacturer_order">Manufacturer Order</string>
+    <string name="raw_gold_amount">Raw Gold Amount</string>
+    <string name="received_gold_amount">Received Gold Amount</string>
+    <string name="processing_fee">Processing Fee</string>
+    <string name="paid_amount">Paid Amount</string>
+    <string name="difference_recorded">Difference Recorded:</string>
+    <string name="on_manufacturer">On manufacturer</string>
+    <string name="for_manufacturer">For manufacturer</string>
+    <string name="close_order">Close Order</string>
+    <string name="add_manufacturer_order">Add Manufacturer Order</string>
+    <string name="edit_manufacturer_order">Edit Manufacturer Order</string>
+    <string name="open">Open</string>
+    <string name="closed">Closed</string>
+    <string name="order_status">Order Status</string>
+    <string name="ingots_transactions">Ingot Transactions</string>
 </resources>
