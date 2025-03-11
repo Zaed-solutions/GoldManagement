@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -14,19 +15,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.zaed.common.data.model.Category
 import com.zaed.common.ui.util.toMoneyFormat
 
 @Composable
 fun CategoryItem(
+    modifier: Modifier = Modifier,
     category: Category,
     onClick: (Category) -> Unit = {},
     count: Int,
     price: Double
 ) {
     Surface(
-        onClick = { onClick(category) }
+        color = Color.Transparent,
+        onClick = { onClick(category) },
+        modifier = modifier
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),

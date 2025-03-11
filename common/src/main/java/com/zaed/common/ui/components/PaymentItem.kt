@@ -106,7 +106,7 @@ fun PaymentItem(
             emptyList()
         }
     Surface(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         onClick = onClick,
     ) {
         Column(

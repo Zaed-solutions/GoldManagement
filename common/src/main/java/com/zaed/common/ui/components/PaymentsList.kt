@@ -1,10 +1,10 @@
 package com.zaed.common.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
@@ -34,13 +34,15 @@ fun PaymentsList(
                 items = payments,
                 key = { it.id }
             ) { payment ->
-                Log.d("find the issue", "paymentSent: $payment")
-                PaymentItem(
-                    payment = payment,
-                    onEdit = { onEditPayment(payment) },
-                    onDelete = { onRemovePayment(payment) }
-                )
-                HorizontalDivider()
+                Column {
+                    PaymentItem(
+                        modifier = Modifier.padding(bottom = 8.dp).animateItem(),
+                        payment = payment,
+                        onEdit = { onEditPayment(payment) },
+                        onDelete = { onRemovePayment(payment) }
+                    )
+                    HorizontalDivider()
+                }
             }
         }
     }

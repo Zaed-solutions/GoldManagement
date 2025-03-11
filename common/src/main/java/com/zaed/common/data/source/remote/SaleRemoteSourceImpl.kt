@@ -17,6 +17,7 @@ import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
 import com.zaed.common.data.model.payment.FuturePayment
+import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.LossPayment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.signedAmount
@@ -736,8 +737,7 @@ class SaleRemoteSourceImpl(
                             )
                         )
                     )
-                } else {
-                }
+                } else { }
                 when (it) {
                     is CashPayment -> batch.set(
                         ref,
@@ -820,24 +820,56 @@ class SaleRemoteSourceImpl(
             request.payments.forEach {
                 val ref = moneyPaymentCollection.document()
                 moneyPaymentsIds.add(ref.id)
-                var amount = if (it.type == PaymentType.FUTURES) {
+                if (it.type == PaymentType.FUTURES) {
                     val customerRef = wholesaleCustomersCollection.document(request.sale.customerId)
                     batch.update(
                         customerRef,
                         mapOf("debtAmount" to FieldValue.increment(it.amount.unaryMinus()))
                     )
-                    it.amount.unaryMinus()
-                } else {
-                    it.amount
+                } else if (it.type == PaymentType.LOSS) {
+                    val document = distributorLossesCollection.document()
+                    batch.set(
+                        document, DistributorLoss(
+                            id = document.id,
+                            value = it.amount,
+                            reason = "Sales Loss for $receiptNumber",
+                            userId = request.sale.distributorId,
+                            userName = request.sale.distributorName,
+                            logs = listOf(
+                                ChangeLog(
+                                    employeeId = request.sale.distributorId,
+                                    employeeName = request.sale.distributorName,
+                                    type = LogType.CREATE
+                                )
+                            )
+                        )
+                    )
+                } else { }
+                when (it) {
+                    is CashPayment -> batch.set(
+                        ref,
+                        it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
+                    )
+
+                    is FuturePayment -> batch.set(
+                        ref,
+                        it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
+                    )
+
+                    is ChequePayment -> batch.set(
+                        ref,
+                        it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
+                    )
+
+                    is BankTransferPayment -> batch.set(
+                        ref,
+                        it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
+                    )
+                    is GoldPayment -> batch.set(
+                        ref,
+                        it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
+                    )
                 }
-                batch.set(
-                    ref,
-                    it.apply {
-                        this.id = ref.id
-                        this.receiptNumber = receiptNumber.toString()
-                        this.amount = amount
-                    }
-                )
             }
             val goldAmount = request.sale.products.sumOf { it.grams }
             inventoryCollection

@@ -1,6 +1,7 @@
 package com.zaed.common.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,7 +36,7 @@ import com.zaed.common.data.model.sale.Sale
 import com.zaed.common.data.model.sale.WholesaleProductSale
 import com.zaed.common.ui.util.toMoneyFormat
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun SelectProductsContent(
     modifier: Modifier = Modifier,
@@ -78,8 +79,9 @@ fun SelectProductsContent(
         LazyColumn(
             modifier = Modifier.weight(1f),
         ) {
-            items(displayedCategory) { category ->
+            items(displayedCategory,key = { it.id }) { category ->
                 CategoryItem(
+                    modifier = Modifier.animateItemPlacement(),
                     count = sale.products.firstOrNull { it.categoryId == category.id }?.quantity?:0,
                     price = sale.products.filter { it.categoryId == category.id }.sumOf { it.totalPriceAfterDiscount },
                     category = category,

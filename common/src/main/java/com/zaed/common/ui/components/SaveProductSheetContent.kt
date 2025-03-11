@@ -100,7 +100,7 @@ fun SaveProductSheetContent(
                 },
             ) {
                 Text(
-                    text = "حذف"
+                    text = stringResource(R.string.delete)
                 )
             }
         }

@@ -12,7 +12,7 @@ enum class NavDrawerItem(
 ) {
     ADD_SALE(
         title = R.string.add_sale,
-        icon = R.drawable.ic_gold,
+        icon = R.drawable.ic_add,
         route = Route.AddProductSaleRoute()
     ),
     PRODUCT_SALES(

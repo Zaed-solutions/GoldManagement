@@ -40,7 +40,7 @@ fun ProductSaleDetailsScreen(
     onNavigateToEditSale: (String) -> Unit,
     saleId: String = "",
     onNavigateToCustomerDetails: (String) -> Unit,
-    isAdmin: Boolean = true
+    isAdmin: Boolean = false
 ) {
     LaunchedEffect(true) {
         viewModel.init(saleId)

@@ -41,7 +41,7 @@ fun SaveCashPaymentBottomSheetContent(
     ) {
 
         Text(
-            text = " طريقه الدفع : ${stringResource(initialPayment.type.titleRes)}",
+            text = stringResource(R.string.payment_method) +stringResource(initialPayment.type.titleRes),
             style = MaterialTheme.typography.titleLarge
         )
 
@@ -111,7 +111,7 @@ fun SaveFuturePaymentBottomSheetContent(
     ) {
 
         Text(
-            text = " طريقه الدفع : ${stringResource(initialPayment.type.titleRes)}",
+            text = stringResource(R.string.payment_method) +stringResource(initialPayment.type.titleRes),
             style = MaterialTheme.typography.titleLarge
         )
 
@@ -181,7 +181,7 @@ fun SaveGoldPaymentBottomSheetContent(
     ) {
 
         Text(
-            text = " طريقه الدفع : ${stringResource(initialPayment.type.titleRes)}",
+            text = stringResource(R.string.payment_method) +stringResource(initialPayment.type.titleRes),
             style = MaterialTheme.typography.titleLarge
         )
 
@@ -264,7 +264,7 @@ fun SaveChequePaymentBottomSheetContent(
     ) {
 
         Text(
-            text = " طريقه الدفع : ${stringResource(initialPayment.type.titleRes)}",
+            text = stringResource(R.string.payment_method) +stringResource(initialPayment.type.titleRes),
             style = MaterialTheme.typography.titleLarge
         )
         //cheque for
@@ -390,7 +390,7 @@ fun SaveBankTransferPaymentBottomSheetContent(
     ) {
 
         Text(
-            text = " طريقه الدفع : ${stringResource(initialPayment.type.titleRes)}",
+            text = stringResource(R.string.payment_method) +stringResource(initialPayment.type.titleRes),
             style = MaterialTheme.typography.titleLarge
         )
         //Account holder name

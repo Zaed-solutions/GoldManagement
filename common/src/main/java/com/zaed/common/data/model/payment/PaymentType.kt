@@ -9,7 +9,7 @@ enum class PaymentType(@StringRes val titleRes: Int,val iconRes:Int) :DropdownMe
     BANK_TRANSFER(R.string.bank_transfer,R.drawable.bank_ic),
     CHEQUE(R.string.cheque,R.drawable.ic_cheque),
     FUTURES(R.string.futures,R.drawable.customer_credit),
-    GOLD(R.string.gold,R.drawable.ic_gold),
+    GOLD(R.string.gold,R.drawable.ic_ingot),
     LOSS(R.string.loss,R.drawable.ic_money_minus);
 }
 
