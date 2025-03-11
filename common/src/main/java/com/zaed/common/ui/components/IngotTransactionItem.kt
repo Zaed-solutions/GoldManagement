@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -108,16 +109,37 @@ fun IngotTransactionItem(
                         .padding(start = 16.dp)
                         .weight(1f),
                 ) {
-                    Text(
-                        text = stringResource(
-                            R.string.ingot_transaction_title_placeholder,
-                            transaction.grams,
-                            transaction.karat.value
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = stringResource(
+                                R.string.ingot_transaction_title_placeholder,
+                                transaction.grams,
+                                transaction.karat.value
+                            ),
+                            style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Text(
+                                text = transaction.totalEarning.formatMoney(),
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 18.sp
                         ),
-                        style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
-                        maxLines = 1,
-                    )
-                    Row {
+                        )
+                        if (moreOptions.isNotEmpty()) {
+                            MoreDropDownMenu(
+                                items = moreOptions,
+                            )
+                        }
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
                         Text(
                             text = stringResource(R.string.total_amount) + ":",
                             style = MaterialTheme.typography.bodyMedium.copy(
@@ -133,19 +155,9 @@ fun IngotTransactionItem(
                         )
                     }
                 }
-                Text(
-                    text = transaction.totalEarning.formatMoney(),
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 18.sp
-                    ),
-                )
-                if (moreOptions.isNotEmpty()) {
-                    MoreDropDownMenu(
-                        items = moreOptions,
-                    )
-                }
+
+
+
             }
             if (isDividerVisible) {
                 HorizontalDivider(thickness = 1.dp)

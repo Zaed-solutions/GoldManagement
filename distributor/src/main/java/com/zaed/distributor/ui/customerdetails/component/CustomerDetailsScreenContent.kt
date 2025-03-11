@@ -112,7 +112,6 @@ fun CustomerDetailsScreenContent(
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp)
                 .padding(it)
 
         ) {
@@ -152,10 +151,11 @@ fun CustomerDetailsScreenContent(
                     0 -> {
                         Column {
                             BalanceSection(
-                                modifier = Modifier.padding(vertical = 8.dp),
+                                modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
                                 amount = uiState.customer.debtAmount,
                             )
-                            PaymentsList(modifier = Modifier.weight(1f),
+                            PaymentsList(
+                                modifier = Modifier.weight(1f),
                                 payments = uiState.payments,
                                 onRemovePayment = { payment ->
                                     selectedPayment = payment

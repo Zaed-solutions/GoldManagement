@@ -234,9 +234,7 @@
     <string name="show_more">Show more</string>
     <string name="show_less">Show less</string>
     <string name="dd_mm_yyyy">dd/mm/yyyy</string>
-    <string name="remains_for_the_client">"Remains for the client "</string>
     <string name="the_value_is_bigger_than_the_remains_amount">The value is Bigger Than The Remains Amount</string>
-    <string name="distributors_sales">Distributors Sales</string>
     <string name="the_amount_to_be_paid">The amount to be paid</string>
     <string name="remaining_amount_from">Remaining amount from %1$s</string>
     <string name="select_payment_method">Select payment method</string>
@@ -258,6 +256,7 @@
     <string name="personal_expense">Personal Expense</string>
     <string name="manufacturer_orders">Manufacturer Orders</string>
     <string name="processing_fee_template">Processing Fee: %1$.2f(Paid: %2$.2f)</string>
+    <string name="distributors_sales">Distributors Sales</string>
     <string name="sent_template">Sent: %1$s</string>
     <string name="received_template">Received: %1$s</string>
     <string name="order_title_template">MO-%1$s (Sent: %2$.2f g | Received: %3$s)</string>
@@ -273,7 +272,10 @@
     <string name="add_manufacturer_order">Add Manufacturer Order</string>
     <string name="edit_manufacturer_order">Edit Manufacturer Order</string>
     <string name="open">Open</string>
+    <string name="stores">Stores</string>
     <string name="closed">Closed</string>
+    <string name="remains_for_the_client">Remains For The Client: %1$s</string>
     <string name="order_status">Order Status</string>
     <string name="ingots_transactions">Ingot Transactions</string>
+    <string name="payment_method">Payment Method: </string>
 </resources>

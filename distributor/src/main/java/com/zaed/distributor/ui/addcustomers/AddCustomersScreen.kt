@@ -29,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -99,6 +98,7 @@ fun AddCustomersScreenContent(
         },
         topBar = {
             AddCustomersTopBar(
+                isEditMode = uiState.isEditMode,
                 onBack = {
                     onAction(AddCustomersUiAction.OnBack)
                 }
@@ -116,8 +116,8 @@ fun AddCustomersScreenContent(
                     Button(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(65.dp)
-                            .padding(16.dp),
+                            .padding(16.dp)
+                            .height(65.dp),
                         onClick = {
                             if (uiState.isEditMode) {
                                 onAction(AddCustomersUiAction.OnEdit)
@@ -201,10 +201,13 @@ fun AddCustomersScreenContent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddCustomersTopBar(onBack: () -> Unit) {
+fun AddCustomersTopBar(onBack: () -> Unit,isEditMode: Boolean = false) {
     TopAppBar(
         title = {
-            Text(text = stringResource(com.zaed.common.R.string.add_customer))
+            Text(
+                if (isEditMode) stringResource(com.zaed.common.R.string.edit_customer) else
+                stringResource(com.zaed.common.R.string.add_customer)
+            )
         },
         navigationIcon = {
             BackIcon {
