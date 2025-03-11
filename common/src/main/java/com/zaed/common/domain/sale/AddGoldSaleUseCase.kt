@@ -8,6 +8,5 @@ class AddGoldSaleUseCase(
 ) {
     suspend operator fun invoke(request: AddWholesaleGoldSaleRequest): Result<String> {
         return saleRepo.addGoldSale(request)
-
     }
 }

@@ -101,72 +101,6 @@ private fun AddGoldSaleScreenContent(
                 onAction(AddGoldSaleUiAction.OnBackClicked)
             }
         },
-//        bottomBar = {
-//            BottomAppBar(
-//                contentPadding = PaddingValues(0.dp),
-//                containerColor = MaterialTheme.colorScheme.surface,
-//            ) {
-//                Surface(
-//                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-//                    shadowElevation = 8.dp
-//                ) {
-//                    Row(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(horizontal = 16.dp, vertical = 8.dp),
-//                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        FilledTonalButton(
-//                            modifier = Modifier
-//                                .weight(1f)
-//                                .heightIn(min = 48.dp),
-//                            onClick = {
-//                                scope.launch {
-//                                    pagerState.animateScrollToPage(pagerState.currentPage - 1)
-//                                }
-//                            },
-//                            enabled = pagerState.currentPage > 0
-//                        ) {
-//                            Text(
-//                                text = stringResource(R.string.previous),
-//                            )
-//                        }
-//                        Button(
-//                            modifier = Modifier
-//                                .weight(1f)
-//                                .heightIn(min = 48.dp),
-//                            enabled = !state.isLoading,
-//                            onClick = {
-//                                if (pagerState.currentPage == 3) {
-//                                    onAction(AddGoldSaleUiAction.OnSubmitClicked)
-//                                } else {
-//                                    scope.launch {
-//                                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
-//                                    }
-//                                }
-//                            }
-//                        ) {
-//                            Row(
-//                                verticalAlignment = Alignment.CenterVertically,
-//                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-//                            ) {
-//                                Text(
-//                                    text = if (pagerState.currentPage == 3) stringResource(R.string.submit) else stringResource(
-//                                        R.string.continue_
-//                                    )
-//                                )
-//                                AnimatedVisibility(state.isLoading) {
-//                                    CircularProgressIndicator(
-//                                        modifier = Modifier.size(24.dp)
-//                                    )
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -178,24 +112,6 @@ private fun AddGoldSaleScreenContent(
                 userScrollEnabled = false,
             ) { page ->
                 when (page) {
-//                    0 -> {
-//                        //select customer
-//                        SelectCustomerContent(
-//                            query = state.customerSearchQuery,
-//                            onQueryChanged = {
-//                                onAction(AddGoldSaleUiAction.OnCustomerSearchQueryChanged(it))
-//                            },
-//                            selectedCustomer = state.selectedCustomer,
-//                            suggestedCustomers = state.suggestedCustomers,
-//                            onAddNewCustomer = {
-//                                onAction(AddGoldSaleUiAction.OnAddNewCustomerClicked)
-//                            },
-//                            onCustomerSelected = {
-//                                onAction(AddGoldSaleUiAction.OnCustomerSelected(it))
-//                            }
-//                        )
-//                    }
-                    //todo discount
                     0 -> {
                         //add products
                         SelectGoldContent(
