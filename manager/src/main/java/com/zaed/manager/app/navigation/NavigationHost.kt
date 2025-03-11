@@ -1,13 +1,6 @@
 package com.zaed.manager.app.navigation
 
-import android.util.Log
-import androidx.compose.compiler.plugins.kotlin.EmptyFunctionMetrics.composable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -16,10 +9,14 @@ import androidx.navigation.toRoute
 import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
+import com.zaed.common.ui.saledetails.cashiersaledetails.SaleDetailsScreen
+import com.zaed.common.ui.saledetails.goldsaledetails.GoldSaleDetailsScreen
+import com.zaed.common.ui.saledetails.productsaledetails.ProductSaleDetailsScreen
 import com.zaed.manager.ui.distributordetails.DistributorDetailsScreen
 import com.zaed.manager.ui.distributors.DistributorsScreen
 import com.zaed.manager.ui.distributorssales.DistributorsSalesScreen
 import com.zaed.manager.ui.losses.LossesScreen
+import com.zaed.manager.ui.manufacturerorders.ManufacturerOrdersScreen
 import com.zaed.manager.ui.storedetails.StoreDetailsScreen
 import com.zaed.manager.ui.stores.StoresScreen
 import com.zaed.manager.ui.storessales.StoresSalesScreen
@@ -83,7 +80,9 @@ fun NavigationHost(
             val storeId = backstackEntry.toRoute<Route.StoreDetailsRoute>().storeId
             StoreDetailsScreen(
                 storeId = storeId,
-                onNavigateToSaleDetails = {/*todo*/},
+                onNavigateToSaleDetails = {
+                    navController.navigate(Route.StoreSaleDetailsRoute(it))
+                },
                 onBackClicked = {
                     navController.popBackStack()
                 }
@@ -101,7 +100,12 @@ fun NavigationHost(
             val distributorId = backstackEntry.toRoute<Route.DistributorDetailsRoute>().distributorId
             DistributorDetailsScreen(
                 distributorId = distributorId,
-                onNavigateToSaleDetails = {/*todo*/},
+                onNavigateToProductSaleDetails = {
+                    navController.navigate(Route.ProductSaleDetailsRoute(it))
+                },
+                onNavigateToGoldSaleDetails = {
+                    navController.navigate(Route.GoldSaleDetailsRoute(it))
+                },
                 onBackPressed = {
                     navController.popBackStack()
                 }
@@ -111,21 +115,74 @@ fun NavigationHost(
             StoresSalesScreen(
                 onShowNavDrawer = onShowNavDrawer,
                 onNavigateToSaleDetails = {
-                    /*TODO*/
+                    navController.navigate(Route.StoreSaleDetailsRoute(it))
                 }
             )
         }
         composable<Route.DistributorsSalesRoute> {
             DistributorsSalesScreen(
                 onShowNavDrawer = onShowNavDrawer,
-                onNavigateToSaleDetails = {
-                    /*TODO*/
+                onNavigateToProductSaleDetails = {
+                    navController.navigate(Route.ProductSaleDetailsRoute(it))
+                },
+                onNavigateToGoldSaleDetails = {
+                    navController.navigate(Route.GoldSaleDetailsRoute(it))
                 }
             )
         }
         composable<Route.LossesRoute> {
             LossesScreen(
                 onShowNavDrawer = onShowNavDrawer
+            )
+        }
+        composable<Route.ManufacturerOrdersRoute> {
+            ManufacturerOrdersScreen(
+                onShowNavDrawer = onShowNavDrawer
+            )
+        }
+        composable<Route.ProductSaleDetailsRoute> {navBackStackEntry ->
+            val saleId = navBackStackEntry.toRoute<Route.ProductSaleDetailsRoute>().saleId
+            ProductSaleDetailsScreen(
+                onBackClicked = {
+                    navController.popBackStack()
+                },
+                onNavigateToEditSale = {
+                    /*TODO*/
+                },
+                onNavigateToCustomerDetails = {
+                    /*TODO*/
+                },
+                saleId = saleId,
+                isAdmin = true
+            )
+        }
+        composable<Route.GoldSaleDetailsRoute> {navBackStackEntry ->
+            val saleId = navBackStackEntry.toRoute<Route.GoldSaleDetailsRoute>().saleId
+            GoldSaleDetailsScreen(
+                onBackClicked = {
+                    navController.popBackStack()
+                },
+                onNavigateToEditSale = {
+                    /*TODO*/
+                },
+                navigateToCustomerDetails = {
+                    /*TODO*/
+                },
+                saleId = saleId,
+                isAdmin = true
+            )
+        }
+        composable<Route.StoreSaleDetailsRoute> {navBackStackEntry ->
+            val saleId = navBackStackEntry.toRoute<Route.StoreSaleDetailsRoute>().saleId
+            SaleDetailsScreen(
+                onBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToEditSale = {
+                    /*TODO*/
+                },
+                saleId = saleId,
+                isAdmin = true
             )
         }
     }

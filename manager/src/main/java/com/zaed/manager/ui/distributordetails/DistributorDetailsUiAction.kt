@@ -7,7 +7,7 @@ sealed interface DistributorDetailsUiAction {
     data object OnBackClicked: DistributorDetailsUiAction
     data class OnSalesQueryChanged(val query: String): DistributorDetailsUiAction
     data class UpdateSalesDateFilter(val dateFormat: DateFormat): DistributorDetailsUiAction
-    data class OnSaleClicked(val saleId: String): DistributorDetailsUiAction
+    data class OnSaleClicked(val saleId: String, val type: String): DistributorDetailsUiAction
     data class OnInventoryQueryChanged(val query: String): DistributorDetailsUiAction
     data class UpdateLossesDateFilter(val dateFormat: DateFormat): DistributorDetailsUiAction
     data class UpdateIngotTransactionsDateFilter(val dateFormat: DateFormat): DistributorDetailsUiAction

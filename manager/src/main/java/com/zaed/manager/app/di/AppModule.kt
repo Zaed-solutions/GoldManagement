@@ -1,10 +1,10 @@
 package com.zaed.manager.app.di
 
-import androidx.lifecycle.ViewModel
 import com.zaed.manager.ui.distributordetails.DistributorDetailsViewModel
 import com.zaed.manager.ui.distributors.DistributorsViewModel
 import com.zaed.manager.ui.distributorssales.DistributorsSalesViewModel
 import com.zaed.manager.ui.losses.LossesViewModel
+import com.zaed.manager.ui.manufacturerorders.ManufacturerOrdersViewModel
 import com.zaed.manager.ui.storedetails.StoreDetailsViewModel
 import com.zaed.manager.ui.stores.StoresViewModel
 import com.zaed.manager.ui.storessales.StoresSalesViewModel
@@ -21,4 +21,5 @@ val appModule = module {
     viewModelOf(::DistributorsSalesViewModel)
     viewModelOf(::DistributorDetailsViewModel)
     viewModelOf(::LossesViewModel)
+    viewModelOf(::ManufacturerOrdersViewModel)
 }

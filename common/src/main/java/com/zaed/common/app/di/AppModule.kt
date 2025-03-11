@@ -17,6 +17,8 @@ import com.zaed.common.data.repository.InventoryRepository
 import com.zaed.common.data.repository.InventoryRepositoryImpl
 import com.zaed.common.data.repository.LossRepository
 import com.zaed.common.data.repository.LossRepositoryImpl
+import com.zaed.common.data.repository.ManufacturerOrderRepository
+import com.zaed.common.data.repository.ManufacturerOrderRepositoryImpl
 import com.zaed.common.data.repository.PaymentRepository
 import com.zaed.common.data.repository.PaymentRepositoryImpl
 import com.zaed.common.data.repository.SaleRepository
@@ -37,6 +39,8 @@ import com.zaed.common.data.source.remote.InventoryRemoteSource
 import com.zaed.common.data.source.remote.InventoryRemoteSourceImpl
 import com.zaed.common.data.source.remote.LossRemoteDataSource
 import com.zaed.common.data.source.remote.LossRemoteDataSourceImpl
+import com.zaed.common.data.source.remote.ManufacturerOrderRemoteSource
+import com.zaed.common.data.source.remote.ManufacturerOrderRemoteSourceImpl
 import com.zaed.common.data.source.remote.PaymentRemoteDataSource
 import com.zaed.common.data.source.remote.PaymentRemoteDataSourceImpl
 import com.zaed.common.data.source.remote.SaleRemoteSource
@@ -87,6 +91,10 @@ import com.zaed.common.domain.loss.GetStoreLossesUseCase
 import com.zaed.common.domain.loss.UpdateDistributorLossUseCase
 import com.zaed.common.domain.loss.UpdateLossUseCase
 import com.zaed.common.domain.loss.UpdateManagerLossUseCase
+import com.zaed.common.domain.manufacturerorder.AddManufacturerOrderUseCase
+import com.zaed.common.domain.manufacturerorder.DeleteManufacturerOrderUseCase
+import com.zaed.common.domain.manufacturerorder.FetchManufacturerOrdersUseCase
+import com.zaed.common.domain.manufacturerorder.UpdateManufacturerOrderUseCase
 import com.zaed.common.domain.payment.AddNewPaymentUseCase
 import com.zaed.common.domain.payment.DeletePaymentUseCase
 import com.zaed.common.domain.payment.EditPaymentUseCase
@@ -208,6 +216,10 @@ val useCaseModule = module {
     singleOf(::AddManagerLossUseCase)
     singleOf(::UpdateManagerLossUseCase)
     singleOf(::DeleteManagerLossUseCase)
+    singleOf(::AddManufacturerOrderUseCase)
+    singleOf(::FetchManufacturerOrdersUseCase)
+    singleOf(::UpdateManufacturerOrderUseCase)
+    singleOf(::DeleteManufacturerOrderUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }
@@ -219,6 +231,7 @@ val repositoryModule = module {
     singleOf(::PaymentRepositoryImpl) { bind<PaymentRepository>() }
     singleOf(::ChequeRepositoryImpl) { bind<ChequeRepository>() }
     singleOf(::InventoryRepositoryImpl) { bind<InventoryRepository>() }
+    singleOf(::ManufacturerOrderRepositoryImpl) { bind<ManufacturerOrderRepository>() }
 }
 val viewModelModule = module {
     viewModelOf(::SignUpViewModel)
@@ -235,6 +248,7 @@ val remoteSourceModule = module {
     singleOf(::WholeSalesCustomerRemoteDataSourceImpl) { bind<WholeSalesCustomerRemoteDataSource>() }
     singleOf(::ChequeRemoteSourceImpl) { bind<ChequeRemoteSource>() }
     singleOf(::InventoryRemoteSourceImpl) { bind<InventoryRemoteSource>() }
+    singleOf(::ManufacturerOrderRemoteSourceImpl) { bind<ManufacturerOrderRemoteSource>() }
     single<FirebaseFirestore> {
         val db = Firebase.firestore
         val settings = FirebaseFirestoreSettings.Builder().setLocalCacheSettings(
