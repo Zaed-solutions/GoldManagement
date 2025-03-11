@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -38,7 +39,7 @@ fun NumberInputTextField(
     trailingIcon: @Composable (() -> Unit)? = null,
     isError: Boolean = false,
     withBorder: Boolean = false,
-    shape: RoundedCornerShape =RoundedCornerShape(32.dp),
+    shape: Shape =RoundedCornerShape(32.dp),
     containerColor: Color = MaterialTheme.colorScheme.background,
 ) {
     var textValue by remember { mutableStateOf(value.toString()) }

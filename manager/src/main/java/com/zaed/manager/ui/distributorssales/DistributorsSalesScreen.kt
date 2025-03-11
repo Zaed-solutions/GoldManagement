@@ -32,8 +32,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
+import com.zaed.common.data.model.sale.WholesaleProductSale
 import com.zaed.common.ui.components.PriceCalculationItem
 import com.zaed.common.ui.components.SearchBar
+import com.zaed.common.ui.components.SearchBarWithFilterButton
 import com.zaed.manager.ui.distributorssales.components.DistributorSalesFilterBottomSheet
 import com.zaed.manager.ui.distributorssales.components.DistributorsSalesList
 import com.zaed.manager.ui.storessales.components.StoreSalesFilterBottomSheet
@@ -44,7 +46,8 @@ import org.koin.androidx.compose.koinViewModel
 fun DistributorsSalesScreen(
     modifier: Modifier = Modifier,
     onShowNavDrawer: () -> Unit,
-    onNavigateToSaleDetails: (String) -> Unit,
+    onNavigateToProductSaleDetails: (String) -> Unit,
+    onNavigateToGoldSaleDetails: (String) -> Unit,
     viewModel: DistributorsSalesViewModel = koinViewModel()
 ){
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -52,7 +55,13 @@ fun DistributorsSalesScreen(
         state = state,
         onAction = {action->
             when(action){
-                is DistributorsSalesUiAction.OnSaleClicked -> onNavigateToSaleDetails(action.saleId)
+                is DistributorsSalesUiAction.OnSaleClicked -> {
+                    if(action.isProductSale){
+                        onNavigateToProductSaleDetails(action.saleId)
+                    }else{
+                        onNavigateToGoldSaleDetails(action.saleId)
+                    }
+                }
                 DistributorsSalesUiAction.OnShowNavDrawer -> onShowNavDrawer()
                 else -> viewModel.handleAction(action)
             }
@@ -102,55 +111,17 @@ fun DistributorsSalesScreenContent(
                 .padding(innerPadding)
         ){
             //search bar
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                SearchBar(
-                    modifier = Modifier.weight(1f),
-                    placeHolder = stringResource(R.string.search_by_receipt_number),
-                    query = state.searchQuery,
-                    onQueryChanged = {
-                        onAction(DistributorsSalesUiAction.UpdateSearchQuery(it))
-                    }
-                )
-                BadgedBox(
-                    badge = {
-                        if(state.filter.isFiltered) {
-                            Box(
-                                modifier = Modifier
-                                    .size(8.dp)
-                                    .background(
-                                        color = MaterialTheme.colorScheme.primary,
-                                        shape = CircleShape
-                                    )
-                            )
-                        }
-                    }
-                ) {
-                    IconButton(
-                        onClick = {
-                            isFilterSheetVisible = true
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.FilterList,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primaryContainer,
-                            modifier = Modifier
-                                .size(40.dp)
-                                .background(
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                    shape = CircleShape
-                                )
-                                .padding(8.dp)
-                        )
-                    }
+            SearchBarWithFilterButton(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                searchQuery = state.searchQuery,
+                onQueryChanged = {
+                    onAction(DistributorsSalesUiAction.UpdateSearchQuery(it))
+                },
+                isFiltered = state.filter.isFiltered,
+                onFilterClicked = {
+                    isFilterSheetVisible = true
                 }
-            }
+            )
             PriceCalculationItem(
                 modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp),
                 title = stringResource(R.string.total_amount),
@@ -162,7 +133,7 @@ fun DistributorsSalesScreenContent(
                 isLoading = state.isLoading,
                 sales = state.filteredSales,
                 onSaleClicked = {
-                    onAction(DistributorsSalesUiAction.OnSaleClicked(it.id))
+                    onAction(DistributorsSalesUiAction.OnSaleClicked(it.id, it is WholesaleProductSale))
                 }
             )
             //filter bottom sheet

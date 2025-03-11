@@ -14,6 +14,11 @@ enum class NavDrawerItem(
         icon = R.drawable.ic_users,
         route = Route.UserManagementRoute
     ),
+    MANUFACTURER_ORDERS(
+        title = R.string.manufacturer_orders,
+        icon = R.drawable.ic_order,
+        route = Route.ManufacturerOrdersRoute
+    ),
     STORES(
         title = com.zaed.manager.R.string.stores,
         icon = R.drawable.ic_store,
