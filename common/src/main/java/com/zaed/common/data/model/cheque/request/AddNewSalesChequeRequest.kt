@@ -1,7 +1,7 @@
 package com.zaed.common.data.model.cheque.request
 
-import com.zaed.common.data.model.cheque.SalesCheque
+import com.zaed.common.data.model.payment.ChequePayment
 
 data class AddNewSalesChequeRequest(
-    val salesCheque: SalesCheque = SalesCheque(),
+    val chequePayment: ChequePayment = ChequePayment(),
 )

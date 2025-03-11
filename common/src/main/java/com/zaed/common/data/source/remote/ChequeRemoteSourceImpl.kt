@@ -1,13 +1,15 @@
 package com.zaed.common.data.source.remote
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.common.data.model.cheque.ManagerCheque
-import com.zaed.common.data.model.cheque.SalesCheque
 import com.zaed.common.data.model.cheque.request.AddNewManagerChequeRequest
 import com.zaed.common.data.model.cheque.request.AddNewSalesChequeRequest
 import com.zaed.common.data.model.cheque.request.UpdateChequeStatusRequest
 import com.zaed.common.data.model.cheque.toMap
+import com.zaed.common.data.model.payment.ChequePayment
+import com.zaed.common.data.model.payment.PaymentType
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -18,10 +20,10 @@ class ChequeRemoteSourceImpl(
     private val crashlytics: FirebaseCrashlytics
 ) : ChequeRemoteSource {
     private val managerChequeCollection = firestore.collection("managerCheque")
-    private val salesChequeCollection = firestore.collection("salesCheque")
+    private val salesChequeCollection = firestore.collection("money_payments")
     override suspend fun addNewSalesCheque(request: AddNewSalesChequeRequest): Result<Unit> {
         try {
-            salesChequeCollection.add(request.salesCheque)
+            salesChequeCollection.add(request.chequePayment)
             return Result.success(Unit)
         }catch (e: Exception){
             e.printStackTrace()
@@ -45,8 +47,8 @@ class ChequeRemoteSourceImpl(
 
     override suspend fun updateSalesCheque(request: AddNewSalesChequeRequest): Result<Unit> {
         try {
-            salesChequeCollection.document(request.salesCheque.id).update(
-                request.salesCheque.toMap()
+            salesChequeCollection.document(request.chequePayment.id).set(
+                request.chequePayment
             ).await()
             return Result.success(Unit)
         }catch (e: Exception){
@@ -97,14 +99,19 @@ class ChequeRemoteSourceImpl(
         }
     }
 
-    override fun fetchSalesCheques(): Flow<Result<List<SalesCheque>>> = callbackFlow {
-        val listener = salesChequeCollection.addSnapshotListener { value, error ->
+    override fun fetchSalesCheques(): Flow<Result<List<ChequePayment>>> = callbackFlow {
+        val listener = salesChequeCollection.where(
+            Filter.and(
+                Filter.equalTo("deleted", false),
+                Filter.equalTo("type", PaymentType.CHEQUE)
+            )
+        ).addSnapshotListener { value, error ->
             if (error != null) {
                 crashlytics.recordException(error)
                 trySend(Result.failure(error))
                 return@addSnapshotListener
             }
-            val cheques = value?.toObjects(SalesCheque::class.java) ?: emptyList()
+            val cheques = value?.toObjects(ChequePayment::class.java) ?: emptyList()
             trySend(Result.success(cheques))
         }
         awaitClose {

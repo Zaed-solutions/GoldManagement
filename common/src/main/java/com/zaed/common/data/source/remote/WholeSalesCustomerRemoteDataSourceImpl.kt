@@ -31,15 +31,30 @@ class WholeSalesCustomerRemoteDataSourceImpl(
     private val goldPaymentsCollection = firestore.collection("gold_payments")
     override fun getWholeSalesCustomers(distributorId:String): Flow<Result<List<WholeSaleCustomer>>> = callbackFlow {
         try {
-            customersCollection.whereEqualTo("distributorId",distributorId).addSnapshotListener { snapshot, error ->
-                if (error != null) {
-                    crashlytics.recordException(error)
-                    trySend(Result.failure(error))
-                } else {
-                    val customers =
-                        snapshot?.toObjects(WholeSaleCustomer::class.java) ?: emptyList()
-                    trySend(Result.success(customers))
-                }
+            if(distributorId.isNotEmpty()) {
+                customersCollection.whereEqualTo("distributorId", distributorId)
+                    .addSnapshotListener { snapshot, error ->
+                        if (error != null) {
+                            crashlytics.recordException(error)
+                            trySend(Result.failure(error))
+                        } else {
+                            val customers =
+                                snapshot?.toObjects(WholeSaleCustomer::class.java) ?: emptyList()
+                            trySend(Result.success(customers))
+                        }
+                    }
+            }else{
+                customersCollection
+                    .addSnapshotListener { snapshot, error ->
+                        if (error != null) {
+                            crashlytics.recordException(error)
+                            trySend(Result.failure(error))
+                        } else {
+                            val customers =
+                                snapshot?.toObjects(WholeSaleCustomer::class.java) ?: emptyList()
+                            trySend(Result.success(customers))
+                        }
+                    }
             }
         } catch (e: Exception) {
             crashlytics.recordException(e)
