@@ -373,11 +373,16 @@ class SaleRemoteSourceImpl(
     override fun fetchIngotTransaction(request: FetchIngotTransactionsRequest): Flow<Result<List<IngotTransaction>>> =
         callbackFlow {
             try {
-                ingotTransactionsCollection.where(
+                val filter = if (request.distributorId.isBlank()){
+                    Filter.equalTo("deleted", false)
+                } else {
                     Filter.and(
                         Filter.equalTo("distributorId", request.distributorId),
                         Filter.equalTo("deleted", false)
                     )
+                }
+                ingotTransactionsCollection.where(
+                    filter
                 ).addSnapshotListener { snapshot, e ->
                     if (e != null) {
                         crashlytics.recordException(e)
