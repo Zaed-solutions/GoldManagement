@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.addGoldSale
+package com.zaed.common.ui.addGoldSale
 
 import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.authentication.User
@@ -17,5 +17,4 @@ data class AddGoldSaleUiState(
     val currentUser: User = User(),
     val totalPaid: Double = 0.0,
     val payments: List<Payment> = emptyList(),
-    val categories: List<Category> = emptyList()
 )

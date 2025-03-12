@@ -16,7 +16,7 @@ import com.zaed.common.ui.displaycustomers.DisplayCustomersScreen
 import com.zaed.common.ui.ingottransactions.IngotTransactionsScreen
 import com.zaed.common.ui.saledetails.goldsaledetails.GoldSaleDetailsScreen
 import com.zaed.common.ui.saledetails.productsaledetails.ProductSaleDetailsScreen
-import com.zaed.distributor.ui.addGoldSale.AddGoldSaleScreen
+import com.zaed.common.ui.addGoldSale.AddGoldSaleScreen
 import com.zaed.distributor.ui.addproductsale.AddProductSaleScreen
 import com.zaed.distributor.ui.losses.LossesScreen
 import com.zaed.distributor.ui.sales.SalesScreen

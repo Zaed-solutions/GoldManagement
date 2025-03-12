@@ -169,13 +169,21 @@ class WholeSalesCustomerRemoteDataSourceImpl(
 
     override suspend fun fetchWholesaleCustomersByName(request: FetchWholesaleCustomersByNameRequest): Result<List<WholeSaleCustomer>> {
         return try {
+            val filter = if(request.distributorId.isBlank()){
+                Filter.and(
+                    Filter.greaterThanOrEqualTo("name", request.name),
+                    Filter.lessThanOrEqualTo("name", request.name + "\uf8ff")
+                )
+            } else {
+                Filter.and(
+                    Filter.greaterThanOrEqualTo("name", request.name),
+                    Filter.lessThanOrEqualTo("name", request.name + "\uf8ff"),
+                    Filter.equalTo("distributorId", request.distributorId)
+                )
+            }
             val customers = customersCollection
                 .where(
-                    Filter.and(
-                        Filter.greaterThanOrEqualTo("name", request.name),
-                        Filter.lessThanOrEqualTo("name", request.name + "\uf8ff"),
-                        Filter.equalTo("distributorId", request.distributorId)
-                    )
+                    filter
                 ).get()
                 .await()
                 .toObjects<WholeSaleCustomer>()

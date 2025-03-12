@@ -1,10 +1,11 @@
-package com.zaed.distributor.ui.addGoldSale
+package com.zaed.common.ui.addGoldSale
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
+import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.data.model.customer.FetchWholesaleCustomersByNameRequest
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.Payment
@@ -47,7 +48,6 @@ class AddGoldSaleViewModel(
         if (saleId.isNotBlank()) {
             fetchSale(saleId)
         }
-        fetchAllCategories()
         fetchCurrentUser()
     }
 
@@ -104,23 +104,6 @@ class AddGoldSaleViewModel(
         }
     }
 
-    private fun fetchAllCategories() {
-        viewModelScope.launch(Dispatchers.IO) {
-            fetchAllCategoriesUseCase().collect { result ->
-                result.onSuccess { data ->
-                    _uiState.update { oldState ->
-                        oldState.copy(categories = data)
-                    }
-                }.onFailure { e ->
-                    Log.e(TAG, "fetchAllCategories: ${e.message}", e)
-                    e.printStackTrace()
-                }
-                Log.d(
-                    "find the issue", "fetchAllCategories: $result"
-                )
-            }
-        }
-    }
 
     private fun fetchCurrentUser() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -202,7 +185,8 @@ class AddGoldSaleViewModel(
                     sale = uiState.value.sale,
                     payments = uiState.value.payments,
                     employeeName = uiState.value.currentUser.fullName,
-                    employeeId = uiState.value.currentUser.id
+                    employeeId = uiState.value.currentUser.id,
+                    isAdmin = uiState.value.currentUser.role == UserRole.MANAGER
                 )
             ).onSuccess {
                 _uiState.update { oldState ->
@@ -254,11 +238,13 @@ class AddGoldSaleViewModel(
                 AddWholesaleGoldSaleRequest(
                     sale = uiState.value.sale,
                     payments = uiState.value.payments,
+                    isAdmin = uiState.value.currentUser.role == UserRole.MANAGER
                 )
             ).onSuccess { id ->
                 _uiState.update { oldState ->
                     oldState.copy(
-                        sale = oldState.sale.copy(id = id), isLoading = false, isFinished = true
+                        sale = oldState.sale.copy(id = id),
+                        isLoading = false, isFinished = true
                     )
                 }
                 Log.d(TAG, "addSale success: $id")
@@ -287,7 +273,7 @@ class AddGoldSaleViewModel(
             fetchCustomersByNameUseCase(
                 FetchWholesaleCustomersByNameRequest(
                     name = uiState.value.customerSearchQuery,
-                    distributorId = uiState.value.currentUser.id
+                    distributorId = ""
                 )
             ).onSuccess { data ->
                 launch(Dispatchers.Main) {

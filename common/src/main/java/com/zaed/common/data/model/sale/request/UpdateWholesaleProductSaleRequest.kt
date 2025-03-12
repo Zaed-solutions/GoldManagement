@@ -16,4 +16,5 @@ data class UpdateWholesaleGoldSaleRequest (
     val payments: List<Payment>,
     val employeeId: String,
     val employeeName: String,
+    val isAdmin: Boolean = false
 )

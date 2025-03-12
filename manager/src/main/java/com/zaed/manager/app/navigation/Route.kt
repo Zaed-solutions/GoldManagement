@@ -39,4 +39,6 @@ sealed interface Route {
     data class GoldSaleDetailsRoute(val saleId: String) : Route
     @Serializable
     data class StoreSaleDetailsRoute(val saleId: String): Route
+    @Serializable
+    data class AddGoldSaleRoute(val saleId: String = "") : Route
 }
