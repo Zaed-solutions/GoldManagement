@@ -885,7 +885,7 @@ class SaleRemoteSourceImpl(
                 .where(
                     Filter.and(
                         Filter.equalTo("type", InventoryType.GOLD),
-                        Filter.equalTo("ownerId", request.sale.distributorId)
+                        Filter.equalTo("ownerId", if(request.isAdmin)"" else request.sale.distributorId)
                     )
                 )
                 .get().await().documents.firstOrNull()?.reference?.let { ref ->
@@ -1118,7 +1118,7 @@ class SaleRemoteSourceImpl(
                 .where(
                     Filter.and(
                         Filter.equalTo("type", InventoryType.GOLD),
-                        Filter.equalTo("ownerId", request.sale.distributorId)
+                        Filter.equalTo("ownerId", if(request.isAdmin) "" else request.sale.distributorId)
                     )
                 )
                 .get().await().documents.firstOrNull()?.reference?.let { ref ->

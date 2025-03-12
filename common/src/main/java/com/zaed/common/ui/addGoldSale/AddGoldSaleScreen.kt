@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.addGoldSale
+package com.zaed.common.ui.addGoldSale
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
@@ -24,7 +24,7 @@ import com.zaed.common.ui.components.PreviewSaleContent
 import com.zaed.common.ui.components.ProgressIndicatorTopAppBar
 import com.zaed.common.ui.components.SaleSummaryContent
 import com.zaed.common.ui.components.SelectPaymentsContent
-import com.zaed.distributor.ui.addGoldSale.components.SelectGoldContent
+import com.zaed.common.ui.addGoldSale.components.SelectGoldContent
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 

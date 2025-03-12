@@ -54,4 +54,9 @@ enum class NavDrawerItem(
         icon = R.drawable.ic_ingot,
         route = Route.IngotTransactionsRoute
     ),
+    GOLD_SALES(
+        title = R.string.gold_sales,
+        icon = R.drawable.ic_coins,
+        route = Route.AddGoldSaleRoute()
+    ),
 }

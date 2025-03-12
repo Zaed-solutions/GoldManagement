@@ -127,6 +127,7 @@ import com.zaed.common.domain.store.DeleteStoreUseCase
 import com.zaed.common.domain.store.FetchStoreByIdUseCase
 import com.zaed.common.domain.store.GetStoresUseCase
 import com.zaed.common.domain.store.UpdateStoreUseCase
+import com.zaed.common.ui.addGoldSale.AddGoldSaleViewModel
 import com.zaed.common.ui.addcustomers.AddCustomersViewModel
 import com.zaed.common.ui.auth.MainViewModel
 import com.zaed.common.ui.auth.login.LoginViewModel
@@ -253,6 +254,7 @@ val viewModelModule = module {
     viewModelOf(::ProductSaleDetailsViewModel)
     viewModelOf(::GoldSaleDetailsViewModel)
     viewModelOf(::SaleDetailsViewModel)
+    viewModelOf(::AddGoldSaleViewModel)
 }
 val remoteSourceModule = module {
     singleOf(::AuthenticationRemoteSourceImpl) { bind<AuthenticationRemoteSource>() }

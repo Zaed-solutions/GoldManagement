@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.addGoldSale.components
+package com.zaed.common.ui.addGoldSale.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Column

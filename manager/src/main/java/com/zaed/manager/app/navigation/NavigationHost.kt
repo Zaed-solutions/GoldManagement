@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.zaed.common.data.model.authentication.UserRole
+import com.zaed.common.ui.addGoldSale.AddGoldSaleScreen
 import com.zaed.common.ui.addcustomers.AddCustomersScreen
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
@@ -210,7 +211,7 @@ fun NavigationHost(
                     /*TODO*/
                 },
                 onNavigateToCustomerDetails = {
-                    /*TODO*/
+                    navController.navigate(Route.CustomerDetails(it))
                 },
                 saleId = saleId,
                 isAdmin = true
@@ -220,13 +221,19 @@ fun NavigationHost(
             val saleId = navBackStackEntry.toRoute<Route.GoldSaleDetailsRoute>().saleId
             GoldSaleDetailsScreen(
                 onBackClicked = {
-                    navController.popBackStack()
+                    val previousDestination =
+                        navController.previousBackStackEntry?.destination?.route?.substringBefore("?")
+                    if (previousDestination == Route.AddGoldSaleRoute::class.qualifiedName) {
+                        navController.navigate(Route.AddGoldSaleRoute())
+                    } else {
+                        navController.popBackStack()
+                    }
                 },
                 onNavigateToEditSale = {
-                    /*TODO*/
+                    navController.navigate(Route.AddGoldSaleRoute(it))
                 },
                 navigateToCustomerDetails = {
-                    /*TODO*/
+                    navController.navigate(Route.CustomerDetails(it))
                 },
                 saleId = saleId,
                 isAdmin = true
@@ -243,6 +250,20 @@ fun NavigationHost(
                 },
                 saleId = saleId,
                 isAdmin = true
+            )
+        }
+        composable<Route.AddGoldSaleRoute> {
+            val saleId = it.toRoute<Route.AddGoldSaleRoute>().saleId
+            AddGoldSaleScreen(
+                onBackClicked = {navController.popBackStack()},
+                saleId = saleId,
+                onOpenDrawer = onShowNavDrawer,
+                onNavigateToGoldSaleDetails = {
+                    navController.navigate(Route.GoldSaleDetailsRoute(it))
+                },
+                onNavigateToAddCustomer = {
+                    navController.navigate(Route.AddCustomers())
+                }
             )
         }
     }

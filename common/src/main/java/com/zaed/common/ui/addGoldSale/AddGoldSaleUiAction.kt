@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.addGoldSale
+package com.zaed.common.ui.addGoldSale
 
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.Payment
