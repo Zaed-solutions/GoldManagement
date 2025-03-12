@@ -2,11 +2,11 @@ package com.zaed.common.ui.auth.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zaed.common.data.model.store.Store
 import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.data.model.authentication.request.SignUpUserRequest
-import com.zaed.common.domain.store.GetStoresUseCase
+import com.zaed.common.data.model.store.Store
 import com.zaed.common.domain.authentication.SignUpUserUseCase
+import com.zaed.common.domain.store.GetStoresUseCase
 import com.zaed.common.ui.auth.AuthenticationUiAction
 import com.zaed.common.ui.auth.AuthenticationUiState
 import com.zaed.common.ui.auth.FieldsError
@@ -22,9 +22,11 @@ class SignUpViewModel(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(AuthenticationUiState())
     val uiState = _uiState.asStateFlow()
+
     init {
         getStores()
     }
+
     val stores = MutableStateFlow(SelectStoreUiState())
 
     private fun getStores() {
@@ -149,12 +151,12 @@ class SignUpViewModel(
                     it.copy(fieldsError = FieldsError.INVALID_PASSWORD)
                 }
                 return false
-            } else if (stores.value.selectedStore.name.isEmpty() && uiState.value.role == UserRole.CASHIER){
+            } else if (stores.value.selectedStore.name.isEmpty() && uiState.value.role == UserRole.CASHIER) {
                 _uiState.update {
                     it.copy(fieldsError = FieldsError.EMPTY_STORE)
                 }
                 return false
-            }else {
+            } else {
                 _uiState.update {
                     it.copy(fieldsError = FieldsError.NONE)
                 }
@@ -164,26 +166,20 @@ class SignUpViewModel(
     }
 
     private fun updateUserName(userName: String) {
-        viewModelScope.launch {
-            _uiState.update {
-                it.copy(userName = userName)
-            }
+        _uiState.update {
+            it.copy(userName = userName)
         }
     }
 
     private fun updatePassword(password: String) {
-        viewModelScope.launch {
-            _uiState.update {
-                it.copy(password = password)
-            }
+        _uiState.update {
+            it.copy(password = password)
         }
     }
 
     private fun updateFullName(fullName: String) {
-        viewModelScope.launch {
-            _uiState.update {
-                it.copy(fullName = fullName)
-            }
+        _uiState.update {
+            it.copy(fullName = fullName)
         }
     }
 }

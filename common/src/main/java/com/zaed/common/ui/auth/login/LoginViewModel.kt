@@ -88,7 +88,7 @@ class LoginViewModel(
 
     private fun validInput(): Boolean {
         with(uiState.value) {
-              if (userName.isEmpty()) {
+            if (userName.isEmpty()) {
                 _uiState.update {
                     it.copy(fieldsError = FieldsError.EMPTY_USER_NAME)
                 }
@@ -118,18 +118,14 @@ class LoginViewModel(
     }
 
     private fun updateUserName(userName: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update {
-                it.copy(userName = userName)
-            }
+        _uiState.update {
+            it.copy(userName = userName)
         }
     }
 
     private fun updatePassword(password: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update {
-                it.copy(password = password)
-            }
+        _uiState.update {
+            it.copy(password = password)
         }
     }
 }
