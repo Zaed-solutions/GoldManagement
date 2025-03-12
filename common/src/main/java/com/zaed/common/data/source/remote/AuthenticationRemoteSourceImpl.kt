@@ -32,14 +32,18 @@ class AuthenticationRemoteSourceImpl(
 
     override suspend fun loginUser(request: LoginUserRequest): Result<User> {
         return try {
-            val userQuery = usersCollection.whereEqualTo("userName", request.userName).get().await()
+            val userQuery = usersCollection.
+            where(
+                Filter.and(
+                    Filter.equalTo("userName", request.userName),
+                    Filter.equalTo("role", request.role)
+                )
+            ).get().await()
             if (userQuery.documents.isEmpty()) {
                 return Result.failure(LoginError.UserNotFound())
             }
             val user = userQuery.documents[0].toObject(User::class.java)
-            if (user == null) {
-                return Result.failure(LoginError.UserNotFound())
-            }
+                ?: return Result.failure(LoginError.UserNotFound())
             if (user.password != request.password) {
                 return Result.failure(LoginError.InCorrectPassword())
             }
@@ -174,8 +178,12 @@ class AuthenticationRemoteSourceImpl(
     override suspend fun signUpUser(request: SignUpUserRequest): Result<User> {
         return try {
             val querySnapshot = usersCollection
-                .whereEqualTo("userName", request.userName)
-                .get(Source.SERVER)
+                .where(
+                    Filter.and(
+                        Filter.equalTo("userName", request.userName),
+                        Filter.equalTo("role", request.role)
+                    )
+                ).get(Source.SERVER)
                 .await()
 
             if (!querySnapshot.isEmpty) {

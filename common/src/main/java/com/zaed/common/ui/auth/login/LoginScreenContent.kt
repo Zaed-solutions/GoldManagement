@@ -1,5 +1,6 @@
 package com.zaed.common.ui.auth.login
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -47,6 +48,7 @@ fun LoginScreenContent(
 ) {
     LaunchedEffect(role){
         onAction(AuthenticationUiAction.OnUpdateRole(role))
+        Log.d("LoginScreenContent: ", "$role")
     }
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
