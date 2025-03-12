@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
+import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.data.model.sale.IngotTransaction
 import com.zaed.common.data.model.sale.request.AddIngotTransactionRequest
 import com.zaed.common.data.model.sale.request.FetchIngotTransactionsRequest
@@ -59,9 +60,10 @@ class IngotTransactionsViewModel(
 
     private fun fetchTransactions(distributorId: String) {
         viewModelScope.launch(Dispatchers.IO) {
+
             fetchTransactionUseCase(
                 FetchIngotTransactionsRequest(
-                    distributorId = distributorId
+                    distributorId = if(uiState.value.currentUser.role == UserRole.MANAGER) "" else  distributorId
                 )
             ).collect { result ->
                 result.onSuccess { data ->
@@ -131,7 +133,7 @@ class IngotTransactionsViewModel(
                     transaction = transaction.copy(
                         logs = logs,
                         createdAt = Date(),
-                        distributorId = _uiState.value.currentUser.id,
+                        distributorId = if(uiState.value.currentUser.role == UserRole.MANAGER) "" else  _uiState.value.currentUser.id,
                         distributorName = _uiState.value.currentUser.fullName,
                     )
                 )
@@ -146,7 +148,7 @@ class IngotTransactionsViewModel(
     private fun updateTransaction(transaction: IngotTransaction) {
         viewModelScope.launch (Dispatchers.IO){
             val updateLog = ChangeLog(
-                employeeId = _uiState.value.currentUser.id,
+                employeeId = if(uiState.value.currentUser.role == UserRole.MANAGER) "" else  _uiState.value.currentUser.id,
                 employeeName = _uiState.value.currentUser.fullName,
                 type = LogType.UPDATE
             )
@@ -167,7 +169,7 @@ class IngotTransactionsViewModel(
     private fun deleteTransaction(transaction: IngotTransaction) {
         viewModelScope.launch (Dispatchers.IO){
             val deleteLog = ChangeLog(
-                employeeId = _uiState.value.currentUser.id,
+                employeeId = if(uiState.value.currentUser.role == UserRole.MANAGER) "" else  _uiState.value.currentUser.id,
                 employeeName = _uiState.value.currentUser.fullName,
                 type = LogType.DELETE
             )
