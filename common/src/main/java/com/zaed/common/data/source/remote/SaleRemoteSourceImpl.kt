@@ -373,17 +373,18 @@ class SaleRemoteSourceImpl(
     override fun fetchIngotTransaction(request: FetchIngotTransactionsRequest): Flow<Result<List<IngotTransaction>>> =
         callbackFlow {
             try {
-                val filter = if (request.distributorId.isBlank()){
-                    Filter.equalTo("deleted", false)
+                val filter = if (request.distributorId.isBlank()) {
+                    null
                 } else {
                     Filter.and(
                         Filter.equalTo("distributorId", request.distributorId),
                         Filter.equalTo("deleted", false)
                     )
                 }
-                ingotTransactionsCollection.where(
-                    filter
-                ).addSnapshotListener { snapshot, e ->
+                val query = filter?.let { ingotTransactionsCollection.where(it) }
+                    ?: ingotTransactionsCollection
+
+                query.addSnapshotListener { snapshot, e ->
                     if (e != null) {
                         crashlytics.recordException(e)
                         trySend(Result.failure(e))
@@ -742,7 +743,8 @@ class SaleRemoteSourceImpl(
                             )
                         )
                     )
-                } else { }
+                } else {
+                }
                 when (it) {
                     is CashPayment -> batch.set(
                         ref,
@@ -849,7 +851,8 @@ class SaleRemoteSourceImpl(
                             )
                         )
                     )
-                } else { }
+                } else {
+                }
                 when (it) {
                     is CashPayment -> batch.set(
                         ref,
@@ -870,6 +873,7 @@ class SaleRemoteSourceImpl(
                         ref,
                         it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
                     )
+
                     is GoldPayment -> batch.set(
                         ref,
                         it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
