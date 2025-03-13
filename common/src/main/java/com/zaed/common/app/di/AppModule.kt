@@ -25,6 +25,8 @@ import com.zaed.common.data.repository.SaleRepository
 import com.zaed.common.data.repository.SaleRepositoryImpl
 import com.zaed.common.data.repository.StoreRepository
 import com.zaed.common.data.repository.StoreRepositoryImpl
+import com.zaed.common.data.repository.SupplierRepository
+import com.zaed.common.data.repository.SupplierRepositoryImpl
 import com.zaed.common.data.repository.WholeSalesCustomerRepository
 import com.zaed.common.data.repository.WholeSalesCustomerRepositoryImpl
 import com.zaed.common.data.source.local.LocalStorage
@@ -47,6 +49,8 @@ import com.zaed.common.data.source.remote.SaleRemoteSource
 import com.zaed.common.data.source.remote.SaleRemoteSourceImpl
 import com.zaed.common.data.source.remote.StoreRemoteDataSource
 import com.zaed.common.data.source.remote.StoreRemoteDataSourceImpl
+import com.zaed.common.data.source.remote.SupplierRemoteSource
+import com.zaed.common.data.source.remote.SupplierRemoteSourceImpl
 import com.zaed.common.data.source.remote.WholeSalesCustomerRemoteDataSource
 import com.zaed.common.data.source.remote.WholeSalesCustomerRemoteDataSourceImpl
 import com.zaed.common.domain.authentication.DeleteUserUseCase
@@ -127,6 +131,10 @@ import com.zaed.common.domain.store.DeleteStoreUseCase
 import com.zaed.common.domain.store.FetchStoreByIdUseCase
 import com.zaed.common.domain.store.GetStoresUseCase
 import com.zaed.common.domain.store.UpdateStoreUseCase
+import com.zaed.common.domain.supplier.AddSupplierUseCase
+import com.zaed.common.domain.supplier.DeleteSupplierUseCase
+import com.zaed.common.domain.supplier.FetchSuppliersUseCase
+import com.zaed.common.domain.supplier.UpdateSupplierUseCase
 import com.zaed.common.ui.addGoldSale.AddGoldSaleViewModel
 import com.zaed.common.ui.addcustomers.AddCustomersViewModel
 import com.zaed.common.ui.auth.MainViewModel
@@ -138,6 +146,7 @@ import com.zaed.common.ui.ingottransactions.IngotTransactionsViewModel
 import com.zaed.common.ui.saledetails.cashiersaledetails.SaleDetailsViewModel
 import com.zaed.common.ui.saledetails.goldsaledetails.GoldSaleDetailsViewModel
 import com.zaed.common.ui.saledetails.productsaledetails.ProductSaleDetailsViewModel
+import com.zaed.common.ui.suppliers.SuppliersViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
@@ -228,6 +237,10 @@ val useCaseModule = module {
     singleOf(::FetchManufacturerOrdersUseCase)
     singleOf(::UpdateManufacturerOrderUseCase)
     singleOf(::DeleteManufacturerOrderUseCase)
+    singleOf(::FetchSuppliersUseCase)
+    singleOf(::AddSupplierUseCase)
+    singleOf(::UpdateSupplierUseCase)
+    singleOf(::DeleteSupplierUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }
@@ -240,6 +253,7 @@ val repositoryModule = module {
     singleOf(::ChequeRepositoryImpl) { bind<ChequeRepository>() }
     singleOf(::InventoryRepositoryImpl) { bind<InventoryRepository>() }
     singleOf(::ManufacturerOrderRepositoryImpl) { bind<ManufacturerOrderRepository>() }
+    singleOf(::SupplierRepositoryImpl) { bind<SupplierRepository>() }
 }
 val viewModelModule = module {
     viewModelOf(::SignUpViewModel)
@@ -255,6 +269,7 @@ val viewModelModule = module {
     viewModelOf(::GoldSaleDetailsViewModel)
     viewModelOf(::SaleDetailsViewModel)
     viewModelOf(::AddGoldSaleViewModel)
+    viewModelOf(::SuppliersViewModel)
 }
 val remoteSourceModule = module {
     singleOf(::AuthenticationRemoteSourceImpl) { bind<AuthenticationRemoteSource>() }
@@ -267,6 +282,7 @@ val remoteSourceModule = module {
     singleOf(::ChequeRemoteSourceImpl) { bind<ChequeRemoteSource>() }
     singleOf(::InventoryRemoteSourceImpl) { bind<InventoryRemoteSource>() }
     singleOf(::ManufacturerOrderRemoteSourceImpl) { bind<ManufacturerOrderRemoteSource>() }
+    singleOf(::SupplierRemoteSourceImpl) { bind<SupplierRemoteSource>() }
     single<FirebaseFirestore> {
         val db = Firebase.firestore
         val settings = FirebaseFirestoreSettings.Builder().setLocalCacheSettings(

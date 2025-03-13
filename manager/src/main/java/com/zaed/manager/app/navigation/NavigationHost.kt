@@ -17,6 +17,7 @@ import com.zaed.common.ui.ingottransactions.IngotTransactionsScreen
 import com.zaed.common.ui.saledetails.cashiersaledetails.SaleDetailsScreen
 import com.zaed.common.ui.saledetails.goldsaledetails.GoldSaleDetailsScreen
 import com.zaed.common.ui.saledetails.productsaledetails.ProductSaleDetailsScreen
+import com.zaed.common.ui.suppliers.SuppliersScreen
 import com.zaed.manager.ui.distributordetails.DistributorDetailsScreen
 import com.zaed.manager.ui.distributors.DistributorsScreen
 import com.zaed.manager.ui.distributorssales.DistributorsSalesScreen
@@ -263,6 +264,15 @@ fun NavigationHost(
                 },
                 onNavigateToAddCustomer = {
                     navController.navigate(Route.AddCustomers())
+                }
+            )
+        }
+        composable<Route.SuppliersRoute> {
+            SuppliersScreen(
+                role = UserRole.MANAGER,
+                onShowNavDrawer = onShowNavDrawer,
+                onNavigateToSupplierDetails = {
+                    /*TODO*/
                 }
             )
         }
