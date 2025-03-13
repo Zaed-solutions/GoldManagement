@@ -65,4 +65,9 @@ enum class NavDrawerItem(
         route = Route.ChequesRoute
     ),
 
+    SUPPLIERS(
+        title = R.string.suppliers,
+        icon = R.drawable.ic_users,
+        route = Route.SuppliersRoute
+    ),
 }
