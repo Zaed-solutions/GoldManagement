@@ -7,8 +7,10 @@ import com.zaed.common.data.model.sale.WholesaleSale
 
 data class SalesChequesUiState(
     val loading: Boolean = false,
-    val customer: WholeSaleCustomer = WholeSaleCustomer(),
+    val selectedCustomer: WholeSaleCustomer = WholeSaleCustomer(),
     val currentDistributor: User = User(),
     val payments:  List<Payment> = emptyList(),
     val sales : List<WholesaleSale> = emptyList(),
+    val customerSearchQuery: String = "",
+    val suggestedCustomers: List<WholeSaleCustomer> = emptyList(),
 )
