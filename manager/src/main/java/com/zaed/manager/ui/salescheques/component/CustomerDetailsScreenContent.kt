@@ -159,7 +159,7 @@ fun SalesChequesScreenContent(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 8.dp),
+                                    .padding(8.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
@@ -243,7 +243,7 @@ fun SalesChequesScreenContent(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 8.dp),
+                                    .padding( 8.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
