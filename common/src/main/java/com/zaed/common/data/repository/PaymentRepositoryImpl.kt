@@ -7,6 +7,7 @@ import com.zaed.common.data.model.payment.request.DeletePaymentRequest
 import com.zaed.common.data.model.payment.request.EditPaymentRequest
 import com.zaed.common.data.model.payment.request.FetchCustomerPaymentsRequest
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
+import com.zaed.common.data.model.payment.request.FetchSupplierPaymentsRequest
 import com.zaed.common.data.source.remote.PaymentRemoteDataSource
 import kotlinx.coroutines.flow.Flow
 
@@ -23,6 +24,10 @@ class PaymentRepositoryImpl(
 
     override suspend fun fetchGoldPaymentsByIds(request: FetchPaymentsByIdsRequest): Result<List<GoldPayment>> {
         return paymentDataSource.fetchGoldPaymentsByIds(request)
+    }
+
+    override fun fetchSupplierPayments(request: FetchSupplierPaymentsRequest): Flow<Result<List<Payment>>> {
+        return paymentDataSource.fetchSupplierPayments(request)
     }
 
 

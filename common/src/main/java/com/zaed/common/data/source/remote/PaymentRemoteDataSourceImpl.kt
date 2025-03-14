@@ -20,6 +20,7 @@ import com.zaed.common.data.model.payment.request.DeletePaymentRequest
 import com.zaed.common.data.model.payment.request.EditPaymentRequest
 import com.zaed.common.data.model.payment.request.FetchCustomerPaymentsRequest
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
+import com.zaed.common.data.model.payment.request.FetchSupplierPaymentsRequest
 import com.zaed.common.data.model.payment.signedAmount
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -148,6 +149,12 @@ class PaymentRemoteDataSourceImpl(
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    override fun fetchSupplierPayments(request: FetchSupplierPaymentsRequest): Flow<Result<List<Payment>>>
+    = callbackFlow {
+//        TODO("Not yet implemented")
+        awaitClose {  }
     }
 
     override suspend fun editPayment(request: EditPaymentRequest): Result<Unit> {

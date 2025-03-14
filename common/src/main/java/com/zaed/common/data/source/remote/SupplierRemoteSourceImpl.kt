@@ -6,6 +6,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.common.data.model.supplier.Supplier
 import com.zaed.common.data.model.supplier.request.AddSupplierRequest
 import com.zaed.common.data.model.supplier.request.DeleteSupplierRequest
+import com.zaed.common.data.model.supplier.request.FetchSupplierRequest
 import com.zaed.common.data.model.supplier.request.UpdateSupplierRequest
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -62,6 +63,16 @@ class SupplierRemoteSourceImpl(
         return try{
             suppliersCollection.document(request.supplier.id).set(request.supplier).await()
             Result.success(Unit)
+        } catch (e: Exception){
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun fetchSupplier(request: FetchSupplierRequest): Result<Supplier> {
+        return try{
+            val supplier = suppliersCollection.document(request.supplierId).get().await().toObject(Supplier::class.java)?: throw Exception("Supplier not found")
+            Result.success(supplier)
         } catch (e: Exception){
             crashlytics.recordException(e)
             Result.failure(e)
