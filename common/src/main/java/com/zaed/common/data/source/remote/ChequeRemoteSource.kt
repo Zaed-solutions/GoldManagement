@@ -5,6 +5,7 @@ import com.zaed.common.data.model.cheque.request.AddNewManagerChequeRequest
 import com.zaed.common.data.model.cheque.request.AddNewSalesChequeRequest
 import com.zaed.common.data.model.cheque.request.UpdateChequeStatusRequest
 import com.zaed.common.data.model.payment.ChequePayment
+import com.zaed.common.domain.cheque.DeleteManagerChequeRequest
 import kotlinx.coroutines.flow.Flow
 
 interface ChequeRemoteSource {
@@ -16,4 +17,5 @@ interface ChequeRemoteSource {
     suspend fun updateManagerCheckStatus(request: UpdateChequeStatusRequest): Result<Unit>
     fun fetchManagerCheques(): Flow<Result<List<ManagerCheque>>>
     fun fetchSalesCheques(): Flow<Result<List<ChequePayment>>>
+    suspend fun deleteManagerCheque(request: DeleteManagerChequeRequest): Result<Unit>
 }

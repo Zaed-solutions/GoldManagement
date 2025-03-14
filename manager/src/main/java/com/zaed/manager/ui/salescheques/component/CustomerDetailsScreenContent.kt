@@ -46,18 +46,21 @@ import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.zaed.common.data.model.cheque.ManagerCheque
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.ChequePayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.signedAmount
+import com.zaed.common.data.model.supplier.Supplier
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
-import com.zaed.common.ui.components.PaymentTypes
 import com.zaed.common.ui.components.PaymentsList
 import com.zaed.common.ui.components.SaveChequePaymentBottomSheetContent
+import com.zaed.common.ui.components.SaveManagerChequePaymentBottomSheetContent
 import com.zaed.common.ui.components.SelectCustomerContent
 import com.zaed.common.ui.components.getContainerColor
 import com.zaed.common.ui.components.getContentColor
+import com.zaed.common.ui.suppliers.SelectSupplierSheet
 import com.zaed.common.ui.util.toMoneyFormat
 import com.zaed.manager.R
 import com.zaed.manager.ui.salescheques.SalesChequesUiAction
@@ -78,13 +81,22 @@ fun SalesChequesScreenContent(
     suggestedCustomers: List<WholeSaleCustomer> = emptyList(),
     onAddPayment: (Payment) -> Unit = {},
     onEditPayment: (Payment, Payment) -> Unit = { _, _ -> },
-    onAction: (SalesChequesUiAction) -> Unit = {}
-) {
+    onAction: (SalesChequesUiAction) -> Unit = {},
+    isAdmin: Boolean = false,
+    isLoading: Boolean = false,
+
+    onUpdateSearchQuery: (String) -> Unit = {},
+    searchQuery: String = "",
+    filteredSuppliers: List<Supplier>,
+    onSupplierClicked: (String) -> Unit = {},
+    onAddSupplier: (Supplier) -> Unit = {},
+
+    ) {
     var addPaymentBottomSheetVisible by remember { mutableStateOf(false) }
     var selectedPayment by remember { mutableStateOf<Payment?>(null) }
     var confirmDeletePaymentSheet by remember { mutableStateOf(false) }
-    var selectPaymentTypeSheet by remember { mutableStateOf(false) }
     var selectCustomerSheet by remember { mutableStateOf(false) }
+    var selectSupplierSheet by remember { mutableStateOf(false) }
     var isTaken by remember { mutableStateOf(false) }
     val pagerState = rememberPagerState { 2 }
     val context = LocalContext.current
@@ -152,7 +164,8 @@ fun SalesChequesScreenContent(
                         Column {
                             Row(
                                 modifier = Modifier
-                                    .fillMaxWidth(),
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
@@ -163,7 +176,8 @@ fun SalesChequesScreenContent(
                                 )
                                 Spacer(modifier = Modifier.weight(1f))
                                 Surface(
-                                    color = uiState.payments.sumOf { it.signedAmount() }.getContainerColor(),
+                                    color = uiState.salesPayments.sumOf { it.signedAmount() }
+                                        .getContainerColor(),
                                     shape = RoundedCornerShape(8f.dp)
                                 ) {
                                     Text(
@@ -171,15 +185,17 @@ fun SalesChequesScreenContent(
                                             horizontal = 12.dp,
                                             vertical = 4.dp
                                         ),
-                                        text = uiState.payments.sumOf { it.signedAmount() }.toMoneyFormat(2),
+                                        text = uiState.salesPayments.sumOf { it.signedAmount() }
+                                            .toMoneyFormat(2),
                                         style = MaterialTheme.typography.titleLarge,
-                                        color = uiState.payments.sumOf { it.signedAmount() }.getContentColor(),
+                                        color = uiState.salesPayments.sumOf { it.signedAmount() }
+                                            .getContentColor(),
                                     )
                                 }
                             }
                             PaymentsList(
                                 modifier = Modifier.weight(1f),
-                                payments = uiState.payments,
+                                payments = uiState.salesPayments,
                                 onRemovePayment = { payment ->
                                     selectedPayment = payment
                                     confirmDeletePaymentSheet = true
@@ -200,7 +216,7 @@ fun SalesChequesScreenContent(
                                         .weight(1f)
                                         .padding(4.dp), onClick = {
                                         isTaken = true
-                                        selectPaymentTypeSheet = true
+                                        selectCustomerSheet = true
                                     }, colors = ButtonDefaults.filledTonalButtonColors(
                                         containerColor = MaterialTheme.colorScheme.primaryContainer,
                                         contentColor = MaterialTheme.colorScheme.onPrimary
@@ -215,7 +231,7 @@ fun SalesChequesScreenContent(
                                     shape = RoundedCornerShape(4.dp),
                                     onClick = {
                                         isTaken = false
-                                        selectPaymentTypeSheet = true
+                                        selectCustomerSheet = true
                                     },
                                     colors = ButtonDefaults.filledTonalButtonColors(
                                         containerColor = MaterialTheme.colorScheme.errorContainer,
@@ -227,7 +243,90 @@ fun SalesChequesScreenContent(
                             }
                         }
                     }
-                    1 -> {}
+
+                    1 -> {
+                        Column {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.difference),
+                                    style = MaterialTheme.typography.titleLarge,
+
+                                    fontWeight = FontWeight.Bold,
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                Surface(
+                                    color = uiState.managerPayments.sumOf { it.signedAmount() }
+                                        .getContainerColor(),
+                                    shape = RoundedCornerShape(8f.dp)
+                                ) {
+                                    Text(
+                                        modifier = Modifier.padding(
+                                            horizontal = 12.dp,
+                                            vertical = 4.dp
+                                        ),
+                                        text = uiState.managerPayments.sumOf { it.signedAmount() }
+                                            .toMoneyFormat(2),
+                                        style = MaterialTheme.typography.titleLarge,
+                                        color = uiState.managerPayments.sumOf { it.signedAmount() }
+                                            .getContentColor(),
+                                    )
+                                }
+                            }
+                            PaymentsList(
+                                modifier = Modifier.weight(1f),
+                                payments = uiState.managerPayments,
+                                onRemovePayment = { payment ->
+                                    selectedPayment = payment
+                                    confirmDeletePaymentSheet = true
+                                },
+                                onEditPayment = { payment ->
+                                    selectedPayment = payment
+                                    Log.d("TAG", "CustomerDetailsScreenContent2: $selectedPayment")
+                                    addPaymentBottomSheetVisible = true
+                                })
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Button(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .padding(4.dp), onClick = {
+                                        isTaken = true
+                                        selectSupplierSheet = true
+                                    }, colors = ButtonDefaults.filledTonalButtonColors(
+                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                        contentColor = MaterialTheme.colorScheme.onPrimary
+                                    ), shape = RoundedCornerShape(4.dp)
+                                ) {
+                                    Text(text = stringResource(com.zaed.common.R.string.taken))
+                                }
+                                Button(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .padding(4.dp),
+                                    shape = RoundedCornerShape(4.dp),
+                                    onClick = {
+                                        isTaken = false
+                                        selectSupplierSheet = true
+                                    },
+                                    colors = ButtonDefaults.filledTonalButtonColors(
+                                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                                        contentColor = MaterialTheme.colorScheme.error
+                                    )
+                                ) {
+                                    Text(text = stringResource(com.zaed.common.R.string.given))
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -264,34 +363,38 @@ fun SalesChequesScreenContent(
                                 })
                         }
                     }
+
+                    PaymentType.MANAGER_CHEQUES -> {
+                        selectedPayment?.let {
+                            SaveManagerChequePaymentBottomSheetContent(initialPayment = selectedPayment as ManagerCheque,
+                                remainsAmount = Double.MAX_VALUE,
+                                onSave = { updatedPayment ->
+                                    if (selectedPayment!!.id.isBlank()) {
+                                        onAddPayment(
+                                            updatedPayment.copy(
+                                                amount = updatedPayment.amount,
+                                                given = !isTaken
+                                            )
+                                        )
+                                    } else {
+                                        onEditPayment(
+                                            selectedPayment as ManagerCheque,
+                                            updatedPayment
+                                        )
+                                    }
+                                    selectedPayment = null
+                                    addPaymentBottomSheetVisible = false
+                                })
+                        }
+                    }
+
                     else -> {}
                 }
 
             }
         }
 
-        AnimatedVisibility(selectPaymentTypeSheet) {
-            ModalBottomSheet(onDismissRequest = {
-                selectedPayment = null
-                selectPaymentTypeSheet = false
-            }) {
-                PaymentTypes(types = listOf(PaymentType.CHEQUE), onPaymentTypeSelected = { type ->
-                    when (type) {
 
-                        PaymentType.CHEQUE -> {
-                            selectedPayment = ChequePayment(type = type)
-                            selectPaymentTypeSheet = false
-                            selectCustomerSheet = true
-                        }
-
-                        else -> {
-                            selectedPayment = null
-                            selectPaymentTypeSheet = false
-                        }
-                    }
-                })
-            }
-        }
         ConfirmDeleteBottomSheet(visible = confirmDeletePaymentSheet,
             label = selectedPayment?.amount?.toMoneyFormat(2) ?: "",
             onDismiss = {
@@ -321,14 +424,40 @@ fun SalesChequesScreenContent(
                     query = query,
                     onQueryChanged = onQueryChanged,
                     selectedCustomer = selectedCustomer,
-                    onCustomerSelected = {selected->
+                    onCustomerSelected = { selected ->
                         onCustomerSelected(selected)
                         selectCustomerSheet = false
+                        selectedPayment = ChequePayment(
+                            customerId = selected.id,
+                            given = !isTaken,
+                        )
                         addPaymentBottomSheetVisible = true
                     },
                     suggestedCustomers = suggestedCustomers
                 )
             }
+        }
+        AnimatedVisibility(selectSupplierSheet) {
+            SelectSupplierSheet(
+                onDismiss = {
+                    selectSupplierSheet = false
+                },
+                isAdmin = isAdmin,
+                isLoading = isLoading,
+                onUpdateSearchQuery = onUpdateSearchQuery,
+                searchQuery = searchQuery,
+                filteredSuppliers = filteredSuppliers,
+                onSupplierClicked = { supplierId ->
+                    onSupplierClicked(supplierId)
+                    selectSupplierSheet = false
+                    selectedPayment = ManagerCheque(
+                        customerId = supplierId,
+                        given = !isTaken,
+                    )
+                    addPaymentBottomSheetVisible = true
+                },
+                onAddSupplier = onAddSupplier
+            )
         }
     }
 }

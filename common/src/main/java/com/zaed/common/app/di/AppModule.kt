@@ -65,6 +65,7 @@ import com.zaed.common.domain.authentication.UpdateUserUseCase
 import com.zaed.common.domain.category.FetchAllCategoriesUseCase
 import com.zaed.common.domain.cheque.AddManagerChequeUseCase
 import com.zaed.common.domain.cheque.AddSalesChequeUseCase
+import com.zaed.common.domain.cheque.DeleteManagerChequeUseCase
 import com.zaed.common.domain.cheque.FetchManagerChequesUseCase
 import com.zaed.common.domain.cheque.FetchSalesChequesUseCase
 import com.zaed.common.domain.cheque.UpdateManagerCheckStatusUseCase
@@ -241,6 +242,7 @@ val useCaseModule = module {
     singleOf(::AddSupplierUseCase)
     singleOf(::UpdateSupplierUseCase)
     singleOf(::DeleteSupplierUseCase)
+    singleOf(::DeleteManagerChequeUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }

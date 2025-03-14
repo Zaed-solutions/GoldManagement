@@ -1,5 +1,6 @@
 package com.zaed.common.data.source.remote
 
+import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Filter
@@ -7,6 +8,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObjects
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
+import com.zaed.common.data.model.cheque.ManagerCheque
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
@@ -34,6 +36,7 @@ class PaymentRemoteDataSourceImpl(
     private val customersCollection = firestore.collection("whole_sale_customers")
     override suspend fun addPayment(request: AddNewPaymentRequest): Result<String> {
         try {
+            Log.d("PaymentRemoteDataSource", "addPayment: ${request.payment}")
             val document = moneyPaymentsCollection.document()
             when(request.payment){
                 is CashPayment->{
@@ -66,7 +69,11 @@ class PaymentRemoteDataSourceImpl(
                         request.payment.copy(id = document.id, customerId = request.customerId)
                     ).await()
                 }
-                else->{}
+                is ManagerCheque->{
+                    document.set(
+                        request.payment.copy(id = document.id, customerId = request.customerId)
+                    ).await()
+                }
             }
             customersCollection.document(request.customerId).update(
                 "debtAmount",
@@ -101,6 +108,7 @@ class PaymentRemoteDataSourceImpl(
                                 PaymentType.FUTURES -> it.toObject(FuturePayment::class.java)
                                 PaymentType.LOSS -> it.toObject(LossPayment::class.java)
                                 PaymentType.GOLD -> it.toObject(GoldPayment::class.java)
+                                PaymentType.MANAGER_CHEQUES -> it.toObject(ManagerCheque::class.java)
                             }
                         } ?: emptyList()
                         trySend(Result.success(payments))
@@ -131,6 +139,7 @@ class PaymentRemoteDataSourceImpl(
                     PaymentType.FUTURES -> it.toObject(FuturePayment::class.java)
                     PaymentType.LOSS -> it.toObject(LossPayment::class.java)
                     PaymentType.GOLD -> it.toObject(GoldPayment::class.java)
+                    PaymentType.MANAGER_CHEQUES -> it.toObject(ManagerCheque::class.java)
                 }
             }
             Result.success(payments)

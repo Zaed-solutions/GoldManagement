@@ -10,7 +10,8 @@ enum class PaymentType(@StringRes val titleRes: Int,val iconRes:Int) :DropdownMe
     CHEQUE(R.string.cheque,R.drawable.ic_cheque),
     FUTURES(R.string.futures,R.drawable.customer_credit),
     GOLD(R.string.gold,R.drawable.ic_ingot),
-    LOSS(R.string.loss,R.drawable.ic_money_minus);
+    LOSS(R.string.loss,R.drawable.ic_money_minus),
+    MANAGER_CHEQUES(R.string.manager_cheques,R.drawable.ic_cheque);
 }
 
 fun getPaymentTypeDropDownItems() = listOf(

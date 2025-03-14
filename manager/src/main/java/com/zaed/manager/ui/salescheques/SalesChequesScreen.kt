@@ -25,6 +25,13 @@ fun SalesChequesScreen(
         onCustomerSelected = viewModel::updateCustomer,
         onAddPayment =viewModel::addPayment,
         onEditPayment = viewModel::confirmEditPayment,
+        isLoading = uiState.loading,
+        isAdmin = uiState.isAdmin,
+        onUpdateSearchQuery = viewModel::updateSupplierSearchQuery,
+        searchQuery = uiState.customerSearchQuery,
+        filteredSuppliers = uiState.filteredSuppliers,
+        onSupplierClicked = viewModel::onSupplierClicked,
+        onAddSupplier = viewModel::addSupplier,
         onAction = { action ->
             when (action) {
                 else -> {
