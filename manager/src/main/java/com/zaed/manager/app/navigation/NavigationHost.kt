@@ -23,6 +23,7 @@ import com.zaed.manager.ui.distributors.DistributorsScreen
 import com.zaed.manager.ui.distributorssales.DistributorsSalesScreen
 import com.zaed.manager.ui.losses.LossesScreen
 import com.zaed.manager.ui.manufacturerorders.ManufacturerOrdersScreen
+import com.zaed.manager.ui.salescheques.SalesChequesScreen
 import com.zaed.manager.ui.storedetails.StoreDetailsScreen
 import com.zaed.manager.ui.stores.StoresScreen
 import com.zaed.manager.ui.storessales.StoresSalesScreen
@@ -199,6 +200,14 @@ fun NavigationHost(
         }
         composable<Route.ManufacturerOrdersRoute> {
             ManufacturerOrdersScreen(
+                onShowNavDrawer = onShowNavDrawer
+            )
+        }
+        composable<Route.ChequesRoute> {
+            SalesChequesScreen(
+                navigateToAddCustomer = {
+                    navController.navigate(Route.AddCustomers())
+                },
                 onShowNavDrawer = onShowNavDrawer
             )
         }

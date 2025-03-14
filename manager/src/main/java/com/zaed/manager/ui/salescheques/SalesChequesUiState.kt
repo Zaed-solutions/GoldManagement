@@ -1,14 +1,25 @@
 package com.zaed.manager.ui.salescheques
 
 import com.zaed.common.data.model.authentication.User
+import com.zaed.common.data.model.cheque.ManagerCheque
 import com.zaed.common.data.model.customer.WholeSaleCustomer
-import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.data.model.payment.ChequePayment
 import com.zaed.common.data.model.sale.WholesaleSale
+import com.zaed.common.data.model.supplier.Supplier
 
 data class SalesChequesUiState(
     val loading: Boolean = false,
-    val customer: WholeSaleCustomer = WholeSaleCustomer(),
+    val selectedCustomer: WholeSaleCustomer = WholeSaleCustomer(),
     val currentDistributor: User = User(),
-    val payments:  List<Payment> = emptyList(),
+    val salesPayments:  List<ChequePayment> = emptyList(),
+    val managerPayments: List<ManagerCheque> = emptyList(),
     val sales : List<WholesaleSale> = emptyList(),
+    val customerSearchQuery: String = "",
+    val suggestedCustomers: List<WholeSaleCustomer> = emptyList(),
+    //
+    val isAdmin: Boolean = false,
+    val allSuppliers: List<Supplier> = emptyList(),
+    val searchQuery: String = "",
+    val filteredSuppliers: List<Supplier> = emptyList(),
+    val selectedSupplier: Supplier = Supplier()
 )

@@ -6,6 +6,7 @@ import com.zaed.common.data.model.cheque.request.AddNewSalesChequeRequest
 import com.zaed.common.data.model.cheque.request.UpdateChequeStatusRequest
 import com.zaed.common.data.model.payment.ChequePayment
 import com.zaed.common.data.source.remote.ChequeRemoteSource
+import com.zaed.common.domain.cheque.DeleteManagerChequeRequest
 import kotlinx.coroutines.flow.Flow
 
 class ChequeRepositoryImpl(
@@ -41,5 +42,9 @@ class ChequeRepositoryImpl(
 
     override fun fetchSalesCheques(): Flow<Result<List<ChequePayment>>> {
         return chequeRemoteSource.fetchSalesCheques()
+    }
+
+    override suspend fun deleteManagerCheque(request: DeleteManagerChequeRequest): Result<Unit> {
+        return chequeRemoteSource.deleteManagerCheque(request)
     }
 }

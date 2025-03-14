@@ -17,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
+import com.zaed.common.data.model.cheque.ChequeType
+import com.zaed.common.data.model.cheque.ManagerCheque
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
@@ -311,6 +313,121 @@ fun SaveChequePaymentBottomSheetContent(
                 payment = payment.copy(senderName = it)
             },
         )
+        //VALUE
+        NumberInputTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            label = stringResource(R.string.amount),
+            value = payment.amount,
+            onValueChange = {
+                payment = payment.copy(amount = it)
+            },
+            supportingText =
+            if (initialPayment.amount == 0.0 && payment.amount > remainsAmount) {
+                stringResource(R.string.remains_for_the_client) + payment.amount.minus(remainsAmount).absoluteValue.toMoneyFormat(
+                    2
+                )
+            } else if (initialPayment.amount != 0.0 && payment.amount > (remainsAmount + initialPayment.amount)) {
+                stringResource(R.string.remains_for_the_client) + payment.amount.minus(remainsAmount + initialPayment.amount).absoluteValue.toMoneyFormat(
+                    2
+                )
+            } else {
+                ""
+            }
+        )
+
+        //Note
+        TextInputTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            label = stringResource(com.zaed.common.R.string.note),
+            value = payment.notes,
+            onValueChange = {
+                payment = payment.copy(notes = it)
+            },
+        )
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 48.dp)
+                .padding(top = 24.dp),
+            onClick = {
+                if (initialPayment.amount == 0.0 && payment.amount > remainsAmount) {
+                    payment = payment.copy(
+                        amount = remainsAmount,
+                    )
+                } else if (initialPayment.amount != 0.0 && payment.amount > (remainsAmount + initialPayment.amount)) {
+                    payment = payment.copy(
+                        amount = remainsAmount + initialPayment.amount,
+                    )
+                }
+                onSave(payment)
+            },
+            enabled = payment.amount != 0.0
+        ) {
+            Text(
+                text = stringResource(R.string.save),
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
+    }
+}
+@Composable
+fun SaveManagerChequePaymentBottomSheetContent(
+    modifier: Modifier = Modifier,
+    remainsAmount: Double = 0.0,
+    initialPayment: ManagerCheque,
+    onSave: (ManagerCheque) -> Unit = {}
+) {
+    var payment by remember { mutableStateOf(initialPayment) }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Text(
+            text = stringResource(R.string.payment_method) +stringResource(initialPayment.type.titleRes),
+            style = MaterialTheme.typography.titleLarge
+        )
+        //cheque for
+        TextInputTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            label = stringResource(R.string.cheque_number),
+            value = payment.chequeNumber,
+            onValueChange = {
+                payment = payment.copy(chequeNumber = it)
+            },
+        )
+        //receiver Name
+        TextInputTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            label = stringResource(com.zaed.common.R.string.receiver_name),
+            value = payment.receiverName,
+            onValueChange = {
+                payment = payment.copy(receiverName = it)
+            },
+        )
+        TitledDropDownTextField2<ChequeType>(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            label = stringResource(R.string.cheque_type),
+            selectedValue = payment.chequeType,
+            onValueChanged = {
+                payment = payment.copy(chequeType = it)
+            },
+            options = ChequeType.entries.toList()
+        )
+
         //VALUE
         NumberInputTextField(
             modifier = Modifier

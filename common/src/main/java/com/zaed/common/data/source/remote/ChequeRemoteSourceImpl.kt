@@ -10,6 +10,7 @@ import com.zaed.common.data.model.cheque.request.UpdateChequeStatusRequest
 import com.zaed.common.data.model.cheque.toMap
 import com.zaed.common.data.model.payment.ChequePayment
 import com.zaed.common.data.model.payment.PaymentType
+import com.zaed.common.domain.cheque.DeleteManagerChequeRequest
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -85,7 +86,12 @@ class ChequeRemoteSourceImpl(
     }
 
     override fun fetchManagerCheques(): Flow<Result<List<ManagerCheque>>> = callbackFlow {
-        val listener = managerChequeCollection.addSnapshotListener { value, error ->
+        val listener = salesChequeCollection.where(
+            Filter.and(
+                Filter.equalTo("deleted", false),
+                Filter.equalTo("type", PaymentType.MANAGER_CHEQUES)
+            )
+        ).addSnapshotListener { value, error ->
             if (error != null) {
                 crashlytics.recordException(error)
                 trySend(Result.failure(error))
@@ -119,9 +125,22 @@ class ChequeRemoteSourceImpl(
         }
     }
 
+    override suspend fun deleteManagerCheque(request: DeleteManagerChequeRequest): Result<Unit> {
+        try {
+            managerChequeCollection.document(request.managerCheque.id).delete()
+            //update supplier amount
+            return Result.success(Unit)
+        }catch (e: Exception){
+            e.printStackTrace()
+            crashlytics.recordException(e)
+            return Result.failure(e)
+        }
+    }
+
     override suspend fun addNewManagerCheque(request: AddNewManagerChequeRequest): Result<Unit> {
         try {
             managerChequeCollection.add(request.managerCheque)
+            //update supplier amount
             return Result.success(Unit)
         }catch (e: Exception){
             e.printStackTrace()

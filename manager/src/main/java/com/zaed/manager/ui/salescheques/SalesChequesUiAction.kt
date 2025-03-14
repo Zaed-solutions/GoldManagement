@@ -1,25 +1,19 @@
 package com.zaed.manager.ui.salescheques
 
+import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.Payment
-import com.zaed.common.data.model.payment.PaymentType
+import com.zaed.common.data.model.supplier.Supplier
 
 sealed interface SalesChequesUiAction {
-
     data object OnBackClicked : SalesChequesUiAction
-    data object OnSaveClicked : SalesChequesUiAction
-    data object OnEditCustomer : SalesChequesUiAction
-    data class OnAmountChanged(val amount: Double) : SalesChequesUiAction
-    data class OnTypeChanged(val type: PaymentType) : SalesChequesUiAction
-    data class OnChangeValueDirection(val isGiven: Boolean) : SalesChequesUiAction
+    data object OnDrawerClicked : SalesChequesUiAction
     data class DeletePayment(val cashPayment: Payment) : SalesChequesUiAction
-    data class EditPayment(val cashPayment: Payment) : SalesChequesUiAction
-    data object OnConfirmEditPayment : SalesChequesUiAction
-    data class OnDeleteProductSale(val saleId: String): SalesChequesUiAction
-    data class OnDeleteGoldSale(val saleId: String): SalesChequesUiAction
-    data class OnEditProductSale(val saleId: String): SalesChequesUiAction
-    data class OnEditGoldSale(val saleId: String): SalesChequesUiAction
-    data class OnProductSaleClicked(val saleId: String): SalesChequesUiAction
-    data class OnGoldSaleClicked(val saleId: String): SalesChequesUiAction
-
-
+    data object OnAddNewCustomer : SalesChequesUiAction
+    data class OnQueryChanged(val query: String) : SalesChequesUiAction
+    data class OnCustomerSelected(val customer: WholeSaleCustomer) : SalesChequesUiAction
+    data class OnAddPayment(val payment: Payment) : SalesChequesUiAction
+    data class OnEditPayment(val oldPayment: Payment, val newPayment: Payment) : SalesChequesUiAction
+    data class OnUpdateSearchQuery(val query: String) : SalesChequesUiAction
+    data class OnSupplierClicked(val supplierId: String) : SalesChequesUiAction
+    data class OnAddSupplier(val supplier: Supplier) : SalesChequesUiAction
 }

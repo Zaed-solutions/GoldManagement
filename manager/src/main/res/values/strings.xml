@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">Evara-Manager</string>
+    <string name="sales_cheques">Sales Cheques</string>
+    <string name="manager_cheques">Manager Cheques</string>
+    <string name="difference">Difference</string>
 </resources>
