@@ -72,26 +72,16 @@ import kotlinx.coroutines.launch
 fun SalesChequesScreenContent(
     modifier: Modifier = Modifier,
     uiState: SalesChequesUiState,
-    onShowNavDrawer: () -> Unit,
-    onAddNewCustomer: () -> Unit = {},
     query: String = "",
-    onQueryChanged: (String) -> Unit = {},
     selectedCustomer: WholeSaleCustomer = WholeSaleCustomer(),
-    onCustomerSelected: (WholeSaleCustomer) -> Unit = {},
     suggestedCustomers: List<WholeSaleCustomer> = emptyList(),
-    onAddPayment: (Payment) -> Unit = {},
-    onEditPayment: (Payment, Payment) -> Unit = { _, _ -> },
     onAction: (SalesChequesUiAction) -> Unit = {},
     isAdmin: Boolean = false,
     isLoading: Boolean = false,
 
-    onUpdateSearchQuery: (String) -> Unit = {},
     searchQuery: String = "",
     filteredSuppliers: List<Supplier>,
-    onSupplierClicked: (String) -> Unit = {},
-    onAddSupplier: (Supplier) -> Unit = {},
-
-    ) {
+) {
     var addPaymentBottomSheetVisible by remember { mutableStateOf(false) }
     var selectedPayment by remember { mutableStateOf<Payment?>(null) }
     var confirmDeletePaymentSheet by remember { mutableStateOf(false) }
@@ -112,7 +102,11 @@ fun SalesChequesScreenContent(
                     overflow = Ellipsis
                 )
             }, navigationIcon = {
-                IconButton(onShowNavDrawer) {
+                IconButton(
+                    onClick = {
+                        onAction(SalesChequesUiAction.OnDrawerClicked)
+                    }
+                ) {
                     Icon(
                         imageVector = Icons.Default.Menu, contentDescription = ""
                     )
@@ -120,11 +114,11 @@ fun SalesChequesScreenContent(
             }
             )
         }, modifier = modifier
-    ) {
+    ) { paddingValues ->
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(it)
+                .padding(paddingValues)
 
         ) {
             val tabs = remember {
@@ -345,17 +339,20 @@ fun SalesChequesScreenContent(
                                 remainsAmount = Double.MAX_VALUE,
                                 onSave = { updatedPayment ->
                                     if (selectedPayment!!.id.isBlank()) {
-                                        onAddPayment(
-                                            updatedPayment.copy(
-//                                                customerId = selectedCustomer.id,
-                                                amount = updatedPayment.amount,
-                                                given = !isTaken
+                                        onAction(
+                                            SalesChequesUiAction.OnAddPayment(
+                                                updatedPayment.copy(
+                                                    amount = updatedPayment.amount,
+                                                    given = !isTaken
+                                                )
                                             )
                                         )
                                     } else {
-                                        onEditPayment(
-                                            selectedPayment as ChequePayment,
-                                            updatedPayment
+                                        onAction(
+                                            SalesChequesUiAction.OnEditPayment(
+                                                selectedPayment as ChequePayment,
+                                                updatedPayment
+                                            )
                                         )
                                     }
                                     selectedPayment = null
@@ -370,16 +367,19 @@ fun SalesChequesScreenContent(
                                 remainsAmount = Double.MAX_VALUE,
                                 onSave = { updatedPayment ->
                                     if (selectedPayment!!.id.isBlank()) {
-                                        onAddPayment(
+                                        onAction(
+                                            SalesChequesUiAction.OnAddPayment(
                                             updatedPayment.copy(
                                                 amount = updatedPayment.amount,
                                                 given = !isTaken
                                             )
                                         )
+                                        )
                                     } else {
-                                        onEditPayment(
-                                            selectedPayment as ManagerCheque,
+                                        onAction(
+                                            SalesChequesUiAction.OnEditPayment(                                            selectedPayment as ManagerCheque,
                                             updatedPayment
+                                        )
                                         )
                                     }
                                     selectedPayment = null
@@ -420,12 +420,16 @@ fun SalesChequesScreenContent(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(vertical = TopAppBarDefaults.TopAppBarExpandedHeight),
-                    onAddNewCustomer = onAddNewCustomer,
+                    onAddNewCustomer = {
+                        onAction(SalesChequesUiAction.OnAddNewCustomer)
+                    },
                     query = query,
-                    onQueryChanged = onQueryChanged,
+                    onQueryChanged = {
+                        onAction(SalesChequesUiAction.OnQueryChanged(it))
+                    },
                     selectedCustomer = selectedCustomer,
                     onCustomerSelected = { selected ->
-                        onCustomerSelected(selected)
+                        onAction(SalesChequesUiAction.OnCustomerSelected(selected))
                         selectCustomerSheet = false
                         selectedPayment = ChequePayment(
                             customerId = selected.id,
@@ -444,11 +448,15 @@ fun SalesChequesScreenContent(
                 },
                 isAdmin = isAdmin,
                 isLoading = isLoading,
-                onUpdateSearchQuery = onUpdateSearchQuery,
+                onUpdateSearchQuery = {
+                    onAction(
+                        SalesChequesUiAction.OnUpdateSearchQuery(it)
+                    )
+                },
                 searchQuery = searchQuery,
                 filteredSuppliers = filteredSuppliers,
                 onSupplierClicked = { supplierId ->
-                    onSupplierClicked(supplierId)
+                    onAction(SalesChequesUiAction.OnSupplierClicked(supplierId))
                     selectSupplierSheet = false
                     selectedPayment = ManagerCheque(
                         customerId = supplierId,
@@ -456,7 +464,9 @@ fun SalesChequesScreenContent(
                     )
                     addPaymentBottomSheetVisible = true
                 },
-                onAddSupplier = onAddSupplier
+                onAddSupplier = {
+                    onAction(SalesChequesUiAction.OnAddSupplier(it))
+                }
             )
         }
     }

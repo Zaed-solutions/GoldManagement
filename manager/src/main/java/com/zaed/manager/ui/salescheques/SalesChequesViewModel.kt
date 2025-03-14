@@ -14,11 +14,8 @@ import com.zaed.common.data.model.supplier.request.AddSupplierRequest
 import com.zaed.common.data.model.supplier.request.DeleteSupplierRequest
 import com.zaed.common.data.model.supplier.request.UpdateSupplierRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
-import com.zaed.common.domain.cheque.AddManagerChequeUseCase
-import com.zaed.common.domain.cheque.DeleteManagerChequeUseCase
 import com.zaed.common.domain.cheque.FetchManagerChequesUseCase
 import com.zaed.common.domain.cheque.FetchSalesChequesUseCase
-import com.zaed.common.domain.cheque.UpdateManagerChequeUseCase
 import com.zaed.common.domain.customer.FetchWholesaleCustomersByNameUseCase
 import com.zaed.common.domain.payment.AddNewPaymentUseCase
 import com.zaed.common.domain.payment.DeletePaymentUseCase
@@ -36,9 +33,6 @@ import kotlinx.coroutines.launch
 class SalesChequesScreenViewModel(
     private val getSalesChequesUseCase: FetchSalesChequesUseCase,
     private val getManagerChequesUseCase: FetchManagerChequesUseCase,
-    private val addManagerChequeUseCase: AddManagerChequeUseCase,
-    private val updateManagerChequeUseCase: UpdateManagerChequeUseCase,
-    private val deleteManagerChequeUseCase: DeleteManagerChequeUseCase,
     private val addPaymentUseCase: AddNewPaymentUseCase,
     private val fetchSuppliersUseCase: FetchSuppliersUseCase,
     private val addSupplierUseCase: AddSupplierUseCase,
@@ -206,7 +200,14 @@ class SalesChequesScreenViewModel(
     }
     fun handleUiAction(action: SalesChequesUiAction) {
         when (action) {
+            is SalesChequesUiAction.OnAddPayment -> addPayment(action.payment)
+            is SalesChequesUiAction.OnEditPayment -> confirmEditPayment(action.oldPayment, action.newPayment)
+            is SalesChequesUiAction.OnCustomerSelected -> updateCustomer(action.customer)
+            is SalesChequesUiAction.OnQueryChanged -> updateSearchQuery(action.query)
             is SalesChequesUiAction.DeletePayment -> deletePayment(action.cashPayment)
+            is SalesChequesUiAction.OnUpdateSearchQuery -> updateSupplierSearchQuery(action.query)
+            is SalesChequesUiAction.OnSupplierClicked -> onSupplierClicked(action.supplierId)
+            is SalesChequesUiAction.OnAddSupplier -> addSupplier(action.supplier)
             else -> {}
         }
     }
