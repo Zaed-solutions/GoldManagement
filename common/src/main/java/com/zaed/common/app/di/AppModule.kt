@@ -106,6 +106,7 @@ import com.zaed.common.domain.payment.EditPaymentUseCase
 import com.zaed.common.domain.payment.FetchCustomerPaymentsUseCase
 import com.zaed.common.domain.payment.FetchGoldPaymentsByIdsUseCase
 import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
+import com.zaed.common.domain.payment.FetchSupplierPaymentsUseCase
 import com.zaed.common.domain.sale.AddGoldSaleUseCase
 import com.zaed.common.domain.sale.AddIngotTransactionUseCase
 import com.zaed.common.domain.sale.AddStoreSaleUseCase
@@ -243,6 +244,8 @@ val useCaseModule = module {
     singleOf(::UpdateSupplierUseCase)
     singleOf(::DeleteSupplierUseCase)
     singleOf(::DeleteManagerChequeUseCase)
+    singleOf(::FetchSupplierPaymentsUseCase)
+    singleOf(::FetchSuppliersUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }
