@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
-import com.zaed.common.data.model.customer.FetchSuppliersByNameRequest
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentStatus
 import com.zaed.common.data.model.payment.PaymentType
@@ -14,6 +13,8 @@ import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.request.AddPurchaseRequest
 import com.zaed.common.data.model.sale.request.UpdatePurchaseRequest
+import com.zaed.common.data.model.supplier.Supplier
+import com.zaed.common.data.model.supplier.request.AddSupplierRequest
 import com.zaed.common.data.model.supplier.request.FetchSupplierRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.category.AddCategoryUseCase
@@ -23,6 +24,7 @@ import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
 import com.zaed.common.domain.purchase.FetchPurchaseUseCase
 import com.zaed.common.domain.sale.AddPurchaseUseCase
 import com.zaed.common.domain.sale.UpdatePurchaseUseCase
+import com.zaed.common.domain.supplier.AddSupplierUseCase
 import com.zaed.common.domain.supplier.FetchSupplierUseCase
 import com.zaed.common.domain.supplier.FetchSuppliersUseCase
 import kotlinx.coroutines.Dispatchers
@@ -42,7 +44,8 @@ class AddPurchaseViewModel(
     private val fetchMoneyPaymentsByIdsUseCase: FetchMoneyPaymentsByIdsUseCase,
     private val addPurchaseUseCase: AddPurchaseUseCase,
     private val updatePurchaseUseCase: UpdatePurchaseUseCase,
-    private val addCategoryUseCase: AddCategoryUseCase
+    private val addCategoryUseCase: AddCategoryUseCase,
+    private val addSupplierUseCase: AddSupplierUseCase
 ) : ViewModel() {
     private val TAG: String = "AddProductSaleVM"
     private val _uiState = MutableStateFlow(AddPurchaseUiState())
@@ -98,7 +101,8 @@ class AddPurchaseViewModel(
                 result.onSuccess { data ->
                     _uiState.update { oldState ->
                         oldState.copy(
-                            allSuppliers = data
+                            allSuppliers = data,
+                            suggestedSuppliers = data
                         )
                     }
                 }.onFailure { e ->
@@ -177,7 +181,23 @@ class AddPurchaseViewModel(
             is AddPurchaseUiAction.OnUpdateProducts -> updateProductsPurchase(action.products)
             AddPurchaseUiAction.OnDeleteAllProducts -> updateProductsPurchase(emptyList())
             is AddPurchaseUiAction.OnAddNewCategory -> addCategory(action.category)
+            is AddPurchaseUiAction.OnAddNewSupplierClicked -> addSupplier(action.supplier)
             else -> Unit
+        }
+    }
+
+    private fun addSupplier(supplier: Supplier) {
+        viewModelScope.launch(Dispatchers.IO) {
+            addSupplierUseCase(
+                request = AddSupplierRequest(
+                    supplier = supplier,
+                )
+            ).onSuccess {
+                Log.d(TAG, "addSupplier: $it")
+            }.onFailure {
+                Log.e(TAG, "addSupplier: ${it.message}", it)
+                it.printStackTrace()
+            }
         }
     }
 
@@ -308,31 +328,13 @@ class AddPurchaseViewModel(
             _uiState.update { oldState ->
                 oldState.copy(
                     supplierSearchQuery = query,
+                    suggestedSuppliers =if(query.isNotBlank()) uiState.value.allSuppliers.filter { it.name.contains(query) } else uiState.value.allSuppliers
                 )
             }
-            fetchCustomersSuggestions()
+
         }
     }
 
-    private fun fetchCustomersSuggestions() {
-        viewModelScope.launch(Dispatchers.IO) {
-            fetchSupplierByNameUseCase(
-                FetchSuppliersByNameRequest(
-                    name = uiState.value.supplierSearchQuery,
-                    distributorId = uiState.value.currentUser.id
-                )
-            ).onSuccess { data ->
-                launch(Dispatchers.Main) {
-                    _uiState.update { oldState ->
-                        oldState.copy(suggestedSuppliers = data)
-                    }
-                }
-            }.onFailure { e ->
-                Log.e(TAG, "fetchCustomersSuggestions: ${e.message}", e)
-                e.printStackTrace()
-            }
-        }
-    }
 
     private fun updateSupplier(supplierId: String) {
         viewModelScope.launch {

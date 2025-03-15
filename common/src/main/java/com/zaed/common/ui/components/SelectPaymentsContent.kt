@@ -54,7 +54,7 @@ fun SelectPaymentsContent(
     onAddPayment: (Payment) -> Unit = {},
     onRemovePayment: (Payment) -> Unit = {},
     onEditPayment: (Payment) -> Unit = {},
-    onAddNewCustomer: () -> Unit,
+    onAddNewCustomer: () -> Unit={},
     query: String,
     paymentsTypes: List<PaymentType> = remember { getProductSalePayments() },
     onQueryChanged: (String) -> Unit,

@@ -55,7 +55,7 @@ fun SaveProductSheetContent(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            text = stringResource(R.string.add_product),
+            text = stringResource(R.string.add_product)+ " ${product.name}",
             style = MaterialTheme.typography.headlineMedium
         )
 

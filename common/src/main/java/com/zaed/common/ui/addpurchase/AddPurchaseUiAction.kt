@@ -3,11 +3,12 @@ package com.zaed.common.ui.addpurchase
 import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.sale.Product
+import com.zaed.common.data.model.supplier.Supplier
 
 sealed interface AddPurchaseUiAction {
     data object OnBackClicked : AddPurchaseUiAction
     data object OnSubmitClicked : AddPurchaseUiAction
-    data object OnAddNewSupplierClicked : AddPurchaseUiAction
+    data class OnAddNewSupplierClicked(val supplier: Supplier) : AddPurchaseUiAction
     data object OpenDrawer: AddPurchaseUiAction
     data class OnSupplierSearchQueryChanged(val query: String) : AddPurchaseUiAction
     data class OnSupplierSelected(val supplierId: String) : AddPurchaseUiAction

@@ -50,7 +50,6 @@ fun AddPurchaseScreen(
         state = state,
         onAction = { action ->
             when (action) {
-                AddPurchaseUiAction.OnAddNewSupplierClicked -> onNavigateToAddSupplier()
                 AddPurchaseUiAction.OnBackClicked -> onBackClicked()
                 AddPurchaseUiAction.OpenDrawer -> onOpenDrawer()
                 else -> viewModel.handleAction(action)
@@ -169,9 +168,6 @@ private fun AddPurchaseScreenContent(
                             },
                             selectedAccount = state.selectedSupplier,
                             suggestedAccounts = state.suggestedSuppliers,
-                            onAddNewAccount = {
-                                onAction(AddPurchaseUiAction.OnAddNewSupplierClicked)
-                            },
                             onNext = {
                                 scope.launch {
                                     pagerState.animateScrollToPage(pagerState.currentPage + 1)
@@ -188,8 +184,8 @@ private fun AddPurchaseScreenContent(
                                 onAction(AddPurchaseUiAction.OnSupplierSelected(it))
                             },
                             onAddSupplier = {
-                                onAction(AddPurchaseUiAction.OnAddSupplier)
-                            }
+                                onAction(AddPurchaseUiAction.OnAddNewSupplierClicked(it))
+                            },
                         )
                     }
 
@@ -203,9 +199,7 @@ private fun AddPurchaseScreenContent(
                                 onAction(AddPurchaseUiAction.OnSupplierSearchQueryChanged(it))
                             },
                             suggestedAccount = state.suggestedSuppliers,
-                            onAddNewCustomer = {
-                                onAction(AddPurchaseUiAction.OnAddNewSupplierClicked)
-                            },
+
                             onAccountSelected = {
                                 onAction(AddPurchaseUiAction.OnSupplierSelected(it.id))
                             },
