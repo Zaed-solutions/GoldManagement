@@ -222,7 +222,7 @@ class AddPurchaseViewModel(
         if (uiState.value.purchase.id.isNotBlank()) {
             updatePurchase()
         } else {
-            addSale()
+            addPurchase()
         }
     }
 
@@ -270,7 +270,7 @@ class AddPurchaseViewModel(
         }
     }
 
-    private fun addSale() {
+    private fun addPurchase() {
         _uiState.update {
             it.copy(isLoading = true)
         }
