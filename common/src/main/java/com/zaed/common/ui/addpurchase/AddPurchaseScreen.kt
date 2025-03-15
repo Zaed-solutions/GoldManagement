@@ -234,6 +234,7 @@ private fun AddPurchaseScreenContent(
                             totalPaid = state.totalPaid,
                             totalAmount = state.purchase.totalAmount,
                             isLoading = state.isLoading,
+                            isPurchase = true,
                             onCreate = {
                                 onAction(AddPurchaseUiAction.OnSubmitClicked)
                             }
