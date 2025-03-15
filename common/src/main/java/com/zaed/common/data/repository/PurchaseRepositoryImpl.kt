@@ -1,9 +1,11 @@
 package com.zaed.common.data.repository
 
 import com.zaed.common.data.model.purchase.Purchase
+import com.zaed.common.data.model.purchase.request.FetchSupplierPurchasesRequest
 import com.zaed.common.data.model.sale.request.AddPurchaseRequest
 import com.zaed.common.data.model.sale.request.UpdatePurchaseRequest
 import com.zaed.common.data.source.remote.PurchaseRemoteDataSource
+import kotlinx.coroutines.flow.Flow
 
 class PurchaseRepositoryImpl(
     private val purchaseRemoteDataSource: PurchaseRemoteDataSource
@@ -18,5 +20,9 @@ class PurchaseRepositoryImpl(
 
     override suspend fun updatePurchase(request: UpdatePurchaseRequest): Result<String> {
         return purchaseRemoteDataSource.updatePurchase(request)
+    }
+
+    override fun fetchSupplierPurchases(request: FetchSupplierPurchasesRequest): Flow<Result<List<Purchase>>> {
+        return purchaseRemoteDataSource.fetchSupplierPurchases(request)
     }
 }

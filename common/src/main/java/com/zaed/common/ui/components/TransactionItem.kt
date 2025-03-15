@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
+import com.zaed.common.data.model.purchase.Purchase
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.Transaction
 import com.zaed.common.data.model.sale.StoreTransaction
@@ -37,10 +38,10 @@ import com.zaed.common.ui.util.formatMoney
 import java.util.Date
 
 @Composable
-fun SaleItem(
+fun TransactionItem(
     modifier: Modifier = Modifier,
     transaction: Transaction,
-    onSaleClicked: () -> Unit,
+    onTransactionClicked: () -> Unit,
     isDividerVisible: Boolean = true,
     isEditable: Boolean = false,
     onEdit: () -> Unit= {},
@@ -53,6 +54,7 @@ fun SaleItem(
     }
     val title = when{
         transaction is StoreTransaction -> "CR-${transaction.receiptNumber}"
+        transaction is Purchase -> "PR-${transaction.receiptNumber}"
         else -> "DR-${transaction.receiptNumber}"
     }
     val context = LocalContext.current
@@ -84,7 +86,7 @@ fun SaleItem(
     }
     Surface(
         modifier = modifier.fillMaxWidth(),
-        onClick = { onSaleClicked() },
+        onClick = { onTransactionClicked() },
         color = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground
     ) {
@@ -144,7 +146,7 @@ fun SaleItem(
 @Composable
 private fun Preview() {
     GoldManagementTheme {
-        SaleItem(
+        TransactionItem(
             transaction = WholesaleGoldTransaction(
                 receiptNumber = "123456",
                 createdAt = Date(),
@@ -169,7 +171,7 @@ private fun Preview() {
                     )
                 )
             ),
-            onSaleClicked = {}
+            onTransactionClicked = {}
         )
     }
 }

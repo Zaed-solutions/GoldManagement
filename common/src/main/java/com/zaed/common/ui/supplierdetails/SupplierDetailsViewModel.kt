@@ -3,11 +3,15 @@ package com.zaed.common.ui.supplierdetails
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zaed.common.data.model.authentication.ChangeLog
+import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.DeletePaymentRequest
 import com.zaed.common.data.model.payment.request.EditPaymentRequest
 import com.zaed.common.data.model.payment.request.FetchSupplierPaymentsRequest
+import com.zaed.common.data.model.purchase.request.FetchSupplierPurchasesRequest
+import com.zaed.common.data.model.sale.request.UpdatePurchaseRequest
 import com.zaed.common.data.model.supplier.Supplier
 import com.zaed.common.data.model.supplier.request.FetchSupplierRequest
 import com.zaed.common.data.model.supplier.request.UpdateSupplierRequest
@@ -16,6 +20,8 @@ import com.zaed.common.domain.payment.AddNewPaymentUseCase
 import com.zaed.common.domain.payment.DeletePaymentUseCase
 import com.zaed.common.domain.payment.EditPaymentUseCase
 import com.zaed.common.domain.payment.FetchSupplierPaymentsUseCase
+import com.zaed.common.domain.purchase.FetchSupplierPurchasesUseCase
+import com.zaed.common.domain.purchase.UpdatePurchaseUseCase
 import com.zaed.common.domain.supplier.FetchSupplierUseCase
 import com.zaed.common.domain.supplier.UpdateSupplierUseCase
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +38,8 @@ class SupplierDetailsViewModel(
     private val fetchSupplierPaymentsUseCase: FetchSupplierPaymentsUseCase,
     private val fetchSupplierUseCase: FetchSupplierUseCase,
     private val updateSupplierUseCase: UpdateSupplierUseCase,
+    private val fetchPurchasesUseCase: FetchSupplierPurchasesUseCase,
+    private val updatePurchaseUseCase: UpdatePurchaseUseCase
     ) : ViewModel() {
     private val TAG: String = "SupplierDetailsViewModel"
     private val _uiState = MutableStateFlow(SupplierDetailsUiState())
@@ -59,7 +67,21 @@ class SupplierDetailsViewModel(
     }
 
     private fun fetchPurchases(supplierId: String) {
-//        TODO("Not yet implemented")
+        viewModelScope.launch (Dispatchers.IO){
+            fetchPurchasesUseCase(
+                FetchSupplierPurchasesRequest(
+                    supplierId = supplierId
+                )
+            ).collect{ result ->
+                result.onSuccess { data ->
+                    _uiState.update { oldState ->
+                        oldState.copy(purchases = data)
+                    }
+                }.onFailure { e->
+                    Log.e(TAG, "fetchPurchases: ${e.message}", e)
+                }
+            }
+        }
     }
 
     private fun fetchPayments(supplierId: String) {
@@ -111,7 +133,30 @@ class SupplierDetailsViewModel(
             is SupplierDetailsUiAction.UpdateSupplier -> updateSupplier(
                 action.supplier
             )
+            is SupplierDetailsUiAction.DeletePurchase -> deletePurchase(action.purchaseId)
             else -> Unit
+        }
+    }
+
+    private fun deletePurchase(purchaseId: String) {
+        viewModelScope.launch (Dispatchers.IO){
+            val purchase = uiState.value.purchases.find { it.id == purchaseId }?: return@launch
+            val currentEmployee = uiState.value.currentUser
+            updatePurchaseUseCase(
+                UpdatePurchaseRequest(
+                    purchase = purchase.copy(
+                        deleted = true,
+                        logs = purchase.logs + ChangeLog(employeeName = currentEmployee.fullName, employeeId = currentEmployee.id, type = LogType.DELETE)
+                    ),
+                    payments = emptyList(),
+                    employeeId = currentEmployee.id,
+                    employeeName = currentEmployee.fullName
+                )
+            ).onSuccess {
+                Log.d(TAG, "deletePurchase: success")
+            }.onFailure {
+                Log.e(TAG, "deletePurchase: ${it.message}", it)
+            }
         }
     }
 

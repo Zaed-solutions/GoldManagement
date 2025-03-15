@@ -22,8 +22,8 @@ import com.zaed.common.domain.category.FetchAllCategoriesUseCase
 import com.zaed.common.domain.customer.FetchSuppliersByNameUseCase
 import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
 import com.zaed.common.domain.purchase.FetchPurchaseUseCase
-import com.zaed.common.domain.sale.AddPurchaseUseCase
-import com.zaed.common.domain.sale.UpdatePurchaseUseCase
+import com.zaed.common.domain.purchase.AddPurchaseUseCase
+import com.zaed.common.domain.purchase.UpdatePurchaseUseCase
 import com.zaed.common.domain.supplier.AddSupplierUseCase
 import com.zaed.common.domain.supplier.FetchSupplierUseCase
 import com.zaed.common.domain.supplier.FetchSuppliersUseCase

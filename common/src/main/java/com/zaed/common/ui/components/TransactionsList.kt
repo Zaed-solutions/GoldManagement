@@ -9,18 +9,18 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.zaed.common.data.model.sale.Transaction
 import com.zaed.common.data.model.sale.WholesaleProductTransaction
-import com.zaed.common.data.model.sale.WholesaleTransaction
 
 @Composable
-fun SalesList(
+fun TransactionsList(
     modifier: Modifier = Modifier,
     listState: LazyListState = LazyListState(),
     isLoading: Boolean,
-    sales: List<WholesaleTransaction>,
-    onSaleClicked: (id: String, isProduct: Boolean) -> Unit,
-    onDeleteSale: (id: String, isProduct: Boolean) -> Unit,
-    onEditSale: (id: String, isProduct: Boolean) -> Unit
+    transactions: List<Transaction>,
+    onTransactionClicked: (id: String, isProduct: Boolean) -> Unit,
+    onDeleteTransaction: (id: String, isProduct: Boolean) -> Unit,
+    onEditTransaction: (id: String, isProduct: Boolean) -> Unit
 ) {
     ListWithLoading(
         isLoading = isLoading
@@ -32,20 +32,20 @@ fun SalesList(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(
-                items = sales,
+                items = transactions,
                 key = { it.id }
-            ) { sale ->
-                SaleItem(
+            ) { transaction ->
+                TransactionItem(
                     modifier = Modifier.animateItem(),
-                    transaction = sale,
-                    onSaleClicked = {
-                        onSaleClicked(sale.id, sale is WholesaleProductTransaction)
+                    transaction = transaction,
+                    onTransactionClicked = {
+                        onTransactionClicked(transaction.id, transaction is WholesaleProductTransaction)
                     },
                     onDelete = {
-                        onDeleteSale(sale.id, sale is WholesaleProductTransaction)
+                        onDeleteTransaction(transaction.id, transaction is WholesaleProductTransaction)
                     },
                     onEdit = {
-                        onEditSale(sale.id, sale is WholesaleProductTransaction)
+                        onEditTransaction(transaction.id, transaction is WholesaleProductTransaction)
                     },
                     isDeletable = true,
                     isEditable = true,

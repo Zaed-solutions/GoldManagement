@@ -326,6 +326,12 @@ fun NavigationHost(
                 supplierId = supplierId,
                 onBackPressed = {
                     navController.popBackStack()
+                },
+                onNavigateToEditPurchase = { purchaseId ->
+                    navController.navigate(Route.AddPurchaseRoute(purchaseId))
+                },
+                onNavigateToPurchaseDetails = { purchaseId ->
+                    navController.navigate(Route.PurchaseDetailsRoute(purchaseId))
                 }
             )
         }
