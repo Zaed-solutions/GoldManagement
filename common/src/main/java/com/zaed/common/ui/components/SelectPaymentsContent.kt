@@ -66,7 +66,7 @@ fun SelectPaymentsContent(
     var simplePaymentBottomSheet by remember { mutableStateOf(false) }
     var selectedPayment by remember { mutableStateOf<Payment?>(null) }
     val simplePaymentBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var warningnNotFullyPaidSheet by remember { mutableStateOf(false) }
+    var warningNotFullyPaidSheet by remember { mutableStateOf(false) }
     var selectCustomerSheet by remember { mutableStateOf(false) }
     val totalPaid by rememberUpdatedState(payments.sumOf { it.amount })
     val remainsAmount by rememberUpdatedState(totalAmount - totalPaid)
@@ -165,7 +165,7 @@ fun SelectPaymentsContent(
                     }
                 }
                 else if (remainsAmount > 0 && payments.filterIsInstance<GoldPayment>().none { it.pricePerGram == 0.0 }) {
-                    warningnNotFullyPaidSheet = true
+                    warningNotFullyPaidSheet = true
                 } else {
                     onNext()
                 }
@@ -283,11 +283,11 @@ fun SelectPaymentsContent(
             }
         }
         AnimatedVisibility(
-            visible = warningnNotFullyPaidSheet,
+            visible = warningNotFullyPaidSheet,
         ) {
             ModalBottomSheet(
                 onDismissRequest = {
-                    warningnNotFullyPaidSheet = false
+                    warningNotFullyPaidSheet = false
                 }
             ) {
                 Column(
@@ -320,7 +320,7 @@ fun SelectPaymentsContent(
                                         type = PaymentType.LOSS
                                     )
                                 )
-                                warningnNotFullyPaidSheet = false
+                                warningNotFullyPaidSheet = false
                             },
                             modifier = Modifier.weight(1f)
                         ) {
@@ -344,7 +344,7 @@ fun SelectPaymentsContent(
                                 } else {
                                     selectCustomerSheet = true
                                 }
-                                warningnNotFullyPaidSheet = false
+                                warningNotFullyPaidSheet = false
 
                             },
                             modifier = Modifier.weight(1f)
