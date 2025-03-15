@@ -117,7 +117,7 @@ private fun AddSaleScreenContent(
                         //add products
                         SelectProductsContent(
                             categories = state.categories,
-                            sale = state.sale,
+                            transaction = state.sale,
                             onAddProduct = {
                                 onAction(AddSaleUiAction.OnAddProduct(it))
                             },
@@ -134,7 +134,7 @@ private fun AddSaleScreenContent(
 
                     1 -> {
                         PreviewSaleContent(
-                            sale = state.sale,
+                            transaction = state.sale,
                             isSelectCustomerEnabled = false,
                             onUpdateProduct = {
                                 onAction(AddSaleUiAction.OnUpdateProduct(it))

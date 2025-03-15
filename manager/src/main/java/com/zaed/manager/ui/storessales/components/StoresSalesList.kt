@@ -7,15 +7,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.sale.StoreSale
+import com.zaed.common.data.model.sale.StoreTransaction
 import com.zaed.common.ui.components.ListWithLoading
 
 @Composable
 fun StoresSalesList(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
-    sales: List<StoreSale>,
-    onSaleClicked: (StoreSale) -> Unit
+    sales: List<StoreTransaction>,
+    onSaleClicked: (StoreTransaction) -> Unit
 ) {
     ListWithLoading(
         modifier = modifier,

@@ -5,7 +5,7 @@ import com.zaed.common.data.model.payment.PaymentStatus
 import kotlinx.serialization.Transient
 import java.util.Date
 
-data class WholesaleProductSale(
+data class WholesaleProductTransaction(
     override val id: String = "",
     override val customerId: String = "",
     override val customerName: String = "",
@@ -20,7 +20,7 @@ data class WholesaleProductSale(
     val paymentsIds: List<String> = emptyList(),
     override val paymentStatus: PaymentStatus = PaymentStatus.UNPAID,
     override val receiptNumber: String = "",
-) : WholesaleSale(
+) : WholesaleTransaction(
     id = id,
     customerId = customerId,
     customerName = customerName,

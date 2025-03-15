@@ -27,10 +27,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zaed.common.data.model.sale.DatedSales
-import com.zaed.common.data.model.sale.Sale
-import com.zaed.common.data.model.sale.StoreSale
-import com.zaed.common.data.model.sale.WholesaleGoldSale
-import com.zaed.common.data.model.sale.WholesaleProductSale
+import com.zaed.common.data.model.sale.Transaction
+import com.zaed.common.data.model.sale.StoreTransaction
+import com.zaed.common.data.model.sale.WholesaleGoldTransaction
+import com.zaed.common.data.model.sale.WholesaleProductTransaction
 import com.zaed.common.ui.util.formatMoney
 
 @Composable
@@ -39,9 +39,9 @@ fun DatedSalesItem(
     datedSale: DatedSales,
     onSaleClicked: (String,String) -> Unit,
     isEditable: Boolean = false,
-    onEdit: (Sale) -> Unit= {},
+    onEdit: (Transaction) -> Unit= {},
     isDeletable: Boolean = false,
-    onDelete: (Sale) -> Unit = {},
+    onDelete: (Transaction) -> Unit = {},
 ) {
     var isExpanded by remember {
         mutableStateOf(false)
@@ -97,14 +97,14 @@ fun DatedSalesItem(
                     Column(
                         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                     ) {
-                        datedSale.sales.forEach { sale ->
+                        datedSale.transactions.forEach { sale ->
                             SaleItem(
-                                sale = sale,
+                                transaction = sale,
                                 onSaleClicked = {
                                     when(sale){
-                                        is WholesaleProductSale -> onSaleClicked(sale.id,sale::class.qualifiedName?:"")
-                                        is WholesaleGoldSale -> onSaleClicked(sale.id,sale::class.qualifiedName?:"")
-                                        is StoreSale -> onSaleClicked(sale.id,sale::class.qualifiedName?:"")
+                                        is WholesaleProductTransaction -> onSaleClicked(sale.id,sale::class.qualifiedName?:"")
+                                        is WholesaleGoldTransaction -> onSaleClicked(sale.id,sale::class.qualifiedName?:"")
+                                        is StoreTransaction -> onSaleClicked(sale.id,sale::class.qualifiedName?:"")
                                     }
                                 },
                                 isDividerVisible = false,

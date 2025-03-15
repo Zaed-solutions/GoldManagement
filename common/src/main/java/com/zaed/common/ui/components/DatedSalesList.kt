@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.zaed.common.data.model.sale.DatedSales
-import com.zaed.common.data.model.sale.Sale
+import com.zaed.common.data.model.sale.Transaction
 
 @Composable
 fun DatedSalesList(
@@ -17,9 +17,9 @@ fun DatedSalesList(
     datedSales: List<DatedSales>,
     onSaleClicked: (String,String) -> Unit,
     isEditable: Boolean = false,
-    onEdit: (Sale) -> Unit= {},
+    onEdit: (Transaction) -> Unit= {},
     isDeletable: Boolean = false,
-    onDelete: (Sale) -> Unit = {},
+    onDelete: (Transaction) -> Unit = {},
 ) {
     ListWithLoading(
         modifier = modifier,

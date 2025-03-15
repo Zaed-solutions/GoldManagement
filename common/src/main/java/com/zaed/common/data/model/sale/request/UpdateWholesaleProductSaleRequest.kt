@@ -1,18 +1,26 @@
 package com.zaed.common.data.model.sale.request
 
 import com.zaed.common.data.model.payment.Payment
-import com.zaed.common.data.model.sale.WholesaleGoldSale
-import com.zaed.common.data.model.sale.WholesaleProductSale
+import com.zaed.common.data.model.purchase.Purchase
+import com.zaed.common.data.model.sale.WholesaleGoldTransaction
+import com.zaed.common.data.model.sale.WholesaleProductTransaction
 
 data class UpdateWholesaleProductSaleRequest (
-    val sale: WholesaleProductSale,
+    val sale: WholesaleProductTransaction,
+    val payments: List<Payment>,
+    val employeeId: String,
+    val employeeName: String,
+)
+
+data class UpdatePurchaseRequest (
+    val purchase: Purchase,
     val payments: List<Payment>,
     val employeeId: String,
     val employeeName: String,
 )
 
 data class UpdateWholesaleGoldSaleRequest (
-    val sale: WholesaleGoldSale,
+    val sale: WholesaleGoldTransaction,
     val payments: List<Payment>,
     val employeeId: String,
     val employeeName: String,

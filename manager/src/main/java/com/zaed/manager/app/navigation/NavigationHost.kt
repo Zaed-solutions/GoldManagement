@@ -9,6 +9,7 @@ import androidx.navigation.toRoute
 import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.ui.addGoldSale.AddGoldSaleScreen
 import com.zaed.common.ui.addcustomers.AddCustomersScreen
+import com.zaed.common.ui.addpurchase.AddPurchaseScreen
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
 import com.zaed.common.ui.customerdetails.CustomerDetailsScreen
@@ -84,6 +85,22 @@ fun NavigationHost(
                 onBack = {
                     navController.popBackStack()
                 }
+            )
+        }
+        composable<Route.AddPurchaseRoute> {
+            val purchaseId = it.toRoute<Route.AddPurchaseRoute>().purchaseId
+            AddPurchaseScreen (
+                purchaseId = purchaseId,
+                onBackClicked = {
+                    navController.popBackStack()
+                },
+                onNavigateToAddSupplier = {
+                    //TODO
+                },
+                navigateToPurchaseDetails = {
+                    //TODO
+                },
+                onOpenDrawer = onShowNavDrawer
             )
         }
         composable<Route.CustomerDetails> {

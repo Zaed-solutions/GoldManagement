@@ -46,12 +46,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
+import com.zaed.common.data.model.customer.Account
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.sale.Discount
 import com.zaed.common.data.model.sale.DiscountType
 import com.zaed.common.data.model.sale.Product
-import com.zaed.common.data.model.sale.Sale
-import com.zaed.common.data.model.sale.WholesaleProductSale
+import com.zaed.common.data.model.sale.Transaction
+import com.zaed.common.data.model.sale.WholesaleProductTransaction
+import com.zaed.common.data.model.supplier.Supplier
+import com.zaed.common.ui.suppliers.SelectSupplierSheet
 import com.zaed.common.ui.util.toMoneyFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,17 +62,24 @@ import com.zaed.common.ui.util.toMoneyFormat
 fun PreviewSaleContent(
     modifier: Modifier = Modifier,
     isSelectCustomerEnabled: Boolean = true,
-    sale: Sale,
+    transaction: Transaction,
     onUpdateProduct: (product: Product) -> Unit = {},
     onDeleteProduct: (product: Product) -> Unit = {},
     deleteAllProducts: () -> Unit = {},
-    onAddNewCustomer: () -> Unit = {},
+    onAddNewAccount: () -> Unit = {},
     query: String = "",
     onQueryChanged: (String) -> Unit = {},
-    selectedCustomer: WholeSaleCustomer = WholeSaleCustomer(),
-    onCustomerSelected: (WholeSaleCustomer) -> Unit = {},
-    suggestedCustomers: List<WholeSaleCustomer> = emptyList(),
+    selectedAccount: Account,
+    onAccountSelected: (Account) -> Unit = {},
+    suggestedAccounts: List<Account> = emptyList(),
     onNext: () -> Unit = {},
+    isAdmin: Boolean =false,
+    isLoading: Boolean  =false,
+    supplierSearchQuery: String ="" ,
+    onUpdateSupplierSearchQuery: (String) -> Unit ={},
+    filteredSuppliers: List<Supplier> = emptyList(),
+    onSupplierClicked: (String) -> Unit ={},
+    onAddSupplier: (Supplier) -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -79,16 +89,17 @@ fun PreviewSaleContent(
         var editProductSheet by remember { mutableStateOf(false) }
         var selectedProduct by remember { mutableStateOf<Product?>(null) }
         var showCustomerSheet by remember { mutableStateOf(false) }
-        if (selectedCustomer.id.isNotBlank()) {
+        var showSupplierSheet by remember { mutableStateOf(false) }
+        if (selectedAccount.id.isNotBlank()) {
             CustomerInfoSection(
                 modifier = Modifier.padding(horizontal = 16.dp),
-                customerName = selectedCustomer.name,
-                customerDebt = selectedCustomer.debtAmount,
+                customerName = selectedAccount.name,
+                customerDebt = selectedAccount.debtAmount,
                 onCustomerClicked = {}
             )
             Spacer(modifier = Modifier.height(8.dp))
         }
-        val productsState by rememberUpdatedState(sale.products)
+        val productsState by rememberUpdatedState(transaction.products)
         LazyColumn(
             modifier = Modifier.weight(1f),
         ) {
@@ -124,7 +135,7 @@ fun PreviewSaleContent(
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = sale.totalAmount.toMoneyFormat(2),
+                        text = transaction.totalAmount.toMoneyFormat(2),
                         modifier = Modifier.weight(1f),
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.primary,
@@ -143,7 +154,15 @@ fun PreviewSaleContent(
                     if (isSelectCustomerEnabled) {
                         OutlinedButton(
                             onClick = {
-                                showCustomerSheet = true
+                                when(selectedAccount){
+                                    is WholeSaleCustomer ->{
+                                        showCustomerSheet = true
+                                    }
+                                    is Supplier ->{
+                                        showSupplierSheet = true
+                                    }
+                                }
+
                             },
                             modifier = Modifier
                                 .weight(1f),
@@ -158,7 +177,7 @@ fun PreviewSaleContent(
                                     contentDescription = null
                                 )
                                 Text(
-                                    text = if (selectedCustomer.id.isNotBlank()) stringResource(R.string.edit_customer) else stringResource(
+                                    text = if (selectedAccount.id.isNotBlank()) stringResource(R.string.edit_customer) else stringResource(
                                         R.string.add_customer
                                     )
                                 )
@@ -198,7 +217,7 @@ fun PreviewSaleContent(
                     onClick = onNext,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(4.dp),
-                    enabled = sale.products.isNotEmpty(),
+                    enabled = transaction.products.isNotEmpty(),
 
                     ) {
                     Text(
@@ -317,18 +336,38 @@ fun PreviewSaleContent(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(vertical = TopAppBarDefaults.TopAppBarExpandedHeight),
-                    onAddNewCustomer = onAddNewCustomer,
+                    onAddNewCustomer = onAddNewAccount,
                     query = query,
                     onQueryChanged = onQueryChanged,
-                    selectedCustomer = selectedCustomer,
+                    selectedCustomer = selectedAccount as WholeSaleCustomer,
                     onCustomerSelected = {
-                        onCustomerSelected(it)
+                        onAccountSelected(it)
                         showCustomerSheet = false
                     },
-                    suggestedCustomers = suggestedCustomers
+                    suggestedCustomers = suggestedAccounts as List<WholeSaleCustomer>
                 )
             }
         }
+        AnimatedVisibility(showSupplierSheet) {
+            SelectSupplierSheet(
+                onDismiss = {
+                    showSupplierSheet = false
+                },
+                isAdmin = isAdmin,
+                isLoading = isLoading,
+                onUpdateSearchQuery = { onUpdateSupplierSearchQuery(it) },
+                searchQuery = supplierSearchQuery,
+                filteredSuppliers = filteredSuppliers,
+                onSupplierClicked = { supplierId ->
+                    onSupplierClicked(supplierId)
+                    showSupplierSheet = false
+                },
+                onAddSupplier = {
+                    onAddSupplier(it)
+                }
+            )
+        }
+
     }
 }
 
@@ -336,7 +375,7 @@ fun PreviewSaleContent(
 @Composable
 private fun PreviewSaleContentPreview() {
     PreviewSaleContent(
-        sale = WholesaleProductSale(
+        transaction = WholesaleProductTransaction(
             products = listOf(
                 Product(
                     id = "1",
@@ -352,12 +391,19 @@ private fun PreviewSaleContentPreview() {
             )
         ),
         onNext = {},
-        onAddNewCustomer = {},
+        onAddNewAccount = {},
         query = "",
         onQueryChanged = {},
-        selectedCustomer = WholeSaleCustomer(),
-        onCustomerSelected = {},
-        suggestedCustomers = listOf()
+        selectedAccount = WholeSaleCustomer(),
+        onAccountSelected = {},
+        suggestedAccounts = listOf(),
+        isAdmin =  false,
+        isLoading = false,
+        supplierSearchQuery = "",
+        onUpdateSupplierSearchQuery = {},
+        filteredSuppliers = emptyList(),
+        onSupplierClicked = {},
+        onAddSupplier = {}
     )
 
 

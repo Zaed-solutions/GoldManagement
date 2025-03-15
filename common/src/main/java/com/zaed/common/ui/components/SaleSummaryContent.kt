@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zaed.common.R
+import com.zaed.common.data.model.customer.Account
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.ui.util.DateFormat
@@ -31,7 +32,7 @@ import java.util.Date
 @Composable
 fun SaleSummaryContent(
     modifier: Modifier = Modifier,
-    customer: WholeSaleCustomer,
+    account: Account,
     products : List<Product>,
     totalAmount: Double,
     isKaratUnSpecified : Boolean = false,
@@ -54,11 +55,11 @@ fun SaleSummaryContent(
         DetailRow(
             modifier = Modifier.padding(top = 16.dp),
             label = stringResource(R.string.name),
-            value = customer.name
+            value = account.name
         )
         DetailRow(
             label = stringResource(R.string.phone_number),
-            value = customer.phone
+            value = account.phone
         )
         DetailRow(
             label = stringResource(R.string.created_at),
@@ -128,7 +129,7 @@ fun SaleSummaryContent(
 @Composable
 private fun Preview() {
     SaleSummaryContent(
-        customer = WholeSaleCustomer(
+        account = WholeSaleCustomer(
             id = "1",
             name = "محمد",
             phone = "1234567890",

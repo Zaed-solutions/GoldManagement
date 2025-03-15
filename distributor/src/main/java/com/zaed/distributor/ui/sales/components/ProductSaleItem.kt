@@ -22,7 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.sale.WholesaleProductSale
+import com.zaed.common.data.model.sale.WholesaleProductTransaction
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
 import com.zaed.common.ui.util.toMoneyFormat
@@ -31,7 +31,7 @@ import com.zaed.distributor.ui.theme.DistributorAppTheme
 @Composable
 fun ProductSaleItem(
     modifier: Modifier = Modifier,
-    sale: WholesaleProductSale,
+    sale: WholesaleProductTransaction,
     onSaleClicked: () -> Unit
 ) {
     Surface(
@@ -87,7 +87,7 @@ fun ProductSaleItem(
 private fun ProductSaleItemPreview() {
     DistributorAppTheme {
         ProductSaleItem(
-            sale = WholesaleProductSale(
+            sale = WholesaleProductTransaction(
                 customerName = "Ali",
                 createdAt = java.util.Date(),
                 products = listOf(
@@ -123,5 +123,5 @@ private fun ProductSaleItemPreview() {
 
 }
 
-fun WholesaleProductSale.toPreview() =
+fun WholesaleProductTransaction.toPreview() =
     "$customerName - ${products.joinToString { "${it.quantity} ${it.name}" }.substringBeforeLast(",")}"

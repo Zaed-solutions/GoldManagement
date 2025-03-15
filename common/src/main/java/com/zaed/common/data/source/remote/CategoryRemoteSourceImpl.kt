@@ -6,6 +6,7 @@ import com.zaed.common.data.model.Category
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 
 class CategoryRemoteSourceImpl(
     private val firestore: FirebaseFirestore,
@@ -30,5 +31,17 @@ class CategoryRemoteSourceImpl(
             trySend(Result.failure(e))
         }
         awaitClose { }
+    }
+
+    override suspend fun addCategory(category: Category): Result<Unit> {
+        try {
+            val document = categoriesCollection.document()
+            document.set(category.copy(id = document.id)).await()
+            return Result.success(Unit)
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            e.printStackTrace()
+            return Result.failure(e)
+        }
     }
 }

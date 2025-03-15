@@ -10,11 +10,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -32,8 +36,8 @@ import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.sale.Product
-import com.zaed.common.data.model.sale.Sale
-import com.zaed.common.data.model.sale.WholesaleProductSale
+import com.zaed.common.data.model.sale.Transaction
+import com.zaed.common.data.model.sale.WholesaleProductTransaction
 import com.zaed.common.ui.util.toMoneyFormat
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -41,12 +45,13 @@ import com.zaed.common.ui.util.toMoneyFormat
 fun SelectProductsContent(
     modifier: Modifier = Modifier,
     categories: List<Category>,
-    sale: Sale,
+    transaction: Transaction,
     onNext: () -> Unit,
     onAddProduct: (Product) -> Unit,
     onDeleteProduct: (Product) -> Unit,
-
-    ) {
+    onAddNewCategory: (Category) -> Unit = {},
+    isPurchase: Boolean = false
+) {
     val categories1 by rememberUpdatedState(categories)
     var searchQuery by remember { mutableStateOf("") }
     val displayedCategory by remember {
@@ -60,102 +65,141 @@ fun SelectProductsContent(
     }
     var enterProductSheetVisible by remember { mutableStateOf(false) }
     var selectedProduct by remember { mutableStateOf<Product?>(null) }
-
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.Start
-    ) {
-        Text(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            text = stringResource(R.string.select_products),
-            style = MaterialTheme.typography.headlineMedium
-        )
-        SearchBar(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            query = searchQuery,
-            onQueryChanged = { searchQuery = it }
-        )
-        LazyColumn(
-            modifier = Modifier.weight(1f),
-        ) {
-            items(displayedCategory,key = { it.id }) { category ->
-                CategoryItem(
-                    modifier = Modifier.animateItemPlacement(),
-                    count = sale.products.firstOrNull { it.categoryId == category.id }?.quantity?:0,
-                    price = sale.products.filter { it.categoryId == category.id }.sumOf { it.totalPriceAfterDiscount },
-                    category = category,
+    var addCategorySheetVisible by remember { mutableStateOf(false) }
+    var selectedCategory by remember { mutableStateOf<Category?>(null) }
+    Scaffold(
+        floatingActionButton = {
+            if (isPurchase) {
+                FloatingActionButton(
                     onClick = {
-                        selectedProduct = if(
-                            sale.products.any { it.categoryId == category.id }
-                        ){
-                            sale.products.first { it.categoryId == category.id }.copy(
-                                name = category.name, categoryId = category.id
-                            )
-                        }else{
-                            Product(name = category.name, categoryId = category.id)
-                        }
-
-                        enterProductSheetVisible = true
-                    }
-                )
-                HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-            }
-        }
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            onClick = onNext,
-            enabled = sale.products.isNotEmpty(),
-            shape = RoundedCornerShape(4.dp)
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = stringResource(com.zaed.common.R.string.sell),
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = stringResource(
-                        R.string.total_placeholder,
-                        sale.totalAmount.toMoneyFormat(2)
-                    ),
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-        }
-        AnimatedVisibility(enterProductSheetVisible) {
-            ModalBottomSheet(
-                sheetState = rememberModalBottomSheetState(
-                    skipPartiallyExpanded = true,
-                ),
-                onDismissRequest = {
-                    enterProductSheetVisible = false
-                    selectedProduct = null
+                        addCategorySheetVisible = true
+                    },
+                ) {
+                    Icon(
+                        imageVector = androidx.compose.material.icons.Icons.Default.Add,
+                        contentDescription = null
+                    )
                 }
+            }
+        },
+        bottomBar = {
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                onClick = onNext,
+                enabled = transaction.products.isNotEmpty(),
+                shape = RoundedCornerShape(4.dp)
             ) {
-                selectedProduct?.let {
-                    SaveProductSheetContent(
-                        initialProduct = it,
-                        onSaveProduct = {newProduct ->
-                            onAddProduct(newProduct)
-                            enterProductSheetVisible = false
-                            selectedProduct = null
-                        },
-                        deleteProduct = {deletedProduct ->
-                            onDeleteProduct(deletedProduct)
-                            enterProductSheetVisible = false
-                            selectedProduct = null
-                        }
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = stringResource(com.zaed.common.R.string.sell),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = stringResource(
+                            R.string.total_placeholder,
+                            transaction.totalAmount.toMoneyFormat(2)
+                        ),
+                        style = MaterialTheme.typography.titleMedium
                     )
                 }
             }
         }
+    ) { paddingValues ->
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                text = stringResource(R.string.select_products),
+                style = MaterialTheme.typography.headlineMedium
+            )
+            SearchBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                query = searchQuery,
+                onQueryChanged = { searchQuery = it }
+            )
+            LazyColumn(
+                modifier = Modifier.weight(1f),
+            ) {
+                items(displayedCategory, key = { it.id }) { category ->
+                    CategoryItem(
+                        modifier = Modifier.animateItemPlacement(),
+                        count = transaction.products.firstOrNull { it.categoryId == category.id }?.quantity
+                            ?: 0,
+                        price = transaction.products.filter { it.categoryId == category.id }
+                            .sumOf { it.totalPriceAfterDiscount },
+                        category = category,
+                        onClick = {
+                            selectedProduct = if (
+                                transaction.products.any { it.categoryId == category.id }
+                            ) {
+                                transaction.products.first { it.categoryId == category.id }.copy(
+                                    name = category.name, categoryId = category.id
+                                )
+                            } else {
+                                Product(name = category.name, categoryId = category.id)
+                            }
 
+                            enterProductSheetVisible = true
+                        }
+                    )
+                    HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+                }
+            }
+
+            AnimatedVisibility(enterProductSheetVisible) {
+                ModalBottomSheet(
+                    sheetState = rememberModalBottomSheetState(
+                        skipPartiallyExpanded = true,
+                    ),
+                    onDismissRequest = {
+                        enterProductSheetVisible = false
+                        selectedProduct = null
+                    }
+                ) {
+                    selectedProduct?.let {
+                        SaveProductSheetContent(
+                            initialProduct = it,
+                            onSaveProduct = { newProduct ->
+                                onAddProduct(newProduct)
+                                enterProductSheetVisible = false
+                                selectedProduct = null
+                            },
+                            deleteProduct = { deletedProduct ->
+                                onDeleteProduct(deletedProduct)
+                                enterProductSheetVisible = false
+                                selectedProduct = null
+                            }
+                        )
+                    }
+                }
+            }
+            AnimatedVisibility(addCategorySheetVisible) {
+                ModalBottomSheet(
+                    sheetState = rememberModalBottomSheetState(
+                        skipPartiallyExpanded = true,
+                    ),
+                    onDismissRequest = { addCategorySheetVisible = false }
+                ) {
+                    AddCategorySheetContent(
+                        onDismiss = { addCategorySheetVisible = false },
+                        onAddNewCategory = onAddNewCategory,
+                        category = selectedCategory
+                    )
+                }
+            }
+        }
     }
-
 }
 
 @Preview(showBackground = true)
@@ -168,7 +212,7 @@ private fun SelectProductsContentPreview() {
             Category(name = "Platinum"),
             Category(name = "Diamond"),
         ),
-        sale = WholesaleProductSale(
+        transaction = WholesaleProductTransaction(
             products = listOf(
                 Product(name = "Gold", quantity = 1, gramPrice = 100.0),
                 Product(name = "Silver", quantity = 2, gramPrice = 50.0),

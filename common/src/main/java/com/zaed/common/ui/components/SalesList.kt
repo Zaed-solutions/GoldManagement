@@ -9,15 +9,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.sale.WholesaleProductSale
-import com.zaed.common.data.model.sale.WholesaleSale
+import com.zaed.common.data.model.sale.WholesaleProductTransaction
+import com.zaed.common.data.model.sale.WholesaleTransaction
 
 @Composable
 fun SalesList(
     modifier: Modifier = Modifier,
     listState: LazyListState = LazyListState(),
     isLoading: Boolean,
-    sales: List<WholesaleSale>,
+    sales: List<WholesaleTransaction>,
     onSaleClicked: (id: String, isProduct: Boolean) -> Unit,
     onDeleteSale: (id: String, isProduct: Boolean) -> Unit,
     onEditSale: (id: String, isProduct: Boolean) -> Unit
@@ -37,15 +37,15 @@ fun SalesList(
             ) { sale ->
                 SaleItem(
                     modifier = Modifier.animateItem(),
-                    sale = sale,
+                    transaction = sale,
                     onSaleClicked = {
-                        onSaleClicked(sale.id, sale is WholesaleProductSale)
+                        onSaleClicked(sale.id, sale is WholesaleProductTransaction)
                     },
                     onDelete = {
-                        onDeleteSale(sale.id, sale is WholesaleProductSale)
+                        onDeleteSale(sale.id, sale is WholesaleProductTransaction)
                     },
                     onEdit = {
-                        onEditSale(sale.id, sale is WholesaleProductSale)
+                        onEditSale(sale.id, sale is WholesaleProductTransaction)
                     },
                     isDeletable = true,
                     isEditable = true,

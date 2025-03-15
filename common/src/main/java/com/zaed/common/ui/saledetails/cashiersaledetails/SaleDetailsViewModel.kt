@@ -3,7 +3,7 @@ package com.zaed.common.ui.saledetails.cashiersaledetails
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zaed.common.data.model.sale.StoreSale
+import com.zaed.common.data.model.sale.StoreTransaction
 import com.zaed.common.data.model.sale.request.DeleteStoreSaleRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.sale.DeleteStoreSaleUseCase
@@ -82,7 +82,7 @@ class SaleDetailsViewModel(
         _uiState.update { it.copy(storeSale = it.storeSale.copy(customerPhone = phoneNumber)) }
     }
 
-    private fun updateStoreSale(storeSale: StoreSale) {
+    private fun updateStoreSale(storeSale: StoreTransaction) {
         _uiState.update { it.copy(storeSale = storeSale) }
     }
 

@@ -2,12 +2,12 @@ package com.zaed.common.ui.saledetails.cashiersaledetails
 
 import androidx.annotation.StringRes
 import com.zaed.common.data.model.authentication.User
-import com.zaed.common.data.model.sale.StoreSale
+import com.zaed.common.data.model.sale.StoreTransaction
 
 data class SaleDetailsUiState(
     val isLoading: Boolean = false,
     val isSaleDeleted: Boolean = false,
-    val storeSale: StoreSale = StoreSale(),
+    val storeSale: StoreTransaction = StoreTransaction(),
     val errorMessage: Exception? = null,
     val fieldError: SaleDetailsFieldsError = SaleDetailsFieldsError.NONE,
     val successMessage: String? = null,

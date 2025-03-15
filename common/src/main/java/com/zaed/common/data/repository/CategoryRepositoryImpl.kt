@@ -10,4 +10,8 @@ class CategoryRepositoryImpl(
     override fun fetchAllCategories(): Flow<Result<List<Category>>> {
         return categoryRemoteSource.fetchAllCategories()
     }
+
+    override suspend fun addCategory(category: Category): Result<Unit> {
+        return categoryRemoteSource.addCategory(category)
+    }
 }

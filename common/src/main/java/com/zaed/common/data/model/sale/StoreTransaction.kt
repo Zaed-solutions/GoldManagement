@@ -4,7 +4,7 @@ import com.zaed.common.data.model.authentication.ChangeLog
 import kotlinx.serialization.Transient
 import java.util.Date
 
-data class StoreSale(
+data class StoreTransaction(
     override val id: String = "",
     override val createdAt: Date = Date(),
     val storeId: String = "",
@@ -21,7 +21,18 @@ data class StoreSale(
     override val logs: List<ChangeLog> = emptyList(),
     override val customerId: String="",
     override val customerPhone: String=""
-): Sale() {
+): Transaction(
+    id = id,
+    customerId = customerId,
+    customerName = customerName,
+    customerPhone = customerPhone,
+    createdAt = createdAt,
+    receiptNumber = receiptNumber,
+    logs = logs,
+    deleted = deleted,
+    products = products,
+    totalAmount = 0.0
+) {
     @Transient
     override val totalAmount
         get() = products.sumOf { it.totalPriceAfterDiscount }

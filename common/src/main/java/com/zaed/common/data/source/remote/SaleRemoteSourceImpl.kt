@@ -22,11 +22,11 @@ import com.zaed.common.data.model.payment.LossPayment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.signedAmount
 import com.zaed.common.data.model.sale.IngotTransaction
-import com.zaed.common.data.model.sale.StoreSale
+import com.zaed.common.data.model.sale.StoreTransaction
 import com.zaed.common.data.model.sale.TransactionType
-import com.zaed.common.data.model.sale.WholesaleGoldSale
-import com.zaed.common.data.model.sale.WholesaleProductSale
-import com.zaed.common.data.model.sale.WholesaleSale
+import com.zaed.common.data.model.sale.WholesaleGoldTransaction
+import com.zaed.common.data.model.sale.WholesaleProductTransaction
+import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.data.model.sale.request.AddIngotTransactionRequest
 import com.zaed.common.data.model.sale.request.AddStoreSaleRequest
 import com.zaed.common.data.model.sale.request.AddWholesaleGoldSaleRequest
@@ -62,7 +62,7 @@ class SaleRemoteSourceImpl(
     private val inventoryCollection = firestore.collection("inventory")
     private val distributorLossesCollection = firestore.collection("distributor-losses")
 
-    override fun fetchStoreSales(request: FetchStoreSalesRequest): Flow<Result<List<StoreSale>>> =
+    override fun fetchStoreSales(request: FetchStoreSalesRequest): Flow<Result<List<StoreTransaction>>> =
         callbackFlow {
             try {
                 storeSalesCollection.where(
@@ -76,7 +76,7 @@ class SaleRemoteSourceImpl(
                         trySend(Result.failure(e))
                         return@addSnapshotListener
                     }
-                    val storeSales = snapshot?.toObjects(StoreSale::class.java) ?: emptyList()
+                    val storeSales = snapshot?.toObjects(StoreTransaction::class.java) ?: emptyList()
                     trySend(Result.success(storeSales))
                 }
             } catch (e: Exception) {
@@ -135,7 +135,7 @@ class SaleRemoteSourceImpl(
             val batch = firestore.batch()
             val saleRef = storeSalesCollection.document(request.saleId)
             val sale = saleRef.get().await()
-                .toObject(StoreSale::class.java) ?: StoreSale()
+                .toObject(StoreTransaction::class.java) ?: StoreTransaction()
             val logs = sale.logs.toMutableList()
             logs.add(
                 ChangeLog(
@@ -182,7 +182,7 @@ class SaleRemoteSourceImpl(
             val batch = firestore.batch()
             val oldSaleRef = storeSalesCollection.document(request.sale.id)
             val oldSale = oldSaleRef.get().await()
-                .toObject(StoreSale::class.java) ?: StoreSale()
+                .toObject(StoreTransaction::class.java) ?: StoreTransaction()
             val logs = oldSale.logs.toMutableList()
             logs.add(
                 ChangeLog(
@@ -244,10 +244,10 @@ class SaleRemoteSourceImpl(
         }
     }
 
-    override suspend fun getStoreSale(saleId: String): Result<StoreSale> {
+    override suspend fun getStoreSale(saleId: String): Result<StoreTransaction> {
         return try {
             val storeSale =
-                storeSalesCollection.document(saleId).get().await().toObject(StoreSale::class.java)
+                storeSalesCollection.document(saleId).get().await().toObject(StoreTransaction::class.java)
             if (storeSale != null) {
                 Result.success(storeSale)
             } else {
@@ -259,13 +259,13 @@ class SaleRemoteSourceImpl(
         }
     }
 
-    override fun fetchWholesaleDistributorSales(request: FetchDistributorSalesRequest): Flow<Result<List<WholesaleSale>>> =
+    override fun fetchWholesaleDistributorSales(request: FetchDistributorSalesRequest): Flow<Result<List<WholesaleTransaction>>> =
         callbackFlow {
             var goldSalesListener: ListenerRegistration? = null
             var productSalesListener: ListenerRegistration? = null
             try {
-                var latestGoldSales: List<WholesaleGoldSale> = emptyList()
-                var latestProductSales: List<WholesaleProductSale> = emptyList()
+                var latestGoldSales: List<WholesaleGoldTransaction> = emptyList()
+                var latestProductSales: List<WholesaleProductTransaction> = emptyList()
                 val updateAndSend = {
                     val combinedSales = (latestGoldSales + latestProductSales)
                         .sortedByDescending { it.createdAt } // Sort by date
@@ -283,7 +283,7 @@ class SaleRemoteSourceImpl(
                         return@addSnapshotListener
                     }
                     latestGoldSales = snapshot?.documents?.mapNotNull { doc ->
-                        doc.toObject(WholesaleGoldSale::class.java)?.copy(id = doc.id)
+                        doc.toObject(WholesaleGoldTransaction::class.java)?.copy(id = doc.id)
                     } ?: emptyList()
                     updateAndSend()
                 }
@@ -299,7 +299,7 @@ class SaleRemoteSourceImpl(
                         return@addSnapshotListener
                     }
                     latestProductSales = snapshot?.documents?.mapNotNull { doc ->
-                        doc.toObject(WholesaleProductSale::class.java)?.copy(id = doc.id)
+                        doc.toObject(WholesaleProductTransaction::class.java)?.copy(id = doc.id)
                     } ?: emptyList()
                     updateAndSend()
                 }
@@ -314,13 +314,13 @@ class SaleRemoteSourceImpl(
             }
         }
 
-    override fun fetchWholesaleCustomerSales(request: FetchWholesaleCustomerSalesRequest): Flow<Result<List<WholesaleSale>>> =
+    override fun fetchWholesaleCustomerSales(request: FetchWholesaleCustomerSalesRequest): Flow<Result<List<WholesaleTransaction>>> =
         callbackFlow {
             var goldSalesListener: ListenerRegistration? = null
             var productSalesListener: ListenerRegistration? = null
             try {
-                var latestGoldSales: List<WholesaleGoldSale> = emptyList()
-                var latestProductSales: List<WholesaleProductSale> = emptyList()
+                var latestGoldSales: List<WholesaleGoldTransaction> = emptyList()
+                var latestProductSales: List<WholesaleProductTransaction> = emptyList()
                 val updateAndSend = {
                     val combinedSales = (latestGoldSales + latestProductSales)
                         .sortedByDescending { it.createdAt } // Sort by date
@@ -338,7 +338,7 @@ class SaleRemoteSourceImpl(
                         return@addSnapshotListener
                     }
                     latestGoldSales = snapshot?.documents?.mapNotNull { doc ->
-                        doc.toObject(WholesaleGoldSale::class.java)?.copy(id = doc.id)
+                        doc.toObject(WholesaleGoldTransaction::class.java)?.copy(id = doc.id)
                     } ?: emptyList()
                     updateAndSend()
                 }
@@ -354,7 +354,7 @@ class SaleRemoteSourceImpl(
                         return@addSnapshotListener
                     }
                     latestProductSales = snapshot?.documents?.mapNotNull { doc ->
-                        doc.toObject(WholesaleProductSale::class.java)?.copy(id = doc.id)
+                        doc.toObject(WholesaleProductTransaction::class.java)?.copy(id = doc.id)
                     } ?: emptyList()
                     updateAndSend()
                 }
@@ -468,7 +468,7 @@ class SaleRemoteSourceImpl(
         }
     }
 
-    override fun fetchAllStoreSales(): Flow<Result<List<StoreSale>>> =
+    override fun fetchAllStoreSales(): Flow<Result<List<StoreTransaction>>> =
         callbackFlow {
             try {
                 storeSalesCollection
@@ -481,7 +481,7 @@ class SaleRemoteSourceImpl(
                             trySend(Result.failure(e))
                             return@addSnapshotListener
                         }
-                        val storeSales = snapshot?.toObjects(StoreSale::class.java) ?: emptyList()
+                        val storeSales = snapshot?.toObjects(StoreTransaction::class.java) ?: emptyList()
                         trySend(Result.success(storeSales))
                     }
             } catch (e: Exception) {
@@ -491,12 +491,12 @@ class SaleRemoteSourceImpl(
             awaitClose { }
         }
 
-    override fun fetchAllDistributorsSales(): Flow<Result<List<WholesaleSale>>> = callbackFlow {
+    override fun fetchAllDistributorsSales(): Flow<Result<List<WholesaleTransaction>>> = callbackFlow {
         var goldSalesListener: ListenerRegistration? = null
         var productSalesListener: ListenerRegistration? = null
         try {
-            var latestGoldSales: List<WholesaleGoldSale> = emptyList()
-            var latestProductSales: List<WholesaleProductSale> = emptyList()
+            var latestGoldSales: List<WholesaleGoldTransaction> = emptyList()
+            var latestProductSales: List<WholesaleProductTransaction> = emptyList()
             val updateAndSend = {
                 val combinedSales = (latestGoldSales + latestProductSales)
                     .sortedByDescending { it.createdAt } // Sort by date
@@ -510,7 +510,7 @@ class SaleRemoteSourceImpl(
                         return@addSnapshotListener
                     }
                     latestGoldSales = snapshot?.documents?.mapNotNull { doc ->
-                        doc.toObject(WholesaleGoldSale::class.java)?.copy(id = doc.id)
+                        doc.toObject(WholesaleGoldTransaction::class.java)?.copy(id = doc.id)
                     } ?: emptyList()
                     updateAndSend()
                 }
@@ -522,7 +522,7 @@ class SaleRemoteSourceImpl(
                         return@addSnapshotListener
                     }
                     latestProductSales = snapshot?.documents?.mapNotNull { doc ->
-                        doc.toObject(WholesaleProductSale::class.java)?.copy(id = doc.id)
+                        doc.toObject(WholesaleProductTransaction::class.java)?.copy(id = doc.id)
                     } ?: emptyList()
                     updateAndSend()
                 }
@@ -543,7 +543,7 @@ class SaleRemoteSourceImpl(
             val batch = firestore.batch()
             val saleRef = wholesaleProductSalesCollection.document(request.saleId)
             val sale = saleRef.get().await()
-                .toObject(WholesaleProductSale::class.java) ?: WholesaleProductSale()
+                .toObject(WholesaleProductTransaction::class.java) ?: WholesaleProductTransaction()
             val logs = sale.logs.toMutableList()
             logs.add(
                 ChangeLog(
@@ -617,7 +617,7 @@ class SaleRemoteSourceImpl(
             val batch = firestore.batch()
             val saleRef = wholesaleGoldSalesCollection.document(request.saleId)
             val sale = saleRef.get().await()
-                .toObject(WholesaleGoldSale::class.java) ?: WholesaleGoldSale()
+                .toObject(WholesaleGoldTransaction::class.java) ?: WholesaleGoldTransaction()
             val logs = sale.logs.toMutableList()
             logs.add(
                 ChangeLog(
@@ -675,10 +675,10 @@ class SaleRemoteSourceImpl(
         }
     }
 
-    override suspend fun fetchWholesaleProductSale(request: FetchWholesaleProductSaleRequest): Result<WholesaleProductSale> {
+    override suspend fun fetchWholesaleProductSale(request: FetchWholesaleProductSaleRequest): Result<WholesaleProductTransaction> {
         return try {
             val sale = wholesaleProductSalesCollection.document(request.saleId).get().await()
-                .toObject(WholesaleProductSale::class.java) ?: WholesaleProductSale()
+                .toObject(WholesaleProductTransaction::class.java) ?: WholesaleProductTransaction()
             Result.success(sale)
         } catch (e: Exception) {
             crashlytics.recordException(e)
@@ -686,10 +686,10 @@ class SaleRemoteSourceImpl(
         }
     }
 
-    override suspend fun fetchWholesaleGoldSale(request: FetchWholesaleGoldSaleRequest): Result<WholesaleGoldSale> {
+    override suspend fun fetchWholesaleGoldSale(request: FetchWholesaleGoldSaleRequest): Result<WholesaleGoldTransaction> {
         return try {
             val sale = wholesaleGoldSalesCollection.document(request.saleId).get().await()
-                .toObject(WholesaleGoldSale::class.java) ?: WholesaleGoldSale()
+                .toObject(WholesaleGoldTransaction::class.java) ?: WholesaleGoldTransaction()
             Result.success(sale)
         } catch (e: Exception) {
             crashlytics.recordException(e)
@@ -915,7 +915,7 @@ class SaleRemoteSourceImpl(
             val saleDocRef = wholesaleProductSalesCollection.document(request.sale.id)
             val existingSale =
                 wholesaleProductSalesCollection.document(request.sale.id).get().await()
-                    .toObject(WholesaleProductSale::class.java)
+                    .toObject(WholesaleProductTransaction::class.java)
                     ?: return Result.failure(Exception("Sale not found"))
             val existingPaymentIds = existingSale.paymentsIds
             val existingPayment = moneyPaymentCollection.where(
@@ -1044,7 +1044,7 @@ class SaleRemoteSourceImpl(
             val saleDocRef = wholesaleGoldSalesCollection.document(request.sale.id)
             val existingSale =
                 wholesaleGoldSalesCollection.document(request.sale.id).get().await()
-                    .toObject(WholesaleGoldSale::class.java)
+                    .toObject(WholesaleGoldTransaction::class.java)
                     ?: return Result.failure(Exception("Sale not found"))
             val existingMoneyPaymentIds = existingSale.paymentsIds
             val existingPayment = moneyPaymentCollection.where(
@@ -1135,7 +1135,7 @@ class SaleRemoteSourceImpl(
 
     private companion object {
 
-        fun isProductsDifferent(sale1: StoreSale, sale2: StoreSale): Boolean {
+        fun isProductsDifferent(sale1: StoreTransaction, sale2: StoreTransaction): Boolean {
             return sale1.products != sale2.products
         }
     }

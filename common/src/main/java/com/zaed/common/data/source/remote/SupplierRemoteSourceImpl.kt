@@ -1,8 +1,10 @@
 package com.zaed.common.data.source.remote
 
-import com.google.android.gms.tasks.Tasks.await
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObjects
+import com.zaed.common.data.model.customer.FetchSuppliersByNameRequest
 import com.zaed.common.data.model.supplier.Supplier
 import com.zaed.common.data.model.supplier.request.AddSupplierRequest
 import com.zaed.common.data.model.supplier.request.DeleteSupplierRequest
@@ -75,6 +77,32 @@ class SupplierRemoteSourceImpl(
             Result.success(supplier)
         } catch (e: Exception){
             crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun fetchSuppliersByName(request: FetchSuppliersByNameRequest): Result<List<Supplier>> {
+        return try {
+            val filter = if(request.distributorId.isBlank()){
+                Filter.and(
+                    Filter.greaterThanOrEqualTo("name", request.name),
+                    Filter.lessThanOrEqualTo("name", request.name + "\uf8ff")
+                )
+            } else {
+                Filter.and(
+                    Filter.greaterThanOrEqualTo("name", request.name),
+                    Filter.lessThanOrEqualTo("name", request.name + "\uf8ff"),
+                    Filter.equalTo("distributorId", request.distributorId)
+                )
+            }
+            val supplier = suppliersCollection
+                .where(
+                    filter
+                ).get()
+                .await()
+                .toObjects<Supplier>()
+            Result.success(supplier)
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }

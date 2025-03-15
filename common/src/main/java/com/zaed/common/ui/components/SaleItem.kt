@@ -26,9 +26,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.sale.Product
-import com.zaed.common.data.model.sale.Sale
-import com.zaed.common.data.model.sale.StoreSale
-import com.zaed.common.data.model.sale.WholesaleGoldSale
+import com.zaed.common.data.model.sale.Transaction
+import com.zaed.common.data.model.sale.StoreTransaction
+import com.zaed.common.data.model.sale.WholesaleGoldTransaction
 import com.zaed.common.ui.theme.GoldManagementTheme
 import com.zaed.common.ui.theme.GoldenCustomColors
 import com.zaed.common.ui.util.DateFormat
@@ -39,7 +39,7 @@ import java.util.Date
 @Composable
 fun SaleItem(
     modifier: Modifier = Modifier,
-    sale: Sale,
+    transaction: Transaction,
     onSaleClicked: () -> Unit,
     isDividerVisible: Boolean = true,
     isEditable: Boolean = false,
@@ -48,12 +48,12 @@ fun SaleItem(
     onDelete: () -> Unit = {},
 ) {
     val (icon, iconBackgroundColor, iconColor) = when{
-        sale is WholesaleGoldSale -> Triple(R.drawable.ic_ingot, GoldenCustomColors.current.color, GoldenCustomColors.current.onColor)
+        transaction is WholesaleGoldTransaction -> Triple(R.drawable.ic_ingot, GoldenCustomColors.current.color, GoldenCustomColors.current.onColor)
         else -> Triple(R.drawable.ic_shopping, MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.onSecondary)
     }
     val title = when{
-        sale is StoreSale -> "CR-${sale.receiptNumber}"
-        else -> "DR-${sale.receiptNumber}"
+        transaction is StoreTransaction -> "CR-${transaction.receiptNumber}"
+        else -> "DR-${transaction.receiptNumber}"
     }
     val context = LocalContext.current
     val primaryColor = MaterialTheme.colorScheme.primary
@@ -115,12 +115,12 @@ fun SaleItem(
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal)
                     )
                     Text(
-                        text = sale.createdAt.format(DateFormat.SHORT_DATE_TIME),
+                        text = transaction.createdAt.format(DateFormat.SHORT_DATE_TIME),
                         style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
                     )
                 }
                 Text(
-                    text = sale.totalAmount.formatMoney(),
+                    text = transaction.totalAmount.formatMoney(),
                     style = MaterialTheme.typography.titleMedium.copy(
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold
@@ -145,7 +145,7 @@ fun SaleItem(
 private fun Preview() {
     GoldManagementTheme {
         SaleItem(
-            sale = WholesaleGoldSale(
+            transaction = WholesaleGoldTransaction(
                 receiptNumber = "123456",
                 createdAt = Date(),
                 products = listOf(

@@ -10,7 +10,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.sale.DatedSales
-import com.zaed.common.data.model.sale.Sale
+import com.zaed.common.data.model.sale.Transaction
 import com.zaed.common.ui.util.DateFormat
 
 @Composable
@@ -24,9 +24,9 @@ fun DatedSalesWithSearchSection(
     datedSales: List<DatedSales>,
     onSaleClicked: (String,String) -> Unit,
     isEditable: Boolean = false,
-    onEdit: (Sale) -> Unit= {},
+    onEdit: (Transaction) -> Unit= {},
     isDeletable: Boolean = false,
-    onDelete: (Sale) -> Unit = {},
+    onDelete: (Transaction) -> Unit = {},
 ){
     Column (
         modifier = modifier.fillMaxWidth(),

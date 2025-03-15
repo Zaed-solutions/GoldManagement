@@ -4,7 +4,7 @@ import com.zaed.common.data.model.inventory.Inventory
 import com.zaed.common.data.model.loss.DatedLoss
 import com.zaed.common.data.model.loss.Loss
 import com.zaed.common.data.model.sale.DatedSales
-import com.zaed.common.data.model.sale.StoreSale
+import com.zaed.common.data.model.sale.StoreTransaction
 import com.zaed.common.data.model.store.Store
 import com.zaed.common.ui.util.DateFormat
 
@@ -18,8 +18,8 @@ data class StoreDetailsUiState(
     val selectedSalesFilter: DateFormat = DateFormat.DATE,
     val inventoryQuery: String = "",
     val salesQuery: String = "",
-    val allSales: List<StoreSale> = emptyList(),
-    val filteredSales: List<StoreSale> = emptyList(),
+    val allSales: List<StoreTransaction> = emptyList(),
+    val filteredSales: List<StoreTransaction> = emptyList(),
     val datedSales: List<DatedSales> = emptyList(),
     val allLosses: List<Loss> = emptyList(),
     val filteredLosses: List<Loss> = emptyList(),

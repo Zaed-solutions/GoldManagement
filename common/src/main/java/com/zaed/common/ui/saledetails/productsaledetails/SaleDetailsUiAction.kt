@@ -1,6 +1,6 @@
 package com.zaed.common.ui.saledetails.productsaledetails
 
-import com.zaed.common.data.model.sale.StoreSale
+import com.zaed.common.data.model.sale.StoreTransaction
 
 sealed interface SaleDetailsUiAction {
     data object OnBackClicked: SaleDetailsUiAction
@@ -12,10 +12,10 @@ sealed interface SaleDetailsUiAction {
     data object OnRequestReceipt: SaleDetailsUiAction
     data object OnCustomerClicked: SaleDetailsUiAction
 
-    data class OnUpdateStoreSale(val storeSale: StoreSale) : SaleDetailsUiAction
-    data class Print (val storeSale: StoreSale) : SaleDetailsUiAction
-    data class ShareViaWhatsapp (val storeSale: StoreSale) : SaleDetailsUiAction
-    data class ShareViaEmail (val storeSale: StoreSale) : SaleDetailsUiAction
+    data class OnUpdateStoreSale(val storeSale: StoreTransaction) : SaleDetailsUiAction
+    data class Print (val storeSale: StoreTransaction) : SaleDetailsUiAction
+    data class ShareViaWhatsapp (val storeSale: StoreTransaction) : SaleDetailsUiAction
+    data class ShareViaEmail (val storeSale: StoreTransaction) : SaleDetailsUiAction
     data class UpdateCustomerEmail (val email: String) : SaleDetailsUiAction
     data class UpdateCustomerPhoneNumber (val phoneNumber: String) : SaleDetailsUiAction
     data object OnSubmit : SaleDetailsUiAction

@@ -3,10 +3,10 @@ package com.zaed.common.data.repository
 import android.util.Log
 import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
 import com.zaed.common.data.model.sale.IngotTransaction
-import com.zaed.common.data.model.sale.StoreSale
-import com.zaed.common.data.model.sale.WholesaleGoldSale
-import com.zaed.common.data.model.sale.WholesaleProductSale
-import com.zaed.common.data.model.sale.WholesaleSale
+import com.zaed.common.data.model.sale.StoreTransaction
+import com.zaed.common.data.model.sale.WholesaleGoldTransaction
+import com.zaed.common.data.model.sale.WholesaleProductTransaction
+import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.data.model.sale.request.AddIngotTransactionRequest
 import com.zaed.common.data.model.sale.request.AddStoreSaleRequest
 import com.zaed.common.data.model.sale.request.AddWholesaleGoldSaleRequest
@@ -42,11 +42,11 @@ class SaleRepositoryImpl(
         return saleRemoteSource.updateStoreSale(request)
     }
 
-    override suspend fun getStoreSale(saleId: String): Result<StoreSale> {
+    override suspend fun getStoreSale(saleId: String): Result<StoreTransaction> {
         return saleRemoteSource.getStoreSale(saleId)
     }
 
-    override fun fetchWholesaleDistributorSales(request: FetchDistributorSalesRequest): Flow<Result<List<WholesaleSale>>> {
+    override fun fetchWholesaleDistributorSales(request: FetchDistributorSalesRequest): Flow<Result<List<WholesaleTransaction>>> {
         return saleRemoteSource.fetchWholesaleDistributorSales(request)
     }
 
@@ -58,11 +58,11 @@ class SaleRepositoryImpl(
         return saleRemoteSource.deleteWholesaleGoldSale(request)
     }
 
-    override suspend fun fetchWholesaleProductSale(request: FetchWholesaleProductSaleRequest): Result<WholesaleProductSale> {
+    override suspend fun fetchWholesaleProductSale(request: FetchWholesaleProductSaleRequest): Result<WholesaleProductTransaction> {
         return saleRemoteSource.fetchWholesaleProductSale(request)
     }
 
-    override suspend fun fetchWholesaleGoldSale(request: FetchWholesaleGoldSaleRequest): Result<WholesaleGoldSale> {
+    override suspend fun fetchWholesaleGoldSale(request: FetchWholesaleGoldSaleRequest): Result<WholesaleGoldTransaction> {
         return saleRemoteSource.fetchWholesaleGoldSale(request)
     }
 
@@ -95,15 +95,15 @@ class SaleRepositoryImpl(
         return saleRemoteSource.updateIngotTransaction(transaction)
     }
 
-    override fun fetchAllStoreSales(): Flow<Result<List<StoreSale>>> {
+    override fun fetchAllStoreSales(): Flow<Result<List<StoreTransaction>>> {
         return saleRemoteSource.fetchAllStoreSales()
     }
 
-    override fun fetchAllDistributorsSales(): Flow<Result<List<WholesaleSale>>> {
+    override fun fetchAllDistributorsSales(): Flow<Result<List<WholesaleTransaction>>> {
         return saleRemoteSource.fetchAllDistributorsSales()
     }
 
-    override fun fetchWholesaleCustomerSales(request: FetchWholesaleCustomerSalesRequest): Flow<Result<List<WholesaleSale>>> {
+    override fun fetchWholesaleCustomerSales(request: FetchWholesaleCustomerSalesRequest): Flow<Result<List<WholesaleTransaction>>> {
         return saleRemoteSource.fetchWholesaleCustomerSales(request)
     }
 }
