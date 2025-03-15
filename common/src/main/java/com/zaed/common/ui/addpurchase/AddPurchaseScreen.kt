@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.ui.components.PreviewSaleContent
 import com.zaed.common.ui.components.ProgressIndicatorTopAppBar
 import com.zaed.common.ui.components.SaleSummaryContent
@@ -194,6 +195,12 @@ private fun AddPurchaseScreenContent(
                             totalAmount = state.purchase.totalAmount,
                             payments = state.payments,
                             selectedAccount = state.selectedSupplier,
+                            paymentsTypes = listOf(
+                                PaymentType.CHEQUE,
+                                PaymentType.BANK_TRANSFER,
+                                PaymentType.CASH,
+                                PaymentType.MANAGER_CHEQUES,
+                            ),
                             query = state.supplierSearchQuery,
                             onQueryChanged = {
                                 onAction(AddPurchaseUiAction.OnSupplierSearchQueryChanged(it))
