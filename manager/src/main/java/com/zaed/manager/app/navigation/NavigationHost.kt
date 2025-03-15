@@ -19,6 +19,7 @@ import com.zaed.common.ui.purchaseDetails.PurchaseDetailsScreen
 import com.zaed.common.ui.saledetails.cashiersaledetails.SaleDetailsScreen
 import com.zaed.common.ui.saledetails.goldsaledetails.GoldSaleDetailsScreen
 import com.zaed.common.ui.saledetails.productsaledetails.ProductSaleDetailsScreen
+import com.zaed.common.ui.supplierdetails.SupplierDetailsScreen
 import com.zaed.common.ui.suppliers.SuppliersScreen
 import com.zaed.manager.ui.distributordetails.DistributorDetailsScreen
 import com.zaed.manager.ui.distributors.DistributorsScreen
@@ -315,7 +316,16 @@ fun NavigationHost(
                 role = UserRole.MANAGER,
                 onShowNavDrawer = onShowNavDrawer,
                 onNavigateToSupplierDetails = {
-                    /*TODO*/
+                    navController.navigate(Route.SupplierDetailsRoute(it))
+                }
+            )
+        }
+        composable<Route.SupplierDetailsRoute> {
+            val supplierId = it.toRoute<Route.SupplierDetailsRoute>().supplierId
+            SupplierDetailsScreen(
+                supplierId = supplierId,
+                onBackPressed = {
+                    navController.popBackStack()
                 }
             )
         }

@@ -160,6 +160,7 @@ import com.zaed.common.ui.purchaseDetails.PurchaseDetailsViewModel
 import com.zaed.common.ui.saledetails.cashiersaledetails.SaleDetailsViewModel
 import com.zaed.common.ui.saledetails.goldsaledetails.GoldSaleDetailsViewModel
 import com.zaed.common.ui.saledetails.productsaledetails.ProductSaleDetailsViewModel
+import com.zaed.common.ui.supplierdetails.SupplierDetailsViewModel
 import com.zaed.common.ui.suppliers.SuppliersViewModel
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
@@ -296,6 +297,7 @@ val viewModelModule = module {
     viewModelOf(::SuppliersViewModel)
     viewModelOf(::AddPurchaseViewModel)
     viewModelOf(::PurchaseDetailsViewModel)
+    viewModelOf(::SupplierDetailsViewModel)
 }
 val remoteSourceModule = module {
     singleOf(::AuthenticationRemoteSourceImpl) { bind<AuthenticationRemoteSource>() }
