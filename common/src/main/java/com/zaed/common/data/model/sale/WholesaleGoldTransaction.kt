@@ -4,7 +4,7 @@ import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.payment.PaymentStatus
 import java.util.Date
 
-data class WholesaleGoldSale(
+data class WholesaleGoldTransaction(
     override val id: String = "",
     override val customerId: String = "",
     override val customerName: String = "",
@@ -19,7 +19,7 @@ data class WholesaleGoldSale(
     override val logs: List<ChangeLog> = emptyList(),
     override val deleted: Boolean = false,
     override val paymentStatus: PaymentStatus = PaymentStatus.UNPAID,
-): WholesaleSale(
+): WholesaleTransaction(
     id = id,
     customerId = customerId,
     customerName = customerName,

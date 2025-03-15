@@ -1,7 +1,7 @@
 package com.zaed.common.data.model.sale.request
 
-import com.zaed.common.data.model.sale.StoreSale
+import com.zaed.common.data.model.sale.StoreTransaction
 
 data class AddStoreSaleRequest(
-    val sale: StoreSale
+    val sale: StoreTransaction
 )

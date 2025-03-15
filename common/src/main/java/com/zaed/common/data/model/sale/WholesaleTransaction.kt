@@ -4,7 +4,7 @@ import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.payment.PaymentStatus
 import java.util.Date
 
-open class WholesaleSale(
+open class WholesaleTransaction(
     override val id: String,
     override val customerId: String,
     override val customerName: String,
@@ -18,6 +18,17 @@ open class WholesaleSale(
     open val paymentStatus: PaymentStatus,
     open val distributorId: String,
     open val distributorName: String
-) : Sale()
+) : Transaction(
+    id = id,
+    customerId = customerId,
+    customerName = customerName,
+    customerPhone = customerPhone,
+    createdAt = createdAt,
+    receiptNumber = receiptNumber,
+    logs = logs,
+    deleted = deleted,
+    totalAmount = totalAmount,
+    products = products
+)
 
 

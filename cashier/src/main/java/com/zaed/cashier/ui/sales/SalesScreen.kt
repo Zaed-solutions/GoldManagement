@@ -30,7 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
-import com.zaed.common.data.model.sale.StoreSale
+import com.zaed.common.data.model.sale.StoreTransaction
 import com.zaed.common.ui.components.ConfirmDeleteDialog
 import com.zaed.common.ui.components.DatedSalesWithSearchSection
 import org.koin.androidx.compose.koinViewModel
@@ -71,7 +71,7 @@ private fun SalesScreenContent(
         mutableStateOf(false)
     }
     var selectedSale by remember {
-        mutableStateOf(StoreSale())
+        mutableStateOf(StoreTransaction())
     }
 
     Scaffold (
@@ -133,18 +133,18 @@ private fun SalesScreenContent(
                 },
                 isEditable = true,
                 onEdit = {
-                    onAction(SalesUiAction.OnEditSale(it as StoreSale))
+                    onAction(SalesUiAction.OnEditSale(it as StoreTransaction))
                 },
                 isDeletable = true,
                 onDelete = {
-                    selectedSale = (it as StoreSale)
+                    selectedSale = (it as StoreTransaction)
                     isConfirmDeleteSaleSheetVisible = true
                 }
             )
             AnimatedVisibility(isConfirmDeleteSaleSheetVisible) {
                 ModalBottomSheet(
                     onDismissRequest = {
-                        selectedSale = StoreSale()
+                        selectedSale = StoreTransaction()
                         isConfirmDeleteSaleSheetVisible = false
                     },
                     sheetState = rememberModalBottomSheetState()
@@ -152,12 +152,12 @@ private fun SalesScreenContent(
                     ConfirmDeleteDialog(
                         label = stringResource(R.string.sale),
                         onDismiss = {
-                            selectedSale = StoreSale()
+                            selectedSale = StoreTransaction()
                             isConfirmDeleteSaleSheetVisible = false
                         },
                         onConfirm = {
                             onAction(SalesUiAction.OnDeleteSale(selectedSale.id))
-                            selectedSale = StoreSale()
+                            selectedSale = StoreTransaction()
                             isConfirmDeleteSaleSheetVisible = false
                         },
                     )

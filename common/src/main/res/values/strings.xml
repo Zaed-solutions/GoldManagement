@@ -288,4 +288,6 @@
     <string name="manager_cheques">Manager Cheque</string>
     <string name="cheque_number">Cheque Number</string>
     <string name="cheque_type">Cheque Type</string>
+    <string name="add_category">Add Category</string>
+    <string name="update_category">Update Category</string>
 </resources>

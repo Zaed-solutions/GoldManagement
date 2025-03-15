@@ -27,7 +27,7 @@ import com.zaed.common.R
 import com.zaed.common.data.model.sale.Discount
 import com.zaed.common.data.model.sale.DiscountType
 import com.zaed.common.data.model.sale.Product
-import com.zaed.common.data.model.sale.StoreSale
+import com.zaed.common.data.model.sale.StoreTransaction
 import com.zaed.common.ui.components.DashedDivider
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.components.PriceCalculationItem
@@ -39,7 +39,7 @@ import java.util.Date
 @Composable
 fun SaleSummaryContent(
     modifier: Modifier = Modifier,
-    sale: StoreSale,
+    sale: StoreTransaction,
     onSubmit: () -> Unit = {},
     isLoading: Boolean = false,
 ) {
@@ -140,7 +140,7 @@ fun SaleSummaryContent(
 @Composable
 private fun Preview() {
     CashierAppTheme {
-        val sale = StoreSale(
+        val sale = StoreTransaction(
             discount = Discount(type = DiscountType.PERCENTAGE, value = 10.0),
             customerName = "Muhammed Edrees",
             customerEmail = "muhammed@edrees.com",

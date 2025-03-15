@@ -14,9 +14,6 @@ abstract class Payment(
     open val createdAt: Date = Date(),
     open val logs: List<ChangeLog> = emptyList()
 )
-
-
-
 fun Payment.signedAmount(): Double =
     when (given) {
         true -> amount.unaryMinus()

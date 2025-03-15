@@ -4,7 +4,7 @@ import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.cheque.ManagerCheque
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.ChequePayment
-import com.zaed.common.data.model.sale.WholesaleSale
+import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.data.model.supplier.Supplier
 
 data class SalesChequesUiState(
@@ -13,7 +13,7 @@ data class SalesChequesUiState(
     val currentDistributor: User = User(),
     val salesPayments:  List<ChequePayment> = emptyList(),
     val managerPayments: List<ManagerCheque> = emptyList(),
-    val sales : List<WholesaleSale> = emptyList(),
+    val sales : List<WholesaleTransaction> = emptyList(),
     val customerSearchQuery: String = "",
     val suggestedCustomers: List<WholeSaleCustomer> = emptyList(),
     //

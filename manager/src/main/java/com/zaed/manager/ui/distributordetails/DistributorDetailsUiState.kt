@@ -7,7 +7,7 @@ import com.zaed.common.data.model.loss.DistributorLoss
 import com.zaed.common.data.model.sale.DatedIngotTransactions
 import com.zaed.common.data.model.sale.DatedSales
 import com.zaed.common.data.model.sale.IngotTransaction
-import com.zaed.common.data.model.sale.WholesaleSale
+import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.ui.util.DateFormat
 
 data class DistributorDetailsUiState(
@@ -15,8 +15,8 @@ data class DistributorDetailsUiState(
     val distributor: User = User(),
     val salesQuery: String = "",
     val selectedSalesFilter: DateFormat = DateFormat.DATE,
-    val allSales: List<WholesaleSale> = emptyList(),
-    val filteredSales: List<WholesaleSale> = emptyList(),
+    val allSales: List<WholesaleTransaction> = emptyList(),
+    val filteredSales: List<WholesaleTransaction> = emptyList(),
     val datedSales: List<DatedSales> = emptyList(),
     val inventoryQuery: String = "",
     val mainInventories: List<Inventory> = emptyList(),

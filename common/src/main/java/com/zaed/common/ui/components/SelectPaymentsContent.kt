@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
+import com.zaed.common.data.model.customer.Account
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
@@ -57,9 +58,9 @@ fun SelectPaymentsContent(
     query: String,
     paymentsTypes: List<PaymentType> = remember { getProductSalePayments() },
     onQueryChanged: (String) -> Unit,
-    selectedCustomer: WholeSaleCustomer,
-    onCustomerSelected: (WholeSaleCustomer) -> Unit,
-    suggestedCustomers: List<WholeSaleCustomer>,
+    selectedAccount: Account,
+    onAccountSelected: (Account) -> Unit,
+    suggestedAccount: List<Account>,
     onNext: () -> Unit = {}
 ) {
     var simplePaymentBottomSheet by remember { mutableStateOf(false) }
@@ -158,8 +159,10 @@ fun SelectPaymentsContent(
 
         Button(
             onClick = {
-                if( payments.filterIsInstance<GoldPayment>().any { it.pricePerGram == 0.0 } && selectedCustomer.id.isBlank()){
-                    selectCustomerSheet = true
+                if( payments.filterIsInstance<GoldPayment>().any { it.pricePerGram == 0.0 } && selectedAccount.id.isBlank()){
+                    if(selectedAccount is WholeSaleCustomer){
+                        selectCustomerSheet = true
+                    }
                 }
                 else if (remainsAmount > 0 && payments.filterIsInstance<GoldPayment>().none { it.pricePerGram == 0.0 }) {
                     warningnNotFullyPaidSheet = true
@@ -196,7 +199,7 @@ fun SelectPaymentsContent(
                                         onAddPayment(
                                             cashPayment.copy(
                                                 id = "Payment-" + UUID.randomUUID().toString(),
-                                                customerId = selectedCustomer.id,
+                                                customerId = selectedAccount.id,
                                             )
                                         )
                                     } else {
@@ -218,7 +221,7 @@ fun SelectPaymentsContent(
                                         onAddPayment(
                                             newPayment.copy(
                                                 id = "Payment-" + UUID.randomUUID().toString(),
-                                                customerId = selectedCustomer.id,
+                                                customerId = selectedAccount.id,
                                             )
                                         )
                                     } else {
@@ -240,7 +243,7 @@ fun SelectPaymentsContent(
                                         onAddPayment(
                                             newPayment.copy(
                                                 id = "Payment-" + UUID.randomUUID().toString(),
-                                                customerId = selectedCustomer.id,
+                                                customerId = selectedAccount.id,
                                             )
                                         )
                                     } else {
@@ -262,7 +265,7 @@ fun SelectPaymentsContent(
                                         onAddPayment(
                                             newPayment.copy(
                                                 id = "Payment-" + UUID.randomUUID().toString(),
-                                                customerId = selectedCustomer.id,
+                                                customerId = selectedAccount.id,
                                             )
                                         )
                                     } else {
@@ -311,7 +314,7 @@ fun SelectPaymentsContent(
                             onClick = {
                                 onAddPayment(
                                     LossPayment(
-                                        customerId = selectedCustomer.id,
+                                        customerId = selectedAccount.id,
                                         amount = remainsAmount,
                                         given = true,
                                         type = PaymentType.LOSS
@@ -329,10 +332,10 @@ fun SelectPaymentsContent(
                         Button(
                             shape = RoundedCornerShape(4.dp),
                             onClick = {
-                                if (selectedCustomer.id.isNotBlank()) {
+                                if (selectedAccount.id.isNotBlank()) {
                                     onAddPayment(
                                         FuturePayment(
-                                            customerId = selectedCustomer.id,
+                                            customerId = selectedAccount.id,
                                             amount = remainsAmount,
                                             given = true,
                                             type = PaymentType.FUTURES
@@ -374,12 +377,12 @@ fun SelectPaymentsContent(
                     onAddNewCustomer = onAddNewCustomer,
                     query = query,
                     onQueryChanged = onQueryChanged,
-                    selectedCustomer = selectedCustomer,
+                    selectedCustomer = selectedAccount as WholeSaleCustomer,
                     onCustomerSelected = {
-                        onCustomerSelected(it)
+                        onAccountSelected(it)
                         selectCustomerSheet = false
                     },
-                    suggestedCustomers = suggestedCustomers
+                    suggestedCustomers = suggestedAccount as List<WholeSaleCustomer>
                 )
             }
         }
@@ -405,7 +408,7 @@ private fun SelectPaymentsContentPreview() {
                 amount = 500.0,
             )
         ),
-        selectedCustomer = WholeSaleCustomer(),
+        selectedAccount = WholeSaleCustomer(),
         onAddPayment = {},
         onRemovePayment = {},
         onEditPayment = {},
@@ -413,8 +416,8 @@ private fun SelectPaymentsContentPreview() {
         onAddNewCustomer = {},
         query = "",
         onQueryChanged = {},
-        onCustomerSelected = {},
-        suggestedCustomers = listOf(),
+        onAccountSelected = {},
+        suggestedAccount = listOf(),
     )
 
 }

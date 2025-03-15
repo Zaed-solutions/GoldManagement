@@ -1,5 +1,6 @@
 package com.zaed.common.data.repository
 
+import com.zaed.common.data.model.customer.FetchSuppliersByNameRequest
 import com.zaed.common.data.model.supplier.Supplier
 import com.zaed.common.data.model.supplier.request.AddSupplierRequest
 import com.zaed.common.data.model.supplier.request.DeleteSupplierRequest
@@ -13,4 +14,5 @@ interface SupplierRepository {
     suspend fun deleteSupplier(request: DeleteSupplierRequest): Result<Unit>
     suspend fun updateSupplier(request: UpdateSupplierRequest): Result<Unit>
     suspend fun fetchSupplier(request: FetchSupplierRequest): Result<Supplier>
+    suspend fun fetchSuppliersByName(request: FetchSuppliersByNameRequest): Result<List<Supplier>>
 }

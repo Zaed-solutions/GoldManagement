@@ -4,3 +4,7 @@ data class FetchWholesaleCustomersByNameRequest(
     val name: String = "",
     val distributorId: String = ""
 )
+data class FetchSuppliersByNameRequest(
+    val name: String = "",
+    val distributorId: String = ""
+)

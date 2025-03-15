@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.ui.components.PreviewSaleContent
 import com.zaed.common.ui.components.ProgressIndicatorTopAppBar
 import com.zaed.common.ui.components.SaleSummaryContent
@@ -121,7 +122,7 @@ private fun AddProductSaleScreenContent(
                         //add products
                         SelectProductsContent(
                             categories = state.categories,
-                            sale = state.sale,
+                            transaction = state.sale,
                             onAddProduct = {
                                 onAction(AddProductSaleUiAction.OnAddProduct(it))
                             },
@@ -142,7 +143,7 @@ private fun AddProductSaleScreenContent(
 
                     1 -> {
                         PreviewSaleContent(
-                            sale = state.sale,
+                            transaction = state.sale,
                             onUpdateProduct = {
                                 onAction(AddProductSaleUiAction.OnAddProduct(it))
                             },
@@ -163,13 +164,13 @@ private fun AddProductSaleScreenContent(
                             onQueryChanged = {
                                 onAction(AddProductSaleUiAction.OnCustomerSearchQueryChanged(it))
                             },
-                            selectedCustomer = state.selectedCustomer,
-                            suggestedCustomers = state.suggestedCustomers,
-                            onAddNewCustomer = {
+                            selectedAccount = state.selectedCustomer,
+                            suggestedAccounts = state.suggestedCustomers,
+                            onAddNewAccount = {
                                 onAction(AddProductSaleUiAction.OnAddNewCustomerClicked)
                             },
-                            onCustomerSelected = {
-                                onAction(AddProductSaleUiAction.OnCustomerSelected(it))
+                            onAccountSelected = {
+                                onAction(AddProductSaleUiAction.OnCustomerSelected(it as WholeSaleCustomer))
                             },
                             onNext = {
                                 scope.launch {
@@ -183,17 +184,17 @@ private fun AddProductSaleScreenContent(
                         SelectPaymentsContent(
                             totalAmount = state.sale.totalAmount,
                             payments = state.payments,
-                            selectedCustomer = state.selectedCustomer,
+                            selectedAccount = state.selectedCustomer,
                             query = state.customerSearchQuery,
                             onQueryChanged = {
                                 onAction(AddProductSaleUiAction.OnCustomerSearchQueryChanged(it))
                             },
-                            suggestedCustomers = state.suggestedCustomers,
+                            suggestedAccount = state.suggestedCustomers,
                             onAddNewCustomer = {
                                 onAction(AddProductSaleUiAction.OnAddNewCustomerClicked)
                             },
-                            onCustomerSelected = {
-                                onAction(AddProductSaleUiAction.OnCustomerSelected(it))
+                            onAccountSelected = {
+                                onAction(AddProductSaleUiAction.OnCustomerSelected(it as WholeSaleCustomer))
                             },
                             onAddPayment = {
                                 onAction(AddProductSaleUiAction.OnAddPayment(it))
@@ -214,7 +215,7 @@ private fun AddProductSaleScreenContent(
 
                     3 -> {
                         SaleSummaryContent(
-                            customer = state.selectedCustomer,
+                            account = state.selectedCustomer,
                             products = state.sale.products,
                             totalPaid = state.totalPaid,
                             totalAmount = state.sale.totalAmount,

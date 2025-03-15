@@ -21,6 +21,8 @@ import com.zaed.common.data.repository.ManufacturerOrderRepository
 import com.zaed.common.data.repository.ManufacturerOrderRepositoryImpl
 import com.zaed.common.data.repository.PaymentRepository
 import com.zaed.common.data.repository.PaymentRepositoryImpl
+import com.zaed.common.data.repository.PurchaseRepository
+import com.zaed.common.data.repository.PurchaseRepositoryImpl
 import com.zaed.common.data.repository.SaleRepository
 import com.zaed.common.data.repository.SaleRepositoryImpl
 import com.zaed.common.data.repository.StoreRepository
@@ -45,6 +47,8 @@ import com.zaed.common.data.source.remote.ManufacturerOrderRemoteSource
 import com.zaed.common.data.source.remote.ManufacturerOrderRemoteSourceImpl
 import com.zaed.common.data.source.remote.PaymentRemoteDataSource
 import com.zaed.common.data.source.remote.PaymentRemoteDataSourceImpl
+import com.zaed.common.data.source.remote.PurchaseRemoteDataSource
+import com.zaed.common.data.source.remote.PurchaseRemoteDataSourceImpl
 import com.zaed.common.data.source.remote.SaleRemoteSource
 import com.zaed.common.data.source.remote.SaleRemoteSourceImpl
 import com.zaed.common.data.source.remote.StoreRemoteDataSource
@@ -62,6 +66,7 @@ import com.zaed.common.domain.authentication.LoginUserUseCase
 import com.zaed.common.domain.authentication.LogoutUserUseCase
 import com.zaed.common.domain.authentication.SignUpUserUseCase
 import com.zaed.common.domain.authentication.UpdateUserUseCase
+import com.zaed.common.domain.category.AddCategoryUseCase
 import com.zaed.common.domain.category.FetchAllCategoriesUseCase
 import com.zaed.common.domain.cheque.AddManagerChequeUseCase
 import com.zaed.common.domain.cheque.AddSalesChequeUseCase
@@ -76,6 +81,7 @@ import com.zaed.common.domain.customer.AddWholeSaleCustomerUseCase
 import com.zaed.common.domain.customer.DeleteWholeSaleCustomerUseCase
 import com.zaed.common.domain.customer.EditWholeSalesCustomerUseCase
 import com.zaed.common.domain.customer.FetchAllWholeCustomersUseCase
+import com.zaed.common.domain.customer.FetchSuppliersByNameUseCase
 import com.zaed.common.domain.customer.FetchWholesaleCustomerSalesUseCase
 import com.zaed.common.domain.customer.FetchWholesaleCustomersByNameUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
@@ -107,8 +113,10 @@ import com.zaed.common.domain.payment.FetchCustomerPaymentsUseCase
 import com.zaed.common.domain.payment.FetchGoldPaymentsByIdsUseCase
 import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
 import com.zaed.common.domain.payment.FetchSupplierPaymentsUseCase
+import com.zaed.common.domain.purchase.FetchPurchaseUseCase
 import com.zaed.common.domain.sale.AddGoldSaleUseCase
 import com.zaed.common.domain.sale.AddIngotTransactionUseCase
+import com.zaed.common.domain.sale.AddPurchaseUseCase
 import com.zaed.common.domain.sale.AddStoreSaleUseCase
 import com.zaed.common.domain.sale.AddWholesaleProductSaleUseCase
 import com.zaed.common.domain.sale.ConvertIngotTransactionsToDatedUseCase
@@ -125,6 +133,7 @@ import com.zaed.common.domain.sale.FetchWholesaleGoldSaleUseCase
 import com.zaed.common.domain.sale.FetchWholesaleProductSaleUseCase
 import com.zaed.common.domain.sale.GetStoreSaleUseCase
 import com.zaed.common.domain.sale.UpdateIngotTransactionUseCase
+import com.zaed.common.domain.sale.UpdatePurchaseUseCase
 import com.zaed.common.domain.sale.UpdateStoreSaleUseCase
 import com.zaed.common.domain.sale.UpdateWholesaleGoldSaleUseCase
 import com.zaed.common.domain.sale.UpdateWholesaleProductSaleUseCase
@@ -135,10 +144,12 @@ import com.zaed.common.domain.store.GetStoresUseCase
 import com.zaed.common.domain.store.UpdateStoreUseCase
 import com.zaed.common.domain.supplier.AddSupplierUseCase
 import com.zaed.common.domain.supplier.DeleteSupplierUseCase
+import com.zaed.common.domain.supplier.FetchSupplierUseCase
 import com.zaed.common.domain.supplier.FetchSuppliersUseCase
 import com.zaed.common.domain.supplier.UpdateSupplierUseCase
 import com.zaed.common.ui.addGoldSale.AddGoldSaleViewModel
 import com.zaed.common.ui.addcustomers.AddCustomersViewModel
+import com.zaed.common.ui.addpurchase.AddPurchaseViewModel
 import com.zaed.common.ui.auth.MainViewModel
 import com.zaed.common.ui.auth.login.LoginViewModel
 import com.zaed.common.ui.auth.signup.SignUpViewModel
@@ -149,9 +160,9 @@ import com.zaed.common.ui.saledetails.cashiersaledetails.SaleDetailsViewModel
 import com.zaed.common.ui.saledetails.goldsaledetails.GoldSaleDetailsViewModel
 import com.zaed.common.ui.saledetails.productsaledetails.ProductSaleDetailsViewModel
 import com.zaed.common.ui.suppliers.SuppliersViewModel
-import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 
@@ -246,6 +257,12 @@ val useCaseModule = module {
     singleOf(::DeleteManagerChequeUseCase)
     singleOf(::FetchSupplierPaymentsUseCase)
     singleOf(::FetchSuppliersUseCase)
+    singleOf(::FetchPurchaseUseCase)
+    singleOf(::AddPurchaseUseCase)
+    singleOf(::FetchSuppliersByNameUseCase)
+    singleOf(::FetchSupplierUseCase)
+    singleOf(::UpdatePurchaseUseCase)
+    singleOf(::AddCategoryUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }
@@ -259,6 +276,7 @@ val repositoryModule = module {
     singleOf(::InventoryRepositoryImpl) { bind<InventoryRepository>() }
     singleOf(::ManufacturerOrderRepositoryImpl) { bind<ManufacturerOrderRepository>() }
     singleOf(::SupplierRepositoryImpl) { bind<SupplierRepository>() }
+    singleOf(::PurchaseRepositoryImpl) { bind<PurchaseRepository>() }
 }
 val viewModelModule = module {
     viewModelOf(::SignUpViewModel)
@@ -275,6 +293,7 @@ val viewModelModule = module {
     viewModelOf(::SaleDetailsViewModel)
     viewModelOf(::AddGoldSaleViewModel)
     viewModelOf(::SuppliersViewModel)
+    viewModelOf(::AddPurchaseViewModel)
 }
 val remoteSourceModule = module {
     singleOf(::AuthenticationRemoteSourceImpl) { bind<AuthenticationRemoteSource>() }
@@ -288,6 +307,7 @@ val remoteSourceModule = module {
     singleOf(::InventoryRemoteSourceImpl) { bind<InventoryRemoteSource>() }
     singleOf(::ManufacturerOrderRemoteSourceImpl) { bind<ManufacturerOrderRemoteSource>() }
     singleOf(::SupplierRemoteSourceImpl) { bind<SupplierRemoteSource>() }
+    singleOf(::PurchaseRemoteDataSourceImpl) { bind<PurchaseRemoteDataSource>() }
     single<FirebaseFirestore> {
         val db = Firebase.firestore
         val settings = FirebaseFirestoreSettings.Builder().setLocalCacheSettings(

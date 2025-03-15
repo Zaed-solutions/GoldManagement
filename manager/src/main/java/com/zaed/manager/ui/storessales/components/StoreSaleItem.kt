@@ -20,7 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.sale.StoreSale
+import com.zaed.common.data.model.sale.StoreTransaction
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
 import com.zaed.common.ui.util.formatMoney
@@ -28,7 +28,7 @@ import com.zaed.common.ui.util.formatMoney
 @Composable
 fun StoreSaleItem(
     modifier: Modifier = Modifier,
-    sale: StoreSale,
+    sale: StoreTransaction,
     onClick: () -> Unit
 ) {
     Surface(

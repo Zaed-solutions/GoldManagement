@@ -20,9 +20,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.sale.StoreSale
-import com.zaed.common.data.model.sale.WholesaleGoldSale
-import com.zaed.common.data.model.sale.WholesaleSale
+import com.zaed.common.data.model.sale.WholesaleGoldTransaction
+import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.manager.ui.theme.GoldenCustomColors
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
@@ -31,11 +30,11 @@ import com.zaed.common.ui.util.formatMoney
 @Composable
 fun DistributorSaleItem(
     modifier: Modifier = Modifier,
-    sale: WholesaleSale,
+    sale: WholesaleTransaction,
     onClick: () -> Unit
 ) {
     val (icon, iconBackgroundColor, iconColor) = when{
-        sale is WholesaleGoldSale -> Triple(R.drawable.ic_ingot, GoldenCustomColors.current.color, GoldenCustomColors.current.onColor)
+        sale is WholesaleGoldTransaction -> Triple(R.drawable.ic_ingot, GoldenCustomColors.current.color, GoldenCustomColors.current.onColor)
         else -> Triple(R.drawable.ic_shopping, MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.onSecondary)
     }
     Surface(

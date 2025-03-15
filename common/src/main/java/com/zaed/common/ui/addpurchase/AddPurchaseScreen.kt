@@ -1,0 +1,247 @@
+package com.zaed.common.ui.addpurchase
+
+import android.util.Log
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.ProgressIndicatorDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zaed.common.ui.components.PreviewSaleContent
+import com.zaed.common.ui.components.ProgressIndicatorTopAppBar
+import com.zaed.common.ui.components.SaleSummaryContent
+import com.zaed.common.ui.components.SelectPaymentsContent
+import com.zaed.common.ui.components.SelectProductsContent
+import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
+
+@Composable
+fun AddPurchaseScreen(
+    modifier: Modifier = Modifier,
+    viewModel: AddPurchaseViewModel = koinViewModel(),
+    purchaseId: String = "",
+    onBackClicked: () -> Unit,
+    navigateToPurchaseDetails: (purchase: String) -> Unit,
+    onNavigateToAddSupplier: () -> Unit,
+    onOpenDrawer: () -> Unit
+) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect(true) {
+        viewModel.init(purchaseId)
+    }
+    LaunchedEffect(state.isFinished) {
+        if (state.isFinished) {
+            Log.d("CREATED",state.purchase.id)
+            navigateToPurchaseDetails(state.purchase.id)
+        }
+    }
+    AddPurchaseScreenContent(
+        state = state,
+        onAction = { action ->
+            when (action) {
+                AddPurchaseUiAction.OnAddNewSupplierClicked -> onNavigateToAddSupplier()
+                AddPurchaseUiAction.OnBackClicked -> onBackClicked()
+                AddPurchaseUiAction.OpenDrawer -> onOpenDrawer()
+                else -> viewModel.handleAction(action)
+            }
+        }
+    )
+}
+
+@Composable
+private fun AddPurchaseScreenContent(
+    modifier: Modifier = Modifier,
+    state: AddPurchaseUiState,
+    onAction: (AddPurchaseUiAction) -> Unit,
+) {
+    val scope = rememberCoroutineScope()
+    Log.d(
+        "find the issue",
+        "fetchCurrentUser: screen"
+    )
+    val pagerState = rememberPagerState { 4 }
+    val progress by remember {
+        derivedStateOf {
+            (pagerState.currentPage + 1).toFloat() / (pagerState.pageCount + 1)
+        }
+    }.let { progressState ->
+        animateFloatAsState(
+            targetValue = progressState.value,
+            animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+            label = "linear progress indicator"
+        )
+    }
+
+    BackHandler {
+        if (pagerState.currentPage > 0) {
+            scope.launch {
+                pagerState.animateScrollToPage(pagerState.currentPage - 1)
+            }
+        }
+    }
+    Scaffold(
+        topBar = {
+            ProgressIndicatorTopAppBar(
+                progress = progress,
+                firstScreen = pagerState.currentPage == 0,
+                onOpenDrawer = {onAction(AddPurchaseUiAction.OpenDrawer)}
+            ) {
+                if (pagerState.currentPage > 0) {
+                    scope.launch {
+                        pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                    }
+                } else {
+                    onAction(AddPurchaseUiAction.OnBackClicked)
+                }
+            }
+        },
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            HorizontalPager(
+                state = pagerState,
+                userScrollEnabled = false,
+            ) { page ->
+                when (page) {
+                    0 -> {
+                        //add products
+                        SelectProductsContent(
+                            categories = state.categories,
+                            transaction = state.purchase,
+                            onAddProduct = {
+                                onAction(AddPurchaseUiAction.OnAddProduct(it))
+                            },
+                            onNext = {
+                                if (pagerState.currentPage == 3) {
+                                    onAction(AddPurchaseUiAction.OnSubmitClicked)
+                                } else {
+                                    scope.launch {
+                                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                    }
+                                }
+                            },
+                            onDeleteProduct = {
+                                onAction(AddPurchaseUiAction.OnDeleteProduct(it))
+                            },
+                            isPurchase = true,
+                            onAddNewCategory = {
+                                onAction(AddPurchaseUiAction.OnAddNewCategory(it))
+                            }
+                        )
+                    }
+
+                    1 -> {
+                        PreviewSaleContent(
+                            transaction = state.purchase,
+                            onUpdateProduct = {
+                                onAction(AddPurchaseUiAction.OnAddProduct(it))
+                            },
+                            onDeleteProduct = {
+                                onAction(AddPurchaseUiAction.OnDeleteProduct(it))
+                            },
+                            deleteAllProducts = {
+                                onAction(AddPurchaseUiAction.OnDeleteAllProducts)
+                                if (pagerState.currentPage > 0) {
+                                    scope.launch {
+                                        pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                                    }
+                                } else {
+                                    onAction(AddPurchaseUiAction.OnBackClicked)
+                                }
+                            },
+                            query = state.supplierSearchQuery,
+                            onQueryChanged = {
+                                onAction(AddPurchaseUiAction.OnSupplierSearchQueryChanged(it))
+                            },
+                            selectedAccount = state.selectedSupplier,
+                            suggestedAccounts = state.suggestedSuppliers,
+                            onAddNewAccount = {
+                                onAction(AddPurchaseUiAction.OnAddNewSupplierClicked)
+                            },
+                            onNext = {
+                                scope.launch {
+                                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                }
+                            },
+                            isAdmin = state.isAdmin,
+                            isLoading = state.isLoading,
+                            supplierSearchQuery = state.supplierSearchQuery,
+                            onUpdateSupplierSearchQuery = {
+                                onAction(AddPurchaseUiAction.OnSupplierSearchQueryChanged(it))
+                            },
+                            filteredSuppliers = state.suggestedSuppliers,
+                            onSupplierClicked = {
+                                onAction(AddPurchaseUiAction.OnSupplierSelected(it))
+                            },
+                            onAddSupplier = {
+                                onAction(AddPurchaseUiAction.OnAddSupplier)
+                            }
+                        )
+                    }
+
+                    2 -> {
+                        SelectPaymentsContent(
+                            totalAmount = state.purchase.totalAmount,
+                            payments = state.payments,
+                            selectedAccount = state.selectedSupplier,
+                            query = state.supplierSearchQuery,
+                            onQueryChanged = {
+                                onAction(AddPurchaseUiAction.OnSupplierSearchQueryChanged(it))
+                            },
+                            suggestedAccount = state.suggestedSuppliers,
+                            onAddNewCustomer = {
+                                onAction(AddPurchaseUiAction.OnAddNewSupplierClicked)
+                            },
+                            onAccountSelected = {
+                                onAction(AddPurchaseUiAction.OnSupplierSelected(it.id))
+                            },
+                            onAddPayment = {
+                                onAction(AddPurchaseUiAction.OnAddPayment(it))
+                            },
+                            onEditPayment = {
+                                onAction(AddPurchaseUiAction.OnEditPayment(it))
+                            },
+                            onRemovePayment = {
+                                onAction(AddPurchaseUiAction.OnRemovePayment(it.id))
+                            },
+                            onNext = {
+                                scope.launch {
+                                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                }
+                            }
+                        )
+                    }
+
+                    3 -> {
+                        SaleSummaryContent(
+                            account = state.selectedSupplier,
+                            products = state.purchase.products,
+                            totalPaid = state.totalPaid,
+                            totalAmount = state.purchase.totalAmount,
+                            isLoading = state.isLoading,
+                            onCreate = {
+                                onAction(AddPurchaseUiAction.OnSubmitClicked)
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+}
+

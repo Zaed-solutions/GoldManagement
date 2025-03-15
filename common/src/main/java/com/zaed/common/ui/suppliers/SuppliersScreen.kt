@@ -19,6 +19,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -203,7 +204,11 @@ fun SelectSupplierSheet(
     var isSaveSupplierSheetVisible by remember { mutableStateOf(false) }
     var isConfirmDeleteSheetVisible by remember { mutableStateOf(false) }
     ModalBottomSheet(
-        onDismissRequest = onDismiss
+        onDismissRequest = onDismiss,
+        dragHandle = {},
+        sheetState = rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+        ),
     ) {
         Scaffold(
             modifier = modifier,

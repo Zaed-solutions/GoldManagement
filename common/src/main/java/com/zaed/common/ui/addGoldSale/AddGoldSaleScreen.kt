@@ -18,13 +18,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.getGoldSalePayments
+import com.zaed.common.ui.addGoldSale.components.SelectGoldContent
 import com.zaed.common.ui.components.PreviewSaleContent
 import com.zaed.common.ui.components.ProgressIndicatorTopAppBar
 import com.zaed.common.ui.components.SaleSummaryContent
 import com.zaed.common.ui.components.SelectPaymentsContent
-import com.zaed.common.ui.addGoldSale.components.SelectGoldContent
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -140,7 +141,7 @@ private fun AddGoldSaleScreenContent(
 
                     1 -> {
                         PreviewSaleContent(
-                            sale = state.sale,
+                            transaction = state.sale,
                             onUpdateProduct = {
                                 onAction(AddGoldSaleUiAction.OnAddProduct(it))
                             },
@@ -161,13 +162,13 @@ private fun AddGoldSaleScreenContent(
                             onQueryChanged = {
                                 onAction(AddGoldSaleUiAction.OnCustomerSearchQueryChanged(it))
                             },
-                            selectedCustomer = state.selectedCustomer,
-                            suggestedCustomers = state.suggestedCustomers,
-                            onAddNewCustomer = {
+                            selectedAccount = state.selectedCustomer,
+                            suggestedAccounts = state.suggestedCustomers,
+                            onAddNewAccount = {
                                 onAction(AddGoldSaleUiAction.OnAddNewCustomerClicked)
                             },
-                            onCustomerSelected = {
-                                onAction(AddGoldSaleUiAction.OnCustomerSelected(it))
+                            onAccountSelected = {
+                                onAction(AddGoldSaleUiAction.OnCustomerSelected(it as WholeSaleCustomer))
                             },
                             onNext = {
                                 scope.launch {
@@ -181,18 +182,18 @@ private fun AddGoldSaleScreenContent(
                         SelectPaymentsContent(
                             totalAmount = state.sale.totalAmount,
                             payments = state.payments,
-                            selectedCustomer = state.selectedCustomer,
+                            selectedAccount = state.selectedCustomer,
                             query = state.customerSearchQuery,
                             paymentsTypes = getGoldSalePayments(),
                             onQueryChanged = {
                                 onAction(AddGoldSaleUiAction.OnCustomerSearchQueryChanged(it))
                             },
-                            suggestedCustomers = state.suggestedCustomers,
+                            suggestedAccount = state.suggestedCustomers,
                             onAddNewCustomer = {
                                 onAction(AddGoldSaleUiAction.OnAddNewCustomerClicked)
                             },
-                            onCustomerSelected = {
-                                onAction(AddGoldSaleUiAction.OnCustomerSelected(it))
+                            onAccountSelected = {
+                                onAction(AddGoldSaleUiAction.OnCustomerSelected(it as WholeSaleCustomer))
                             },
                             onAddPayment = {
                                 onAction(AddGoldSaleUiAction.OnAddPayment(it))
@@ -213,7 +214,7 @@ private fun AddGoldSaleScreenContent(
 
                     3 -> {
                         SaleSummaryContent(
-                            customer = state.selectedCustomer,
+                            account = state.selectedCustomer,
                             products = state.sale.products,
                             totalPaid = state.totalPaid,
                             isKaratUnSpecified = state.payments.filterIsInstance<GoldPayment>().any { it.pricePerGram==0.0 },

@@ -13,7 +13,7 @@ import android.graphics.pdf.PdfDocument
 import android.os.Environment
 import androidx.core.content.ContextCompat
 import com.zaed.common.data.model.sale.DiscountType
-import com.zaed.common.data.model.sale.StoreSale
+import com.zaed.common.data.model.sale.StoreTransaction
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -147,7 +147,7 @@ object ReceiptUtil {
      */
     fun generateStoreSaleReceipt(
         context: Context,
-        storeSale: StoreSale,
+        storeSale: StoreTransaction,
         logoMipmapId: Int? = null,
         fileName: String = "إيصال_بيع"
     ): File {

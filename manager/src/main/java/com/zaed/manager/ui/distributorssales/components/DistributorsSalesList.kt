@@ -7,17 +7,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.sale.StoreSale
-import com.zaed.common.data.model.sale.WholesaleSale
+import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.ui.components.ListWithLoading
-import com.zaed.manager.ui.storessales.components.StoreSaleItem
 
 @Composable
 fun DistributorsSalesList(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
-    sales: List<WholesaleSale>,
-    onSaleClicked: (WholesaleSale) -> Unit
+    sales: List<WholesaleTransaction>,
+    onSaleClicked: (WholesaleTransaction) -> Unit
 ) {
     ListWithLoading(
         modifier = modifier,
