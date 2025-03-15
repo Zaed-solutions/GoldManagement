@@ -292,4 +292,5 @@
     <string name="update_category">Update Category</string>
     <string name="edit_supplier">Edit Supplier</string>
     <string name="purchase_summary">Purchase Summary</string>
+    <string name="purchase_information">Purchase Information</string>
 </resources>

@@ -15,6 +15,7 @@ import com.zaed.common.ui.auth.signup.SignUpScreen
 import com.zaed.common.ui.customerdetails.CustomerDetailsScreen
 import com.zaed.common.ui.displaycustomers.DisplayCustomersScreen
 import com.zaed.common.ui.ingottransactions.IngotTransactionsScreen
+import com.zaed.common.ui.purchaseDetails.PurchaseDetailsScreen
 import com.zaed.common.ui.saledetails.cashiersaledetails.SaleDetailsScreen
 import com.zaed.common.ui.saledetails.goldsaledetails.GoldSaleDetailsScreen
 import com.zaed.common.ui.saledetails.productsaledetails.ProductSaleDetailsScreen
@@ -98,9 +99,25 @@ fun NavigationHost(
                     //TODO
                 },
                 navigateToPurchaseDetails = {
-                    //TODO
+                    navController.navigate(Route.PurchaseDetailsRoute(it))
                 },
                 onOpenDrawer = onShowNavDrawer
+            )
+        }
+        composable<Route.PurchaseDetailsRoute> {
+            val purchaseId = it.toRoute<Route.PurchaseDetailsRoute>().purchaseId
+            PurchaseDetailsScreen(
+                purchaseId = purchaseId,
+                onBackClicked = {
+                    navController.popBackStack()
+                },
+                onNavigateToEditPurchase = {
+                    navController.navigate(Route.AddPurchaseRoute(it))
+                },
+                onNavigateToSupplierDetails = {
+//                    navController.navigate(Route.SupplierDetailsRoute(it))
+
+                }
             )
         }
         composable<Route.CustomerDetails> {

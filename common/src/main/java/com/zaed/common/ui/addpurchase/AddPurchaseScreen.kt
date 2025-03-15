@@ -33,7 +33,7 @@ fun AddPurchaseScreen(
     viewModel: AddPurchaseViewModel = koinViewModel(),
     purchaseId: String = "",
     onBackClicked: () -> Unit,
-    navigateToPurchaseDetails: (purchase: String) -> Unit,
+    navigateToPurchaseDetails: (purchaseId: String) -> Unit,
     onNavigateToAddSupplier: () -> Unit,
     onOpenDrawer: () -> Unit
 ) {
