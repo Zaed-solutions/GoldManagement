@@ -176,11 +176,19 @@ fun PreviewSaleContent(
                                     imageVector = Icons.Outlined.PersonAdd,
                                     contentDescription = null
                                 )
-                                Text(
-                                    text = if (selectedAccount.id.isNotBlank()) stringResource(R.string.edit_customer) else stringResource(
-                                        R.string.add_customer
+                                if(selectedAccount is WholeSaleCustomer) {
+                                    Text(
+                                        text = if (selectedAccount.id.isNotBlank()) stringResource(R.string.edit_customer) else stringResource(
+                                            R.string.add_customer
+                                        )
                                     )
-                                )
+                                }else{
+                                    Text(
+                                        text = if (selectedAccount.id.isNotBlank()) stringResource(R.string.edit_supplier) else stringResource(
+                                            R.string.add_supplier
+                                        )
+                                    )
+                                }
                             }
                         }
                     }

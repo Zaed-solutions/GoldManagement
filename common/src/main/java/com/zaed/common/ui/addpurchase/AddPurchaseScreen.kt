@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.ui.components.PreviewSaleContent
 import com.zaed.common.ui.components.ProgressIndicatorTopAppBar
 import com.zaed.common.ui.components.SaleSummaryContent
@@ -32,7 +33,7 @@ fun AddPurchaseScreen(
     viewModel: AddPurchaseViewModel = koinViewModel(),
     purchaseId: String = "",
     onBackClicked: () -> Unit,
-    navigateToPurchaseDetails: (purchase: String) -> Unit,
+    navigateToPurchaseDetails: (purchaseId: String) -> Unit,
     onNavigateToAddSupplier: () -> Unit,
     onOpenDrawer: () -> Unit
 ) {
@@ -50,7 +51,6 @@ fun AddPurchaseScreen(
         state = state,
         onAction = { action ->
             when (action) {
-                AddPurchaseUiAction.OnAddNewSupplierClicked -> onNavigateToAddSupplier()
                 AddPurchaseUiAction.OnBackClicked -> onBackClicked()
                 AddPurchaseUiAction.OpenDrawer -> onOpenDrawer()
                 else -> viewModel.handleAction(action)
@@ -169,9 +169,6 @@ private fun AddPurchaseScreenContent(
                             },
                             selectedAccount = state.selectedSupplier,
                             suggestedAccounts = state.suggestedSuppliers,
-                            onAddNewAccount = {
-                                onAction(AddPurchaseUiAction.OnAddNewSupplierClicked)
-                            },
                             onNext = {
                                 scope.launch {
                                     pagerState.animateScrollToPage(pagerState.currentPage + 1)
@@ -188,8 +185,8 @@ private fun AddPurchaseScreenContent(
                                 onAction(AddPurchaseUiAction.OnSupplierSelected(it))
                             },
                             onAddSupplier = {
-                                onAction(AddPurchaseUiAction.OnAddSupplier)
-                            }
+                                onAction(AddPurchaseUiAction.OnAddNewSupplierClicked(it))
+                            },
                         )
                     }
 
@@ -198,14 +195,18 @@ private fun AddPurchaseScreenContent(
                             totalAmount = state.purchase.totalAmount,
                             payments = state.payments,
                             selectedAccount = state.selectedSupplier,
+                            paymentsTypes = listOf(
+                                PaymentType.CHEQUE,
+                                PaymentType.BANK_TRANSFER,
+                                PaymentType.CASH,
+                                PaymentType.MANAGER_CHEQUES,
+                            ),
                             query = state.supplierSearchQuery,
                             onQueryChanged = {
                                 onAction(AddPurchaseUiAction.OnSupplierSearchQueryChanged(it))
                             },
                             suggestedAccount = state.suggestedSuppliers,
-                            onAddNewCustomer = {
-                                onAction(AddPurchaseUiAction.OnAddNewSupplierClicked)
-                            },
+
                             onAccountSelected = {
                                 onAction(AddPurchaseUiAction.OnSupplierSelected(it.id))
                             },
@@ -233,6 +234,7 @@ private fun AddPurchaseScreenContent(
                             totalPaid = state.totalPaid,
                             totalAmount = state.purchase.totalAmount,
                             isLoading = state.isLoading,
+                            isPurchase = true,
                             onCreate = {
                                 onAction(AddPurchaseUiAction.OnSubmitClicked)
                             }

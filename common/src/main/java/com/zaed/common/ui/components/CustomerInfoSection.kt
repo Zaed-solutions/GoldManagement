@@ -30,11 +30,12 @@ fun CustomerInfoSection(
     modifier: Modifier = Modifier,
     customerName: String,
     customerDebt: Double ,
+    isPurchase: Boolean = false,
     onCustomerClicked: () -> Unit
 ) {
     TitledSection(
         modifier = modifier,
-        title = stringResource(R.string.customer)
+        title = if (isPurchase) stringResource(R.string.supplier) else stringResource(R.string.customer)
     ) {
         Surface(
             modifier = Modifier.fillMaxWidth(),

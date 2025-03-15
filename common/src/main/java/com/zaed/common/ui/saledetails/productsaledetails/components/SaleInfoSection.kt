@@ -34,11 +34,12 @@ fun SaleInfoSection(
     totalPrice: Double,
     paymentStatus: PaymentStatus = PaymentStatus.PAID,
     receiptStatus: ReceiptStatus? = null,
-    onRequestReceipt: () -> Unit = {}
+    onRequestReceipt: () -> Unit = {},
+    isPurchase: Boolean = false
 ) {
     TitledSection(
         modifier = modifier,
-        title = stringResource(R.string.sale_information),
+        title =if (isPurchase) stringResource(R.string.purchase_information) else stringResource(R.string.sale_information),
     ) {
         Column {
             DetailRow(

@@ -17,7 +17,7 @@ data class AddPurchaseUiState(
     val allSuppliers: List<Supplier> = emptyList(),
     val currentUser: User = User(),
     val totalPaid: Double = 0.0,
-    val isAdmin: Boolean = false,
+    val isAdmin: Boolean = true/*todo*/,
     val payments: List<Payment> = emptyList(),
     val categories: List<Category> = emptyList(),
 )

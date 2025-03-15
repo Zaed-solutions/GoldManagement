@@ -38,6 +38,7 @@ fun SaleSummaryContent(
     isKaratUnSpecified : Boolean = false,
     totalPaid: Double,
     onCreate: () -> Unit = {},
+    isPurchase : Boolean = false,
     isLoading: Boolean = false
 ) {
 
@@ -49,7 +50,7 @@ fun SaleSummaryContent(
         horizontalAlignment = Alignment.Start
     ) {
         Text(
-            text = stringResource(R.string.sale_summary),
+            text = if(isPurchase) stringResource(R.string.purchase_summary) else stringResource(R.string.sale_summary),
             style = MaterialTheme.typography.headlineMedium,
         )
         DetailRow(
