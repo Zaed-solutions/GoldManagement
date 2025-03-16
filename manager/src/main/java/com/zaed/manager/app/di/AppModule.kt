@@ -9,6 +9,7 @@ import com.zaed.manager.ui.salescheques.SalesChequesScreenViewModel
 import com.zaed.manager.ui.storedetails.StoreDetailsViewModel
 import com.zaed.manager.ui.stores.StoresViewModel
 import com.zaed.manager.ui.storessales.StoresSalesViewModel
+import com.zaed.manager.ui.transactions.TransactionsViewModel
 import com.zaed.manager.ui.usermanagement.UserManagementViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -24,4 +25,5 @@ val appModule = module {
     viewModelOf(::LossesViewModel)
     viewModelOf(::ManufacturerOrdersViewModel)
     viewModelOf(::SalesChequesScreenViewModel)
+    viewModelOf(::TransactionsViewModel)
 }

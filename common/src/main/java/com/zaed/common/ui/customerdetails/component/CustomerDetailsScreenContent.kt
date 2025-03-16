@@ -55,7 +55,7 @@ import com.zaed.common.ui.components.BalanceSection
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
 import com.zaed.common.ui.components.PaymentTypes
 import com.zaed.common.ui.components.PaymentsList
-import com.zaed.common.ui.components.SalesList
+import com.zaed.common.ui.components.TransactionsList
 import com.zaed.common.ui.components.SaveBankTransferPaymentBottomSheetContent
 import com.zaed.common.ui.components.SaveCashPaymentBottomSheetContent
 import com.zaed.common.ui.components.SaveChequePaymentBottomSheetContent
@@ -206,10 +206,10 @@ fun CustomerDetailsScreenContent(
                     }
 
                     1 -> {
-                        SalesList(listState = listState,
+                        TransactionsList(listState = listState,
                             isLoading = uiState.loading,
-                            sales = uiState.sales,
-                            onDeleteSale = { saleId, isProduct ->
+                            transactions = uiState.sales,
+                            onDeleteTransaction = { saleId, isProduct ->
                                 onAction(
                                     if (isProduct) {
                                         CustomerDetailsUiAction.OnDeleteProductSale(saleId)
@@ -218,7 +218,7 @@ fun CustomerDetailsScreenContent(
                                     }
                                 )
                             },
-                            onEditSale = { saleId, isProduct ->
+                            onEditTransaction = { saleId, isProduct ->
                                 onAction(
                                     if (isProduct) {
                                         CustomerDetailsUiAction.OnEditProductSale(saleId)
@@ -227,7 +227,7 @@ fun CustomerDetailsScreenContent(
                                     }
                                 )
                             },
-                            onSaleClicked = { saleId, isProduct ->
+                            onTransactionClicked = { saleId, isProduct ->
                                 onAction(
                                     if (isProduct) {
                                         CustomerDetailsUiAction.OnProductSaleClicked(saleId)

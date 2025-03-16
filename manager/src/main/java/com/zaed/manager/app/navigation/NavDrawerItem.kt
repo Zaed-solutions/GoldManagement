@@ -75,4 +75,9 @@ enum class NavDrawerItem(
         icon = R.drawable.ic_cart,
         route = Route.AddPurchaseRoute()
     ),
+    TRANSACTIONS(
+        title = R.string.transactions,
+        icon = R.drawable.ic_store,
+        route = Route.TransactionsRoute
+    )
 }

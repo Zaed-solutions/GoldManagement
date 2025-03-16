@@ -98,9 +98,9 @@ fun DatedSalesItem(
                         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                     ) {
                         datedSale.transactions.forEach { sale ->
-                            SaleItem(
+                            TransactionItem(
                                 transaction = sale,
-                                onSaleClicked = {
+                                onTransactionClicked = {
                                     when(sale){
                                         is WholesaleProductTransaction -> onSaleClicked(sale.id,sale::class.qualifiedName?:"")
                                         is WholesaleGoldTransaction -> onSaleClicked(sale.id,sale::class.qualifiedName?:"")
