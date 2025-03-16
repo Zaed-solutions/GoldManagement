@@ -59,6 +59,7 @@ import com.zaed.common.ui.components.SaveBankTransferPaymentBottomSheetContent
 import com.zaed.common.ui.components.SaveCashPaymentBottomSheetContent
 import com.zaed.common.ui.components.SaveChequePaymentBottomSheetContent
 import com.zaed.common.ui.components.SaveFuturePaymentBottomSheetContent
+import com.zaed.common.ui.components.SearchBar
 import com.zaed.common.ui.components.TransactionsList
 import com.zaed.common.ui.suppliers.components.SaveSupplierBottomSheet
 import com.zaed.common.ui.util.toMoneyFormat
@@ -94,7 +95,7 @@ fun SupplierDetailsScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SupplierDetailsScreenContent(
+private fun SupplierDetailsScreenContent(
     modifier: Modifier = Modifier,
     state: SupplierDetailsUiState,
     onAction: (SupplierDetailsUiAction) -> Unit
@@ -208,21 +209,30 @@ fun SupplierDetailsScreenContent(
             ) { value ->
                 when (value) {
                     SupplierDetailsTabs.PURCHASES.ordinal -> {
-                        TransactionsList(
-                            isLoading = false,
-                            transactions = state.purchases,
-                            onTransactionClicked = { purchaseId, _ ->
-                                onAction(SupplierDetailsUiAction.OnPurchaseClicked(purchaseId))
-                            },
-                            onEditTransaction = { purchaseId, _ ->
-                                onAction(SupplierDetailsUiAction.OnEditPurchase(purchaseId))
-                            },
-                            onDeleteTransaction = { purchaseId, _ ->
-                                isPurchase = true
-                                selectedPurchaseId = purchaseId
-                                isConfirmDeletePaymentSheetVisible = true
-                            }
-                        )
+                        Column {
+                            SearchBar(
+                                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                                query = state.purchasesSearchQuery,
+                                onQueryChanged = {
+                                    onAction(SupplierDetailsUiAction.UpdatePurchasesSearchQuery(it))
+                                },
+                            )
+                            TransactionsList(
+                                isLoading = false,
+                                transactions = state.allPurchases,
+                                onTransactionClicked = { purchaseId, _ ->
+                                    onAction(SupplierDetailsUiAction.OnPurchaseClicked(purchaseId))
+                                },
+                                onEditTransaction = { purchaseId, _ ->
+                                    onAction(SupplierDetailsUiAction.OnEditPurchase(purchaseId))
+                                },
+                                onDeleteTransaction = { purchaseId, _ ->
+                                    isPurchase = true
+                                    selectedPurchaseId = purchaseId
+                                    isConfirmDeletePaymentSheetVisible = true
+                                }
+                            )
+                        }
                     }
 
                     SupplierDetailsTabs.PAYMENTS.ordinal -> {
@@ -449,8 +459,9 @@ fun SupplierDetailsScreenContent(
                     )
                 }
             }
-            ConfirmDeleteBottomSheet(visible = isConfirmDeletePaymentSheetVisible,
-                label = selectedPayment.amount.toMoneyFormat(2),
+            ConfirmDeleteBottomSheet(
+                visible = isConfirmDeletePaymentSheetVisible,
+                label = if(isPurchase) stringResource(R.string.purchase) else stringResource(R.string.payment),
                 onDismiss = {
                     isConfirmDeletePaymentSheetVisible = false
                 },
@@ -468,7 +479,7 @@ fun SupplierDetailsScreenContent(
     }
 }
 
-enum class SupplierDetailsTabs(val titleRes: Int) {
+private enum class SupplierDetailsTabs(val titleRes: Int) {
     PURCHASES(R.string.purchases),
     PAYMENTS(R.string.payments),
 }

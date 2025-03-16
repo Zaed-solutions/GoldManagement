@@ -3,4 +3,5 @@
     <string name="sales_cheques">Sales Cheques</string>
     <string name="manager_cheques">Manager Cheques</string>
     <string name="difference">Difference</string>
+    <string name="transactions">Transactions</string>
 </resources>

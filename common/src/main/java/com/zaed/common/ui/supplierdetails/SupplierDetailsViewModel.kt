@@ -75,11 +75,26 @@ class SupplierDetailsViewModel(
             ).collect{ result ->
                 result.onSuccess { data ->
                     _uiState.update { oldState ->
-                        oldState.copy(purchases = data)
+                        oldState.copy(allPurchases = data)
                     }
+                    filterPurchases()
                 }.onFailure { e->
                     Log.e(TAG, "fetchPurchases: ${e.message}", e)
                 }
+            }
+        }
+    }
+
+    private fun filterPurchases() {
+        viewModelScope.launch (Dispatchers.Default){
+            val query = uiState.value.purchasesSearchQuery
+            val filteredPurchases = uiState.value.allPurchases.filter {
+                it.receiptNumber.contains(query)
+            }
+            _uiState.update {
+                it.copy(
+                    filteredPurchases = filteredPurchases
+                )
             }
         }
     }
@@ -134,13 +149,25 @@ class SupplierDetailsViewModel(
                 action.supplier
             )
             is SupplierDetailsUiAction.DeletePurchase -> deletePurchase(action.purchaseId)
+            is SupplierDetailsUiAction.UpdatePurchasesSearchQuery -> updatePurchasesSearchQuery(action.query)
             else -> Unit
+        }
+    }
+
+    private fun updatePurchasesSearchQuery(query: String) {
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    purchasesSearchQuery = query
+                )
+            }
+            filterPurchases()
         }
     }
 
     private fun deletePurchase(purchaseId: String) {
         viewModelScope.launch (Dispatchers.IO){
-            val purchase = uiState.value.purchases.find { it.id == purchaseId }?: return@launch
+            val purchase = uiState.value.allPurchases.find { it.id == purchaseId }?: return@launch
             val currentEmployee = uiState.value.currentUser
             updatePurchaseUseCase(
                 UpdatePurchaseRequest(

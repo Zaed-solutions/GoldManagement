@@ -118,6 +118,7 @@ import com.zaed.common.domain.purchase.FetchSupplierPurchasesUseCase
 import com.zaed.common.domain.sale.AddGoldSaleUseCase
 import com.zaed.common.domain.sale.AddIngotTransactionUseCase
 import com.zaed.common.domain.purchase.AddPurchaseUseCase
+import com.zaed.common.domain.purchase.FetchPurchasesUseCase
 import com.zaed.common.domain.sale.AddStoreSaleUseCase
 import com.zaed.common.domain.sale.AddWholesaleProductSaleUseCase
 import com.zaed.common.domain.sale.ConvertIngotTransactionsToDatedUseCase
@@ -267,6 +268,7 @@ val useCaseModule = module {
     singleOf(::UpdatePurchaseUseCase)
     singleOf(::AddCategoryUseCase)
     singleOf(::FetchSupplierPurchasesUseCase)
+    singleOf(::FetchPurchasesUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }

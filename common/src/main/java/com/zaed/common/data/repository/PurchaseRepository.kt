@@ -11,4 +11,5 @@ interface PurchaseRepository {
     suspend fun addPurchase(request: AddPurchaseRequest): Result<String>
     suspend fun updatePurchase(request: UpdatePurchaseRequest): Result<String>
     fun fetchSupplierPurchases(request: FetchSupplierPurchasesRequest): Flow<Result<List<Purchase>>>
+    fun fetchPurchases(): Flow<Result<List<Purchase>>>
 }

@@ -25,4 +25,8 @@ class PurchaseRepositoryImpl(
     override fun fetchSupplierPurchases(request: FetchSupplierPurchasesRequest): Flow<Result<List<Purchase>>> {
         return purchaseRemoteDataSource.fetchSupplierPurchases(request)
     }
+
+    override fun fetchPurchases(): Flow<Result<List<Purchase>>> {
+        return purchaseRemoteDataSource.fetchPurchases()
+    }
 }

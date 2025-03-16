@@ -8,7 +8,9 @@ import com.zaed.common.data.model.supplier.Supplier
 data class SupplierDetailsUiState(
     val supplier: Supplier = Supplier(),
     val credit: Double = 0.0,
+    val purchasesSearchQuery: String = "",
+    val allPurchases: List<Purchase> = emptyList(),
+    val filteredPurchases: List<Purchase> = emptyList(),
     val payments: List<Payment> = emptyList(),
-    val purchases: List<Purchase> = emptyList(),
     val currentUser: User = User(),
 )

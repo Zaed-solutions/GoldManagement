@@ -82,4 +82,23 @@ class PurchaseRemoteDataSourceImpl(
         }
         awaitClose {  }
     }
+
+    override fun fetchPurchases(): Flow<Result<List<Purchase>>> = callbackFlow {
+        try {
+            purchaseCollection
+                .whereEqualTo("deleted", false)
+                .addSnapshotListener{ value, error ->
+                    if (error != null){
+                        trySend(Result.failure(error))
+                        return@addSnapshotListener
+                    }
+                    val purchases = value?.toObjects(Purchase::class.java)?: emptyList()
+                    trySend(Result.success(purchases))
+                }
+        } catch (e: Exception){
+            crashlytics.recordException(e)
+            trySend(Result.failure(e))
+        }
+        awaitClose {}
+    }
 }

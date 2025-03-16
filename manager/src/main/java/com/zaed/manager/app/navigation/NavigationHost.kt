@@ -30,6 +30,7 @@ import com.zaed.manager.ui.salescheques.SalesChequesScreen
 import com.zaed.manager.ui.storedetails.StoreDetailsScreen
 import com.zaed.manager.ui.stores.StoresScreen
 import com.zaed.manager.ui.storessales.StoresSalesScreen
+import com.zaed.manager.ui.transactions.TransactionsScreen
 import com.zaed.manager.ui.usermanagement.UserManagementScreen
 
 @Composable
@@ -332,6 +333,23 @@ fun NavigationHost(
                 },
                 onNavigateToPurchaseDetails = { purchaseId ->
                     navController.navigate(Route.PurchaseDetailsRoute(purchaseId))
+                }
+            )
+        }
+        composable<Route.TransactionsRoute> {
+            TransactionsScreen(
+                onNavigateToEditPurchase = {
+                    navController.navigate(Route.AddPurchaseRoute(it))
+                },
+                onNavigateToEditSale = {
+                    navController.navigate(Route.AddGoldSaleRoute(it))
+                },
+                onNavigateToPurchaseDetails = {
+                    navController.navigate(Route.PurchaseDetailsRoute(it))
+                },
+                onShowNavDrawer = onShowNavDrawer,
+                onNavigateToSaleDetails = {
+                    navController.navigate(Route.GoldSaleDetailsRoute(it))
                 }
             )
         }
