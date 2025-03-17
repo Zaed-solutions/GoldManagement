@@ -148,6 +148,7 @@ private fun AddSaleScreenContent(
                                     pagerState.animateScrollToPage(pagerState.currentPage - 1)
                                 }
                             },
+                            selectedAccount = state.selectedCustomer,
                             onNext = {
                                 scope.launch {
                                     pagerState.animateScrollToPage(pagerState.currentPage + 1)

@@ -59,6 +59,8 @@ import com.zaed.common.util.getAsyncEscPosPrinter
 import kotlinx.coroutines.launch
 import org.checkerframework.checker.units.qual.s
 
+private val TAG = "PrinterBottomSheet"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("MissingPermission")
 @Composable
@@ -90,6 +92,7 @@ fun PrinterBottomSheet(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
+            Log.d(TAG, "PrinterBottomSheet: bluetooth permission granted")
             checkNextPermissionRef()
         }
     }
@@ -98,6 +101,7 @@ fun PrinterBottomSheet(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
+            Log.d(TAG, "PrinterBottomSheet: bluetooth admin permission granted")
             checkNextPermissionRef()
         }
     }
@@ -106,6 +110,7 @@ fun PrinterBottomSheet(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
+            Log.d(TAG, "PrinterBottomSheet: bluetooth connect permission granted")
             checkNextPermissionRef()
         }
     }
@@ -114,6 +119,7 @@ fun PrinterBottomSheet(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
+            Log.d(TAG, "PrinterBottomSheet: bluetooth scan permission granted")
             permissionsGranted = true
         }
     }
@@ -126,6 +132,7 @@ fun PrinterBottomSheet(
                         context,
                         Manifest.permission.BLUETOOTH
                     ) != PackageManager.PERMISSION_GRANTED -> {
+                Log.d(TAG, "PrinterBottomSheet: bluetooth permission not granted")
                 requestBluetoothPermission.launch(Manifest.permission.BLUETOOTH)
             }
 
@@ -134,6 +141,7 @@ fun PrinterBottomSheet(
                         context,
                         Manifest.permission.BLUETOOTH_ADMIN
                     ) != PackageManager.PERMISSION_GRANTED -> {
+                Log.d(TAG, "PrinterBottomSheet: bluetooth admin permission not granted")
                 requestBluetoothAdminPermission.launch(Manifest.permission.BLUETOOTH_ADMIN)
             }
 
@@ -142,6 +150,7 @@ fun PrinterBottomSheet(
                         context,
                         Manifest.permission.BLUETOOTH_CONNECT
                     ) != PackageManager.PERMISSION_GRANTED -> {
+                Log.d(TAG, "PrinterBottomSheet: bluetooth connect permission not granted")
                 requestBluetoothConnectPermission.launch(Manifest.permission.BLUETOOTH_CONNECT)
             }
 
@@ -150,6 +159,7 @@ fun PrinterBottomSheet(
                         context,
                         Manifest.permission.BLUETOOTH_SCAN
                     ) != PackageManager.PERMISSION_GRANTED -> {
+                Log.d(TAG, "PrinterBottomSheet: bluetooth scan permission not granted")
                 requestBluetoothScanPermission.launch(Manifest.permission.BLUETOOTH_SCAN)
             }
 
@@ -162,6 +172,7 @@ fun PrinterBottomSheet(
     // Function to browse Bluetooth devices
     fun browseBluetoothDevices() {
         if (permissionsGranted) {
+            Log.d("PrinterBottomSheet", "browseBluetoothDevices: permissions granted")
             val bluetoothDevicesList = BluetoothPrintersConnections().list
 
             if (bluetoothDevicesList != null && bluetoothDevicesList.isNotEmpty()) {
@@ -175,6 +186,7 @@ fun PrinterBottomSheet(
                 ).show()
             }
         } else {
+            Log.d("PrinterBottomSheet", "browseBluetoothDevices: permission not granted")
             checkNextPermissionRef()
         }
     }
@@ -374,9 +386,12 @@ fun PrinterBottomSheet(
                             )
 
                             Button(
-                                onClick = { browseBluetoothDevices() },
+                                onClick = {
+
+                                    browseBluetoothDevices() },
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .padding(top = 24.dp)
                                     .heightIn(min = 48.dp)
                             ) {
                                 Text(
