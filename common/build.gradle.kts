@@ -78,6 +78,7 @@ dependencies {
         "dir" to "C:\\Users\\moham\\AndroidStudioProjects\\GoldManagement\\libs",
         "include" to listOf("*.aar", "*.jar"),
     )))
+    implementation(project(":printer"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

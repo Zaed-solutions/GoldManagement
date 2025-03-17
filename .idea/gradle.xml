@@ -15,6 +15,7 @@
             <option value="$PROJECT_DIR$/common" />
             <option value="$PROJECT_DIR$/distributor" />
             <option value="$PROJECT_DIR$/manager" />
+            <option value="$PROJECT_DIR$/printer" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />
