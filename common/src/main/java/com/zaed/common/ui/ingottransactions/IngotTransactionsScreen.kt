@@ -126,6 +126,7 @@ fun IngotTransactionsScreenContent(
                         )
                     )
                 },
+                onCustomRangeSelected = {TODO()},
                 content = {
                     DatedIngotTransactionsList(
                         isLoading = state.isLoading,

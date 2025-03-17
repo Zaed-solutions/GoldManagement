@@ -15,6 +15,7 @@ enum class DateFormat(val pattern: String, @StringRes val labelRes: Int){
     DATE("d MMM, yyyy", R.string.daily),
     MONTH_YEAR("MMM, yyyy", R.string.monthly),
     YEAR("yyyy", R.string.yearly),
+    CUSTOM_RANGE("", R.string.custom_range),
     TIME("hh:mm a", 0),
     DATE_TIME("d MMM, yyyy, hh:mm a", 0),
     SHORT_DATE_TIME("d MMM, hh:mm a",0)

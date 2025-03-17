@@ -12,6 +12,7 @@ import com.zaed.common.R
 import com.zaed.common.data.model.sale.DatedSales
 import com.zaed.common.data.model.sale.Transaction
 import com.zaed.common.ui.util.DateFormat
+import java.util.Date
 
 @Composable
 fun DatedSalesWithSearchSection(
@@ -21,6 +22,7 @@ fun DatedSalesWithSearchSection(
     onQueryChanged: (String) -> Unit,
     selectedFilter: DateFormat,
     onFilterClicked: (DateFormat) -> Unit,
+    onCustomRangeSelected: (Pair<Date?, Date?>) -> Unit,
     datedSales: List<DatedSales>,
     onSaleClicked: (String,String) -> Unit,
     isEditable: Boolean = false,
@@ -41,7 +43,8 @@ fun DatedSalesWithSearchSection(
         DatedListWithFilter(
             modifier = modifier,
             selectedFilter = selectedFilter,
-            onFilterClicked = onFilterClicked
+            onFilterClicked = onFilterClicked,
+            onCustomRangeSelected = onCustomRangeSelected
         ) {
             DatedSalesList(
                 isLoading = isLoading,

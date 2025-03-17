@@ -204,6 +204,7 @@ fun StoreDetailsScreenContent(
                 when (page) {
                     StoreDetailsTab.SALES.ordinal -> {
                         DatedSalesWithSearchSection(
+                            onCustomRangeSelected = {TODO()},
                             modifier = Modifier.fillMaxSize(),
                             isLoading = state.isLoading,
                             query = state.salesQuery,
@@ -252,6 +253,7 @@ fun StoreDetailsScreenContent(
                                     )
                                 )
                             },
+                            onCustomRangeSelected = {TODO()},
                             content = {
                                 DatedLossesList(
                                     isLoading = state.isLoading,

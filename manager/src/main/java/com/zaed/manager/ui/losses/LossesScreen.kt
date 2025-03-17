@@ -184,6 +184,7 @@ fun LossesScreenContent(
                                     )
                                 )
                             },
+                            onCustomRangeSelected = {TODO()},
                             content = {
                                 DatedLossesList(
                                     isLoading = state.isLoading,
@@ -205,6 +206,7 @@ fun LossesScreenContent(
 
                     1 -> {
                         DatedListWithFilter(
+                            onCustomRangeSelected = {TODO()},
                             selectedFilter = state.selectedPersonalExpensesFilter,
                             onFilterClicked = {
                                 onAction(
