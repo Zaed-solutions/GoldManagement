@@ -37,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -47,6 +48,7 @@ import com.zaed.common.ui.saledetails.cashiersaledetails.SaleDetailsUiState
 import com.zaed.common.ui.saledetails.productsaledetails.SaleDetailsUiAction
 import com.zaed.common.ui.components.MultiOptionSwitch
 import com.zaed.common.ui.components.PhoneNumberTextField
+import com.zaed.common.ui.components.PrinterBottomSheet
 import com.zaed.common.ui.components.TextInputTextField
 import com.zaed.common.ui.util.isValidPhoneNumber
 import com.zaed.common.ui.util.toMoneyFormat
@@ -58,6 +60,8 @@ fun SaleDetailsPreview(
     onAction: (SaleDetailsUiAction) -> Unit
 ) {
     var isShareBottomSheetIsVisible by remember { mutableStateOf(false) }
+    var isPrinterSheetVisible by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     val sale = uiState.storeSale
     Column(
         modifier = Modifier
@@ -390,7 +394,7 @@ fun SaleDetailsPreview(
             OutlinedButton(
                 shape = RoundedCornerShape(8.dp),
                 onClick = {
-                    onAction(SaleDetailsUiAction.Print(sale))
+                    isPrinterSheetVisible = true
                 },
                 modifier = Modifier.weight(1f)
             ) {
@@ -402,6 +406,11 @@ fun SaleDetailsPreview(
                 )
             }
         }
+        PrinterBottomSheet(
+            isVisible = isPrinterSheetVisible,
+            onDismiss = { isPrinterSheetVisible = false },
+            sale = uiState.storeSale
+        )
         AnimatedVisibility(isShareBottomSheetIsVisible) {
             ModalBottomSheet(
                 sheetState = rememberModalBottomSheetState(

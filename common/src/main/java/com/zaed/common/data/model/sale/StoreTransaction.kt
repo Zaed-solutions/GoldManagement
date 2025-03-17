@@ -1,5 +1,6 @@
 package com.zaed.common.data.model.sale
 
+import android.content.Context
 import com.zaed.common.data.model.authentication.ChangeLog
 import kotlinx.serialization.Transient
 import java.util.Date
@@ -36,4 +37,10 @@ data class StoreTransaction(
     @Transient
     override val totalAmount
         get() = products.sumOf { it.totalPriceAfterDiscount }
+    @Transient
+    val totalAmountBeforeDiscount
+        get() = products.sumOf { it.totalPriceBeforeDiscount }
+    @Transient
+    val totalDiscount
+        get() = totalAmountBeforeDiscount - totalAmount
 }
