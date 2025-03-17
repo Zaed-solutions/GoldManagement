@@ -28,7 +28,6 @@ import com.zaed.common.R
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.Transaction
 import com.zaed.common.data.model.sale.StoreTransaction
-import com.zaed.common.data.model.sale.WholesaleGoldTransaction
 import com.zaed.common.ui.theme.GoldManagementTheme
 import com.zaed.common.ui.theme.GoldenCustomColors
 import com.zaed.common.ui.util.DateFormat

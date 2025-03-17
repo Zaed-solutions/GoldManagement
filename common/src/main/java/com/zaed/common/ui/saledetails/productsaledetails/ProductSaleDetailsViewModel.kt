@@ -9,7 +9,7 @@ import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
 import com.zaed.common.data.model.sale.ReceiptStatus
 import com.zaed.common.data.model.sale.request.DeleteWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleProductSaleRequest
-import com.zaed.common.data.model.sale.request.UpdateWholesaleProductSaleRequest
+import com.zaed.common.data.model.sale.request.UpdateWholesaleRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
 import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
@@ -115,7 +115,7 @@ class ProductSaleDetailsViewModel(
                 )
             }
             updateWholesaleProductSaleUseCase(
-                UpdateWholesaleProductSaleRequest(
+                UpdateWholesaleRequest(
                     sale = sale.copy(logs = logs),
                     payments = uiState.value.cashPayments,
                     employeeName = uiState.value.currentUser.fullName,

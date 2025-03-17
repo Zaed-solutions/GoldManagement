@@ -3,7 +3,7 @@ package com.zaed.distributor.ui.sales
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zaed.common.data.model.sale.request.DeleteWholesaleGoldSaleRequest
+import com.zaed.common.data.model.sale.request.DeleteWholesaleRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.FetchDistributorSalesRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
@@ -116,7 +116,7 @@ class SalesViewModel(
     private fun deleteGoldSale(saleId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             deleteGoldSaleUseCase(
-                DeleteWholesaleGoldSaleRequest(
+                DeleteWholesaleRequest(
                     saleId = saleId,
                     distributorId = uiState.value.currentUser.id,
                     distributorName = uiState.value.currentUser.fullName

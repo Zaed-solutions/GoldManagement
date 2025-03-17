@@ -25,7 +25,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.sale.Product
-import com.zaed.common.data.model.sale.WholesaleGoldTransaction
 import com.zaed.common.ui.components.ProductsList
 import com.zaed.common.ui.util.toMoneyFormat
 
@@ -35,7 +34,6 @@ fun SelectGoldContent(
     modifier: Modifier = Modifier,
     sale: WholesaleGoldTransaction,
     onAddGold: (Product) -> Unit,
-    onEditGold: (Product) -> Unit,
     onRemoveGold: (id: String) -> Unit,
     onNext: () -> Unit,
 ) {

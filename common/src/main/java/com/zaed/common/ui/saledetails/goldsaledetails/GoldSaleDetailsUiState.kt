@@ -5,7 +5,6 @@ import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentStatus
-import com.zaed.common.data.model.sale.WholesaleGoldTransaction
 
 data class GoldSaleDetailsUiState(
     val isLoading: Boolean = false,

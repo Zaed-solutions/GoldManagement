@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.sp
 import com.zaed.common.data.model.sale.DatedSales
 import com.zaed.common.data.model.sale.Transaction
 import com.zaed.common.data.model.sale.StoreTransaction
-import com.zaed.common.data.model.sale.WholesaleGoldTransaction
 import com.zaed.common.data.model.sale.WholesaleProductTransaction
 import com.zaed.common.ui.util.formatMoney
 

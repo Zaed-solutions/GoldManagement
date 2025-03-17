@@ -123,9 +123,6 @@ private fun AddGoldSaleScreenContent(
                             onRemoveGold = {
                                 onAction(AddGoldSaleUiAction.OnRemoveProduct(it))
                             },
-                            onEditGold = {
-                                onAction(AddGoldSaleUiAction.OnEditProduct(it))
-                            },
                             onNext = {
                                 if (pagerState.currentPage == 3) {
                                     onAction(AddGoldSaleUiAction.OnSubmitClicked)

@@ -14,7 +14,7 @@ import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.request.AddWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleProductSaleRequest
-import com.zaed.common.data.model.sale.request.UpdateWholesaleProductSaleRequest
+import com.zaed.common.data.model.sale.request.UpdateWholesaleRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.category.FetchAllCategoriesUseCase
 import com.zaed.common.domain.customer.FetchWholesaleCustomersByNameUseCase
@@ -198,7 +198,7 @@ class AddProductSaleViewModel(
                 }
             }
             updateProductSaleUseCase(
-                UpdateWholesaleProductSaleRequest(
+                UpdateWholesaleRequest(
                     sale = uiState.value.sale,
                     payments = uiState.value.payments,
                     employeeName = uiState.value.currentUser.fullName,

@@ -7,9 +7,9 @@ import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
 import com.zaed.common.data.model.sale.ReceiptStatus
-import com.zaed.common.data.model.sale.request.DeleteWholesaleGoldSaleRequest
+import com.zaed.common.data.model.sale.request.DeleteWholesaleRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleGoldSaleRequest
-import com.zaed.common.data.model.sale.request.UpdateWholesaleGoldSaleRequest
+import com.zaed.common.data.model.sale.request.UpdateWholesaleRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
 import com.zaed.common.domain.payment.FetchGoldPaymentsByIdsUseCase
@@ -122,7 +122,7 @@ class GoldSaleDetailsViewModel(
                 )
             }
             updateWholesaleGoldSaleUseCase(
-                UpdateWholesaleGoldSaleRequest(
+                UpdateWholesaleRequest(
                     sale = sale.copy(logs = logs),
                     payments = uiState.value.payments,
                     employeeName = uiState.value.currentUser.fullName,
@@ -142,7 +142,7 @@ class GoldSaleDetailsViewModel(
         Log.d("zarea2", "deleteSale: ")
         viewModelScope.launch (Dispatchers.IO){
             deleteWholesaleGoldSaleUseCase(
-                DeleteWholesaleGoldSaleRequest(
+                DeleteWholesaleRequest(
                     saleId = uiState.value.sale.id
                 )
             ).onSuccess {

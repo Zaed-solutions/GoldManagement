@@ -3,7 +3,6 @@ package com.zaed.common.ui.purchaseDetails
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.customer.Account
 import com.zaed.common.data.model.payment.Payment
-import com.zaed.common.data.model.purchase.Purchase
 import com.zaed.common.data.model.supplier.Supplier
 
 data class PurchaseDetailsUiState(

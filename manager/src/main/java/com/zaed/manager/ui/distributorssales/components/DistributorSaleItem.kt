@@ -20,7 +20,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.sale.WholesaleGoldTransaction
 import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.manager.ui.theme.GoldenCustomColors
 import com.zaed.common.ui.util.DateFormat

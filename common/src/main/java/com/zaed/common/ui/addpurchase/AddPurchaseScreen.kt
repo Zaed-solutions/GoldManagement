@@ -166,23 +166,18 @@ private fun AddPurchaseScreenContent(
                         when (selectedProductType) {
                             ProductType.GOLD -> {
                                 SelectGoldContent(
-                                    sale = state.sale,
+                                    sale = state.purchase as WholesaleGoldTransaction,
                                     onAddGold = {
-                                        onAction(AddGoldSaleUiAction.OnAddProduct(it))
+                                        onAction(AddPurchaseUiAction.OnAddProduct(it))
                                     },
-                                    onRemoveGold = {
-                                        onAction(AddGoldSaleUiAction.OnRemoveProduct(it))
-                                    },
-                                    onEditGold = {
-                                        onAction(AddGoldSaleUiAction.OnEditProduct(it))
+                                    onRemoveGold = {productId->
+                                        state.purchase.products.firstOrNull { productId == it.id }?.let {
+                                            onAction(AddPurchaseUiAction.OnDeleteProduct(it))
+                                        }
                                     },
                                     onNext = {
-                                        if (pagerState.currentPage == 3) {
-                                            onAction(AddGoldSaleUiAction.OnSubmitClicked)
-                                        } else {
-                                            scope.launch {
-                                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                                            }
+                                        scope.launch {
+                                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
                                         }
                                     },
                                 )

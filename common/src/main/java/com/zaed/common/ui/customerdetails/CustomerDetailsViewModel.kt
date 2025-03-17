@@ -10,7 +10,7 @@ import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.DeletePaymentRequest
 import com.zaed.common.data.model.payment.request.EditPaymentRequest
 import com.zaed.common.data.model.payment.request.FetchCustomerPaymentsRequest
-import com.zaed.common.data.model.sale.request.DeleteWholesaleGoldSaleRequest
+import com.zaed.common.data.model.sale.request.DeleteWholesaleRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleProductSaleRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.customer.FetchWholesaleCustomerSalesUseCase
@@ -125,7 +125,7 @@ class CustomerDetailsViewModel(
     private fun deleteGoldSale(saleId: String) {
         viewModelScope.launch (Dispatchers.IO){
             deleteGoldSaleUseCase(
-                DeleteWholesaleGoldSaleRequest(
+                DeleteWholesaleRequest(
                     saleId = saleId,
                     distributorId = uiState.value.currentDistributor.id,
                     distributorName = uiState.value.currentDistributor.fullName

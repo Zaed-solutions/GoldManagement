@@ -4,15 +4,12 @@ import android.util.Log
 import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
 import com.zaed.common.data.model.sale.IngotTransaction
 import com.zaed.common.data.model.sale.StoreTransaction
-import com.zaed.common.data.model.sale.WholesaleGoldTransaction
-import com.zaed.common.data.model.sale.WholesaleProductTransaction
 import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.data.model.sale.request.AddIngotTransactionRequest
 import com.zaed.common.data.model.sale.request.AddStoreSaleRequest
-import com.zaed.common.data.model.sale.request.AddWholesaleGoldSaleRequest
-import com.zaed.common.data.model.sale.request.AddWholesaleProductSaleRequest
+import com.zaed.common.data.model.sale.request.AddWholesaleRequest
 import com.zaed.common.data.model.sale.request.DeleteStoreSaleRequest
-import com.zaed.common.data.model.sale.request.DeleteWholesaleGoldSaleRequest
+import com.zaed.common.data.model.sale.request.DeleteWholesaleRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.FetchDistributorSalesRequest
 import com.zaed.common.data.model.sale.request.FetchIngotTransactionsRequest
@@ -21,8 +18,7 @@ import com.zaed.common.data.model.sale.request.FetchWholesaleGoldSaleRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.UpdateIngotTransactionRequest
 import com.zaed.common.data.model.sale.request.UpdateStoreSaleRequest
-import com.zaed.common.data.model.sale.request.UpdateWholesaleGoldSaleRequest
-import com.zaed.common.data.model.sale.request.UpdateWholesaleProductSaleRequest
+import com.zaed.common.data.model.sale.request.UpdateWholesaleRequest
 import com.zaed.common.data.source.remote.SaleRemoteSource
 import kotlinx.coroutines.flow.Flow
 
@@ -54,32 +50,32 @@ class SaleRepositoryImpl(
         return saleRemoteSource.deleteWholesaleProductSale(request)
     }
 
-    override suspend fun deleteWholesaleGoldSale(request: DeleteWholesaleGoldSaleRequest): Result<Unit> {
+    override suspend fun deleteWholesaleGoldSale(request: DeleteWholesaleRequest): Result<Unit> {
         return saleRemoteSource.deleteWholesaleGoldSale(request)
     }
 
-    override suspend fun fetchWholesaleProductSale(request: FetchWholesaleProductSaleRequest): Result<WholesaleProductTransaction> {
+    override suspend fun fetchWholesaleProductSale(request: FetchWholesaleProductSaleRequest): Result<WholesaleTransaction> {
         return saleRemoteSource.fetchWholesaleProductSale(request)
     }
 
-    override suspend fun fetchWholesaleGoldSale(request: FetchWholesaleGoldSaleRequest): Result<WholesaleGoldTransaction> {
+    override suspend fun fetchWholesaleGoldSale(request: FetchWholesaleGoldSaleRequest): Result<WholesaleTransaction> {
         return saleRemoteSource.fetchWholesaleGoldSale(request)
     }
 
-    override suspend fun updateWholesaleGoldSale(request: UpdateWholesaleGoldSaleRequest): Result<Unit> {
+    override suspend fun updateWholesaleGoldSale(request: UpdateWholesaleRequest): Result<Unit> {
         return saleRemoteSource.updateWholesaleGoldSale(request)
     }
 
-    override suspend fun addWholesaleProductSale(request: AddWholesaleProductSaleRequest): Result<String> {
+    override suspend fun addWholesaleProductSale(request: AddWholesaleRequest): Result<String> {
         Log.d("add_sale", "invoke repo: $request")
         return saleRemoteSource.addWholesaleProductSale(request)
     }
 
-    override suspend fun addGoldSale(request: AddWholesaleGoldSaleRequest): Result<String> {
+    override suspend fun addGoldSale(request: AddWholesaleRequest): Result<String> {
         return saleRemoteSource.addGoldSale(request)
     }
 
-    override suspend fun updateWholesaleProductSale(request: UpdateWholesaleProductSaleRequest): Result<Unit> {
+    override suspend fun updateWholesaleProductSale(request: UpdateWholesaleRequest): Result<Unit> {
         return saleRemoteSource.updateWholesaleProductSale(request)
     }
 

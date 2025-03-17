@@ -1,6 +1,6 @@
 package com.zaed.common.data.repository
 
-import com.zaed.common.data.model.purchase.Purchase
+import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.data.model.sale.request.AddPurchaseRequest
 import com.zaed.common.data.model.sale.request.UpdatePurchaseRequest
 import com.zaed.common.data.source.remote.PurchaseRemoteDataSource
@@ -8,7 +8,7 @@ import com.zaed.common.data.source.remote.PurchaseRemoteDataSource
 class PurchaseRepositoryImpl(
     private val purchaseRemoteDataSource: PurchaseRemoteDataSource
 ) : PurchaseRepository {
-    override suspend fun fetchPurchaseById(id: String): Result<Purchase> {
+    override suspend fun fetchPurchaseById(id: String): Result<WholesaleTransaction> {
         return  purchaseRemoteDataSource.fetchPurchaseById(id)
     }
 

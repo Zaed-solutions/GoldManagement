@@ -13,9 +13,9 @@ import com.zaed.common.data.model.payment.PaymentStatus
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
 import com.zaed.common.data.model.sale.Product
-import com.zaed.common.data.model.sale.request.AddWholesaleGoldSaleRequest
+import com.zaed.common.data.model.sale.request.AddWholesaleRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleGoldSaleRequest
-import com.zaed.common.data.model.sale.request.UpdateWholesaleGoldSaleRequest
+import com.zaed.common.data.model.sale.request.UpdateWholesaleRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.category.FetchAllCategoriesUseCase
 import com.zaed.common.domain.customer.FetchWholesaleCustomersByNameUseCase
@@ -181,7 +181,7 @@ class AddGoldSaleViewModel(
                 }
             }
             updateProductSaleUseCase(
-                UpdateWholesaleGoldSaleRequest(
+                UpdateWholesaleRequest(
                     sale = uiState.value.sale,
                     payments = uiState.value.payments,
                     employeeName = uiState.value.currentUser.fullName,
@@ -235,7 +235,7 @@ class AddGoldSaleViewModel(
                 )
             }
             addProductSaleUseCase(
-                AddWholesaleGoldSaleRequest(
+                AddWholesaleRequest(
                     sale = uiState.value.sale,
                     payments = uiState.value.payments,
                     isAdmin = uiState.value.currentUser.role == UserRole.MANAGER
