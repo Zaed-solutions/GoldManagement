@@ -4,6 +4,7 @@ import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.payment.PaymentStatus
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.Transaction
+import com.zaed.common.ui.addpurchase.ProductType
 import kotlinx.serialization.Transient
 import java.util.Date
 
@@ -20,7 +21,8 @@ data class Purchase(
     val paymentsIds: List<String> = emptyList(),
     val paymentStatus: PaymentStatus = PaymentStatus.UNPAID,
     val distributorId: String = "",
-    val distributorName: String = ""
+    val distributorName: String = "",
+    val productType: ProductType = ProductType.PRODUCT
 ) : Transaction(
     id = id,
     customerId = supplierId,

@@ -20,6 +20,7 @@ data class WholesaleProductTransaction(
     val paymentsIds: List<String> = emptyList(),
     override val paymentStatus: PaymentStatus = PaymentStatus.UNPAID,
     override val receiptNumber: String = "",
+    override val isSale: Boolean = true
 ) : WholesaleTransaction(
     id = id,
     customerId = customerId,
@@ -33,11 +34,12 @@ data class WholesaleProductTransaction(
     totalAmount = products.sumOf { it.grams * it.gramPrice * it.quantity } - products.sumOf { it.discountAmount },
     distributorId = distributorId,
     distributorName = distributorName,
-    products = products
+    products = products,
+    isSale = isSale
 ) {
     @Transient
     val totalPriceBeforeDiscount
-        get() = products.sumOf { it.grams * it.gramPrice * it.quantity }
+        get() = products.sumOf { it.totalPriceBeforeDiscount }
     override val totalAmount
-        get() = totalPriceBeforeDiscount - products.sumOf { it.discountAmount }
+        get() = products.sumOf { it.totalPriceAfterDiscount }
 }

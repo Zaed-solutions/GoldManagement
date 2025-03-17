@@ -19,6 +19,7 @@ data class WholesaleGoldTransaction(
     override val logs: List<ChangeLog> = emptyList(),
     override val deleted: Boolean = false,
     override val paymentStatus: PaymentStatus = PaymentStatus.UNPAID,
+    override val isSale: Boolean = true
 ): WholesaleTransaction(
     id = id,
     customerId = customerId,
@@ -29,11 +30,12 @@ data class WholesaleGoldTransaction(
     deleted = deleted,
     paymentStatus = paymentStatus,
     receiptNumber = receiptNumber,
-    totalAmount = products.sumOf { it.grams * it.gramPrice * it.quantity } - products.sumOf { it.discountAmount },
+    totalAmount = products.sumOf { it.totalPriceAfterDiscount},
     distributorId = distributorId,
     distributorName = distributorName,
-    products = products
+    products = products,
+    isSale = isSale
 ){
     override val totalAmount
-        get() = products.sumOf { (it.grams * it.gramPrice * it.quantity)+it.laborCost/*TODO*/ } - products.sumOf { it.discountAmount }
+        get() = products.sumOf { it.totalPriceAfterDiscount }
 }

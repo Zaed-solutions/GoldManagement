@@ -2,6 +2,8 @@ package com.zaed.common.ui.addpurchase
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,11 +16,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zaed.common.R
 import com.zaed.common.data.model.payment.PaymentType
+import com.zaed.common.ui.addGoldSale.AddGoldSaleUiAction
+import com.zaed.common.ui.addGoldSale.components.SelectGoldContent
+import com.zaed.common.ui.addpurchase.components.SelectProductType
 import com.zaed.common.ui.components.PreviewSaleContent
 import com.zaed.common.ui.components.ProgressIndicatorTopAppBar
 import com.zaed.common.ui.components.SaleSummaryContent
@@ -43,7 +51,7 @@ fun AddPurchaseScreen(
     }
     LaunchedEffect(state.isFinished) {
         if (state.isFinished) {
-            Log.d("CREATED",state.purchase.id)
+            Log.d("CREATED", state.purchase.id)
             navigateToPurchaseDetails(state.purchase.id)
         }
     }
@@ -59,6 +67,24 @@ fun AddPurchaseScreen(
     )
 }
 
+enum class ProductType(
+    @StringRes val titleRes: Int,
+    @DrawableRes val iconRes: Int
+) {
+    GOLD(
+        R.string.gold,
+        R.drawable.ic_gold
+    ),
+    INGOT(
+        R.string.ingots,
+        R.drawable.ic_ingot
+    ),
+    PRODUCT(
+        R.string.products,
+        R.drawable.ic_cart
+    )
+}
+
 @Composable
 private fun AddPurchaseScreenContent(
     modifier: Modifier = Modifier,
@@ -70,7 +96,7 @@ private fun AddPurchaseScreenContent(
         "find the issue",
         "fetchCurrentUser: screen"
     )
-    val pagerState = rememberPagerState { 4 }
+    val pagerState = rememberPagerState { 5 }
     val progress by remember {
         derivedStateOf {
             (pagerState.currentPage + 1).toFloat() / (pagerState.pageCount + 1)
@@ -81,6 +107,9 @@ private fun AddPurchaseScreenContent(
             animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
             label = "linear progress indicator"
         )
+    }
+    var selectedProductType by remember {
+        mutableStateOf(ProductType.PRODUCT)
     }
 
     BackHandler {
@@ -95,9 +124,11 @@ private fun AddPurchaseScreenContent(
             ProgressIndicatorTopAppBar(
                 progress = progress,
                 firstScreen = pagerState.currentPage == 0,
-                onOpenDrawer = {onAction(AddPurchaseUiAction.OpenDrawer)}
+                onOpenDrawer = { onAction(AddPurchaseUiAction.OpenDrawer) }
             ) {
-                if (pagerState.currentPage > 0) {
+                if (pagerState.currentPage == 1) {
+                    onAction(AddPurchaseUiAction.ReselectProductType)
+                } else if (pagerState.currentPage > 0) {
                     scope.launch {
                         pagerState.animateScrollToPage(pagerState.currentPage - 1)
                     }
@@ -118,33 +149,75 @@ private fun AddPurchaseScreenContent(
             ) { page ->
                 when (page) {
                     0 -> {
-                        //add products
-                        SelectProductsContent(
-                            categories = state.categories,
-                            transaction = state.purchase,
-                            onAddProduct = {
-                                onAction(AddPurchaseUiAction.OnAddProduct(it))
-                            },
-                            onNext = {
-                                if (pagerState.currentPage == 3) {
-                                    onAction(AddPurchaseUiAction.OnSubmitClicked)
-                                } else {
-                                    scope.launch {
-                                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                                    }
-                                }
-                            },
-                            onDeleteProduct = {
-                                onAction(AddPurchaseUiAction.OnDeleteProduct(it))
-                            },
-                            isPurchase = true,
-                            onAddNewCategory = {
-                                onAction(AddPurchaseUiAction.OnAddNewCategory(it))
+                        SelectProductType { type ->
+                            onAction(AddPurchaseUiAction.OnProductTypeSelected(type))
+                            selectedProductType = when (type) {
+                                ProductType.GOLD -> ProductType.GOLD
+                                ProductType.INGOT -> ProductType.INGOT
+                                ProductType.PRODUCT -> ProductType.PRODUCT
                             }
-                        )
+                            scope.launch {
+                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                            }
+                        }
                     }
 
                     1 -> {
+                        when (selectedProductType) {
+                            ProductType.GOLD -> {
+                                SelectGoldContent(
+                                    sale = state.sale,
+                                    onAddGold = {
+                                        onAction(AddGoldSaleUiAction.OnAddProduct(it))
+                                    },
+                                    onRemoveGold = {
+                                        onAction(AddGoldSaleUiAction.OnRemoveProduct(it))
+                                    },
+                                    onEditGold = {
+                                        onAction(AddGoldSaleUiAction.OnEditProduct(it))
+                                    },
+                                    onNext = {
+                                        if (pagerState.currentPage == 3) {
+                                            onAction(AddGoldSaleUiAction.OnSubmitClicked)
+                                        } else {
+                                            scope.launch {
+                                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                            }
+                                        }
+                                    },
+                                )
+                            }
+
+                            ProductType.INGOT -> {
+
+                            }
+
+                            ProductType.PRODUCT -> {
+                                SelectProductsContent(
+                                    categories = state.categories,
+                                    transaction = state.purchase,
+                                    onAddProduct = {
+                                        onAction(AddPurchaseUiAction.OnAddProduct(it))
+                                    },
+                                    onNext = {
+                                        scope.launch {
+                                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                        }
+                                    },
+                                    onDeleteProduct = {
+                                        onAction(AddPurchaseUiAction.OnDeleteProduct(it))
+                                    },
+                                    isPurchase = true,
+                                    onAddNewCategory = {
+                                        onAction(AddPurchaseUiAction.OnAddNewCategory(it))
+                                    }
+                                )
+                            }
+                        }
+
+                    }
+
+                    2 -> {
                         PreviewSaleContent(
                             transaction = state.purchase,
                             onUpdateProduct = {
@@ -190,7 +263,7 @@ private fun AddPurchaseScreenContent(
                         )
                     }
 
-                    2 -> {
+                    3 -> {
                         SelectPaymentsContent(
                             totalAmount = state.purchase.totalAmount,
                             payments = state.payments,
@@ -227,7 +300,7 @@ private fun AddPurchaseScreenContent(
                         )
                     }
 
-                    3 -> {
+                    4 -> {
                         SaleSummaryContent(
                             account = state.selectedSupplier,
                             products = state.purchase.products,

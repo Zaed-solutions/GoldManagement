@@ -17,7 +17,8 @@ open class WholesaleTransaction(
     override val products: List<Product>,
     open val paymentStatus: PaymentStatus,
     open val distributorId: String,
-    open val distributorName: String
+    open val distributorName: String,
+    open val isSale:Boolean = true
 ) : Transaction(
     id = id,
     customerId = customerId,

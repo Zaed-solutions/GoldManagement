@@ -182,6 +182,20 @@ class AddPurchaseViewModel(
             AddPurchaseUiAction.OnDeleteAllProducts -> updateProductsPurchase(emptyList())
             is AddPurchaseUiAction.OnAddNewCategory -> addCategory(action.category)
             is AddPurchaseUiAction.OnAddNewSupplierClicked -> addSupplier(action.supplier)
+            is AddPurchaseUiAction.OnProductTypeSelected -> {
+                _uiState.update {
+                    it.copy(
+                    )
+                }
+            }
+            AddPurchaseUiAction.ReselectProductType -> {
+                _uiState.update { oldState ->
+                    oldState.copy(
+                        payments = emptyList(),
+                        purchase = oldState.purchase.copy(products = emptyList()),
+                    )
+                }
+            }
             else -> Unit
         }
     }
