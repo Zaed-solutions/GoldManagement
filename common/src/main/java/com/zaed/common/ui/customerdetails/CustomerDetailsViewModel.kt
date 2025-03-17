@@ -106,7 +106,7 @@ class CustomerDetailsViewModel(
         viewModelScope.launch (Dispatchers.IO){
             deleteWholeSaleUseCase(
                 DeleteWholesaleRequest(
-                    saleId = saleId,
+                    id = saleId,
                     distributorId = uiState.value.currentDistributor.id,
                     distributorName = uiState.value.currentDistributor.fullName
                 )
@@ -123,7 +123,7 @@ class CustomerDetailsViewModel(
         viewModelScope.launch (Dispatchers.IO){
             deleteWholeSaleUseCase(
                 DeleteWholesaleRequest(
-                    saleId = saleId,
+                    id = saleId,
                     distributorId = uiState.value.currentDistributor.id,
                     distributorName = uiState.value.currentDistributor.fullName
                 )

@@ -113,9 +113,11 @@ import com.zaed.common.domain.payment.FetchCustomerPaymentsUseCase
 import com.zaed.common.domain.payment.FetchGoldPaymentsByIdsUseCase
 import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
 import com.zaed.common.domain.payment.FetchSupplierPaymentsUseCase
+import com.zaed.common.domain.purchase.AddPurchaseUseCase
+import com.zaed.common.domain.purchase.DeletePurchaseUseCase
 import com.zaed.common.domain.purchase.FetchPurchaseUseCase
+import com.zaed.common.domain.purchase.UpdatePurchaseUseCase
 import com.zaed.common.domain.sale.AddIngotTransactionUseCase
-import com.zaed.common.domain.sale.AddPurchaseUseCase
 import com.zaed.common.domain.sale.AddStoreSaleUseCase
 import com.zaed.common.domain.sale.AddWholesaleUseCase
 import com.zaed.common.domain.sale.ConvertIngotTransactionsToDatedUseCase
@@ -130,7 +132,6 @@ import com.zaed.common.domain.sale.FetchStoreSalesUseCase
 import com.zaed.common.domain.sale.FetchWholesaleUseCase
 import com.zaed.common.domain.sale.GetStoreSaleUseCase
 import com.zaed.common.domain.sale.UpdateIngotTransactionUseCase
-import com.zaed.common.domain.sale.UpdatePurchaseUseCase
 import com.zaed.common.domain.sale.UpdateStoreSaleUseCase
 import com.zaed.common.domain.sale.UpdateWholesaleUseCase
 import com.zaed.common.domain.store.AddStoreUseCase
@@ -189,6 +190,7 @@ val useCaseModule = module {
     singleOf(::UpdateStoreSaleUseCase)
     singleOf(::FetchDistributorSalesUseCase)
     singleOf(::DeleteWholesaleUseCase)
+    singleOf(::DeletePurchaseUseCase)
     singleOf(::FetchWholesaleUseCase)
     singleOf(::AddWholeSaleCustomerUseCase)
     singleOf(::GetWholeSalesCustomersUseCase)

@@ -2,6 +2,7 @@ package com.zaed.common.data.repository
 
 import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.data.model.sale.request.AddPurchaseRequest
+import com.zaed.common.data.model.sale.request.DeleteWholesaleRequest
 import com.zaed.common.data.model.sale.request.UpdatePurchaseRequest
 import com.zaed.common.data.source.remote.PurchaseRemoteDataSource
 
@@ -18,5 +19,9 @@ class PurchaseRepositoryImpl(
 
     override suspend fun updatePurchase(request: UpdatePurchaseRequest): Result<String> {
         return purchaseRemoteDataSource.updatePurchase(request)
+    }
+
+    override suspend fun deletePurchase(request: DeleteWholesaleRequest): Result<Unit> {
+        return purchaseRemoteDataSource.deletePurchase(request)
     }
 }

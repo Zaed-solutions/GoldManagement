@@ -22,8 +22,8 @@ import com.zaed.common.domain.category.FetchAllCategoriesUseCase
 import com.zaed.common.domain.customer.FetchSuppliersByNameUseCase
 import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
 import com.zaed.common.domain.purchase.FetchPurchaseUseCase
-import com.zaed.common.domain.sale.AddPurchaseUseCase
-import com.zaed.common.domain.sale.UpdatePurchaseUseCase
+import com.zaed.common.domain.purchase.AddPurchaseUseCase
+import com.zaed.common.domain.purchase.UpdatePurchaseUseCase
 import com.zaed.common.domain.supplier.AddSupplierUseCase
 import com.zaed.common.domain.supplier.FetchSupplierUseCase
 import com.zaed.common.domain.supplier.FetchSuppliersUseCase
@@ -184,12 +184,7 @@ class AddPurchaseViewModel(
             AddPurchaseUiAction.OnDeleteAllProducts -> updateProductsPurchase(emptyList())
             is AddPurchaseUiAction.OnAddNewCategory -> addCategory(action.category)
             is AddPurchaseUiAction.OnAddNewSupplierClicked -> addSupplier(action.supplier)
-            is AddPurchaseUiAction.OnProductTypeSelected -> {
-                _uiState.update {
-                    it.copy(
-                    )
-                }
-            }
+            is AddPurchaseUiAction.OnProductTypeSelected -> updateProductType(action.productType)
 
             AddPurchaseUiAction.ReselectProductType -> {
                 _uiState.update { oldState ->
@@ -204,6 +199,19 @@ class AddPurchaseViewModel(
             }
 
             else -> Unit
+        }
+    }
+
+    private fun updateProductType(productType: ProductType) {
+        _uiState.update { oldState ->
+            oldState.copy(
+                purchase = oldState.purchase.copy(
+                    products = emptyList(),
+                    paymentsIds = emptyList(),
+                    productType = productType,
+                    sale = false
+                )
+            )
         }
     }
 
@@ -235,9 +243,11 @@ class AddPurchaseViewModel(
 
     private fun updateProductsPurchase(products: List<Product>) {
         _uiState.update { oldState ->
-            oldState.copy(purchase = oldState.purchase.copy(
-                products = products
-            ))
+            oldState.copy(
+                purchase = oldState.purchase.copy(
+                    products = products
+                )
+            )
         }
     }
 
@@ -268,7 +278,7 @@ class AddPurchaseViewModel(
                             customerName = customer.name,
                             customerPhone = customer.phone,
                             paymentStatus =
-                                if ((uiState.value.purchase.totalAmount - uiState.value.totalPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID,
+                            if ((uiState.value.purchase.totalAmount - uiState.value.totalPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID,
                             logs = oldState.purchase.logs + updateLog
                         ),
                     )
@@ -312,7 +322,7 @@ class AddPurchaseViewModel(
                         distributorName = distributor.fullName,
                         createdAt = Date(),
                         paymentStatus =
-                            if ((uiState.value.purchase.totalAmount - uiState.value.totalPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID
+                        if ((uiState.value.purchase.totalAmount - uiState.value.totalPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID
                     )
                 )
             }
@@ -335,7 +345,7 @@ class AddPurchaseViewModel(
             ).onSuccess { id ->
                 _uiState.update { oldState ->
                     oldState.copy(
-                        purchase = oldState.purchase.copy( id = id ),
+                        purchase = oldState.purchase.copy(id = id),
                         isLoading = false,
                         isFinished = true
                     )
@@ -432,7 +442,7 @@ class AddPurchaseViewModel(
     private fun removeProduct(productId: String) {
         viewModelScope.launch {
             _uiState.update { oldState ->
-                oldState.copy(purchase = oldState.purchase.copy( products = oldState.purchase.products.filter { it.id != productId }))
+                oldState.copy(purchase = oldState.purchase.copy(products = oldState.purchase.products.filter { it.id != productId }))
             }
             updateTotalAmounts()
         }
@@ -441,7 +451,7 @@ class AddPurchaseViewModel(
     private fun deleteProduct(product: Product) {
         viewModelScope.launch {
             _uiState.update { oldState ->
-                oldState.copy(purchase = oldState.purchase.copy( products = oldState.purchase.products.filter { it != product }))
+                oldState.copy(purchase = oldState.purchase.copy(products = oldState.purchase.products.filter { it != product }))
             }
             updateTotalAmounts()
         }

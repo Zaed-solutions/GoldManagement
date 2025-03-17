@@ -47,9 +47,9 @@ class SaleRemoteSourceImpl(
     private val crashlytics: FirebaseCrashlytics
 ) : SaleRemoteSource {
     private val storeSalesCollection = firestore.collection("store_sales")
-    private val wholesalesCollection = firestore.collection("wholesale_product_sales")
+    private val wholesalesCollection = firestore.collection("wholesale_sales")
     private val ingotTransactionsCollection = firestore.collection("ingot_transactions")
-    private val moneyPaymentCollection = firestore.collection("money_payments")
+    private val moneyPaymentCollection = firestore.collection("payments")
     private val wholesaleCustomersCollection = firestore.collection("whole_sale_customers")
     private val inventoryCollection = firestore.collection("inventory")
     private val distributorLossesCollection = firestore.collection("distributor-losses")
@@ -527,7 +527,7 @@ class SaleRemoteSourceImpl(
     override suspend fun deleteWholesale(request: DeleteWholesaleRequest): Result<Unit> {
         return try {
             val batch = firestore.batch()
-            val saleRef = wholesalesCollection.document(request.saleId)
+            val saleRef = wholesalesCollection.document(request.id)
             val sale = saleRef.get().await()
                 .toObject(WholesaleTransaction::class.java) ?: WholesaleTransaction()
             val logs = sale.logs.toMutableList()
@@ -601,7 +601,7 @@ class SaleRemoteSourceImpl(
 
     override suspend fun fetchWholesale(request: FetchWholesaleRequest): Result<WholesaleTransaction> {
         return try {
-            val sale = wholesalesCollection.document(request.saleId).get().await()
+            val sale = wholesalesCollection.document(request.id).get().await()
                 .toObject(WholesaleTransaction::class.java) ?: WholesaleTransaction()
             Result.success(sale)
         } catch (e: Exception) {
@@ -846,7 +846,7 @@ class SaleRemoteSourceImpl(
         }
     }
 
-    private companion object {
+     companion object {
         fun isProductsDifferent(sale1: StoreTransaction, sale2: StoreTransaction): Boolean {
             return sale1.products != sale2.products
         }

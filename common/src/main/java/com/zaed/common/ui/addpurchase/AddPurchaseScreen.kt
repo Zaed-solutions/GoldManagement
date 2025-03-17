@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
 import com.zaed.common.data.model.payment.PaymentType
-import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.ui.addGoldSale.components.SelectGoldContent
 import com.zaed.common.ui.addpurchase.components.SelectProductType
 import com.zaed.common.ui.components.PreviewSaleContent
@@ -128,6 +127,9 @@ private fun AddPurchaseScreenContent(
             ) {
                 if (pagerState.currentPage == 1) {
                     onAction(AddPurchaseUiAction.ReselectProductType)
+                    scope.launch {
+                        pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                    }
                 } else if (pagerState.currentPage > 0) {
                     scope.launch {
                         pagerState.animateScrollToPage(pagerState.currentPage - 1)
@@ -166,7 +168,7 @@ private fun AddPurchaseScreenContent(
                         when (selectedProductType) {
                             ProductType.GOLD -> {
                                 SelectGoldContent(
-                                    sale = state.purchase as WholesaleTransaction,
+                                    sale = state.purchase,
                                     onAddGold = {
                                         onAction(AddPurchaseUiAction.OnAddProduct(it))
                                     },

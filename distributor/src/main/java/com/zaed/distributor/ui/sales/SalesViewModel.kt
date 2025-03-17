@@ -98,7 +98,7 @@ class SalesViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             deleteProductSaleUseCase(
                 DeleteWholesaleRequest(
-                    saleId = saleId,
+                    id = saleId,
                     distributorId = uiState.value.currentUser.id,
                     distributorName = uiState.value.currentUser.fullName
                 )
@@ -115,7 +115,7 @@ class SalesViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             deleteGoldSaleUseCase(
                 DeleteWholesaleRequest(
-                    saleId = saleId,
+                    id = saleId,
                     distributorId = uiState.value.currentUser.id,
                     distributorName = uiState.value.currentUser.fullName
                 )

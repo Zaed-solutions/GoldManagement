@@ -141,7 +141,7 @@ class GoldSaleDetailsViewModel(
         viewModelScope.launch (Dispatchers.IO){
             deleteWholesaleUseCase(
                 DeleteWholesaleRequest(
-                    saleId = uiState.value.sale.id
+                    id = uiState.value.sale.id
                 )
             ).onSuccess {
                 _uiState.update {

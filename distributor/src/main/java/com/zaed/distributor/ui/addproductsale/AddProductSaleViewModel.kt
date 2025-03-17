@@ -55,7 +55,7 @@ class AddProductSaleViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             fetchProductSaleUseCase(
                 FetchWholesaleRequest(
-                    saleId = saleId
+                    id = saleId
                 )
             ).onSuccess { data ->
                 _uiState.update { oldState ->
