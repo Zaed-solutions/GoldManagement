@@ -9,12 +9,10 @@ import com.zaed.common.data.model.sale.request.AddStoreSaleRequest
 import com.zaed.common.data.model.sale.request.AddWholesaleRequest
 import com.zaed.common.data.model.sale.request.DeleteStoreSaleRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleRequest
-import com.zaed.common.data.model.sale.request.DeleteWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.FetchDistributorSalesRequest
 import com.zaed.common.data.model.sale.request.FetchIngotTransactionsRequest
 import com.zaed.common.data.model.sale.request.FetchStoreSalesRequest
-import com.zaed.common.data.model.sale.request.FetchWholesaleGoldSaleRequest
-import com.zaed.common.data.model.sale.request.FetchWholesaleProductSaleRequest
+import com.zaed.common.data.model.sale.request.FetchWholesaleRequest
 import com.zaed.common.data.model.sale.request.UpdateIngotTransactionRequest
 import com.zaed.common.data.model.sale.request.UpdateStoreSaleRequest
 import com.zaed.common.data.model.sale.request.UpdateWholesaleRequest
@@ -27,15 +25,11 @@ interface SaleRepository {
     suspend fun updateStoreSale(request: UpdateStoreSaleRequest): Result<Unit>
     suspend fun getStoreSale(saleId: String): Result<StoreTransaction>
     fun fetchWholesaleDistributorSales(request: FetchDistributorSalesRequest): Flow<Result<List<WholesaleTransaction>>>
-    suspend fun deleteWholesaleProductSale(request: DeleteWholesaleProductSaleRequest): Result<Unit>
-    suspend fun deleteWholesaleGoldSale(request: DeleteWholesaleRequest): Result<Unit>
-    suspend fun fetchWholesaleProductSale(request: FetchWholesaleProductSaleRequest): Result<WholesaleTransaction>
-    suspend fun fetchWholesaleGoldSale(request: FetchWholesaleGoldSaleRequest): Result<WholesaleTransaction>
+    suspend fun deleteWholesale(request: DeleteWholesaleRequest): Result<Unit>
+    suspend fun fetchWholesale(request: FetchWholesaleRequest): Result<WholesaleTransaction>
     fun fetchWholesaleCustomerSales(request: FetchWholesaleCustomerSalesRequest): Flow<Result<List<WholesaleTransaction>>>
-    suspend fun addWholesaleProductSale(request: AddWholesaleRequest): Result<String>
-    suspend fun addGoldSale(request: AddWholesaleRequest): Result<String>
-    suspend fun updateWholesaleProductSale(request: UpdateWholesaleRequest): Result<Unit>
-    suspend fun updateWholesaleGoldSale(request: UpdateWholesaleRequest): Result<Unit>
+    suspend fun addWholesale(request: AddWholesaleRequest): Result<String>
+    suspend fun updateWholesale(request: UpdateWholesaleRequest): Result<Unit>
     fun fetchIngotTransaction(request: FetchIngotTransactionsRequest): Flow<Result<List<IngotTransaction>>>
     suspend fun addIngotTransaction(transaction: AddIngotTransactionRequest): Result<String>
     suspend fun updateIngotTransaction(transaction: UpdateIngotTransactionRequest): Result<Unit>

@@ -14,16 +14,15 @@ import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.request.AddWholesaleRequest
-import com.zaed.common.data.model.sale.request.FetchWholesaleGoldSaleRequest
+import com.zaed.common.data.model.sale.request.FetchWholesaleRequest
 import com.zaed.common.data.model.sale.request.UpdateWholesaleRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
-import com.zaed.common.domain.category.FetchAllCategoriesUseCase
 import com.zaed.common.domain.customer.FetchWholesaleCustomersByNameUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
 import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
-import com.zaed.common.domain.sale.AddGoldSaleUseCase
-import com.zaed.common.domain.sale.FetchWholesaleGoldSaleUseCase
-import com.zaed.common.domain.sale.UpdateWholesaleGoldSaleUseCase
+import com.zaed.common.domain.sale.AddWholesaleUseCase
+import com.zaed.common.domain.sale.FetchWholesaleUseCase
+import com.zaed.common.domain.sale.UpdateWholesaleUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,14 +31,13 @@ import kotlinx.coroutines.launch
 import java.util.Date
 
 class AddGoldSaleViewModel(
-    private val fetchAllCategoriesUseCase: FetchAllCategoriesUseCase,
-    private val fetchProductSaleUseCase: FetchWholesaleGoldSaleUseCase,
     private val getCurrentUserUseCase: GetCurrentUserLoggedInUseCase,
     private val getCurrentWholeSalesCustomerUseCase: GetWholeSalesCustomerUseCase,
     private val fetchCustomersByNameUseCase: FetchWholesaleCustomersByNameUseCase,
     private val fetchMoneyPaymentsByIdsUseCase: FetchMoneyPaymentsByIdsUseCase,
-    private val addProductSaleUseCase: AddGoldSaleUseCase,
-    private val updateProductSaleUseCase: UpdateWholesaleGoldSaleUseCase
+    private val fetchProductSaleUseCase: FetchWholesaleUseCase,
+    private val addProductSaleUseCase: AddWholesaleUseCase,
+    private val updateProductSaleUseCase: UpdateWholesaleUseCase
 ) : ViewModel() {
     private val TAG: String = "AddProductSaleVM"
     private val _uiState = MutableStateFlow(AddGoldSaleUiState())
@@ -54,7 +52,7 @@ class AddGoldSaleViewModel(
     private fun fetchSale(saleId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             fetchProductSaleUseCase(
-                FetchWholesaleGoldSaleRequest(
+                FetchWholesaleRequest(
                     saleId = saleId
                 )
             ).onSuccess { data ->

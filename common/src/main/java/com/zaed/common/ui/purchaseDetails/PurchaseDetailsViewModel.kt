@@ -8,8 +8,8 @@ import com.zaed.common.data.model.supplier.request.FetchSupplierRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
 import com.zaed.common.domain.purchase.FetchPurchaseUseCase
-import com.zaed.common.domain.sale.DeleteWholesaleProductSaleUseCase
-import com.zaed.common.domain.sale.UpdateWholesaleProductSaleUseCase
+import com.zaed.common.domain.sale.DeleteWholesaleUseCase
+import com.zaed.common.domain.sale.UpdateWholesaleUseCase
 import com.zaed.common.domain.supplier.FetchSupplierUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,8 +21,8 @@ class PurchaseDetailsViewModel(
     private val fetchPurchaseUseCase: FetchPurchaseUseCase,
     private val fetchSalePaymentsUseCase: FetchMoneyPaymentsByIdsUseCase,
     private val getCurrentUseUseCase: GetCurrentUserLoggedInUseCase,
-    private val deleteWholesaleProductSaleUseCase: DeleteWholesaleProductSaleUseCase,
-    private val updateWholesaleProductSaleUseCase: UpdateWholesaleProductSaleUseCase,
+    private val deleteWholesaleUseCase: DeleteWholesaleUseCase,
+    private val updateWholesaleUseCase: UpdateWholesaleUseCase,
     private val fetchSupplierUseCase: FetchSupplierUseCase
 ): ViewModel() {
     private val TAG = "PurchaseDetailsViewModel"

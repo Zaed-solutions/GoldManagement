@@ -17,7 +17,6 @@ import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
 import com.zaed.common.data.model.payment.FuturePayment
-import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.LossPayment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.signedAmount
@@ -33,7 +32,7 @@ import com.zaed.common.data.model.sale.request.DeleteWholesaleRequest
 import com.zaed.common.data.model.sale.request.FetchDistributorSalesRequest
 import com.zaed.common.data.model.sale.request.FetchIngotTransactionsRequest
 import com.zaed.common.data.model.sale.request.FetchStoreSalesRequest
-import com.zaed.common.data.model.sale.request.FetchWholesaleGoldSaleRequest
+import com.zaed.common.data.model.sale.request.FetchWholesaleRequest
 import com.zaed.common.data.model.sale.request.UpdateIngotTransactionRequest
 import com.zaed.common.data.model.sale.request.UpdateStoreSaleRequest
 import com.zaed.common.data.model.sale.request.UpdateWholesaleRequest
@@ -49,7 +48,6 @@ class SaleRemoteSourceImpl(
 ) : SaleRemoteSource {
     private val storeSalesCollection = firestore.collection("store_sales")
     private val wholesalesCollection = firestore.collection("wholesale_product_sales")
-    private val wholesaleGoldSalesCollection = firestore.collection("wholesale_gold_sales")
     private val ingotTransactionsCollection = firestore.collection("ingot_transactions")
     private val moneyPaymentCollection = firestore.collection("money_payments")
     private val wholesaleCustomersCollection = firestore.collection("whole_sale_customers")
@@ -255,18 +253,16 @@ class SaleRemoteSourceImpl(
 
     override fun fetchWholesaleDistributorSales(request: FetchDistributorSalesRequest): Flow<Result<List<WholesaleTransaction>>> =
         callbackFlow {
-            var goldSalesListener: ListenerRegistration? = null
             var sListener: ListenerRegistration? = null
             try {
-                var latestGoldSales: List<WholesaleTransaction> = emptyList()
                 var latests: List<WholesaleTransaction> = emptyList()
                 val updateAndSend = {
-                    val combinedSales = (latestGoldSales + latests)
+                    val combinedSales = (latests + latests)
                         .sortedByDescending { it.createdAt } // Sort by date
                     trySend(Result.success(combinedSales))
                 }
 
-                goldSalesListener = wholesaleGoldSalesCollection.where(
+                sListener = wholesalesCollection.where(
                     Filter.and(
                         Filter.equalTo("distributorId", request.distributorId),
                         Filter.equalTo("deleted", false)
@@ -276,7 +272,7 @@ class SaleRemoteSourceImpl(
                         close(error)
                         return@addSnapshotListener
                     }
-                    latestGoldSales = snapshot?.documents?.mapNotNull { doc ->
+                    latests = snapshot?.documents?.mapNotNull { doc ->
                         doc.toObject(WholesaleTransaction::class.java)?.copy(id = doc.id)
                     } ?: emptyList()
                     updateAndSend()
@@ -303,25 +299,23 @@ class SaleRemoteSourceImpl(
                 trySend(Result.failure(e))
             }
             awaitClose {
-                goldSalesListener?.remove()
+                sListener?.remove()
                 sListener?.remove()
             }
         }
 
     override fun fetchWholesaleCustomerSales(request: FetchWholesaleCustomerSalesRequest): Flow<Result<List<WholesaleTransaction>>> =
         callbackFlow {
-            var goldSalesListener: ListenerRegistration? = null
             var sListener: ListenerRegistration? = null
             try {
-                var latestGoldSales: List<WholesaleTransaction> = emptyList()
                 var latests: List<WholesaleTransaction> = emptyList()
                 val updateAndSend = {
-                    val combinedSales = (latestGoldSales + latests)
+                    val combinedSales = (latests + latests)
                         .sortedByDescending { it.createdAt } // Sort by date
                     trySend(Result.success(combinedSales))
                 }
 
-                goldSalesListener = wholesaleGoldSalesCollection.where(
+                sListener = wholesalesCollection.where(
                     Filter.and(
                         Filter.equalTo("customerId", request.customerId),
                         Filter.equalTo("deleted", false)
@@ -331,7 +325,7 @@ class SaleRemoteSourceImpl(
                         close(error)
                         return@addSnapshotListener
                     }
-                    latestGoldSales = snapshot?.documents?.mapNotNull { doc ->
+                    latests = snapshot?.documents?.mapNotNull { doc ->
                         doc.toObject(WholesaleTransaction::class.java)?.copy(id = doc.id)
                     } ?: emptyList()
                     updateAndSend()
@@ -359,7 +353,7 @@ class SaleRemoteSourceImpl(
                 trySend(Result.failure(e))
             }
             awaitClose {
-                goldSalesListener?.remove()
+                sListener?.remove()
                 sListener?.remove()
             }
         }
@@ -486,24 +480,22 @@ class SaleRemoteSourceImpl(
         }
 
     override fun fetchAllDistributorsSales(): Flow<Result<List<WholesaleTransaction>>> = callbackFlow {
-        var goldSalesListener: ListenerRegistration? = null
         var sListener: ListenerRegistration? = null
         try {
-            var latestGoldSales: List<WholesaleTransaction> = emptyList()
             var latests: List<WholesaleTransaction> = emptyList()
             val updateAndSend = {
-                val combinedSales = (latestGoldSales + latests)
+                val combinedSales = (latests + latests)
                     .sortedByDescending { it.createdAt } // Sort by date
                 trySend(Result.success(combinedSales))
             }
 
-            goldSalesListener =
-                wholesaleGoldSalesCollection.addSnapshotListener { snapshot, error ->
+            sListener =
+                wholesalesCollection.addSnapshotListener { snapshot, error ->
                     if (error != null) {
                         close(error)
                         return@addSnapshotListener
                     }
-                    latestGoldSales = snapshot?.documents?.mapNotNull { doc ->
+                    latests = snapshot?.documents?.mapNotNull { doc ->
                         doc.toObject(WholesaleTransaction::class.java)?.copy(id = doc.id)
                     } ?: emptyList()
                     updateAndSend()
@@ -526,7 +518,7 @@ class SaleRemoteSourceImpl(
             trySend(Result.failure(e))
         }
         awaitClose {
-            goldSalesListener?.remove()
+            sListener?.remove()
             sListener?.remove()
         }
     }
@@ -606,83 +598,10 @@ class SaleRemoteSourceImpl(
         }
     }
 
-    override suspend fun deleteWholesaleGoldSale(request: DeleteWholesaleRequest): Result<Unit> {
-        return try {
-            val batch = firestore.batch()
-            val saleRef = wholesaleGoldSalesCollection.document(request.saleId)
-            val sale = saleRef.get().await()
-                .toObject(WholesaleTransaction::class.java) ?: WholesaleTransaction()
-            val logs = sale.logs.toMutableList()
-            logs.add(
-                ChangeLog(
-                    date = Date(),
-                    employeeId = request.distributorId,
-                    employeeName = request.distributorName,
-                    type = LogType.DELETE
-                )
-            )
-            batch.set(saleRef, sale.copy(logs = logs, deleted = true))
-            if (sale.customerId.isNotEmpty()) {
-                val customerRef = wholesaleCustomersCollection.document(sale.customerId)
-                var totalPaymentDeleted = 0.0
-                sale.paymentsIds.forEach {
-                    val paymentRef = moneyPaymentCollection.document(it)
-                    val payment = paymentRef.get().await().toObject(CashPayment::class.java)
-                    val log = ChangeLog(
-                        date = Date(),
-                        employeeId = request.distributorId,
-                        employeeName = request.distributorName,
-                        type = LogType.DELETE
-                    )
-                    val updatePayments = mapOf(
-                        "deleted" to true,
-                        "logs" to FieldValue.arrayUnion(log)
-                    )
-                    batch.update(paymentRef, updatePayments)
-                    if (payment?.type == PaymentType.FUTURES) {
-                        totalPaymentDeleted += payment.amount
-                    }
-                }
-
-                batch.update(
-                    customerRef,
-                    mapOf("debtAmount" to FieldValue.increment(totalPaymentDeleted))
-                )
-            }
-            val goldAmount = sale.products.sumOf { it.grams }
-            inventoryCollection
-                .where(
-                    Filter.and(
-                        Filter.equalTo("type", InventoryType.GOLD),
-                        Filter.equalTo("ownerId", sale.distributorId)
-                    )
-                )
-                .get().await().documents.firstOrNull()?.reference?.let { ref ->
-                    val updates = mapOf("quantity" to FieldValue.increment(goldAmount))
-                    batch.update(ref, updates)
-                }
-            batch.commit().await()
-            Result.success(Unit)
-        } catch (e: Exception) {
-            crashlytics.recordException(e)
-            Result.failure(e)
-        }
-    }
 
     override suspend fun fetchWholesale(request: FetchWholesaleRequest): Result<WholesaleTransaction> {
         return try {
             val sale = wholesalesCollection.document(request.saleId).get().await()
-                .toObject(WholesaleTransaction::class.java) ?: WholesaleTransaction()
-            Result.success(sale)
-        } catch (e: Exception) {
-            crashlytics.recordException(e)
-            Result.failure(e)
-        }
-    }
-
-    override suspend fun fetchWholesaleGoldSale(request: FetchWholesaleGoldSaleRequest): Result<WholesaleTransaction> {
-        return try {
-            val sale = wholesaleGoldSalesCollection.document(request.saleId).get().await()
                 .toObject(WholesaleTransaction::class.java) ?: WholesaleTransaction()
             Result.success(sale)
         } catch (e: Exception) {
@@ -697,17 +616,11 @@ class SaleRemoteSourceImpl(
             val batch = firestore.batch()
             val docRef = wholesalesCollection.document()
             val paymentsIds = mutableListOf<String>()
-            val maxProductReceipt = wholesalesCollection.orderBy(
+            val receiptNumber = wholesalesCollection.orderBy(
                 "createdAt",
                 Query.Direction.DESCENDING
             ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")
-                ?.toLongOrNull() ?: 0
-            val maxGoldReceiptNumber = wholesaleGoldSalesCollection.orderBy(
-                "receiptNumber",
-                Query.Direction.DESCENDING
-            ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")
-                ?.toLongOrNull() ?: 0
-            val receiptNumber = maxOf(maxProductReceipt, maxGoldReceiptNumber) + 1
+                ?.toLongOrNull() ?: 0 .plus(1)
 
             request.payments.forEach {
                 val ref = moneyPaymentCollection.document()
@@ -802,105 +715,6 @@ class SaleRemoteSourceImpl(
         }
     }
 
-    override suspend fun addGoldSale(request: AddWholesaleRequest): Result<String> {
-        return try {
-            val batch = firestore.batch()
-            val docRef = wholesaleGoldSalesCollection.document()
-            val moneyPaymentsIds = mutableListOf<String>()
-            val maxProductReceipt = wholesalesCollection.orderBy(
-                "createdAt",
-                Query.Direction.DESCENDING
-            ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")
-                ?.toLongOrNull() ?: 0
-            val maxGoldReceiptNumber = wholesaleGoldSalesCollection.orderBy(
-                "createdAt",
-                Query.Direction.DESCENDING
-            ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")
-                ?.toLongOrNull() ?: 0
-            var receiptNumber = maxOf(maxProductReceipt, maxGoldReceiptNumber) + 1
-            request.payments.forEach {
-                val ref = moneyPaymentCollection.document()
-                moneyPaymentsIds.add(ref.id)
-                if (it.type == PaymentType.FUTURES) {
-                    val customerRef = wholesaleCustomersCollection.document(request.sale.customerId)
-                    batch.update(
-                        customerRef,
-                        mapOf("debtAmount" to FieldValue.increment(it.amount.unaryMinus()))
-                    )
-                } else if (it.type == PaymentType.LOSS) {
-                    val document = distributorLossesCollection.document()
-                    batch.set(
-                        document, DistributorLoss(
-                            id = document.id,
-                            value = it.amount,
-                            reason = "Sales Loss for $receiptNumber",
-                            userId = request.sale.distributorId,
-                            userName = request.sale.distributorName,
-                            logs = listOf(
-                                ChangeLog(
-                                    employeeId = request.sale.distributorId,
-                                    employeeName = request.sale.distributorName,
-                                    type = LogType.CREATE
-                                )
-                            )
-                        )
-                    )
-                } else {
-                }
-                when (it) {
-                    is CashPayment -> batch.set(
-                        ref,
-                        it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
-                    )
-
-                    is FuturePayment -> batch.set(
-                        ref,
-                        it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
-                    )
-
-                    is ChequePayment -> batch.set(
-                        ref,
-                        it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
-                    )
-
-                    is BankTransferPayment -> batch.set(
-                        ref,
-                        it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
-                    )
-
-                    is GoldPayment -> batch.set(
-                        ref,
-                        it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
-                    )
-                }
-            }
-            val goldAmount = request.sale.products.sumOf { it.grams }
-            inventoryCollection
-                .where(
-                    Filter.and(
-                        Filter.equalTo("type", InventoryType.GOLD),
-                        Filter.equalTo("ownerId", if(request.isAdmin)"" else request.sale.distributorId)
-                    )
-                )
-                .get().await().documents.firstOrNull()?.reference?.let { ref ->
-                    val updates = mapOf("quantity" to FieldValue.increment(goldAmount.unaryMinus()))
-                    batch.update(ref, updates)
-                }
-            batch.set(
-                docRef,
-                request.sale.copy(
-                    id = docRef.id,
-                    paymentsIds = moneyPaymentsIds,
-                    receiptNumber = receiptNumber.toString()
-                )
-            )
-            batch.commit().await()
-            Result.success(docRef.id)
-        } catch (e: Exception) {
-            crashlytics.recordException(e)
-            Result.failure(e)
-        }
-    }
 
 
     override suspend fun updateWholesale(request: UpdateWholesaleRequest): Result<Unit> {
@@ -1032,103 +846,7 @@ class SaleRemoteSourceImpl(
         }
     }
 
-    override suspend fun updateWholesaleGoldSale(request: UpdateWholesaleRequest): Result<Unit> {
-        return try {
-            val batch = firestore.batch()
-            val saleDocRef = wholesaleGoldSalesCollection.document(request.sale.id)
-            val existingSale =
-                wholesaleGoldSalesCollection.document(request.sale.id).get().await()
-                    .toObject(WholesaleTransaction::class.java)
-                    ?: return Result.failure(Exception("Sale not found"))
-            val existingMoneyPaymentIds = existingSale.paymentsIds
-            val existingPayment = moneyPaymentCollection.where(
-                Filter.and(
-                    Filter.inArray("id", existingMoneyPaymentIds),
-                    Filter.equalTo("type", PaymentType.FUTURES)
-                )
-            ).get().await().documents.firstOrNull()?.toObject(CashPayment::class.java)
-                ?: CashPayment()
-            val updatedMoneyPaymentIds = mutableListOf<String>()
-            if (request.sale.customerId.isNotBlank()) {
-                val customerRef = wholesaleCustomersCollection.document(request.sale.customerId)
-                batch.update(
-                    customerRef,
-                    mapOf(
-                        "debtAmount" to FieldValue.increment(
-                            existingPayment.signedAmount().unaryMinus()
-                        )
-                    )
-                )
-            }
-            request.payments.forEach { payment ->
-                if (payment.id.isNotEmpty() && existingMoneyPaymentIds.contains(payment.id)) {
-                    val paymentRef = moneyPaymentCollection.document(payment.id)
-                    batch.set(paymentRef, payment, SetOptions.merge())
-                    updatedMoneyPaymentIds.add(payment.id)
-                } else {
-                    val newPaymentRef = moneyPaymentCollection.document()
-                    val amount = if (payment.type == PaymentType.FUTURES) {
-                        val customerRef =
-                            wholesaleCustomersCollection.document(request.sale.customerId)
-                        batch.update(
-                            customerRef,
-                            mapOf("debtAmount" to FieldValue.increment(payment.signedAmount()))
-                        )
-                        payment.amount
-                    } else {
-                        payment.amount
-                    }
-                    batch.set(
-                        newPaymentRef,
-                        payment.apply {
-                            this.id = newPaymentRef.id
-                            this.amount = amount
-                        }
-                    )
-                    updatedMoneyPaymentIds.add(newPaymentRef.id)
-                }
-            }
-            existingMoneyPaymentIds.forEach { paymentId ->
-                if (!updatedMoneyPaymentIds.contains(paymentId)) {
-                    batch.delete(moneyPaymentCollection.document(paymentId))
-                }
-            }
-            batch.set(
-                saleDocRef, request.sale.copy(paymentsIds = updatedMoneyPaymentIds),
-                SetOptions.merge()
-            )
-            //
-
-            batch.set(
-                saleDocRef, request.sale.copy(
-                    paymentsIds = updatedMoneyPaymentIds
-                ),
-                SetOptions.merge()
-            )
-            val oldGoldAmount = existingSale.products.sumOf { it.grams }
-            val newGoldAmount = request.sale.products.sumOf { it.grams }
-            val goldUpdate = oldGoldAmount - newGoldAmount
-            inventoryCollection
-                .where(
-                    Filter.and(
-                        Filter.equalTo("type", InventoryType.GOLD),
-                        Filter.equalTo("ownerId", if(request.isAdmin) "" else request.sale.distributorId)
-                    )
-                )
-                .get().await().documents.firstOrNull()?.reference?.let { ref ->
-                    val updates = mapOf("quantity" to FieldValue.increment(goldUpdate))
-                    batch.update(ref, updates)
-                }
-            batch.commit().await()
-            Result.success(Unit)
-        } catch (e: Exception) {
-            crashlytics.recordException(e)
-            Result.failure(e)
-        }
-    }
-
     private companion object {
-
         fun isProductsDifferent(sale1: StoreTransaction, sale2: StoreTransaction): Boolean {
             return sale1.products != sale2.products
         }

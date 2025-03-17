@@ -10,12 +10,10 @@ import com.zaed.common.data.model.sale.request.AddStoreSaleRequest
 import com.zaed.common.data.model.sale.request.AddWholesaleRequest
 import com.zaed.common.data.model.sale.request.DeleteStoreSaleRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleRequest
-import com.zaed.common.data.model.sale.request.DeleteWholesaleProductSaleRequest
 import com.zaed.common.data.model.sale.request.FetchDistributorSalesRequest
 import com.zaed.common.data.model.sale.request.FetchIngotTransactionsRequest
 import com.zaed.common.data.model.sale.request.FetchStoreSalesRequest
-import com.zaed.common.data.model.sale.request.FetchWholesaleGoldSaleRequest
-import com.zaed.common.data.model.sale.request.FetchWholesaleProductSaleRequest
+import com.zaed.common.data.model.sale.request.FetchWholesaleRequest
 import com.zaed.common.data.model.sale.request.UpdateIngotTransactionRequest
 import com.zaed.common.data.model.sale.request.UpdateStoreSaleRequest
 import com.zaed.common.data.model.sale.request.UpdateWholesaleRequest
@@ -46,38 +44,28 @@ class SaleRepositoryImpl(
         return saleRemoteSource.fetchWholesaleDistributorSales(request)
     }
 
-    override suspend fun deleteWholesaleProductSale(request: DeleteWholesaleProductSaleRequest): Result<Unit> {
-        return saleRemoteSource.deleteWholesaleProductSale(request)
+    override suspend fun deleteWholesale(request: DeleteWholesaleRequest): Result<Unit> {
+        return saleRemoteSource.deleteWholesale(request)
     }
 
-    override suspend fun deleteWholesaleGoldSale(request: DeleteWholesaleRequest): Result<Unit> {
-        return saleRemoteSource.deleteWholesaleGoldSale(request)
+
+
+    override suspend fun fetchWholesale(request: FetchWholesaleRequest): Result<WholesaleTransaction> {
+        return saleRemoteSource.fetchWholesale(request)
     }
 
-    override suspend fun fetchWholesaleProductSale(request: FetchWholesaleProductSaleRequest): Result<WholesaleTransaction> {
-        return saleRemoteSource.fetchWholesaleProductSale(request)
+
+
+    override suspend fun updateWholesale(request: UpdateWholesaleRequest): Result<Unit> {
+        return saleRemoteSource.updateWholesale(request)
     }
 
-    override suspend fun fetchWholesaleGoldSale(request: FetchWholesaleGoldSaleRequest): Result<WholesaleTransaction> {
-        return saleRemoteSource.fetchWholesaleGoldSale(request)
-    }
-
-    override suspend fun updateWholesaleGoldSale(request: UpdateWholesaleRequest): Result<Unit> {
-        return saleRemoteSource.updateWholesaleGoldSale(request)
-    }
-
-    override suspend fun addWholesaleProductSale(request: AddWholesaleRequest): Result<String> {
+    override suspend fun addWholesale(request: AddWholesaleRequest): Result<String> {
         Log.d("add_sale", "invoke repo: $request")
-        return saleRemoteSource.addWholesaleProductSale(request)
+        return saleRemoteSource.addWholesale(request)
     }
 
-    override suspend fun addGoldSale(request: AddWholesaleRequest): Result<String> {
-        return saleRemoteSource.addGoldSale(request)
-    }
 
-    override suspend fun updateWholesaleProductSale(request: UpdateWholesaleRequest): Result<Unit> {
-        return saleRemoteSource.updateWholesaleProductSale(request)
-    }
 
     override fun fetchIngotTransaction(request: FetchIngotTransactionsRequest): Flow<Result<List<IngotTransaction>>> {
         return saleRemoteSource.fetchIngotTransaction(request)

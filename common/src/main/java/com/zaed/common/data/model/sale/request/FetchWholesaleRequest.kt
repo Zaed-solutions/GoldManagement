@@ -1,5 +1,5 @@
 package com.zaed.common.data.model.sale.request
 
-data class FetchWholesaleGoldSaleRequest(
+data class FetchWholesaleRequest(
     val saleId: String = ""
 )

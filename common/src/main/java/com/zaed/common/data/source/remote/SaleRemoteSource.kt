@@ -9,11 +9,9 @@ import com.zaed.common.data.model.sale.request.AddStoreSaleRequest
 import com.zaed.common.data.model.sale.request.AddWholesaleRequest
 import com.zaed.common.data.model.sale.request.DeleteStoreSaleRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleRequest
-import com.zaed.common.data.model.sale.request.DeleteWholesaleRequest
 import com.zaed.common.data.model.sale.request.FetchDistributorSalesRequest
 import com.zaed.common.data.model.sale.request.FetchIngotTransactionsRequest
 import com.zaed.common.data.model.sale.request.FetchStoreSalesRequest
-import com.zaed.common.data.model.sale.request.FetchWholesaleRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleRequest
 import com.zaed.common.data.model.sale.request.UpdateIngotTransactionRequest
 import com.zaed.common.data.model.sale.request.UpdateStoreSaleRequest
@@ -28,14 +26,10 @@ interface SaleRemoteSource {
     suspend fun getStoreSale(saleId: String): Result<StoreTransaction>
     fun fetchWholesaleDistributorSales(request: FetchDistributorSalesRequest): Flow<Result<List<WholesaleTransaction>>>
     suspend fun deleteWholesale(request: DeleteWholesaleRequest): Result<Unit>
-    suspend fun deleteWholesale(request: DeleteWholesaleRequest): Result<Unit>
-    suspend fun fetchWholesale(request: FetchWholesaleRequest): Result<WholesaleTransaction>
     suspend fun fetchWholesale(request: FetchWholesaleRequest): Result<WholesaleTransaction>
     suspend fun addWholesale(request: AddWholesaleRequest): Result<String>
     suspend fun updateWholesale(request: UpdateWholesaleRequest): Result<Unit>
     fun fetchWholesaleCustomerSales(request: FetchWholesaleCustomerSalesRequest): Flow<Result<List<WholesaleTransaction>>>
-    suspend fun add(request: AddWholesaleRequest): Result<String>
-    suspend fun updateWholesale(request: UpdateWholesaleRequest): Result<Unit>
     fun fetchIngotTransaction(request: FetchIngotTransactionsRequest): Flow<Result<List<IngotTransaction>>>
     suspend fun addIngotTransaction(transaction: AddIngotTransactionRequest): Result<String>
     suspend fun updateIngotTransaction(transaction: UpdateIngotTransactionRequest): Result<Unit>

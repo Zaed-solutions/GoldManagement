@@ -7,15 +7,15 @@ import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
 import com.zaed.common.data.model.sale.ReceiptStatus
-import com.zaed.common.data.model.sale.request.DeleteWholesaleProductSaleRequest
-import com.zaed.common.data.model.sale.request.FetchWholesaleProductSaleRequest
+import com.zaed.common.data.model.sale.request.DeleteWholesaleRequest
+import com.zaed.common.data.model.sale.request.FetchWholesaleRequest
 import com.zaed.common.data.model.sale.request.UpdateWholesaleRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
 import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
-import com.zaed.common.domain.sale.DeleteWholesaleProductSaleUseCase
-import com.zaed.common.domain.sale.FetchWholesaleProductSaleUseCase
-import com.zaed.common.domain.sale.UpdateWholesaleProductSaleUseCase
+import com.zaed.common.domain.sale.DeleteWholesaleUseCase
+import com.zaed.common.domain.sale.FetchWholesaleUseCase
+import com.zaed.common.domain.sale.UpdateWholesaleUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,11 +23,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ProductSaleDetailsViewModel(
-    private val fetchSaleUseCase: FetchWholesaleProductSaleUseCase,
+    private val fetchSaleUseCase: FetchWholesaleUseCase,
     private val fetchSalePaymentsUseCase: FetchMoneyPaymentsByIdsUseCase,
     private val getCurrentUseUseCase: GetCurrentUserLoggedInUseCase,
-    private val deleteWholesaleProductSaleUseCase: DeleteWholesaleProductSaleUseCase,
-    private val updateWholesaleProductSaleUseCase: UpdateWholesaleProductSaleUseCase,
+    private val deleteWholesaleUseCase: DeleteWholesaleUseCase,
+    private val updateWholesaleUseCase: UpdateWholesaleUseCase,
     private val fetchCustomerUseCase: GetWholeSalesCustomerUseCase
 ): ViewModel() {
     private val TAG = "ProductSaleDetailsViewModel"
@@ -57,7 +57,7 @@ class ProductSaleDetailsViewModel(
     private fun fetchSale(saleId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             fetchSaleUseCase(
-                FetchWholesaleProductSaleRequest(saleId)
+                FetchWholesaleRequest(saleId)
             ).onSuccess { data ->
                 _uiState.update { oldState->
                     oldState.copy(sale = data)
@@ -114,7 +114,7 @@ class ProductSaleDetailsViewModel(
                     )
                 )
             }
-            updateWholesaleProductSaleUseCase(
+            updateWholesaleUseCase(
                 UpdateWholesaleRequest(
                     sale = sale.copy(logs = logs),
                     payments = uiState.value.cashPayments,
@@ -133,8 +133,8 @@ class ProductSaleDetailsViewModel(
 
     private fun deleteSale() {
         viewModelScope.launch (Dispatchers.IO){
-            deleteWholesaleProductSaleUseCase(
-                DeleteWholesaleProductSaleRequest(
+            deleteWholesaleUseCase(
+                DeleteWholesaleRequest(
                     saleId = uiState.value.sale.id
                 )
             ).onSuccess {
