@@ -42,6 +42,7 @@ import com.zaed.common.data.model.sale.Product
 @Composable
 fun SaveProductSheetContent(
     modifier: Modifier = Modifier,
+    isStoreSale: Boolean,
     initialProduct: Product,
     onSaveProduct: (Product) -> Unit,
     deleteProduct: (Product) -> Unit
@@ -61,6 +62,7 @@ fun SaveProductSheetContent(
 
         Spacer(modifier = Modifier.height(16.dp))
         ProductFieldsContent(
+            isStoreSale = isStoreSale,
             product1 = product,
             onValueChange = { newProduct ->
                 product = newProduct
@@ -109,12 +111,28 @@ fun SaveProductSheetContent(
 
 @Composable
 fun ProductFieldsContent(
+    isStoreSale: Boolean,
     product1: Product,
     onValueChange: (Product) -> Unit,
 ) {
-    Column() {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         val focusRequester = remember { FocusRequester() }
         //grams
+        if(isStoreSale){
+            TextInputTextField(
+                value = product1.name,
+                onValueChange = { value ->
+                    onValueChange(product1.copy(name = value))
+                },
+                label = stringResource(R.string.product_name),
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(4.dp),
+                withBorder = true,
+            )
+        }
         NumberInputTextField(
             value = product1.grams,
             onValueChange = { value ->
@@ -126,8 +144,6 @@ fun ProductFieldsContent(
             shape = RoundedCornerShape(4.dp),
             withBorder = true,
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
         //gram price
         NumberInputTextField(
             modifier = Modifier.fillMaxWidth(),
@@ -140,8 +156,6 @@ fun ProductFieldsContent(
             shape = RoundedCornerShape(4.dp),
             withBorder = true,
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         //discount
         NumberInputTextField(
@@ -210,7 +224,7 @@ fun ProductFieldsContent(
         )
         //quqntity
         Row(
-            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -280,6 +294,7 @@ fun ProductFieldsContent(
 @Composable
 private fun Previewff() {
     ProductFieldsContent(
+        isStoreSale = true,
         product1 = Product(),
         {}
     )

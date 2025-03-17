@@ -79,7 +79,8 @@ fun PreviewSaleContent(
     onUpdateSupplierSearchQuery: (String) -> Unit ={},
     filteredSuppliers: List<Supplier> = emptyList(),
     onSupplierClicked: (String) -> Unit ={},
-    onAddSupplier: (Supplier) -> Unit = {}
+    onAddSupplier: (Supplier) -> Unit = {},
+    isStoreSale: Boolean = false,
 ) {
     Column(
         modifier = modifier
@@ -280,6 +281,7 @@ fun PreviewSaleContent(
                     )
                     selectedProduct?.let {
                         ProductFieldsContent(
+                            isStoreSale= isStoreSale,
                             product1 = it,
                             onValueChange = { updatedProduct ->
                                 selectedProduct = updatedProduct
