@@ -58,7 +58,7 @@ class PurchaseDetailsViewModel(
                     oldState.copy(purchase = data)
                 }
                 fetchPayments(data.paymentsIds)
-                fetchSupplier(data.supplierId)
+                fetchSupplier(data.customerId)
             }.onFailure {
                 Log.e(TAG, "fetchSale: ${it.message}", it)
             }

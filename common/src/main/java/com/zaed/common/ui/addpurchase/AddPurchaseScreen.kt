@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
 import com.zaed.common.data.model.payment.PaymentType
-import com.zaed.common.ui.addGoldSale.AddGoldSaleUiAction
+import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.ui.addGoldSale.components.SelectGoldContent
 import com.zaed.common.ui.addpurchase.components.SelectProductType
 import com.zaed.common.ui.components.PreviewSaleContent
@@ -166,7 +166,7 @@ private fun AddPurchaseScreenContent(
                         when (selectedProductType) {
                             ProductType.GOLD -> {
                                 SelectGoldContent(
-                                    sale = state.purchase as WholesaleGoldTransaction,
+                                    sale = state.purchase as WholesaleTransaction,
                                     onAddGold = {
                                         onAction(AddPurchaseUiAction.OnAddProduct(it))
                                     },

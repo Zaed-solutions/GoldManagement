@@ -27,9 +27,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zaed.common.data.model.sale.DatedSales
-import com.zaed.common.data.model.sale.Transaction
 import com.zaed.common.data.model.sale.StoreTransaction
-import com.zaed.common.data.model.sale.WholesaleProductTransaction
+import com.zaed.common.data.model.sale.Transaction
+import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.ui.util.formatMoney
 
 @Composable
@@ -101,8 +101,7 @@ fun DatedSalesItem(
                                 transaction = sale,
                                 onSaleClicked = {
                                     when(sale){
-                                        is WholesaleProductTransaction -> onSaleClicked(sale.id,sale::class.qualifiedName?:"")
-                                        is WholesaleGoldTransaction -> onSaleClicked(sale.id,sale::class.qualifiedName?:"")
+                                        is WholesaleTransaction -> onSaleClicked(sale.id,sale::class.qualifiedName?:"")
                                         is StoreTransaction -> onSaleClicked(sale.id,sale::class.qualifiedName?:"")
                                     }
                                 },

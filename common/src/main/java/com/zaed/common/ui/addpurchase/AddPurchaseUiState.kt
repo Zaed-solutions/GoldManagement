@@ -3,15 +3,14 @@ package com.zaed.common.ui.addpurchase
 import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.payment.Payment
-import com.zaed.common.data.model.sale.WholesaleProductTransaction
 import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.data.model.supplier.Supplier
 
 data class AddPurchaseUiState(
     val isFinished: Boolean = false,
     val isLoading: Boolean = false,
-    val initialPurchase: WholesaleTransaction =WholesaleProductTransaction(),
-    val purchase: WholesaleTransaction =WholesaleProductTransaction(),
+    val initialPurchase: WholesaleTransaction =WholesaleTransaction(),
+    val purchase: WholesaleTransaction =WholesaleTransaction(),
     val selectedSupplier: Supplier = Supplier(),
     val supplierSearchQuery: String = "",
     val suggestedSuppliers: List<Supplier> = emptyList(),

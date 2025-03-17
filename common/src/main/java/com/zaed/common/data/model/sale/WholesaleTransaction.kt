@@ -21,7 +21,8 @@ data class WholesaleTransaction(
     val paymentsIds: List<String> = emptyList(),
     val paymentStatus: PaymentStatus = PaymentStatus.UNPAID,
     override val receiptNumber: String = "",
-    val productType: ProductType = ProductType.PRODUCT
+    val productType: ProductType = ProductType.PRODUCT,
+    val sale : Boolean = true
 ) : Transaction(
     id = id,
     customerId = customerId,

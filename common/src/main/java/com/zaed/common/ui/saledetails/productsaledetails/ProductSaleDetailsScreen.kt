@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
 import com.zaed.common.data.model.sale.Product
-import com.zaed.common.data.model.sale.WholesaleProductTransaction
+import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.ui.components.ChangeLogList
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
 import com.zaed.common.ui.components.CustomerInfoSection
@@ -168,7 +168,7 @@ private fun Preview() {
     ProductSaleDetailsContent(
         onAction = {},
         state = ProductSaleDetailsUiState(
-            sale = WholesaleProductTransaction(
+            sale = WholesaleTransaction(
                 customerName = "Ali",
                 createdAt = Date(),
                 receiptNumber = "123456",

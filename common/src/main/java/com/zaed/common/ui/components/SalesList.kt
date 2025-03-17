@@ -9,8 +9,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.sale.WholesaleProductTransaction
 import com.zaed.common.data.model.sale.WholesaleTransaction
+import com.zaed.common.ui.addpurchase.ProductType
 
 @Composable
 fun SalesList(
@@ -39,13 +39,13 @@ fun SalesList(
                     modifier = Modifier.animateItem(),
                     transaction = sale,
                     onSaleClicked = {
-                        onSaleClicked(sale.id, sale is WholesaleProductTransaction)
+                        onSaleClicked(sale.id, sale.productType == ProductType.PRODUCT)
                     },
                     onDelete = {
-                        onDeleteSale(sale.id, sale is WholesaleProductTransaction)
+                        onDeleteSale(sale.id, sale.productType == ProductType.PRODUCT)
                     },
                     onEdit = {
-                        onEditSale(sale.id, sale is WholesaleProductTransaction)
+                        onEditSale(sale.id, sale.productType == ProductType.PRODUCT)
                     },
                     isDeletable = true,
                     isEditable = true,

@@ -52,7 +52,7 @@ import com.zaed.common.data.model.sale.Discount
 import com.zaed.common.data.model.sale.DiscountType
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.Transaction
-import com.zaed.common.data.model.sale.WholesaleProductTransaction
+import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.data.model.supplier.Supplier
 import com.zaed.common.ui.suppliers.SelectSupplierSheet
 import com.zaed.common.ui.util.toMoneyFormat
@@ -383,7 +383,7 @@ fun PreviewSaleContent(
 @Composable
 private fun PreviewSaleContentPreview() {
     PreviewSaleContent(
-        transaction = WholesaleProductTransaction(
+        transaction = WholesaleTransaction(
             products = listOf(
                 Product(
                     id = "1",
