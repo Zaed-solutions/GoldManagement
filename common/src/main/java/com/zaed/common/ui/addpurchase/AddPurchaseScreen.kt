@@ -279,13 +279,25 @@ private fun AddPurchaseScreenContent(
                         SelectPaymentsContent(
                             totalAmount = state.purchase.totalAmount,
                             payments = state.payments,
+                            salesCheques = state.salesCheques,
+                            isPurchase = true,
                             selectedAccount = state.selectedSupplier,
-                            paymentsTypes = listOf(
-                                PaymentType.CHEQUE,
-                                PaymentType.BANK_TRANSFER,
-                                PaymentType.CASH,
-                                PaymentType.MANAGER_CHEQUES,
-                            ),
+                            paymentsTypes =
+                            when(selectedProductType){
+                                ProductType.GOLD -> listOf(
+                                    PaymentType.CHEQUE,
+                                    PaymentType.BANK_TRANSFER,
+                                    PaymentType.CASH,
+                                    PaymentType.MANAGER_CHEQUES,
+                                )
+                                ProductType.INGOT -> listOf(PaymentType.CASH)
+                                ProductType.PRODUCT -> listOf(
+                                    PaymentType.CHEQUE,
+                                    PaymentType.BANK_TRANSFER,
+                                    PaymentType.CASH,
+                                    PaymentType.MANAGER_CHEQUES,
+                                )
+                            },
                             query = state.supplierSearchQuery,
                             onQueryChanged = {
                                 onAction(AddPurchaseUiAction.OnSupplierSearchQueryChanged(it))
@@ -294,6 +306,17 @@ private fun AddPurchaseScreenContent(
 
                             onAccountSelected = {
                                 onAction(AddPurchaseUiAction.OnSupplierSelected(it.id))
+                            },
+                            supplierSearchQuery = state.supplierSearchQuery,
+                            onUpdateSupplierSearchQuery = {
+                                onAction(AddPurchaseUiAction.OnSupplierSearchQueryChanged(it))
+                            },
+                            filteredSuppliers = state.suggestedSuppliers,
+                            onSupplierClicked = {
+                                onAction(AddPurchaseUiAction.OnSupplierSelected(it))
+                            },
+                            onAddSupplier = {
+                                onAction(AddPurchaseUiAction.OnAddNewSupplierClicked(it))
                             },
                             onAddPayment = {
                                 onAction(AddPurchaseUiAction.OnAddPayment(it))

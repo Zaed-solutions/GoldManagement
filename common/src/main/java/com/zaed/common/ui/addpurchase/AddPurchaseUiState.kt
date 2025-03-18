@@ -2,6 +2,7 @@ package com.zaed.common.ui.addpurchase
 
 import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.authentication.User
+import com.zaed.common.data.model.payment.ChequePayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.data.model.supplier.Supplier
@@ -21,4 +22,5 @@ data class AddPurchaseUiState(
     val isAdmin: Boolean = true/*todo*/,
     val payments: List<Payment> = emptyList(),
     val categories: List<Category> = emptyList(),
+    val salesCheques: List<ChequePayment> = emptyList()
 )

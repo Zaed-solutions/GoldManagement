@@ -18,4 +18,5 @@ interface ChequeRemoteSource {
     fun fetchManagerCheques(): Flow<Result<List<ManagerCheque>>>
     fun fetchSalesCheques(): Flow<Result<List<ChequePayment>>>
     suspend fun deleteManagerCheque(request: DeleteManagerChequeRequest): Result<Unit>
+    suspend fun fetchAllUnCashedSalesCheque(): Result<List<ChequePayment>>
 }

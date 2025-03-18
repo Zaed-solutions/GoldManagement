@@ -21,12 +21,31 @@ class ChequeRemoteSourceImpl(
     private val crashlytics: FirebaseCrashlytics
 ) : ChequeRemoteSource {
     private val managerChequeCollection = firestore.collection("managerCheque")
-    private val salesChequeCollection = firestore.collection("money_payments")
+    private val salesChequeCollection = firestore.collection("payments")
     override suspend fun addNewSalesCheque(request: AddNewSalesChequeRequest): Result<Unit> {
         try {
             salesChequeCollection.add(request.chequePayment)
             return Result.success(Unit)
-        }catch (e: Exception){
+        } catch (e: Exception) {
+            e.printStackTrace()
+            crashlytics.recordException(e)
+            return Result.failure(e)
+        }
+    }
+
+    override suspend fun fetchAllUnCashedSalesCheque(): Result<List<ChequePayment>> {
+        try {
+            val result = salesChequeCollection.where(
+                Filter.and(
+                    Filter.equalTo("deleted", false),
+                    Filter.equalTo("cashed", false),
+                    Filter.equalTo("type", PaymentType.CHEQUE)
+                )
+            ).get().await()
+            val cheques = result?.toObjects(ChequePayment::class.java) ?: emptyList()
+            return Result.success(cheques)
+
+        } catch (e: Exception) {
             e.printStackTrace()
             crashlytics.recordException(e)
             return Result.failure(e)
@@ -39,7 +58,7 @@ class ChequeRemoteSourceImpl(
                 request.managerCheque.toMap()
             ).await()
             return Result.success(Unit)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             crashlytics.recordException(e)
             return Result.failure(e)
@@ -52,7 +71,7 @@ class ChequeRemoteSourceImpl(
                 request.chequePayment
             ).await()
             return Result.success(Unit)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             crashlytics.recordException(e)
             return Result.failure(e)
@@ -62,10 +81,10 @@ class ChequeRemoteSourceImpl(
     override suspend fun updateSalesCheckStatus(request: UpdateChequeStatusRequest): Result<Unit> {
         try {
             salesChequeCollection.document(request.chequeId).update(
-                "chequeStatus",request.status
+                "chequeStatus", request.status
             ).await()
             return Result.success(Unit)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             crashlytics.recordException(e)
             return Result.failure(e)
@@ -78,7 +97,7 @@ class ChequeRemoteSourceImpl(
                 "chequeStatus", request.status
             ).await()
             return Result.success(Unit)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             crashlytics.recordException(e)
             return Result.failure(e)
@@ -130,7 +149,7 @@ class ChequeRemoteSourceImpl(
             managerChequeCollection.document(request.managerCheque.id).delete()
             //update supplier amount
             return Result.success(Unit)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             crashlytics.recordException(e)
             return Result.failure(e)
@@ -142,7 +161,7 @@ class ChequeRemoteSourceImpl(
             managerChequeCollection.add(request.managerCheque)
             //update supplier amount
             return Result.success(Unit)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             crashlytics.recordException(e)
             return Result.failure(e)

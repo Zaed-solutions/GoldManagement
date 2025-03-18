@@ -189,8 +189,16 @@ class PurchaseRemoteDataSourceImpl(
                 Query.Direction.DESCENDING
             ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")
                 ?.toLongOrNull() ?: 0.plus(1)
-
-            request.payments.forEach {
+            request.payments.filter { it.type==PaymentType.CHEQUE }.forEach {
+                paymentsIds.add(it.id)
+                val paymentRef = paymentCollection.document(it.id)
+                paymentsIds.add(it.id)
+                batch.update(
+                    paymentRef,
+                    mapOf("cashed" to true)
+                )
+            }
+            request.payments.filter { it.type!=PaymentType.CHEQUE }.forEach {
                 val ref = paymentCollection.document()
                 paymentsIds.add(ref.id)
 
@@ -217,10 +225,6 @@ class PurchaseRemoteDataSourceImpl(
                         it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
                     )
 
-                    is ChequePayment -> batch.set(
-                        ref,
-                        it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
-                    )
 
                     is BankTransferPayment -> batch.set(
                         ref,

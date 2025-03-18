@@ -296,4 +296,8 @@
     <string name="select_product_type">Select Product Type</string>
     <string name="add_purchase">Add Purchase</string>
     <string name="buy">Buy</string>
+    <string name="do_you_want_to_register_it_as_a_debt">Do you want to register it as a debt?</string>
+    <string name="record_as_debt">Record as Debt</string>
+    <string name="select_cheques">Select Cheques</string>
+    <string name="selected_cheques_amount_is_greater_than_the_remaining_amount">Selected Cheques amount is greater than the remaining amount</string>
 </resources>

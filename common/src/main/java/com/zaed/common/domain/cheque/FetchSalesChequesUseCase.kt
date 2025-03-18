@@ -11,3 +11,10 @@ class FetchSalesChequesUseCase(
         return chequeRepository.fetchSalesCheques()
     }
 }
+class FetchAllUnCashedSalesChequeUseCase(
+    private val chequeRepository: ChequeRepository
+) {
+    suspend operator fun invoke(): Result<List<ChequePayment>> {
+        return chequeRepository.fetchAllUnCashedSalesCheque()
+    }
+}

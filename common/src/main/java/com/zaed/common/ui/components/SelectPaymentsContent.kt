@@ -7,13 +7,26 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -42,6 +55,10 @@ import com.zaed.common.data.model.payment.LossPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.getProductSalePayments
+import com.zaed.common.data.model.supplier.Supplier
+import com.zaed.common.ui.suppliers.SelectSupplierSheet
+import com.zaed.common.ui.util.DateFormat
+import com.zaed.common.ui.util.format
 import com.zaed.common.ui.util.toMoneyFormat
 import java.util.UUID
 
@@ -54,15 +71,25 @@ fun SelectPaymentsContent(
     onAddPayment: (Payment) -> Unit = {},
     onRemovePayment: (Payment) -> Unit = {},
     onEditPayment: (Payment) -> Unit = {},
-    onAddNewCustomer: () -> Unit={},
+    onAddNewCustomer: () -> Unit = {},
     query: String,
     paymentsTypes: List<PaymentType> = remember { getProductSalePayments() },
     onQueryChanged: (String) -> Unit,
     selectedAccount: Account,
     onAccountSelected: (Account) -> Unit,
     suggestedAccount: List<Account>,
-    onNext: () -> Unit = {}
+    onNext: () -> Unit = {},
+    isPurchase: Boolean = false,
+    isAdmin: Boolean = false,
+    isLoading: Boolean = false,
+    supplierSearchQuery: String = "",
+    onUpdateSupplierSearchQuery: (String) -> Unit = {},
+    filteredSuppliers: List<Supplier> = emptyList(),
+    onSupplierClicked: (String) -> Unit = {},
+    onAddSupplier: (Supplier) -> Unit = {},
+    salesCheques: List<ChequePayment> = emptyList(),
 ) {
+    var showSupplierSheet by remember { mutableStateOf(false) }
     var simplePaymentBottomSheet by remember { mutableStateOf(false) }
     var selectedPayment by remember { mutableStateOf<Payment?>(null) }
     val simplePaymentBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -159,12 +186,17 @@ fun SelectPaymentsContent(
 
         Button(
             onClick = {
-                if( payments.filterIsInstance<GoldPayment>().any { it.pricePerGram == 0.0 } && selectedAccount.id.isBlank()){
-                    if(selectedAccount is WholeSaleCustomer){
+                if (payments.filterIsInstance<GoldPayment>()
+                        .any { it.pricePerGram == 0.0 } && selectedAccount.id.isBlank()
+                ) {
+                    if (selectedAccount is WholeSaleCustomer) {
                         selectCustomerSheet = true
+                    } else {
+                        showSupplierSheet = true
                     }
-                }
-                else if (remainsAmount > 0 && payments.filterIsInstance<GoldPayment>().none { it.pricePerGram == 0.0 }) {
+                } else if (remainsAmount > 0 && payments.filterIsInstance<GoldPayment>()
+                        .none { it.pricePerGram == 0.0 }
+                ) {
                     warningNotFullyPaidSheet = true
                 } else {
                     onNext()
@@ -179,6 +211,25 @@ fun SelectPaymentsContent(
                 text = stringResource(R.string.continue_word),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
+            )
+        }
+        AnimatedVisibility(showSupplierSheet) {
+            SelectSupplierSheet(
+                onDismiss = {
+                    showSupplierSheet = false
+                },
+                isAdmin = isAdmin,
+                isLoading = isLoading,
+                onUpdateSearchQuery = { onUpdateSupplierSearchQuery(it) },
+                searchQuery = supplierSearchQuery,
+                filteredSuppliers = filteredSuppliers,
+                onSupplierClicked = { supplierId ->
+                    onSupplierClicked(supplierId)
+                    showSupplierSheet = false
+                },
+                onAddSupplier = {
+                    onAddSupplier(it)
+                }
             )
         }
         //add payment bottom sheet
@@ -234,23 +285,40 @@ fun SelectPaymentsContent(
                     }
 
                     PaymentType.CHEQUE -> {
-                        selectedPayment?.let {
-                            SaveChequePaymentBottomSheetContent(
-                                initialPayment = selectedPayment as ChequePayment,
-                                remainsAmount = remainsAmount,
-                                onSave = { newPayment ->
-                                    if (selectedPayment!!.id.startsWith("Destributor")) {
-                                        onAddPayment(
-                                            newPayment.copy(
-                                                id = "Payment-" + UUID.randomUUID().toString(),
-                                                customerId = selectedAccount.id,
+                        if (!isPurchase) {
+                            selectedPayment?.let {
+                                SaveChequePaymentBottomSheetContent(
+                                    initialPayment = selectedPayment as ChequePayment,
+                                    remainsAmount = remainsAmount,
+                                    onSave = { newPayment ->
+                                        if (selectedPayment!!.id.startsWith("Destributor")) {
+                                            onAddPayment(
+                                                newPayment.copy(
+                                                    id = "Payment-" + UUID.randomUUID().toString(),
+                                                    customerId = selectedAccount.id,
+                                                )
                                             )
-                                        )
-                                    } else {
-                                        onEditPayment(newPayment)
+                                        } else {
+                                            onEditPayment(newPayment)
+                                        }
+                                        simplePaymentBottomSheet = false
                                     }
+                                )
+                            }
+                        } else {
+                            SelectFromSalesChequesBottomSheetContent(
+                                salesCheques = salesCheques,
+                                onSelect = { selectedPayment ->
+                                    onAddPayment(selectedPayment)
+                                },
+                                onDismiss = {
                                     simplePaymentBottomSheet = false
-                                }
+                                },
+                                selectedChequesPayment = payments.filterIsInstance<ChequePayment>(),
+                                onRemove = {
+                                    onRemovePayment(it)
+                                },
+                                remainsAmount = remainsAmount
                             )
                         }
                     }
@@ -302,32 +370,36 @@ fun SelectPaymentsContent(
                     )
                     Spacer(modifier = Modifier.padding(8.dp))
                     Text(
-                        text = stringResource(R.string.do_you_want_to_record_it_on_the_customer_or_register_it_as_a_sales_loss),
-                                style = MaterialTheme.typography.titleMedium,
+                        text = if (selectedAccount is WholeSaleCustomer) stringResource(R.string.do_you_want_to_record_it_on_the_customer_or_register_it_as_a_sales_loss) else stringResource(
+                            R.string.do_you_want_to_register_it_as_a_debt
+                        ),
+                        style = MaterialTheme.typography.titleMedium,
                     )
                     Spacer(modifier = Modifier.padding(8.dp))
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        OutlinedButton(
-                            shape = RoundedCornerShape(4.dp),
-                            onClick = {
-                                onAddPayment(
-                                    LossPayment(
-                                        customerId = selectedAccount.id,
-                                        amount = remainsAmount,
-                                        given = true,
-                                        type = PaymentType.LOSS
+                        if (!isPurchase) {
+                            OutlinedButton(
+                                shape = RoundedCornerShape(4.dp),
+                                onClick = {
+                                    onAddPayment(
+                                        LossPayment(
+                                            customerId = selectedAccount.id,
+                                            amount = remainsAmount,
+                                            given = true,
+                                            type = PaymentType.LOSS
+                                        )
                                     )
+                                    warningNotFullyPaidSheet = false
+                                },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.register_as_a_sales_loss),
+                                    textAlign = TextAlign.Center
                                 )
-                                warningNotFullyPaidSheet = false
-                            },
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.register_as_a_sales_loss),
-                                textAlign = TextAlign.Center
-                            )
+                            }
                         }
                         Button(
                             shape = RoundedCornerShape(4.dp),
@@ -341,16 +413,19 @@ fun SelectPaymentsContent(
                                             type = PaymentType.FUTURES
                                         )
                                     )
-                                } else {
+                                } else if (selectedAccount is WholeSaleCustomer) {
                                     selectCustomerSheet = true
+                                } else {
+                                    showSupplierSheet = true
                                 }
                                 warningNotFullyPaidSheet = false
-
                             },
                             modifier = Modifier.weight(1f)
                         ) {
                             Text(
-                                text = stringResource(R.string.record_on_the_customer),
+                                text = if (!isPurchase) stringResource(R.string.record_on_the_customer) else stringResource(
+                                    R.string.record_as_debt
+                                ),
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -384,6 +459,135 @@ fun SelectPaymentsContent(
                     },
                     suggestedCustomers = suggestedAccount as List<WholeSaleCustomer>
                 )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SelectFromSalesChequesBottomSheetContent(
+    salesCheques: List<ChequePayment>,
+    selectedChequesPayment: List<ChequePayment>,
+    onSelect: (ChequePayment) -> Unit,
+    onRemove: (ChequePayment) -> Unit = {},
+    onDismiss: () -> Unit = {},
+    remainsAmount: Double
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        dragHandle = {},
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(text = stringResource(R.string.select_cheques))
+                },
+                navigationIcon = {
+                    IconButton(onClick = onDismiss) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = null
+                        )
+                    }
+                }
+            )
+            LazyColumn(
+                modifier = Modifier.weight(1f)
+            ) {
+                items(salesCheques) { cheque ->
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            if (selectedChequesPayment.contains(cheque)) {
+                                onRemove(cheque)
+                            } else {
+                                onSelect(cheque)
+                            }
+                        },
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(horizontal = 12.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                FilterChip(
+                                    modifier = Modifier.height(FilterChipDefaults.Height - 8.dp),
+                                    selected = true,
+                                    onClick = {},
+                                    label = { Text(text = stringResource(cheque.type.titleRes)) },
+
+                                    )
+                                Spacer(modifier = Modifier.weight(1f))
+                                Text(
+                                    text = cheque.customerName,
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                RadioButton(
+                                    selected = selectedChequesPayment.contains(cheque),
+                                    onClick = {
+                                        if (selectedChequesPayment.contains(cheque)) {
+                                            onRemove(cheque)
+                                        } else {
+                                            onSelect(cheque)
+                                        }
+                                    }
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = cheque.createdAt.format(DateFormat.TIME),
+                                    style = MaterialTheme.typography.titleLarge
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                Text(
+                                    text = cheque.amount.toMoneyFormat(2),
+                                    style = MaterialTheme.typography.titleLarge,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.Bold
+                                )
+
+                            }
+                        }
+                    }
+                    HorizontalDivider()
+                }
+
+            }
+            Button(
+                onClick = onDismiss,
+                enabled = selectedChequesPayment.sumOf { it.amount } <= remainsAmount,
+                modifier = Modifier
+                    .fillMaxWidth().padding(8.dp),
+                shape = RoundedCornerShape(4.dp),
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    if(selectedChequesPayment.sumOf { it.amount } <= remainsAmount) {
+                        Text(
+                            selectedChequesPayment.sumOf { it.amount }.toMoneyFormat(2),
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        Text(
+                            text = stringResource(R.string.select_cheques),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }else{
+                        Text(
+                            text = stringResource(R.string.selected_cheques_amount_is_greater_than_the_remaining_amount),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                }
             }
         }
     }

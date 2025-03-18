@@ -19,10 +19,10 @@ import com.zaed.common.data.model.supplier.request.FetchSupplierRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.category.AddCategoryUseCase
 import com.zaed.common.domain.category.FetchAllCategoriesUseCase
-import com.zaed.common.domain.customer.FetchSuppliersByNameUseCase
+import com.zaed.common.domain.cheque.FetchAllUnCashedSalesChequeUseCase
 import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
-import com.zaed.common.domain.purchase.FetchPurchaseUseCase
 import com.zaed.common.domain.purchase.AddPurchaseUseCase
+import com.zaed.common.domain.purchase.FetchPurchaseUseCase
 import com.zaed.common.domain.purchase.UpdatePurchaseUseCase
 import com.zaed.common.domain.supplier.AddSupplierUseCase
 import com.zaed.common.domain.supplier.FetchSupplierUseCase
@@ -40,12 +40,12 @@ class AddPurchaseViewModel(
     private val fetchSuppliersUseCase: FetchSuppliersUseCase,
     private val getCurrentUserUseCase: GetCurrentUserLoggedInUseCase,
     private val getSupplierUseCase: FetchSupplierUseCase,
-    private val fetchSupplierByNameUseCase: FetchSuppliersByNameUseCase,
     private val fetchMoneyPaymentsByIdsUseCase: FetchMoneyPaymentsByIdsUseCase,
     private val addPurchaseUseCase: AddPurchaseUseCase,
     private val updatePurchaseUseCase: UpdatePurchaseUseCase,
     private val addCategoryUseCase: AddCategoryUseCase,
-    private val addSupplierUseCase: AddSupplierUseCase
+    private val addSupplierUseCase: AddSupplierUseCase,
+    private val fetchAllUnCashedSalesChequesUseCase: FetchAllUnCashedSalesChequeUseCase
 ) : ViewModel() {
     private val TAG: String = "AddProductSaleVM"
     private val _uiState = MutableStateFlow(AddPurchaseUiState())
@@ -57,6 +57,21 @@ class AddPurchaseViewModel(
         fetchAllCategories()
         fetchCurrentUser()
         fetchSuppliers()
+        fetchSalesCheques()
+    }
+
+    private fun fetchSalesCheques() {
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchAllUnCashedSalesChequesUseCase().onSuccess {
+                _uiState.update { oldState ->
+                    oldState.copy(
+                        salesCheques = it
+                    )
+                }
+            }.onFailure {
+                Log.e(TAG, "fetchSalesCheques: ${it.message}", it)
+            }
+        }
     }
 
     private fun fetchPurchase(purchaseId: String) {
