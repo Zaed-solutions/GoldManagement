@@ -32,7 +32,7 @@ fun DatedSalesWithSearchSection(
     onEdit: (Transaction) -> Unit= {},
     isDeletable: Boolean = false,
     onDelete: (Transaction) -> Unit = {},
-){
+) {
     Column (
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp)

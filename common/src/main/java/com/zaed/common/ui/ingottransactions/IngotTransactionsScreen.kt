@@ -1,5 +1,6 @@
 package com.zaed.common.ui.ingottransactions
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.rememberPagerState
@@ -31,7 +32,9 @@ import com.zaed.common.data.model.sale.IngotTransaction
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
 import com.zaed.common.ui.components.DatedIngotTransactionsList
 import com.zaed.common.ui.components.DatedListWithFilter
+import com.zaed.common.ui.components.IngotTransactionsList
 import com.zaed.common.ui.ingottransactions.components.SaveIngotTransactionBottomSheet
+import com.zaed.common.ui.util.DateFormat
 import kotlinx.coroutines.CoroutineScope
 import org.koin.androidx.compose.koinViewModel
 
@@ -126,22 +129,49 @@ fun IngotTransactionsScreenContent(
                         )
                     )
                 },
-                onCustomRangeSelected = {TODO()},
+                onCustomRangeSelected = {
+                    onAction(IngotTransactionsUiAction.SetCustomRange(it))
+                },
+                selectedRange = state.dateRange,
                 content = {
-                    DatedIngotTransactionsList(
-                        isLoading = state.isLoading,
-                        datedTransactions = state.datedTransactions,
-                        isEditable = true,
-                        isDeletable = true,
-                        onEdit = {
-                            selectedTransaction = it
-                            isSaveTransactionSheetVisible = true
-                        },
-                        onDelete = {
-                            selectedTransaction = it
-                            isConfirmDeleteSheetVisible = true
+                    AnimatedContent(
+                        targetState = state.dateFilter
+                    ) { contentState ->
+                        when(contentState){
+                            DateFormat.CUSTOM_RANGE -> {
+                                IngotTransactionsList(
+                                    isLoading = state.isLoading,
+                                    transactions = state.filteredTransactions,
+                                    isEditable = true,
+                                    isDeletable = true,
+                                    onEdit = {
+                                        selectedTransaction = it
+                                        isSaveTransactionSheetVisible = true
+                                    },
+                                    onDelete = {
+                                        selectedTransaction = it
+                                        isConfirmDeleteSheetVisible = true
+                                    }
+                                )
+                            }
+                            else -> {
+                                DatedIngotTransactionsList(
+                                    isLoading = state.isLoading,
+                                    datedTransactions = state.datedTransactions,
+                                    isEditable = true,
+                                    isDeletable = true,
+                                    onEdit = {
+                                        selectedTransaction = it
+                                        isSaveTransactionSheetVisible = true
+                                    },
+                                    onDelete = {
+                                        selectedTransaction = it
+                                        isConfirmDeleteSheetVisible = true
+                                    }
+                                )
+                            }
                         }
-                    )
+                    }
                 }
             )
             SaveIngotTransactionBottomSheet(

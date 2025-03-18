@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.inventory.Inventory
-import com.zaed.common.data.model.inventory.InventoryType
 import com.zaed.common.data.model.inventory.request.AddInventoryRequest
 import com.zaed.common.data.model.inventory.request.FetchInventoriesRequest
 import com.zaed.common.data.model.inventory.request.UpdateInventoryRequest
@@ -31,7 +30,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Date
-import kotlin.math.log
 
 class StoreDetailsViewModel(
     private val fetchLossesUseCase: FetchStoreLossesUseCase,
@@ -85,7 +83,11 @@ class StoreDetailsViewModel(
                             allLosses = data
                         )
                     }
-                    convertToDatedLosses()
+                    if(uiState.value.selectedLossesFilter == DateFormat.CUSTOM_RANGE){
+                        filterLosses()
+                    } else {
+                        convertToDatedLosses()
+                    }
                 }.onFailure {
                     Log.e(TAG, "fetchLosses: ${it.message}", it)
                 }
@@ -168,24 +170,54 @@ class StoreDetailsViewModel(
         when (action) {
             StoreDetailsUiAction.OnDeleteStore -> deleteStore()
             is StoreDetailsUiAction.UpdateSalesDateFilter -> updateSalesDateFilterAndFilter(format = action.format)
-            is StoreDetailsUiAction.SetCustomRange -> setCustomRangeFilter(action.range)
+            is StoreDetailsUiAction.SetSalesDateRange -> setSalesDateRange(action.range)
             is StoreDetailsUiAction.OnInventoryQueryChanged -> updateInventoryQueryAndFilter(action.query)
             is StoreDetailsUiAction.OnSalesQueryChanged -> updateSalesQueryAndFilter(query = action.query)
             is StoreDetailsUiAction.OnUpdateStore -> updateStore(action.store)
             is StoreDetailsUiAction.UpdateLossesDateFilter -> updateLossesDateFilterAndFilter(action.format)
+            is StoreDetailsUiAction.SetLossesDateRange -> setLossesDateRange(action.range)
             is StoreDetailsUiAction.OnSaveInventory -> saveInventory(action.inventory)
             else -> Unit
         }
     }
 
-    private fun setCustomRangeFilter(range: Pair<Date?, Date?>) {
+    private fun setLossesDateRange(range: Pair<Date?, Date?>) {
+        viewModelScope.launch {
+            if(range.first == null && range.second == null) return@launch
+            _uiState.update {
+                it.copy(
+                    isLoading = true,
+                    selectedLossesFilter = DateFormat.CUSTOM_RANGE,
+                    selectedLossesRange = range
+                )
+            }
+            filterLosses()
+        }
+    }
+
+    private fun filterLosses() {
+        viewModelScope.launch (Dispatchers.Default){
+            val filteredLosses = uiState.value.allLosses.filter{
+                val beforeFlag = uiState.value.selectedLossesRange.first?.let { date ->
+                    it.date >= date
+                } ?: true
+                val afterFlag = uiState.value.selectedLossesRange.second?.let { date ->
+                    it.date  <= date
+                } ?: true
+                beforeFlag && afterFlag
+            }
+            _uiState.update { it.copy(isLoading = false, filteredLosses = filteredLosses) }
+        }
+    }
+
+    private fun setSalesDateRange(range: Pair<Date?, Date?>) {
         viewModelScope.launch {
             if(range.first == null && range.second == null) return@launch
             _uiState.update {
                 it.copy(
                     isLoading = true,
                     selectedSalesFilter = DateFormat.CUSTOM_RANGE,
-                    selectedRange = range
+                    selectedSalesRange = range
                 )
             }
             filterSales()
@@ -332,10 +364,10 @@ class StoreDetailsViewModel(
             }
             if(_uiState.value.selectedSalesFilter == DateFormat.CUSTOM_RANGE){
                 val filteredSales = uiState.value.filteredSales.filter{
-                    val beforeFlag = uiState.value.selectedRange.first?.let { date ->
+                    val beforeFlag = uiState.value.selectedSalesRange.first?.let { date ->
                         it.createdAt >= date
                     } ?: true
-                    val afterFlag = uiState.value.selectedRange.second?.let { date ->
+                    val afterFlag = uiState.value.selectedSalesRange.second?.let { date ->
                         it.createdAt <= date
                     } ?: true
                     beforeFlag && afterFlag

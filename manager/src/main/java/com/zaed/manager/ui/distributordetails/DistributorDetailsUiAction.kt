@@ -11,7 +11,9 @@ sealed interface DistributorDetailsUiAction {
     data class OnSaleClicked(val saleId: String, val type: String): DistributorDetailsUiAction
     data class OnInventoryQueryChanged(val query: String): DistributorDetailsUiAction
     data class UpdateLossesDateFilter(val dateFormat: DateFormat): DistributorDetailsUiAction
+    data class SetLossesDateRange(val range: Pair<Date?, Date?>): DistributorDetailsUiAction
     data class UpdateIngotTransactionsDateFilter(val dateFormat: DateFormat): DistributorDetailsUiAction
+    data class SetIngotTransactionsDateRange(val range: Pair<Date?, Date?>): DistributorDetailsUiAction
     data class OnSaveInventory(val inventory: Inventory): DistributorDetailsUiAction
-    data class SetCustomRange(val range: Pair<Date?, Date?>): DistributorDetailsUiAction
+    data class SetSalesDateRange(val range: Pair<Date?, Date?>): DistributorDetailsUiAction
 }

@@ -72,7 +72,11 @@ class IngotTransactionsViewModel(
                             allTransactions = data,
                         )
                     }
-                    convertDataToDatedTransactions()
+                    if(uiState.value.dateFilter == DateFormat.CUSTOM_RANGE) {
+                        filterData()
+                    } else {
+                        convertDataToDatedTransactions()
+                    }
                 }.onFailure {
                     Log.e(TAG, "fetchTransaction: ${it.message}", it)
                 }
@@ -98,7 +102,39 @@ class IngotTransactionsViewModel(
             is IngotTransactionsUiAction.OnSaveTransaction -> onSave(action.transaction)
             is IngotTransactionsUiAction.OnDeleteTransaction -> deleteTransaction(action.transaction)
             is IngotTransactionsUiAction.UpdateIngotTransactionsDateFilter -> updateFilter(action.dateFormat)
+            is IngotTransactionsUiAction.SetCustomRange -> setCustomRangeFilter(action.range)
             else -> Unit
+        }
+    }
+
+    private fun setCustomRangeFilter(range: Pair<Date?, Date?>) {
+        viewModelScope.launch {
+            if(range.first == null && range.second == null) return@launch
+            _uiState.update { oldState ->
+                oldState.copy(
+                    isLoading = true,
+                    dateFilter = DateFormat.CUSTOM_RANGE,
+                    dateRange = range
+                )
+            }
+            filterData()
+        }
+    }
+
+    private fun filterData() {
+        viewModelScope.launch (Dispatchers.Default){
+            val range = _uiState.value.dateRange
+            val filteredTransactions = _uiState.value.allTransactions.filter { transaction ->
+                val fromFlag = range.first?.let { transaction.createdAt >= it } ?: true
+                val toFlag = range.second?.let { transaction.createdAt <= it } ?: true
+                fromFlag && toFlag
+            }
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    filteredTransactions = filteredTransactions
+                )
+            }
         }
     }
 
