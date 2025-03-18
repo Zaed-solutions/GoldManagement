@@ -151,9 +151,9 @@ fun PurchasesScreenContent(
                         onConfirm = {
                             onAction(
                                 if (selectedTransaction.second) {
-                                    PurchasesUiAction.OnDeleteProductPurchases(selectedTransaction.first)
+                                    PurchasesUiAction.OnDeletePurchases(selectedTransaction.first)
                                 } else {
-                                    PurchasesUiAction.OnDeleteGoldPurchases(selectedTransaction.first)
+                                    PurchasesUiAction.OnDeletePurchases(selectedTransaction.first)
                                 }
                             )
                             isConfirmDeleteVisible = false
