@@ -50,7 +50,7 @@ import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.ui.components.TitledSection
-import com.zaed.manager.ui.storessales.components.DatePickerFieldToModal
+import com.zaed.common.ui.components.DatePickerFieldToModal
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable

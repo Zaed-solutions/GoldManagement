@@ -140,10 +140,10 @@ fun PaymentItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = payment.createdAt.format(DateFormat.TIME),
-                    style = MaterialTheme.typography.titleLarge
+                    text = payment.createdAt.format(DateFormat.DATE_TIME),
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.weight(1f)
                 )
-                Spacer(modifier = Modifier.weight(1f))
                 Text(
                     text = price,
                     style = MaterialTheme.typography.titleLarge,

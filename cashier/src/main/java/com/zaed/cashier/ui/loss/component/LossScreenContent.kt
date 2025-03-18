@@ -1,28 +1,21 @@
 package com.zaed.cashier.ui.loss.component
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -59,8 +52,7 @@ import com.zaed.common.ui.components.ConfirmDeleteDialog
 import com.zaed.common.ui.components.CustomSnackbar
 import com.zaed.common.ui.components.DatedListWithFilter
 import com.zaed.common.ui.components.DatedLossesList
-import com.zaed.common.ui.components.MoreDropDownMenu
-import com.zaed.common.ui.components.MoreDropdownItem
+import com.zaed.common.ui.components.LossesList
 import com.zaed.common.ui.components.NumberInputTextField
 import com.zaed.common.ui.components.TextInputTextField
 import com.zaed.common.ui.util.DateFormat
@@ -157,22 +149,51 @@ fun LossScreenContent(
         ) {
             DatedListWithFilter(
                 selectedFilter = uiState.groupedByFilter,
+                selectedRange = uiState.selectedDateRange,
                 onFilterClicked = { onAction(LossUiAction.UpdateGroupedByFilter(it)) },
+                onCustomRangeSelected = { dateRange ->
+                    onAction(LossUiAction.SetCustomRangeFilter(dateRange))
+                },
                 content = {
-                    DatedLossesList(
-                        isLoading = uiState.isLoading,
-                        datedLosses = uiState.datedLosses,
-                        isDeleteEnabled = true,
-                        onDeleteLoss = {
-                            selectedLoss = it as StoreLoss
-                            isDeleteLossSheetOpen = true
-                        },
-                        isEditEnabled = true,
-                        onUpdateLoss = {
-                            selectedLoss = it as StoreLoss
-                            isSaveLossSheetOpen = true
+                    AnimatedContent(
+                        targetState = uiState.groupedByFilter
+                    ) { contentState ->
+                        when (contentState) {
+                            DateFormat.CUSTOM_RANGE -> {
+                                LossesList(
+                                    isLoading = uiState.isLoading,
+                                    losses = uiState.filteredLosses,
+                                    isDeletable = true,
+                                    onDelete = {
+                                        selectedLoss = it as StoreLoss
+                                        isDeleteLossSheetOpen = true
+                                    },
+                                    isEditable = true,
+                                    onEdit = {
+                                        selectedLoss = it as StoreLoss
+                                        isSaveLossSheetOpen = true
+                                    }
+                                )
+                            }
+
+                            else -> {
+                                DatedLossesList(
+                                    isLoading = uiState.isLoading,
+                                    datedLosses = uiState.datedLosses,
+                                    isDeleteEnabled = true,
+                                    onDeleteLoss = {
+                                        selectedLoss = it as StoreLoss
+                                        isDeleteLossSheetOpen = true
+                                    },
+                                    isEditEnabled = true,
+                                    onUpdateLoss = {
+                                        selectedLoss = it as StoreLoss
+                                        isSaveLossSheetOpen = true
+                                    }
+                                )
+                            }
                         }
-                    )
+                    }
                 }
             )
         }

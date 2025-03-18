@@ -118,6 +118,7 @@ private fun SalesScreenContent(
        ){
             DatedSalesWithSearchSection(
                 modifier = Modifier.fillMaxSize(),
+                onCustomRangeSelected = {TODO()},
                 isLoading = state.isLoading,
                 query = state.searchQuery,
                 onQueryChanged = { query ->

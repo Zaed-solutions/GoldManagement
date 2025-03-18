@@ -116,6 +116,7 @@ private fun AddSaleScreenContent(
                     0 -> {
                         //add products
                         SelectProductsContent(
+                            isStoreSale = true,
                             categories = state.categories,
                             transaction = state.sale,
                             onAddProduct = {
@@ -134,6 +135,7 @@ private fun AddSaleScreenContent(
 
                     1 -> {
                         PreviewSaleContent(
+                            isStoreSale = true,
                             transaction = state.sale,
                             isSelectCustomerEnabled = false,
                             onUpdateProduct = {
@@ -148,6 +150,7 @@ private fun AddSaleScreenContent(
                                     pagerState.animateScrollToPage(pagerState.currentPage - 1)
                                 }
                             },
+                            selectedAccount = state.selectedCustomer,
                             onNext = {
                                 scope.launch {
                                     pagerState.animateScrollToPage(pagerState.currentPage + 1)

@@ -7,16 +7,19 @@ import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.loss.DatedLoss
 import com.zaed.common.data.model.loss.StoreLoss
 import com.zaed.common.ui.util.DateFormat
+import java.util.Date
 
 data class LossUiState(
     val losses: List<StoreLoss> = emptyList(),
+    val filteredLosses: List<StoreLoss> = emptyList(),
     val currentUser: User = User(),
     val isLoading: Boolean = false,
     @StringRes val errorMessage: Int? = null,
     val fieldError: LossFieldsError = LossFieldsError.NONE,
     val successMessage: String? = null,
     val datedLosses : List<DatedLoss> = emptyList(),
-    val groupedByFilter: DateFormat = DateFormat.DATE
+    val groupedByFilter: DateFormat = DateFormat.DATE,
+    val selectedDateRange: Pair<Date?, Date?> = null to null
 )
 
 enum class LossFieldsError(@StringRes val message: Int) {

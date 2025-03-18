@@ -59,7 +59,8 @@ import com.zaed.common.ui.components.SaveBankTransferPaymentBottomSheetContent
 import com.zaed.common.ui.components.SaveCashPaymentBottomSheetContent
 import com.zaed.common.ui.components.SaveChequePaymentBottomSheetContent
 import com.zaed.common.ui.components.SaveFuturePaymentBottomSheetContent
-import com.zaed.common.ui.suppliers.SuppliersUiAction
+import com.zaed.common.ui.components.SearchBar
+import com.zaed.common.ui.components.TransactionsList
 import com.zaed.common.ui.suppliers.components.SaveSupplierBottomSheet
 import com.zaed.common.ui.util.toMoneyFormat
 import kotlinx.coroutines.launch
@@ -70,6 +71,8 @@ fun SupplierDetailsScreen(
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit,
     supplierId: String,
+    onNavigateToPurchaseDetails: (String) -> Unit,
+    onNavigateToEditPurchase: (String) -> Unit,
     viewModel: SupplierDetailsViewModel = koinViewModel()
 ) {
     LaunchedEffect(true) {
@@ -81,6 +84,8 @@ fun SupplierDetailsScreen(
         onAction = { action ->
             when (action) {
                 SupplierDetailsUiAction.OnBackClicked -> onBackPressed()
+                is SupplierDetailsUiAction.OnEditPurchase -> onNavigateToEditPurchase(action.purchaseId)
+                is SupplierDetailsUiAction.OnPurchaseClicked -> onNavigateToPurchaseDetails(action.purchaseId)
                 else -> viewModel.handleAction(action)
             }
         }
@@ -90,7 +95,7 @@ fun SupplierDetailsScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SupplierDetailsScreenContent(
+private fun SupplierDetailsScreenContent(
     modifier: Modifier = Modifier,
     state: SupplierDetailsUiState,
     onAction: (SupplierDetailsUiAction) -> Unit
@@ -102,6 +107,12 @@ fun SupplierDetailsScreenContent(
     }
     var selectedPayment: Payment by remember {
         mutableStateOf(CashPayment())
+    }
+    var isPurchase by remember {
+        mutableStateOf(false)
+    }
+    var selectedPurchaseId by remember {
+        mutableStateOf("")
     }
     var isConfirmDeletePaymentSheetVisible by remember {
         mutableStateOf(false)
@@ -198,7 +209,30 @@ fun SupplierDetailsScreenContent(
             ) { value ->
                 when (value) {
                     SupplierDetailsTabs.PURCHASES.ordinal -> {
-                        //todo purchases list
+                        Column {
+                            SearchBar(
+                                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                                query = state.purchasesSearchQuery,
+                                onQueryChanged = {
+                                    onAction(SupplierDetailsUiAction.UpdatePurchasesSearchQuery(it))
+                                },
+                            )
+                            TransactionsList(
+                                isLoading = false,
+                                transactions = state.allPurchases,
+                                onTransactionClicked = { purchaseId, _ ->
+                                    onAction(SupplierDetailsUiAction.OnPurchaseClicked(purchaseId))
+                                },
+                                onEditTransaction = { purchaseId, _ ->
+                                    onAction(SupplierDetailsUiAction.OnEditPurchase(purchaseId))
+                                },
+                                onDeleteTransaction = { purchaseId, _ ->
+                                    isPurchase = true
+                                    selectedPurchaseId = purchaseId
+                                    isConfirmDeletePaymentSheetVisible = true
+                                }
+                            )
+                        }
                     }
 
                     SupplierDetailsTabs.PAYMENTS.ordinal -> {
@@ -213,6 +247,7 @@ fun SupplierDetailsScreenContent(
                                 payments = state.payments,
                                 onRemovePayment = { payment ->
                                     selectedPayment = payment
+                                    isPurchase = false
                                     isConfirmDeletePaymentSheetVisible = true
                                 },
                                 onEditPayment = { payment ->
@@ -424,21 +459,27 @@ fun SupplierDetailsScreenContent(
                     )
                 }
             }
-            ConfirmDeleteBottomSheet(visible = isConfirmDeletePaymentSheetVisible,
-                label = selectedPayment.amount.toMoneyFormat(2),
+            ConfirmDeleteBottomSheet(
+                visible = isConfirmDeletePaymentSheetVisible,
+                label = if(isPurchase) stringResource(R.string.purchase) else stringResource(R.string.payment),
                 onDismiss = {
                     isConfirmDeletePaymentSheetVisible = false
                 },
                 onConfirm = {
                     isConfirmDeletePaymentSheetVisible = false
-                    onAction(SupplierDetailsUiAction.DeletePayment(selectedPayment))
+                    onAction(
+                        if (isPurchase)
+                            SupplierDetailsUiAction.DeletePurchase(selectedPurchaseId)
+                        else
+                            SupplierDetailsUiAction.DeletePayment(selectedPayment)
+                    )
                 }
             )
         }
     }
 }
 
-enum class SupplierDetailsTabs(val titleRes: Int) {
+private enum class SupplierDetailsTabs(val titleRes: Int) {
     PURCHASES(R.string.purchases),
     PAYMENTS(R.string.payments),
 }

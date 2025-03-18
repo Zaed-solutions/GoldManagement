@@ -157,6 +157,7 @@ fun DistributorScreenContent(
                 when (page) {
                     DistributorDetailsTab.SALES.ordinal -> {
                         DatedSalesWithSearchSection(
+                            onCustomRangeSelected = {TODO()},
                             modifier = Modifier.fillMaxSize(),
                             isLoading = state.isLoading,
                             query = state.salesQuery,
@@ -184,6 +185,7 @@ fun DistributorScreenContent(
                                     )
                                 )
                             },
+                            onCustomRangeSelected = {TODO()},
                             content = {
                                 DatedIngotTransactionsList(
                                     isLoading = state.isLoading,
@@ -224,6 +226,7 @@ fun DistributorScreenContent(
                                     )
                                 )
                             },
+                            onCustomRangeSelected = {TODO()},
                             content = {
                                 DatedLossesList(
                                     isLoading = state.isLoading,

@@ -1,4 +1,4 @@
-package com.zaed.manager.ui.storessales.components
+package com.zaed.common.ui.components
 
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown

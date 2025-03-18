@@ -58,12 +58,14 @@ import com.zaed.common.data.source.remote.SupplierRemoteSourceImpl
 import com.zaed.common.data.source.remote.WholeSalesCustomerRemoteDataSource
 import com.zaed.common.data.source.remote.WholeSalesCustomerRemoteDataSourceImpl
 import com.zaed.common.domain.authentication.DeleteUserUseCase
+import com.zaed.common.domain.authentication.FetchAppLanguageUseCase
 import com.zaed.common.domain.authentication.FetchDistributorUseCase
 import com.zaed.common.domain.authentication.FetchUsersByRoleUseCase
 import com.zaed.common.domain.authentication.FetchUsersUseCase
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.authentication.LoginUserUseCase
 import com.zaed.common.domain.authentication.LogoutUserUseCase
+import com.zaed.common.domain.authentication.SetAppLanguageUseCase
 import com.zaed.common.domain.authentication.SignUpUserUseCase
 import com.zaed.common.domain.authentication.UpdateUserUseCase
 import com.zaed.common.domain.category.AddCategoryUseCase
@@ -119,7 +121,11 @@ import com.zaed.common.domain.purchase.DeletePurchaseUseCase
 import com.zaed.common.domain.purchase.FetchPurchaseUseCase
 import com.zaed.common.domain.purchase.FetchPurchasesUseCase
 import com.zaed.common.domain.purchase.UpdatePurchaseUseCase
+import com.zaed.common.domain.purchase.FetchSupplierPurchasesUseCase
+import com.zaed.common.domain.sale.AddGoldSaleUseCase
 import com.zaed.common.domain.sale.AddIngotTransactionUseCase
+import com.zaed.common.domain.purchase.AddPurchaseUseCase
+import com.zaed.common.domain.purchase.FetchPurchasesUseCase
 import com.zaed.common.domain.sale.AddStoreSaleUseCase
 import com.zaed.common.domain.sale.AddWholesaleUseCase
 import com.zaed.common.domain.sale.ConvertIngotTransactionsToDatedUseCase
@@ -134,6 +140,7 @@ import com.zaed.common.domain.sale.FetchStoreSalesUseCase
 import com.zaed.common.domain.sale.FetchWholesaleUseCase
 import com.zaed.common.domain.sale.GetStoreSaleUseCase
 import com.zaed.common.domain.sale.UpdateIngotTransactionUseCase
+import com.zaed.common.domain.purchase.UpdatePurchaseUseCase
 import com.zaed.common.domain.sale.UpdateStoreSaleUseCase
 import com.zaed.common.domain.sale.UpdateWholesaleUseCase
 import com.zaed.common.domain.store.AddStoreUseCase
@@ -261,6 +268,10 @@ val useCaseModule = module {
     singleOf(::FetchSupplierUseCase)
     singleOf(::UpdatePurchaseUseCase)
     singleOf(::AddCategoryUseCase)
+    singleOf(::FetchSupplierPurchasesUseCase)
+    singleOf(::FetchPurchasesUseCase)
+    singleOf(::SetAppLanguageUseCase)
+    singleOf(::FetchAppLanguageUseCase)
     singleOf(::FetchPurchasesUseCase)
     singleOf(::FetchAllUnCashedSalesChequeUseCase)
 }

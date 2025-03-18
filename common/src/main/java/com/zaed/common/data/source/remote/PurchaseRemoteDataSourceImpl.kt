@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Filter
+import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
@@ -20,6 +21,8 @@ import com.zaed.common.data.model.payment.LossPayment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.signedAmount
 import com.zaed.common.data.model.sale.WholesaleTransaction
+import com.zaed.common.data.model.purchase.Purchase
+import com.zaed.common.data.model.purchase.request.FetchSupplierPurchasesRequest
 import com.zaed.common.data.model.sale.request.AddPurchaseRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleRequest
@@ -403,5 +406,50 @@ class PurchaseRemoteDataSourceImpl(
             crashlytics.recordException(e)
             Result.failure(e)
         }
+    }
+
+    override fun fetchSupplierPurchases(request: FetchSupplierPurchasesRequest): Flow<Result<List<Purchase>>>
+    = callbackFlow {
+        try {
+            purchaseCollection
+                .where(
+                    Filter.and(
+                        Filter.equalTo("supplierId", request.supplierId),
+                        Filter.equalTo("deleted", false)
+                    )
+                )
+                .addSnapshotListener{ value, error ->
+                    if (error != null){
+                        trySend(Result.failure(error))
+                        return@addSnapshotListener
+                    }
+                    val purchases = value?.toObjects(Purchase::class.java)?: emptyList()
+                    trySend(Result.success(purchases))
+                }
+        }catch ( e: Exception){
+            crashlytics.recordException(e)
+            e.printStackTrace()
+            trySend(Result.failure(e))
+        }
+        awaitClose {  }
+    }
+
+    override fun fetchPurchases(): Flow<Result<List<Purchase>>> = callbackFlow {
+        try {
+            purchaseCollection
+                .whereEqualTo("deleted", false)
+                .addSnapshotListener{ value, error ->
+                    if (error != null){
+                        trySend(Result.failure(error))
+                        return@addSnapshotListener
+                    }
+                    val purchases = value?.toObjects(Purchase::class.java)?: emptyList()
+                    trySend(Result.success(purchases))
+                }
+        } catch (e: Exception){
+            crashlytics.recordException(e)
+            trySend(Result.failure(e))
+        }
+        awaitClose {}
     }
 }

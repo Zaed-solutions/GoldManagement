@@ -50,6 +50,7 @@ fun SelectProductsContent(
     onAddProduct: (Product) -> Unit,
     onDeleteProduct: (Product) -> Unit,
     onAddNewCategory: (Category) -> Unit = {},
+    isStoreSale: Boolean = false,
     isPurchase: Boolean = false
 ) {
     val categories1 by rememberUpdatedState(categories)
@@ -95,7 +96,7 @@ fun SelectProductsContent(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = stringResource(com.zaed.common.R.string.sell),
+                        text = stringResource(R.string.sell),
                         style = MaterialTheme.typography.titleMedium
                     )
                     Text(
@@ -133,23 +134,16 @@ fun SelectProductsContent(
             ) {
                 items(displayedCategory, key = { it.id }) { category ->
                     CategoryItem(
-                        modifier = Modifier.animateItemPlacement(),
+                        modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null),
                         count = transaction.products.firstOrNull { it.categoryId == category.id }?.quantity
                             ?: 0,
                         price = transaction.products.filter { it.categoryId == category.id }
                             .sumOf { it.totalPriceAfterDiscount },
                         category = category,
                         onClick = {
-                            selectedProduct = if (
-                                transaction.products.any { it.categoryId == category.id }
-                            ) {
-                                transaction.products.first { it.categoryId == category.id }.copy(
-                                    name = category.name, categoryId = category.id
-                                )
-                            } else {
-                                Product(name = category.name, categoryId = category.id)
-                            }
-
+                            selectedProduct =
+                                transaction.products.firstOrNull { it.categoryId == category.id }
+                                    ?: Product(categoryId = category.id)
                             enterProductSheetVisible = true
                         }
                     )
@@ -169,6 +163,7 @@ fun SelectProductsContent(
                 ) {
                     selectedProduct?.let {
                         SaveProductSheetContent(
+                            isStoreSale = isStoreSale,
                             initialProduct = it,
                             onSaveProduct = { newProduct ->
                                 onAddProduct(newProduct)
