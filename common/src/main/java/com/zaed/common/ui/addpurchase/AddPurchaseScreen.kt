@@ -163,7 +163,6 @@ private fun AddPurchaseScreenContent(
                             }
                         }
                     }
-
                     1 -> {
                         when (selectedProductType) {
                             ProductType.GOLD -> {
@@ -186,7 +185,22 @@ private fun AddPurchaseScreenContent(
                             }
 
                             ProductType.INGOT -> {
-
+                                SelectGoldContent(
+                                    sale = state.purchase,
+                                    onAddGold = {
+                                        onAction(AddPurchaseUiAction.OnAddProduct(it))
+                                    },
+                                    onRemoveGold = {productId->
+                                        state.purchase.products.firstOrNull { productId == it.id }?.let {
+                                            onAction(AddPurchaseUiAction.OnDeleteProduct(it))
+                                        }
+                                    },
+                                    onNext = {
+                                        scope.launch {
+                                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                        }
+                                    },
+                                )
                             }
 
                             ProductType.PRODUCT -> {

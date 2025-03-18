@@ -92,6 +92,19 @@ class PurchaseRemoteDataSourceImpl(
         }
     }
 
+    override fun fetchPurchases(): Flow<Result<List<WholesaleTransaction>>> = callbackFlow {
+        try {
+            purchaseCollection.addSnapshotListener { snapshot, error ->
+                val result = snapshot?.toObjects(WholesaleTransaction::class.java) ?: emptyList()
+                trySend(Result.success(result))
+            }
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            trySend(Result.failure(e))
+        }
+        awaitClose {}
+    }
+
     override suspend fun deletePurchase(request: DeleteWholesaleRequest): Result<Unit> {
         return try {
             val batch = firestore.batch()

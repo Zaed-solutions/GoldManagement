@@ -14,5 +14,6 @@ interface PurchaseRemoteDataSource {
     suspend fun updatePurchase(request: UpdatePurchaseRequest): Result<String>
     suspend fun deletePurchase(request: DeleteWholesaleRequest): Result<Unit>
     fun fetchSupplierPurchase(request: FetchSupplierPurchaseRequest): Flow<Result<List<WholesaleTransaction>>>
+    fun fetchPurchases(): Flow<Result<List<WholesaleTransaction>>>
     suspend fun fetchPurchase(request: FetchWholesaleRequest): Result<WholesaleTransaction>
 }

@@ -5,6 +5,7 @@ import com.zaed.common.data.model.sale.request.AddPurchaseRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleRequest
 import com.zaed.common.data.model.sale.request.UpdatePurchaseRequest
 import com.zaed.common.data.source.remote.PurchaseRemoteDataSource
+import kotlinx.coroutines.flow.Flow
 
 class PurchaseRepositoryImpl(
     private val purchaseRemoteDataSource: PurchaseRemoteDataSource
@@ -23,5 +24,9 @@ class PurchaseRepositoryImpl(
 
     override suspend fun deletePurchase(request: DeleteWholesaleRequest): Result<Unit> {
         return purchaseRemoteDataSource.deletePurchase(request)
+    }
+
+    override fun fetchPurchasesUseCase(): Flow<Result<List<WholesaleTransaction>>> {
+        return purchaseRemoteDataSource.fetchPurchases()
     }
 }

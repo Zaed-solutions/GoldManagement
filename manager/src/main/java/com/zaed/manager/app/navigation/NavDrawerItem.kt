@@ -71,8 +71,13 @@ enum class NavDrawerItem(
         route = Route.SuppliersRoute
     ),
     ADD_PURCHASE(
-        title = R.string.purchases,
-        icon = R.drawable.ic_cart,
+        title = R.string.add_purchase,
+        icon = com.zaed.manager.R.drawable.ic_add_cart,
         route = Route.AddPurchaseRoute()
+    ),
+    PURCHASE(
+        title = R.string.purchases,
+        icon =R.drawable.ic_cart,
+        route = Route.PurchasesRoute
     ),
 }

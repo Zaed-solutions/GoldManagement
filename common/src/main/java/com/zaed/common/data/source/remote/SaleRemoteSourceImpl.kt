@@ -255,13 +255,6 @@ class SaleRemoteSourceImpl(
         callbackFlow {
             var sListener: ListenerRegistration? = null
             try {
-                var latests: List<WholesaleTransaction> = emptyList()
-                val updateAndSend = {
-                    val combinedSales = (latests + latests)
-                        .sortedByDescending { it.createdAt } // Sort by date
-                    trySend(Result.success(combinedSales))
-                }
-
                 sListener = wholesalesCollection.where(
                     Filter.and(
                         Filter.equalTo("distributorId", request.distributorId),
@@ -270,28 +263,11 @@ class SaleRemoteSourceImpl(
                 ).addSnapshotListener { snapshot, error ->
                     if (error != null) {
                         close(error)
-                        return@addSnapshotListener
+                        trySend(Result.failure(error))
+                    }else{
+                        val sales = snapshot?.toObjects(WholesaleTransaction::class.java) ?: emptyList()
+                        trySend(Result.success(sales))
                     }
-                    latests = snapshot?.documents?.mapNotNull { doc ->
-                        doc.toObject(WholesaleTransaction::class.java)?.copy(id = doc.id)
-                    } ?: emptyList()
-                    updateAndSend()
-                }
-
-                sListener = wholesalesCollection.where(
-                    Filter.and(
-                        Filter.equalTo("distributorId", request.distributorId),
-                        Filter.equalTo("deleted", false)
-                    )
-                ).addSnapshotListener { snapshot, error ->
-                    if (error != null) {
-                        close(error)
-                        return@addSnapshotListener
-                    }
-                    latests = snapshot?.documents?.mapNotNull { doc ->
-                        doc.toObject(WholesaleTransaction::class.java)?.copy(id = doc.id)
-                    } ?: emptyList()
-                    updateAndSend()
                 }
 
             } catch (e: Exception) {
@@ -308,13 +284,6 @@ class SaleRemoteSourceImpl(
         callbackFlow {
             var sListener: ListenerRegistration? = null
             try {
-                var latests: List<WholesaleTransaction> = emptyList()
-                val updateAndSend = {
-                    val combinedSales = (latests + latests)
-                        .sortedByDescending { it.createdAt } // Sort by date
-                    trySend(Result.success(combinedSales))
-                }
-
                 sListener = wholesalesCollection.where(
                     Filter.and(
                         Filter.equalTo("customerId", request.customerId),
@@ -323,37 +292,18 @@ class SaleRemoteSourceImpl(
                 ).addSnapshotListener { snapshot, error ->
                     if (error != null) {
                         close(error)
-                        return@addSnapshotListener
+                        trySend(Result.failure(error))
+                    }else{
+                        val sales = snapshot?.toObjects(WholesaleTransaction::class.java) ?: emptyList()
+                        trySend(Result.success(sales))
                     }
-                    latests = snapshot?.documents?.mapNotNull { doc ->
-                        doc.toObject(WholesaleTransaction::class.java)?.copy(id = doc.id)
-                    } ?: emptyList()
-                    updateAndSend()
                 }
-
-                sListener = wholesalesCollection.where(
-                    Filter.and(
-                        Filter.equalTo("customerId", request.customerId),
-                        Filter.equalTo("deleted", false)
-                    )
-                ).addSnapshotListener { snapshot, error ->
-                    if (error != null) {
-                        close(error)
-                        return@addSnapshotListener
-                    }
-                    latests = snapshot?.documents?.mapNotNull { doc ->
-                        doc.toObject(WholesaleTransaction::class.java)?.copy(id = doc.id)
-                    } ?: emptyList()
-                    updateAndSend()
-                }
-
 
             } catch (e: Exception) {
                 crashlytics.recordException(e)
                 trySend(Result.failure(e))
             }
             awaitClose {
-                sListener?.remove()
                 sListener?.remove()
             }
         }
@@ -482,37 +432,16 @@ class SaleRemoteSourceImpl(
     override fun fetchAllDistributorsSales(): Flow<Result<List<WholesaleTransaction>>> = callbackFlow {
         var sListener: ListenerRegistration? = null
         try {
-            var latests: List<WholesaleTransaction> = emptyList()
-            val updateAndSend = {
-                val combinedSales = (latests + latests)
-                    .sortedByDescending { it.createdAt } // Sort by date
-                trySend(Result.success(combinedSales))
-            }
 
             sListener =
                 wholesalesCollection.addSnapshotListener { snapshot, error ->
                     if (error != null) {
                         close(error)
-                        return@addSnapshotListener
+                        trySend(Result.failure(error))
                     }
-                    latests = snapshot?.documents?.mapNotNull { doc ->
-                        doc.toObject(WholesaleTransaction::class.java)?.copy(id = doc.id)
-                    } ?: emptyList()
-                    updateAndSend()
+                    val sales = snapshot?.toObjects(WholesaleTransaction::class.java) ?: emptyList()
+                    trySend(Result.success(sales))
                 }
-
-            sListener =
-                wholesalesCollection.addSnapshotListener { snapshot, error ->
-                    if (error != null) {
-                        close(error)
-                        return@addSnapshotListener
-                    }
-                    latests = snapshot?.documents?.mapNotNull { doc ->
-                        doc.toObject(WholesaleTransaction::class.java)?.copy(id = doc.id)
-                    } ?: emptyList()
-                    updateAndSend()
-                }
-
         } catch (e: Exception) {
             crashlytics.recordException(e)
             trySend(Result.failure(e))

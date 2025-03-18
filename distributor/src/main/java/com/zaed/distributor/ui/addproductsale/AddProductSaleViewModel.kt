@@ -12,7 +12,7 @@ import com.zaed.common.data.model.payment.PaymentStatus
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
 import com.zaed.common.data.model.sale.Product
-import com.zaed.common.data.model.sale.request.AddWholesaleProductSaleRequest
+import com.zaed.common.data.model.sale.request.AddWholesaleRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleRequest
 import com.zaed.common.data.model.sale.request.UpdateWholesaleRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
@@ -251,7 +251,7 @@ class AddProductSaleViewModel(
                 )
             }
             addProductSaleUseCase(
-                AddWholesaleProductSaleRequest(
+                AddWholesaleRequest(
                     sale = uiState.value.sale,
                     payments = uiState.value.payments,
                 )

@@ -294,4 +294,5 @@
     <string name="purchase_summary">Purchase Summary</string>
     <string name="purchase_information">Purchase Information</string>
     <string name="select_product_type">Select Product Type</string>
+    <string name="add_purchase">Add Purchase</string>
 </resources>
