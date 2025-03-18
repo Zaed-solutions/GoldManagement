@@ -1,5 +1,6 @@
 package com.zaed.manager.ui.losses
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -41,6 +42,8 @@ import com.zaed.common.data.model.loss.ManagerLossType
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
 import com.zaed.common.ui.components.DatedListWithFilter
 import com.zaed.common.ui.components.DatedLossesList
+import com.zaed.common.ui.components.LossesList
+import com.zaed.common.ui.util.DateFormat
 import com.zaed.manager.ui.losses.components.SaveLossBottomSheet
 import com.zaed.manager.ui.storedetails.StoreDetailsUiAction
 import kotlinx.coroutines.launch
@@ -184,29 +187,57 @@ fun LossesScreenContent(
                                     )
                                 )
                             },
-                            onCustomRangeSelected = {TODO()},
+                            selectedRange = state.lossesDateRange,
+                            onCustomRangeSelected = {
+                                onAction(LossesUiAction.SetCustomLossesRange(it))
+                            },
                             content = {
-                                DatedLossesList(
-                                    isLoading = state.isLoading,
-                                    datedLosses = state.datedLosses,
-                                    isEditEnabled = true,
-                                    isDeleteEnabled = true,
-                                    onUpdateLoss = {
-                                        selectedLoss = it as ManagerLoss
-                                        isSaveLossSheetVisible = true
-                                    },
-                                    onDeleteLoss = {
-                                        selectedLoss = it as ManagerLoss
-                                        isConfirmDeleteSheetVisible = true
+                                AnimatedContent(state.selectedLossesFilter) { contentState ->
+                                    when(contentState){
+                                        DateFormat.CUSTOM_RANGE -> {
+                                            LossesList(
+                                                isLoading = state.isLoading,
+                                                losses = state.filteredLosses,
+                                                isEditable = true,
+                                                isDeletable = true,
+                                                onEdit = {
+                                                    selectedLoss = it as ManagerLoss
+                                                    isSaveLossSheetVisible = true
+                                                },
+                                                onDelete = {
+                                                    selectedLoss = it as ManagerLoss
+                                                    isConfirmDeleteSheetVisible = true
+                                                }
+                                            )
+                                        }
+                                        else -> {
+                                            DatedLossesList(
+                                                isLoading = state.isLoading,
+                                                datedLosses = state.datedLosses,
+                                                isEditEnabled = true,
+                                                isDeleteEnabled = true,
+                                                onUpdateLoss = {
+                                                    selectedLoss = it as ManagerLoss
+                                                    isSaveLossSheetVisible = true
+                                                },
+                                                onDeleteLoss = {
+                                                    selectedLoss = it as ManagerLoss
+                                                    isConfirmDeleteSheetVisible = true
+                                                }
+                                            )
+                                        }
                                     }
-                                )
+                                }
                             }
                         )
                     }
 
                     1 -> {
                         DatedListWithFilter(
-                            onCustomRangeSelected = {TODO()},
+                            onCustomRangeSelected = {
+                                onAction(LossesUiAction.SetCustomPersonalExpensesRange(it))
+                            },
+                            selectedRange = state.personalExpensesDateRange,
                             selectedFilter = state.selectedPersonalExpensesFilter,
                             onFilterClicked = {
                                 onAction(
@@ -216,20 +247,43 @@ fun LossesScreenContent(
                                 )
                             },
                             content = {
-                                DatedLossesList(
-                                    isLoading = state.isLoading,
-                                    datedLosses = state.datedPersonalExpenses,
-                                    isEditEnabled = true,
-                                    isDeleteEnabled = true,
-                                    onUpdateLoss = {
-                                        selectedLoss = it as ManagerLoss
-                                        isSaveLossSheetVisible = true
-                                    },
-                                    onDeleteLoss = {
-                                        selectedLoss = it as ManagerLoss
-                                        isConfirmDeleteSheetVisible = true
+                                AnimatedContent(state.selectedPersonalExpensesFilter) { contentState ->
+                                    when (contentState) {
+                                        DateFormat.CUSTOM_RANGE -> {
+                                            LossesList(
+                                                isLoading = state.isLoading,
+                                                losses = state.filteredPersonalExpenses,
+                                                isEditable = true,
+                                                isDeletable = true,
+                                                onEdit = {
+                                                    selectedLoss = it as ManagerLoss
+                                                    isSaveLossSheetVisible = true
+                                                },
+                                                onDelete = {
+                                                    selectedLoss = it as ManagerLoss
+                                                    isConfirmDeleteSheetVisible = true
+                                                }
+                                            )
+                                        }
+
+                                        else -> {
+                                            DatedLossesList(
+                                                isLoading = state.isLoading,
+                                                datedLosses = state.datedPersonalExpenses,
+                                                isEditEnabled = true,
+                                                isDeleteEnabled = true,
+                                                onUpdateLoss = {
+                                                    selectedLoss = it as ManagerLoss
+                                                    isSaveLossSheetVisible = true
+                                                },
+                                                onDeleteLoss = {
+                                                    selectedLoss = it as ManagerLoss
+                                                    isConfirmDeleteSheetVisible = true
+                                                }
+                                            )
+                                        }
                                     }
-                                )
+                                }
                             }
                         )
                     }

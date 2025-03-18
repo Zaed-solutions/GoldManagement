@@ -9,12 +9,14 @@ import com.zaed.common.data.model.sale.DatedSales
 import com.zaed.common.data.model.sale.IngotTransaction
 import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.ui.util.DateFormat
+import java.util.Date
 
 data class DistributorDetailsUiState(
     val isLoading: Boolean = false,
     val distributor: User = User(),
     val salesQuery: String = "",
     val selectedSalesFilter: DateFormat = DateFormat.DATE,
+    val selectedSalesDateRange: Pair<Date?, Date?> = null to null,
     val allSales: List<WholesaleTransaction> = emptyList(),
     val filteredSales: List<WholesaleTransaction> = emptyList(),
     val datedSales: List<DatedSales> = emptyList(),
@@ -23,9 +25,13 @@ data class DistributorDetailsUiState(
     val allInventories: List<Inventory> = emptyList(),
     val displayedInventories: List<Inventory> = emptyList(),
     val selectedLossesFilter: DateFormat = DateFormat.DATE,
+    val selectedLossesRange: Pair<Date?, Date?> = null to null,
     val allLosses: List<DistributorLoss> = emptyList(),
+    val filteredLosses: List<DistributorLoss> = emptyList(),
     val datedLosses: List<DatedLoss> = emptyList(),
     val allIngotTransactions: List<IngotTransaction> = emptyList(),
+    val filteredIngotTransactions: List<IngotTransaction> = emptyList(),
     val datedIngotTransactions: List<DatedIngotTransactions> = emptyList(),
     val ingotTransactionsDateFormat: DateFormat = DateFormat.DATE,
+    val selectedIngotsRange: Pair<Date?, Date?> = null to null,
 )

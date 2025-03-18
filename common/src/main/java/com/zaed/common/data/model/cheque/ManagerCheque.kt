@@ -13,7 +13,7 @@ data class ManagerCheque(
     val chequeStatus : ChequeStatus = ChequeStatus.RECEIVED,
     val notes : String = "",
     override var given :Boolean = false,
-    override val customerId: String = "",
+    override var customerId: String = "",
     override val type: PaymentType = PaymentType.MANAGER_CHEQUES,
     override var amount: Double = 0.0,
     override val deleted: Boolean = false,

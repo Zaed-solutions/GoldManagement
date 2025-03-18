@@ -16,7 +16,7 @@ data class ChequePayment(
     val notes : String = "",
     val customerName : String = "",
     override var given :Boolean = false,
-    override val customerId: String = "",
+    override var customerId: String = "",
     override val type: PaymentType = PaymentType.CHEQUE,
     override var amount: Double = 0.0,
     override val deleted: Boolean = false,

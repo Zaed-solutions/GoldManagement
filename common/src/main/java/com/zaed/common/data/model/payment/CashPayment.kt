@@ -5,7 +5,7 @@ import java.util.Date
 
 data class CashPayment(
     override var id: String = "",
-    override val customerId: String = "",
+    override var customerId: String = "",
     override val type: PaymentType = PaymentType.CASH,
     override var amount: Double = 0.0,
     override var given :Boolean = false,

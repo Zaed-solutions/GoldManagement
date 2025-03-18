@@ -1,6 +1,7 @@
 package com.zaed.manager.ui.distributordetails
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -41,7 +42,10 @@ import com.zaed.common.ui.components.DatedIngotTransactionsList
 import com.zaed.common.ui.components.DatedListWithFilter
 import com.zaed.common.ui.components.DatedLossesList
 import com.zaed.common.ui.components.DatedSalesWithSearchSection
+import com.zaed.common.ui.components.IngotTransactionsList
+import com.zaed.common.ui.components.LossesList
 import com.zaed.common.ui.components.StoreInventorySection
+import com.zaed.common.ui.util.DateFormat
 import com.zaed.manager.ui.storedetails.components.SaveInventoryBottomSheet
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -119,7 +123,6 @@ fun DistributorScreenContent(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-
             PrimaryTabRow(
                 selectedTabIndex = pagerState.currentPage,
                 indicator = {
@@ -157,7 +160,11 @@ fun DistributorScreenContent(
                 when (page) {
                     DistributorDetailsTab.SALES.ordinal -> {
                         DatedSalesWithSearchSection(
-                            onCustomRangeSelected = {TODO()},
+                            onCustomRangeSelected = {
+                                onAction(DistributorDetailsUiAction.SetSalesDateRange(it))
+                            },
+                            selectedRange = state.selectedSalesDateRange,
+                            sales = state.filteredSales,
                             modifier = Modifier.fillMaxSize(),
                             isLoading = state.isLoading,
                             query = state.salesQuery,
@@ -185,12 +192,31 @@ fun DistributorScreenContent(
                                     )
                                 )
                             },
-                            onCustomRangeSelected = {TODO()},
+                            selectedRange = state.selectedIngotsRange,
+                            onCustomRangeSelected = {
+                                onAction(DistributorDetailsUiAction.SetIngotTransactionsDateRange(it))
+                            },
                             content = {
-                                DatedIngotTransactionsList(
-                                    isLoading = state.isLoading,
-                                    datedTransactions = state.datedIngotTransactions,
-                                )
+                                AnimatedContent(state.ingotTransactionsDateFormat) { contentState ->
+                                    when(contentState){
+                                        DateFormat.CUSTOM_RANGE -> {
+                                            IngotTransactionsList(
+                                                isLoading = state.isLoading,
+                                                transactions = state.filteredIngotTransactions,
+                                                isEditable = false,
+                                                onEdit = {},
+                                                isDeletable = false,
+                                                onDelete = {}
+                                            )
+                                        }
+                                        else -> {
+                                            DatedIngotTransactionsList(
+                                                isLoading = state.isLoading,
+                                                datedTransactions = state.datedIngotTransactions,
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         )
                     }
@@ -226,12 +252,33 @@ fun DistributorScreenContent(
                                     )
                                 )
                             },
-                            onCustomRangeSelected = {TODO()},
+                            selectedRange = state.selectedLossesRange,
+                            onCustomRangeSelected = {
+                                onAction(DistributorDetailsUiAction.SetLossesDateRange(it))
+                            },
                             content = {
-                                DatedLossesList(
-                                    isLoading = state.isLoading,
-                                    datedLosses = state.datedLosses,
-                                )
+                                AnimatedContent(
+                                    state.selectedLossesFilter
+                                ) { contentState->
+                                    when(contentState){
+                                        DateFormat.CUSTOM_RANGE -> {
+                                            LossesList(
+                                                isLoading = state.isLoading,
+                                                losses = state.filteredLosses,
+                                                isEditable = false,
+                                                onEdit = {},
+                                                isDeletable = false,
+                                                onDelete = {}
+                                            )
+                                        }
+                                        else -> {
+                                            DatedLossesList(
+                                                isLoading = state.isLoading,
+                                                datedLosses = state.datedLosses,
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         )
                     }

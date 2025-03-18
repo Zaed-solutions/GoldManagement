@@ -9,7 +9,7 @@ data class BankTransferPayment(
     val accountNumber : String ="",
     val accountHolderName : String ="",
     override var amount: Double = 0.0,
-    override val customerId: String = "",
+    override var customerId: String = "",
     override var given :Boolean = false,
     override val type: PaymentType = PaymentType.BANK_TRANSFER,
     override val deleted: Boolean = false,

@@ -5,7 +5,7 @@ import java.util.Date
 
 abstract class Payment(
     open var id: String = "",
-    open val customerId: String = "",
+    open var customerId: String = "",
     open val type: PaymentType,
     open var amount: Double = 0.0,
     open var given: Boolean = false,

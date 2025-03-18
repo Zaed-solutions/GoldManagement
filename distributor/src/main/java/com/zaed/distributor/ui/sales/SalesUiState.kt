@@ -5,6 +5,7 @@ import com.zaed.common.data.model.payment.PaymentStatus
 import com.zaed.common.data.model.sale.DatedSales
 import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.ui.util.DateFormat
+import java.util.Date
 
 data class SalesUiState(
     val isLoading: Boolean = true,
@@ -15,5 +16,6 @@ data class SalesUiState(
     val allSales: List<WholesaleTransaction> = emptyList(),
     val filteredSales: List<WholesaleTransaction> = emptyList(),
     val dateFilter: DateFormat = DateFormat.DATE,
+    val selectedRange: Pair<Date?, Date?> = null to null,
     val datedSales: List<DatedSales> = emptyList()
 )

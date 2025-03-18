@@ -209,30 +209,30 @@ fun CustomerDetailsScreenContent(
                         TransactionsList (listState = listState,
                             isLoading = uiState.loading,
                             transactions = uiState.sales,
-                            onDeleteTransaction = { saleId, isProduct ->
+                            onDeleteTransaction = { sale, isProduct ->
                                 onAction(
                                     if (isProduct) {
-                                        CustomerDetailsUiAction.OnDeleteProductSale(saleId)
+                                        CustomerDetailsUiAction.OnDeleteProductSale(sale.id)
                                     } else {
-                                        CustomerDetailsUiAction.OnDeleteGoldSale(saleId)
+                                        CustomerDetailsUiAction.OnDeleteGoldSale(sale.id)
                                     }
                                 )
                             },
-                            onEditTransaction = { saleId, isProduct ->
+                            onEditTransaction = { sale, isProduct ->
                                 onAction(
                                     if (isProduct) {
-                                        CustomerDetailsUiAction.OnEditProductSale(saleId)
+                                        CustomerDetailsUiAction.OnEditProductSale(sale.id)
                                     } else {
-                                        CustomerDetailsUiAction.OnEditGoldSale(saleId)
+                                        CustomerDetailsUiAction.OnEditGoldSale(sale.id)
                                     }
                                 )
                             },
-                            onTransactionClicked = { saleId, isProduct ->
+                            onTransactionClicked = { sale, isProduct ->
                                 onAction(
                                     if (isProduct) {
-                                        CustomerDetailsUiAction.OnProductSaleClicked(saleId)
+                                        CustomerDetailsUiAction.OnProductSaleClicked(sale.id)
                                     } else {
-                                        CustomerDetailsUiAction.OnGoldSaleClicked(saleId)
+                                        CustomerDetailsUiAction.OnGoldSaleClicked(sale.id)
                                     }
                                 )
                             })

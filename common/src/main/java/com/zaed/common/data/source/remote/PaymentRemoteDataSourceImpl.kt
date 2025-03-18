@@ -162,7 +162,41 @@ class PaymentRemoteDataSourceImpl(
 
     override fun fetchSupplierPayments(request: FetchSupplierPaymentsRequest): Flow<Result<List<Payment>>>
     = callbackFlow {
-//        TODO("Not yet implemented")
+        try{
+            val filter = if(request.isManager) {
+                Filter.equalTo("customerId", request.supplierId)
+            } else {
+                Filter.and(
+                    Filter.equalTo("customerId", request.supplierId),
+                    Filter.equalTo("deleted", false)
+                )
+            }
+            moneyPaymentsCollection.where(
+                filter
+            ).addSnapshotListener{ snapshot, error ->
+                if(error != null){
+                    crashlytics.recordException(error)
+                    trySend(Result.failure(error))
+                } else {
+                    val payments = snapshot?.mapNotNull {
+                        val type = it.toObject(CashPayment::class.java).type
+                        when (type) {
+                            PaymentType.CASH -> it.toObject(CashPayment::class.java)
+                            PaymentType.BANK_TRANSFER -> it.toObject(BankTransferPayment::class.java)
+                            PaymentType.CHEQUE -> it.toObject(ChequePayment::class.java)
+                            PaymentType.FUTURES -> it.toObject(FuturePayment::class.java)
+                            PaymentType.LOSS -> it.toObject(LossPayment::class.java)
+                            PaymentType.GOLD -> it.toObject(GoldPayment::class.java)
+                            PaymentType.MANAGER_CHEQUES -> it.toObject(ManagerCheque::class.java)
+                        }
+                    } ?: emptyList()
+                    trySend(Result.success(payments))
+                }
+            }
+        } catch (e: Exception){
+            crashlytics.recordException(e)
+            trySend(Result.failure(e))
+        }
         awaitClose {  }
     }
 

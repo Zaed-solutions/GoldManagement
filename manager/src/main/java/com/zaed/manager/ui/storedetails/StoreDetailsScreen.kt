@@ -1,5 +1,6 @@
 package com.zaed.manager.ui.storedetails
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -42,9 +43,11 @@ import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
 import com.zaed.common.ui.components.DatedListWithFilter
 import com.zaed.common.ui.components.DatedLossesList
 import com.zaed.common.ui.components.DatedSalesWithSearchSection
+import com.zaed.common.ui.components.LossesList
 import com.zaed.common.ui.components.MoreDropDownMenu
 import com.zaed.common.ui.components.MoreDropdownItem
 import com.zaed.common.ui.components.StoreInventorySection
+import com.zaed.common.ui.util.DateFormat
 import com.zaed.manager.ui.storedetails.components.SaveInventoryBottomSheet
 import com.zaed.manager.ui.stores.components.SaveStoreBottomSheet
 import kotlinx.coroutines.launch
@@ -204,7 +207,11 @@ fun StoreDetailsScreenContent(
                 when (page) {
                     StoreDetailsTab.SALES.ordinal -> {
                         DatedSalesWithSearchSection(
-                            onCustomRangeSelected = {TODO()},
+                            onCustomRangeSelected = {
+                                onAction(StoreDetailsUiAction.SetSalesDateRange(it))
+                            },
+                            selectedRange = state.selectedSalesRange,
+                            sales = state.filteredSales,
                             modifier = Modifier.fillMaxSize(),
                             isLoading = state.isLoading,
                             query = state.salesQuery,
@@ -253,12 +260,33 @@ fun StoreDetailsScreenContent(
                                     )
                                 )
                             },
-                            onCustomRangeSelected = {TODO()},
+                            selectedRange = state.selectedSalesRange,
+                            onCustomRangeSelected = {
+                              onAction(StoreDetailsUiAction.SetLossesDateRange(it))
+                            },
                             content = {
-                                DatedLossesList(
-                                    isLoading = state.isLoading,
-                                    datedLosses = state.datedLosses,
-                                )
+                                AnimatedContent(
+                                    state.selectedLossesFilter
+                                ) {contentState ->
+                                    when(contentState){
+                                        DateFormat.CUSTOM_RANGE -> {
+                                            LossesList(
+                                                isLoading = state.isLoading,
+                                                losses = state.filteredLosses,
+                                                isEditable = false,
+                                                isDeletable = false,
+                                                onDelete = {},
+                                                onEdit = {}
+                                            )
+                                        }
+                                        else -> {
+                                            DatedLossesList(
+                                                isLoading = state.isLoading,
+                                                datedLosses = state.datedLosses,
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         )
                     }

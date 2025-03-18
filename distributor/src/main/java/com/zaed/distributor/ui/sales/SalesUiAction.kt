@@ -1,6 +1,7 @@
 package com.zaed.distributor.ui.sales
 
 import com.zaed.common.ui.util.DateFormat
+import java.util.Date
 
 sealed interface SalesUiAction {
     data object AddProductSaleClicked: SalesUiAction
@@ -15,4 +16,5 @@ sealed interface SalesUiAction {
     data class OnEditGoldSale(val saleId: String): SalesUiAction
     data class OnProductSaleClicked(val saleId: String): SalesUiAction
     data class OnGoldSaleClicked(val saleId: String): SalesUiAction
+    data class SetCustomRangeFilter(val range: Pair<Date?, Date?>): SalesUiAction
 }

@@ -22,10 +22,10 @@ import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.ui.addpurchase.ProductType
+import com.zaed.common.ui.theme.GoldenCustomColors
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
 import com.zaed.common.ui.util.formatMoney
-import com.zaed.manager.ui.theme.GoldenCustomColors
 
 @Composable
 fun DistributorSaleItem(

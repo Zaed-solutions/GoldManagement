@@ -87,7 +87,11 @@ class DistributorDetailsViewModel(
                             allIngotTransactions = data
                         )
                     }
-                    convertIngotTransactionsToDated()
+                    if(uiState.value.ingotTransactionsDateFormat == DateFormat.CUSTOM_RANGE){
+                        filterIngots()
+                    } else {
+                        convertIngotTransactionsToDated()
+                    }
                 }.onFailure { e ->
                     Log.e(TAG, "fetchIngotTransactions: ${e.message}", e)
                 }
@@ -145,7 +149,11 @@ class DistributorDetailsViewModel(
                             allLosses = data
                         )
                     }
-                    convertToDatedLosses()
+                    if(uiState.value.selectedLossesFilter == DateFormat.CUSTOM_RANGE){
+                        filterLosses()
+                    } else {
+                        convertToDatedLosses()
+                    }
                 }.onFailure { e ->
                     Log.e(TAG, "fetchLosses: ${e.message}", e)
                 }
@@ -207,15 +215,92 @@ class DistributorDetailsViewModel(
             is DistributorDetailsUiAction.UpdateLossesDateFilter -> updateLossesDateFilterAndFilter(
                 action.dateFormat
             )
-
+            is DistributorDetailsUiAction.SetSalesDateRange -> setCustomRangeFilter(action.range)
             is DistributorDetailsUiAction.UpdateSalesDateFilter -> updateSalesDateFilterAndFilter(
                 action.dateFormat
             )
             is DistributorDetailsUiAction.UpdateIngotTransactionsDateFilter -> updateIngotTransactionsDateFilterAndFilter(
                 action.dateFormat
             )
-
+            is DistributorDetailsUiAction.SetLossesDateRange -> setLossesDateRange(action.range)
+            is DistributorDetailsUiAction.SetIngotTransactionsDateRange -> setIngotTransactionsDateRange(
+                action.range
+            )
             else -> Unit
+        }
+    }
+
+    private fun setIngotTransactionsDateRange(range: Pair<Date?, Date?>) {
+        viewModelScope.launch {
+            if(range.first == null && range.second == null) return@launch
+            _uiState.update {
+                it.copy(
+                    isLoading = true,
+                    ingotTransactionsDateFormat = DateFormat.CUSTOM_RANGE,
+                    selectedIngotsRange = range
+                )
+            }
+            filterIngots()
+        }
+    }
+
+    private fun filterIngots() {
+        viewModelScope.launch (Dispatchers.Default){
+            val filteredTransactions = uiState.value.allIngotTransactions.filter { transaction ->
+                val beforeFlag = uiState.value.selectedIngotsRange.first?.let {  transaction.createdAt >= it} ?: true
+                val afterFlag = uiState.value.selectedIngotsRange.second?.let {  transaction.createdAt <= it} ?: true
+                beforeFlag && afterFlag
+            }
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    filteredIngotTransactions = filteredTransactions
+                )
+            }
+        }
+    }
+
+    private fun setLossesDateRange(range: Pair<Date?, Date?>) {
+        viewModelScope.launch {
+            if(range.first == null && range.second == null) return@launch
+            _uiState.update {
+                it.copy(
+                    isLoading = true,
+                    selectedLossesFilter = DateFormat.CUSTOM_RANGE,
+                    selectedLossesRange = range
+                )
+            }
+            filterLosses()
+        }
+    }
+
+    private fun filterLosses() {
+        viewModelScope.launch (Dispatchers.Default){
+            val filteredLosses = uiState.value.allLosses.filter { loss ->
+                val beforeFlag = uiState.value.selectedLossesRange.first?.let {  loss.date >= it} ?: true
+                val afterFlag = uiState.value.selectedLossesRange.second?.let {  loss.date <= it} ?: true
+                beforeFlag && afterFlag
+            }
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    filteredLosses = filteredLosses
+                )
+            }
+        }
+    }
+
+    private fun setCustomRangeFilter(range: Pair<Date?, Date?>) {
+        viewModelScope.launch {
+            if(range.first == null && range.second == null) return@launch
+            _uiState.update {
+                it.copy(
+                    isLoading = true,
+                    selectedSalesFilter = DateFormat.CUSTOM_RANGE,
+                    selectedSalesDateRange = range
+                )
+            }
+            filterSales()
         }
     }
 
@@ -400,7 +485,20 @@ class DistributorDetailsViewModel(
                     )
                 }
             }
-            convertSalesToDatedSales()
+            if(uiState.value.selectedSalesFilter == DateFormat.CUSTOM_RANGE) {
+                val filteredSales = uiState.value.filteredSales.filter { sale ->
+                    val beforeFlag = uiState.value.selectedSalesDateRange.first?.let {  sale.createdAt >= it} ?: true
+                    val afterFlag = uiState.value.selectedSalesDateRange.second?.let {  sale.createdAt <= it} ?: true
+                    beforeFlag && afterFlag
+                }
+                _uiState.update {
+                    it.copy(
+                        filteredSales = filteredSales
+                    )
+                }
+            } else {
+                convertSalesToDatedSales()
+            }
         }
     }
 

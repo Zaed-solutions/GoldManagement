@@ -47,8 +47,16 @@ class LossesViewModel(
                             losses = groupedLosses[false] ?: emptyList()
                         )
                     }
-                    convertLossesToDated()
-                    convertPersonalExpensesToDated()
+                    if(uiState.value.selectedLossesFilter == DateFormat.CUSTOM_RANGE){
+                        filterLosses()
+                    } else {
+                        convertLossesToDated()
+                    }
+                    if(uiState.value.selectedPersonalExpensesFilter == DateFormat.CUSTOM_RANGE){
+                        filterPersonalExpenses()
+                    } else {
+                        convertPersonalExpensesToDated()
+                    }
                 }.onFailure { e ->
                     Log.e(TAG, "fetchLosses: ${e.message}", e)
                 }
@@ -64,8 +72,69 @@ class LossesViewModel(
             is LossesUiAction.UpdatePersonalExpensesDateFilter -> updatePersonalExpensesDateFilter(
                 action.filter
             )
-
+            is LossesUiAction.SetCustomLossesRange -> setLossesRange(action.range)
+            is LossesUiAction.SetCustomPersonalExpensesRange -> setPersonalExpensesRange(action.range)
             else -> {}
+        }
+    }
+
+    private fun setPersonalExpensesRange(range: Pair<Date?, Date?>) {
+        viewModelScope.launch {
+            if(range.first == null && range.second == null) return@launch
+            _uiState.update {
+                it.copy(
+                    isLoading = true,
+                    personalExpensesDateRange = range,
+                    selectedPersonalExpensesFilter = DateFormat.CUSTOM_RANGE
+                )
+            }
+            filterPersonalExpenses()
+        }
+    }
+
+    private fun filterPersonalExpenses() {
+        viewModelScope.launch (Dispatchers.Default){
+            val filteredPersonalExpenses = _uiState.value.personalExpenses.filter { loss ->
+                val fromFlag = _uiState.value.personalExpensesDateRange.first?.let { it <= loss.date } ?: true
+                val toFlag = _uiState.value.personalExpensesDateRange.second?.let { it >= loss.date } ?: true
+                fromFlag && toFlag
+            }
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    filteredPersonalExpenses = filteredPersonalExpenses
+                )
+            }
+        }
+    }
+
+    private fun setLossesRange(range: Pair<Date?, Date?>) {
+        viewModelScope.launch {
+            if(range.first == null && range.second == null) return@launch
+            _uiState.update {
+                it.copy(
+                    isLoading = true,
+                    lossesDateRange = range,
+                    selectedPersonalExpensesFilter = DateFormat.CUSTOM_RANGE
+                )
+            }
+            filterLosses()
+        }
+    }
+
+    private fun filterLosses() {
+        viewModelScope.launch (Dispatchers.Default){
+            val filteredLosses = _uiState.value.losses.filter { loss ->
+                val fromFlag = _uiState.value.lossesDateRange.first?.let { it <= loss.date } ?: true
+                val toFlag = _uiState.value.lossesDateRange.second?.let { it >= loss.date } ?: true
+                fromFlag && toFlag
+            }
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    filteredLosses = filteredLosses
+                )
+            }
         }
     }
 

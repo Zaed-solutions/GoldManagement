@@ -175,7 +175,7 @@ fun App(
                             .padding(vertical = 8.dp)
                     ) {
                         Column(
-                            modifier = Modifier.verticalScroll(rememberScrollState())
+                            modifier = Modifier.weight(1f).verticalScroll(rememberScrollState())
                         ) {
                             NavDrawerItem.entries.forEach { item ->
                                 NavigationDrawerItem(
@@ -207,7 +207,6 @@ fun App(
                                 )
                             }
                         }
-                        Spacer(modifier = Modifier.weight(1f))
                         HorizontalDivider(modifier = Modifier.padding(bottom = 8.dp))
                         NavigationDrawerItem(
                             shape = RoundedCornerShape(0.dp),

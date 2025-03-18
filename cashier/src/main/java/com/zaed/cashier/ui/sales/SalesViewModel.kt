@@ -75,6 +75,7 @@ class SalesViewModel(
             is SalesUiAction.UpdateSearchQuery -> updateSearchQuery(action.query)
             is SalesUiAction.OnDeleteSale -> deleteSale(action.saleId)
             is SalesUiAction.UpdateSelectedDate -> updateDateFilter(action.filter)
+            is SalesUiAction.SetCustomRangeFilter -> setCustomRangeFilter(action.range)
             else -> Unit
         }
     }
@@ -110,6 +111,14 @@ class SalesViewModel(
         }
     }
 
+    private fun setCustomRangeFilter(range: Pair<Date?, Date?>) {
+        viewModelScope.launch {
+            if(range.first == null && range.second == null) return@launch
+            _uiState.update { oldState -> oldState.copy(isLoading = true, selectedDateFilter = DateFormat.CUSTOM_RANGE, selectedDateRange = range) }
+            filterData()
+        }
+    }
+
     private fun filterData(
         query: String = uiState.value.searchQuery,
     ) {
@@ -130,7 +139,17 @@ class SalesViewModel(
                     _uiState.update { it.copy(filteredSales = filteredSales) }
                 }
             }
-            convertToDatedSales()
+            if(uiState.value.selectedDateFilter == DateFormat.CUSTOM_RANGE){
+                val sales = uiState.value.filteredSales
+                val filteredSales = sales.filter{
+                    val beforeFlag = uiState.value.selectedDateRange.first?.let { date -> it.createdAt >= date } ?: true
+                    val afterFlag = uiState.value.selectedDateRange.second?.let { date -> it.createdAt <= date } ?: true
+                    beforeFlag && afterFlag
+                }
+                _uiState.update { it.copy(filteredSales = filteredSales) }
+            } else {
+                convertToDatedSales()
+            }
         }
     }
 

@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Date
 
 class SalesViewModel(
     private val fetchSalesUseCase: FetchDistributorSalesUseCase,
@@ -78,7 +79,18 @@ class SalesViewModel(
             SalesUiAction.OnSignOut -> signOut()
             is SalesUiAction.UpdateDateFilter -> updateDateFilter(action.filter)
             is SalesUiAction.UpdateSearchQuery -> updateSearchQuery(action.searchQuery)
+            is SalesUiAction.SetCustomRangeFilter -> setCustomRange(action.range)
             else -> Unit
+        }
+    }
+
+    private fun setCustomRange(range: Pair<Date?, Date?>) {
+        viewModelScope.launch {
+            if(range.first == null && range.second == null) return@launch
+            _uiState.update { oldState ->
+                oldState.copy(isLoading = true, dateFilter = DateFormat.CUSTOM_RANGE, selectedRange = range)
+            }
+            filterData()
         }
     }
 
@@ -133,7 +145,7 @@ class SalesViewModel(
             _uiState.update { oldState ->
                 oldState.copy(isLoading = true, searchQuery = searchQuery)
             }
-            filterData(searchQuery = searchQuery)
+            filterData()
         }
     }
 
@@ -146,9 +158,10 @@ class SalesViewModel(
         }
     }
 
-    private fun filterData(
-        searchQuery: String = uiState.value.searchQuery,
-    ) {
+    private fun filterData() {
+        val searchQuery: String = uiState.value.searchQuery
+        val filter = uiState.value.dateFilter
+        val range = uiState.value.selectedRange
         viewModelScope.launch(Dispatchers.Default) {
             if (searchQuery.isBlank()) {
                 //no search query and payment status is all
@@ -172,7 +185,18 @@ class SalesViewModel(
                     oldState.copy(isLoading = false, filteredSales = filteredSales)
                 }
             }
-            convertToDatedSales()
+            if(filter == DateFormat.CUSTOM_RANGE){
+                val filteredSales = uiState.value.filteredSales.filter {
+                    val fromFlag = range.first?.let { it >= it  } ?: true
+                    val toFlag = range.second?.let { it >= it  } ?: true
+                    fromFlag && toFlag
+                }
+                _uiState.update { oldState ->
+                    oldState.copy(isLoading = false, filteredSales = filteredSales)
+                }
+            } else {
+                convertToDatedSales()
+            }
         }
 
     }

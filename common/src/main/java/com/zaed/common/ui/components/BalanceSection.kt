@@ -16,12 +16,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.zaed.common.R
 import com.zaed.common.ui.util.toMoneyFormat
 import kotlin.math.absoluteValue
 
 @Composable
 fun BalanceSection(
     modifier: Modifier = Modifier,
+    isSupplier: Boolean = false,
     amount: Double,
 ) {
     Column(
@@ -33,14 +35,14 @@ fun BalanceSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = amount.getDebtTitle(),
+                text = amount.getDebtTitle(isSupplier),
                 style = MaterialTheme.typography.titleLarge,
 
                 fontWeight = FontWeight.Bold,
             )
             Spacer(modifier = Modifier.weight(1f))
             Surface(
-                color = amount.getContainerColor(),
+                color = amount.getContainerColor(isSupplier),
                 shape = RoundedCornerShape(8f.dp)
             ) {
                 Text(
@@ -50,7 +52,7 @@ fun BalanceSection(
                     ),
                     text = amount.absoluteValue.toMoneyFormat(2),
                     style = MaterialTheme.typography.titleLarge,
-                    color = amount.getContentColor(),
+                    color = amount.getContentColor(isSupplier),
                 )
             }
         }
@@ -60,22 +62,23 @@ fun BalanceSection(
 
 
 @Composable
-fun Double.getContainerColor() =
+fun Double.getContainerColor(isSupplier: Boolean = false) =
     when {
-        this >= 0 -> MaterialTheme.colorScheme.primary
+        isSupplier || this >= 0  -> MaterialTheme.colorScheme.primary
         else -> MaterialTheme.colorScheme.error
     }
 
 @Composable
-fun Double.getContentColor() =
+fun Double.getContentColor(isSupplier: Boolean = false) =
     when {
-        this >= 0 -> contentColorFor(MaterialTheme.colorScheme.primary)
+        isSupplier || this >= 0 -> contentColorFor(MaterialTheme.colorScheme.primary)
         else -> contentColorFor(MaterialTheme.colorScheme.error)
     }
 
 @Composable
-fun Double.getDebtTitle() =
+fun Double.getDebtTitle(isSupplier: Boolean = false) =
     when {
+        isSupplier -> stringResource(R.string.credit)
         this >= 0 -> stringResource(com.zaed.common.R.string.not_in_debt)
         else -> stringResource(com.zaed.common.R.string.in_debt)
     }

@@ -124,7 +124,11 @@ fun SalesScreenContent(
             //paid/unpaid tabs
             DatedSalesWithSearchSection(
                 modifier = Modifier.fillMaxSize(),
-                onCustomRangeSelected = {TODO()},
+                onCustomRangeSelected = {
+                    onAction(SalesUiAction.SetCustomRangeFilter(it))
+                },
+                selectedRange = state.selectedRange,
+                sales = state.filteredSales,
                 isLoading = state.isLoading,
                 query = state.searchQuery,
                 onQueryChanged = { query ->

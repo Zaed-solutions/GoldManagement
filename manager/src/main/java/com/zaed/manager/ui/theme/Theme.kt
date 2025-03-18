@@ -14,6 +14,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.zaed.common.ui.theme.ColorFamily
+import com.zaed.common.ui.theme.GoldenCustomColors
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -263,9 +264,6 @@ val darkGoldColors = ColorFamily(
     colorContainer = Color(0xFFFFB22C),
     onColorContainer = Color(0xFF6D4700)
 )
-
-val GoldenCustomColors = staticCompositionLocalOf { ColorFamily() }
-
 
 @Composable
 fun ManagerTheme(

@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.zaed.common.data.model.sale.Transaction
 import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.ui.addpurchase.ProductType
 
@@ -17,10 +18,10 @@ fun TransactionsList(
     modifier: Modifier = Modifier,
     listState: LazyListState = LazyListState(),
     isLoading: Boolean,
-    transactions: List<WholesaleTransaction>,
-    onTransactionClicked: (id: String, isProduct: Boolean) -> Unit,
-    onDeleteTransaction: (id: String, isProduct: Boolean) -> Unit,
-    onEditTransaction: (id: String, isProduct: Boolean) -> Unit
+    transactions: List<Transaction>,
+    onTransactionClicked: (transaction: Transaction, isProduct: Boolean) -> Unit,
+    onDeleteTransaction: (transaction: Transaction, isProduct: Boolean) -> Unit,
+    onEditTransaction: (transaction: Transaction, isProduct: Boolean) -> Unit
 ) {
     ListWithLoading(
         isLoading = isLoading
@@ -34,18 +35,18 @@ fun TransactionsList(
             items(
                 items = transactions,
                 key = { it.id }
-            ) { sale ->
+            ) { transaction ->
                 TransactionItem(
                     modifier = Modifier.animateItem(),
-                    transaction = sale,
+                    transaction = transaction,
                     onTransactionClicked = {
-                        onTransactionClicked(sale.id, sale.productType == ProductType.PRODUCT)
+                        onTransactionClicked(transaction, transaction is WholesaleTransaction && transaction.productType == ProductType.PRODUCT)
                     },
                     onDelete = {
-                        onDeleteTransaction(sale.id, sale.productType == ProductType.PRODUCT)
+                        onDeleteTransaction(transaction, transaction is WholesaleTransaction && transaction.productType == ProductType.PRODUCT)
                     },
                     onEdit = {
-                        onEditTransaction(sale.id, sale.productType == ProductType.PRODUCT)
+                        onEditTransaction(transaction, transaction is WholesaleTransaction && transaction.productType == ProductType.PRODUCT)
                     },
                     isDeletable = true,
                     isEditable = true,

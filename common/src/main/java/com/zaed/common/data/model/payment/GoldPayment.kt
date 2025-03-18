@@ -5,7 +5,7 @@ import java.util.Date
 
 data class GoldPayment(
     override var id: String = "",
-    override val customerId: String = "",
+    override var customerId: String = "",
     override val type: PaymentType = PaymentType.GOLD,
     override var amount: Double = 0.0,
     val givenGoldAmount: Double = 0.0,

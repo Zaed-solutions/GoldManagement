@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
+import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
@@ -165,10 +166,12 @@ private fun SupplierDetailsScreenContent(
         ) {
             //supplier details
             DetailRow(
+                modifier = Modifier.padding(horizontal = 16.dp),
                 label = stringResource(R.string.phone_number),
                 value = state.supplier.phone
             )
             DetailRow(
+                modifier = Modifier.padding(horizontal = 16.dp),
                 label = stringResource(R.string.email),
                 value = state.supplier.email
             )
@@ -211,7 +214,7 @@ private fun SupplierDetailsScreenContent(
                     SupplierDetailsTabs.PURCHASES.ordinal -> {
                         Column {
                             SearchBar(
-                                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                                 query = state.purchasesSearchQuery,
                                 onQueryChanged = {
                                     onAction(SupplierDetailsUiAction.UpdatePurchasesSearchQuery(it))
@@ -219,16 +222,16 @@ private fun SupplierDetailsScreenContent(
                             )
                             TransactionsList(
                                 isLoading = false,
-                                transactions = state.allPurchases,
-                                onTransactionClicked = { purchaseId, _ ->
-                                    onAction(SupplierDetailsUiAction.OnPurchaseClicked(purchaseId))
+                                transactions = state.filteredPurchases,
+                                onTransactionClicked = { purchase, _ ->
+                                    onAction(SupplierDetailsUiAction.OnPurchaseClicked(purchase.id))
                                 },
-                                onEditTransaction = { purchaseId, _ ->
-                                    onAction(SupplierDetailsUiAction.OnEditPurchase(purchaseId))
+                                onEditTransaction = { purchase, _ ->
+                                    onAction(SupplierDetailsUiAction.OnEditPurchase(purchase.id))
                                 },
-                                onDeleteTransaction = { purchaseId, _ ->
+                                onDeleteTransaction = { purchase, _ ->
                                     isPurchase = true
-                                    selectedPurchaseId = purchaseId
+                                    selectedPurchaseId = purchase.id
                                     isConfirmDeletePaymentSheetVisible = true
                                 }
                             )
@@ -240,7 +243,8 @@ private fun SupplierDetailsScreenContent(
                         Column {
                             BalanceSection(
                                 modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
-                                amount = state.credit,
+                                isSupplier = true,
+                                amount = state.supplier.debtAmount,
                             )
                             PaymentsList(
                                 modifier = Modifier.weight(1f),
@@ -435,24 +439,24 @@ private fun SupplierDetailsScreenContent(
                             when (type) {
                                 PaymentType.CASH -> {
                                     selectedPayment = CashPayment(type = type)
-                                    isSavePaymentSheetVisible = false
+                                    isSelectPaymentTypeSheetVisible = false
                                     isSavePaymentSheetVisible = true
                                 }
 
                                 PaymentType.BANK_TRANSFER -> {
                                     selectedPayment = BankTransferPayment(type = type)
-                                    isSavePaymentSheetVisible = false
+                                    isSelectPaymentTypeSheetVisible = false
                                     isSavePaymentSheetVisible = true
                                 }
 
                                 PaymentType.CHEQUE -> {
                                     selectedPayment = ChequePayment(type = type)
-                                    isSavePaymentSheetVisible = false
+                                    isSelectPaymentTypeSheetVisible = false
                                     isSavePaymentSheetVisible = true
                                 }
 
                                 else -> {
-                                    isSavePaymentSheetVisible = false
+                                    isSelectPaymentTypeSheetVisible = false
                                 }
                             }
                         }
