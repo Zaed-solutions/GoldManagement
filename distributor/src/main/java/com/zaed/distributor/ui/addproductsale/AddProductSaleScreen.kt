@@ -19,6 +19,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.data.model.customer.WholeSaleCustomer
+import com.zaed.common.ui.addpurchase.ProductType
 import com.zaed.common.ui.components.PreviewSaleContent
 import com.zaed.common.ui.components.ProgressIndicatorTopAppBar
 import com.zaed.common.ui.components.SaleSummaryContent
@@ -222,7 +223,8 @@ private fun AddProductSaleScreenContent(
                             isLoading = state.isLoading,
                             onCreate = {
                                 onAction(AddProductSaleUiAction.OnSubmitClicked)
-                            }
+                            },
+                            productType = ProductType.PRODUCT
                         )
                     }
                 }

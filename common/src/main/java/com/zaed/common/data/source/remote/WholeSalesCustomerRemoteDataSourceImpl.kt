@@ -25,10 +25,6 @@ class WholeSalesCustomerRemoteDataSourceImpl(
     private val crashlytics: FirebaseCrashlytics
 ) : WholeSalesCustomerRemoteDataSource {
     private val customersCollection = firestore.collection("whole_sale_customers")
-    private val wholesaleProductsCollection = firestore.collection("wholesale_product_sales")
-    private val wholesaleGoldCollection = firestore.collection("wholesale_gold_sales")
-    private val moneyPaymentsCollection = firestore.collection("money_payments")
-    private val goldPaymentsCollection = firestore.collection("gold_payments")
     override fun getWholeSalesCustomers(distributorId:String): Flow<Result<List<WholeSaleCustomer>>> = callbackFlow {
         try {
             if(distributorId.isNotEmpty()) {

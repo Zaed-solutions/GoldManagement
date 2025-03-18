@@ -140,7 +140,8 @@ class TransactionsViewModel(
             _uiState.update {
                 it.copy(
                     displayedSales = filteredSales,
-                    displayedPurchases = filteredPurchases
+                    displayedPurchases = filteredPurchases,
+                    isLoading = false
                 )
             }
         }

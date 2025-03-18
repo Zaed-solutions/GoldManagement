@@ -197,7 +197,7 @@ class PurchaseRemoteDataSourceImpl(
                 .where(
                     Filter.and(
                         Filter.inArray("productId", categoryUpdates.keys.toList()),
-                        Filter.equalTo("ownerId", request.purchase.distributorId)
+                        Filter.equalTo("ownerId", "")
                     )
                 )
                 .get().await()
@@ -324,7 +324,6 @@ class PurchaseRemoteDataSourceImpl(
             val newProductsByCategory = request.purchase.products
                 .groupBy { it.categoryId }
                 .mapValues { (_, products) -> products.sumOf { it.grams } }
-            val distributorId = request.purchase.distributorId
             val inventoryChanges =
                 (oldProductsByCategory.keys + newProductsByCategory.keys).associateWith { categoryId ->
                     val oldAmount = oldProductsByCategory[categoryId] ?: 0.0
@@ -335,7 +334,7 @@ class PurchaseRemoteDataSourceImpl(
                 .where(
                     Filter.and(
                         Filter.inArray("productId", inventoryChanges.keys.toList()),
-                        Filter.equalTo("ownerId", distributorId)
+                        Filter.equalTo("ownerId", "")
                     )
                 )
                 .get().await()
