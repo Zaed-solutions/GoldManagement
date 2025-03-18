@@ -25,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.getProductSalePayments
+import com.zaed.common.ui.addpurchase.ProductType
 
 @Composable
 fun PaymentTypes(
@@ -58,6 +59,52 @@ fun PaymentTypes(
                     Text(
                         text = stringResource(paymentType.titleRes),
                         style = MaterialTheme.typography.titleMedium,
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Default.ArrowForwardIos,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun ProductTypes(
+    onProductTypeSelected: (ProductType) -> Unit = {}
+) {
+    LazyColumn {
+        items(ProductType.entries) { productType ->
+            Surface(
+                onClick = { onProductTypeSelected(productType) },
+                modifier = Modifier.padding(vertical = 16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        Modifier
+                            .padding(16.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f))
+                    ) {
+                        Icon(
+                            painter = painterResource(productType.iconRes),
+                            modifier = Modifier
+                                .size(48.dp)
+                                .padding(8.dp),
+                            tint = MaterialTheme.colorScheme.primary,
+                            contentDescription = null
+                        )
+                    }
+                    Text(
+                        text = stringResource(productType.titleRes),
+                        style = MaterialTheme.typography.titleLarge,
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Icon(

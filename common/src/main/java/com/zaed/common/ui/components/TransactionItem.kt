@@ -25,11 +25,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.purchase.Purchase
 import com.zaed.common.data.model.sale.Product
-import com.zaed.common.data.model.sale.Transaction
 import com.zaed.common.data.model.sale.StoreTransaction
-import com.zaed.common.data.model.sale.WholesaleGoldTransaction
+import com.zaed.common.data.model.sale.Transaction
+import com.zaed.common.data.model.sale.WholesaleTransaction
+import com.zaed.common.ui.addpurchase.ProductType
 import com.zaed.common.ui.theme.GoldManagementTheme
 import com.zaed.common.ui.theme.GoldenCustomColors
 import com.zaed.common.ui.util.DateFormat
@@ -49,12 +49,12 @@ fun TransactionItem(
     onDelete: () -> Unit = {},
 ) {
     val (icon, iconBackgroundColor, iconColor) = when{
-        transaction is WholesaleGoldTransaction -> Triple(R.drawable.ic_ingot, GoldenCustomColors.current.color, GoldenCustomColors.current.onColor)
+        transaction is WholesaleTransaction && transaction.productType == ProductType.GOLD  -> Triple(R.drawable.ic_ingot, GoldenCustomColors.current.color, GoldenCustomColors.current.onColor)
         else -> Triple(R.drawable.ic_shopping, MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.onSecondary)
     }
     val title = when{
         transaction is StoreTransaction -> "CR-${transaction.receiptNumber}"
-        transaction is Purchase -> "PR-${transaction.receiptNumber}"
+        transaction is WholesaleTransaction -> "PR-${transaction.receiptNumber}"
         else -> "DR-${transaction.receiptNumber}"
     }
     val context = LocalContext.current
@@ -147,7 +147,7 @@ fun TransactionItem(
 private fun Preview() {
     GoldManagementTheme {
         TransactionItem(
-            transaction = WholesaleGoldTransaction(
+            transaction = WholesaleTransaction(
                 receiptNumber = "123456",
                 createdAt = Date(),
                 products = listOf(

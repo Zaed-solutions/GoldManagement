@@ -206,7 +206,7 @@ fun CustomerDetailsScreenContent(
                     }
 
                     1 -> {
-                        TransactionsList(listState = listState,
+                        TransactionsList (listState = listState,
                             isLoading = uiState.loading,
                             transactions = uiState.sales,
                             onDeleteTransaction = { saleId, isProduct ->

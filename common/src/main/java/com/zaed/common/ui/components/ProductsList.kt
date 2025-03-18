@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.sale.Product
+import com.zaed.common.ui.addpurchase.ProductType
 import com.zaed.common.ui.util.formatMoney
 import com.zaed.common.ui.util.toMoneyFormat
 
@@ -30,18 +31,21 @@ fun ProductsList(
     onAddProduct: () -> Unit,
     onEditProduct: (Product) -> Unit,
     label: String = stringResource(R.string.products),
-    onRemoveProduct: (id: String) -> Unit
+    onRemoveProduct: (id: String) -> Unit,
+    productType: ProductType
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text =label ,
+                text = label,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.weight(1f)
             )
@@ -54,6 +58,7 @@ fun ProductsList(
         }
         ProductsTable(
             products = products,
+            productType = productType,
         )
 
     }
@@ -68,31 +73,24 @@ fun ProductItem(
         modifier = modifier.fillMaxWidth(),
         tonalElevation = 2.dp
     ) {
-        Row (
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
-        ){
-            if(product.name.isNotEmpty()) {
-                Text(
-                    text = product.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(5f)
-                )
-            }
+        ) {
+            Text(
+                text = product.name,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.weight(5f)
+            )
+
             Text(
                 text = product.grams.toString(),
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.weight(3f)
             )
-            if(product.name.isEmpty()) {
-                Text(
-                    text = product.laborCost.toMoneyFormat(2),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(5f),
-                    textAlign = TextAlign.Center
-                )
-            }
             Text(
                 text = product.totalPriceAfterDiscount.formatMoney(),
                 style = MaterialTheme.typography.titleMedium,
@@ -100,6 +98,84 @@ fun ProductItem(
                 maxLines = 1,
                 modifier = Modifier.weight(3f)
             )
+        }
+    }
+}
+
+@Composable
+fun GoldItem(
+    modifier: Modifier = Modifier,
+    product: Product,
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        tonalElevation = 2.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = product.grams.toString(),
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.weight(3f)
+            )
+
+            Text(
+                text = product.totalPriceAfterDiscount.formatMoney(),
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.End,
+                maxLines = 1,
+                modifier = Modifier.weight(5f)
+            )
+            Text(
+                text = product.laborCost.toMoneyFormat(2),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.weight(3f),
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+fun IngotItem(
+    modifier: Modifier = Modifier,
+    product: Product,
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        tonalElevation = 2.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = product.grams.toString(),
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.weight(3f)
+            )
+            Text(
+                text = product.totalPriceAfterDiscount.formatMoney(),
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.End,
+                maxLines = 1,
+                modifier = Modifier.weight(5f)
+            )
+            Text(
+                text = product.karat.name,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.weight(3f),
+                textAlign = TextAlign.Center
+            )
+
         }
     }
 }

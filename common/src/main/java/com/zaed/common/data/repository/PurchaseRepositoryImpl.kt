@@ -1,8 +1,9 @@
 package com.zaed.common.data.repository
 
-import com.zaed.common.data.model.purchase.Purchase
+import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.data.model.purchase.request.FetchSupplierPurchasesRequest
 import com.zaed.common.data.model.sale.request.AddPurchaseRequest
+import com.zaed.common.data.model.sale.request.DeleteWholesaleRequest
 import com.zaed.common.data.model.sale.request.UpdatePurchaseRequest
 import com.zaed.common.data.source.remote.PurchaseRemoteDataSource
 import kotlinx.coroutines.flow.Flow
@@ -10,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 class PurchaseRepositoryImpl(
     private val purchaseRemoteDataSource: PurchaseRemoteDataSource
 ) : PurchaseRepository {
-    override suspend fun fetchPurchaseById(id: String): Result<Purchase> {
+    override suspend fun fetchPurchaseById(id: String): Result<WholesaleTransaction> {
         return  purchaseRemoteDataSource.fetchPurchaseById(id)
     }
 
@@ -22,11 +23,15 @@ class PurchaseRepositoryImpl(
         return purchaseRemoteDataSource.updatePurchase(request)
     }
 
-    override fun fetchSupplierPurchases(request: FetchSupplierPurchasesRequest): Flow<Result<List<Purchase>>> {
+    override suspend fun deletePurchase(request: DeleteWholesaleRequest): Result<Unit> {
+        return purchaseRemoteDataSource.deletePurchase(request)
+    }
+
+    override fun fetchSupplierPurchases(request: FetchSupplierPurchasesRequest): Flow<Result<List<WholesaleTransaction>>> {
         return purchaseRemoteDataSource.fetchSupplierPurchases(request)
     }
 
-    override fun fetchPurchases(): Flow<Result<List<Purchase>>> {
+    override fun fetchPurchases(): Flow<Result<List<WholesaleTransaction>>> {
         return purchaseRemoteDataSource.fetchPurchases()
     }
 }

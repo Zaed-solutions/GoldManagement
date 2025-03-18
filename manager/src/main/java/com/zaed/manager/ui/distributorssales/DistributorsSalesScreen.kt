@@ -22,7 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
-import com.zaed.common.data.model.sale.WholesaleProductTransaction
+import com.zaed.common.ui.addpurchase.ProductType
 import com.zaed.common.ui.components.PriceCalculationItem
 import com.zaed.common.ui.components.SearchBarWithFilterButton
 import com.zaed.manager.ui.distributorssales.components.DistributorSalesFilterBottomSheet
@@ -120,7 +120,7 @@ fun DistributorsSalesScreenContent(
                 isLoading = state.isLoading,
                 sales = state.filteredSales,
                 onSaleClicked = {
-                    onAction(DistributorsSalesUiAction.OnSaleClicked(it.id, it is WholesaleProductTransaction))
+                    onAction(DistributorsSalesUiAction.OnSaleClicked(it.id, it.productType ==ProductType.PRODUCT))
                 }
             )
             //filter bottom sheet

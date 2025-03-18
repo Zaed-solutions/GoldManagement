@@ -25,7 +25,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.sale.Product
-import com.zaed.common.data.model.sale.WholesaleGoldTransaction
+import com.zaed.common.data.model.sale.WholesaleTransaction
+import com.zaed.common.ui.addpurchase.ProductType
 import com.zaed.common.ui.components.ProductsList
 import com.zaed.common.ui.util.toMoneyFormat
 
@@ -33,9 +34,8 @@ import com.zaed.common.ui.util.toMoneyFormat
 @Composable
 fun SelectGoldContent(
     modifier: Modifier = Modifier,
-    sale: WholesaleGoldTransaction,
+    sale: WholesaleTransaction,
     onAddGold: (Product) -> Unit,
-    onEditGold: (Product) -> Unit,
     onRemoveGold: (id: String) -> Unit,
     onNext: () -> Unit,
 ) {
@@ -64,7 +64,8 @@ fun SelectGoldContent(
             onEditProduct = {
                 selectedProduct = it
                 isAddProductSheetVisible = true
-            }
+            },
+            productType = ProductType.GOLD
         )
         Spacer(modifier = Modifier.weight(1f))
         Button(
@@ -100,6 +101,85 @@ fun SelectGoldContent(
                     initialProduct = selectedProduct,
                     onSaveProduct = {
                         onAddGold(it)
+                        isAddProductSheetVisible = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SelectIngotsContent(
+    modifier: Modifier = Modifier,
+    sale: WholesaleTransaction,
+    onAddIngot: (Product) -> Unit,
+    onRemoveIngot: (id: String) -> Unit,
+    onNext: () -> Unit,
+) {
+
+    var isAddProductSheetVisible by remember { mutableStateOf(false) }
+    val bottomSheetState2 = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var selectedProduct by remember {
+        mutableStateOf(Product())
+    }
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+        Text(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            text = stringResource(com.zaed.common.R.string.add_ingot_transaction),
+            style = MaterialTheme.typography.headlineMedium
+        )
+        ProductsList(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            products = sale.products,
+            onAddProduct = { isAddProductSheetVisible = true },
+            onRemoveProduct = onRemoveIngot,
+            label = stringResource(com.zaed.common.R.string.ingots),
+            onEditProduct = {
+                selectedProduct = it
+                isAddProductSheetVisible = true
+            },
+            productType = ProductType.INGOT
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            onClick = onNext,
+            enabled = sale.products.isNotEmpty(),
+            shape = RoundedCornerShape(4.dp)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = stringResource(com.zaed.common.R.string.buy),
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = stringResource(
+                        R.string.total_placeholder,
+                        sale.totalAmount.toMoneyFormat(2)
+                    ),
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+        }
+        AnimatedVisibility(isAddProductSheetVisible) {
+            ModalBottomSheet(
+                sheetState = bottomSheetState2,
+                onDismissRequest = { isAddProductSheetVisible = false },
+            ) {
+                SaveIngotSheetContent(
+                    initialProduct = selectedProduct,
+                    onSaveProduct = {
+                        onAddIngot(it)
                         isAddProductSheetVisible = false
                     }
                 )

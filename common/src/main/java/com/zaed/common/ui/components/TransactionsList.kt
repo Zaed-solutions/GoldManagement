@@ -9,15 +9,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.sale.Transaction
-import com.zaed.common.data.model.sale.WholesaleProductTransaction
+import com.zaed.common.data.model.sale.WholesaleTransaction
+import com.zaed.common.ui.addpurchase.ProductType
 
 @Composable
 fun TransactionsList(
     modifier: Modifier = Modifier,
     listState: LazyListState = LazyListState(),
     isLoading: Boolean,
-    transactions: List<Transaction>,
+    transactions: List<WholesaleTransaction>,
     onTransactionClicked: (id: String, isProduct: Boolean) -> Unit,
     onDeleteTransaction: (id: String, isProduct: Boolean) -> Unit,
     onEditTransaction: (id: String, isProduct: Boolean) -> Unit
@@ -34,18 +34,18 @@ fun TransactionsList(
             items(
                 items = transactions,
                 key = { it.id }
-            ) { transaction ->
+            ) { sale ->
                 TransactionItem(
                     modifier = Modifier.animateItem(),
-                    transaction = transaction,
+                    transaction = sale,
                     onTransactionClicked = {
-                        onTransactionClicked(transaction.id, transaction is WholesaleProductTransaction)
+                        onTransactionClicked(sale.id, sale.productType == ProductType.PRODUCT)
                     },
                     onDelete = {
-                        onDeleteTransaction(transaction.id, transaction is WholesaleProductTransaction)
+                        onDeleteTransaction(sale.id, sale.productType == ProductType.PRODUCT)
                     },
                     onEdit = {
-                        onEditTransaction(transaction.id, transaction is WholesaleProductTransaction)
+                        onEditTransaction(sale.id, sale.productType == ProductType.PRODUCT)
                     },
                     isDeletable = true,
                     isEditable = true,

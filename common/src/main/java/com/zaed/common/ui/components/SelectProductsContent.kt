@@ -37,7 +37,7 @@ import com.zaed.common.R
 import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.Transaction
-import com.zaed.common.data.model.sale.WholesaleProductTransaction
+import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.ui.util.toMoneyFormat
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -207,7 +207,7 @@ private fun SelectProductsContentPreview() {
             Category(name = "Platinum"),
             Category(name = "Diamond"),
         ),
-        transaction = WholesaleProductTransaction(
+        transaction = WholesaleTransaction(
             products = listOf(
                 Product(name = "Gold", quantity = 1, gramPrice = 100.0),
                 Product(name = "Silver", quantity = 2, gramPrice = 50.0),

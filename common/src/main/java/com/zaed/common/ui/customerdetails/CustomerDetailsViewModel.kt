@@ -10,8 +10,7 @@ import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.DeletePaymentRequest
 import com.zaed.common.data.model.payment.request.EditPaymentRequest
 import com.zaed.common.data.model.payment.request.FetchCustomerPaymentsRequest
-import com.zaed.common.data.model.sale.request.DeleteWholesaleGoldSaleRequest
-import com.zaed.common.data.model.sale.request.DeleteWholesaleProductSaleRequest
+import com.zaed.common.data.model.sale.request.DeleteWholesaleRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.customer.FetchWholesaleCustomerSalesUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
@@ -19,8 +18,7 @@ import com.zaed.common.domain.payment.AddNewPaymentUseCase
 import com.zaed.common.domain.payment.DeletePaymentUseCase
 import com.zaed.common.domain.payment.EditPaymentUseCase
 import com.zaed.common.domain.payment.FetchCustomerPaymentsUseCase
-import com.zaed.common.domain.sale.DeleteWholesaleGoldSaleUseCase
-import com.zaed.common.domain.sale.DeleteWholesaleProductSaleUseCase
+import com.zaed.common.domain.sale.DeleteWholesaleUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,8 +32,7 @@ class CustomerDetailsViewModel(
     private val getWholeSalesCustomerUseCase: GetWholeSalesCustomerUseCase,
     private val deletePaymentUseCase: DeletePaymentUseCase,
     private val editPaymentUseCase: EditPaymentUseCase,
-    private val deleteProductSaleUseCase: DeleteWholesaleProductSaleUseCase,
-    private val deleteGoldSaleUseCase: DeleteWholesaleGoldSaleUseCase,
+    private val deleteWholeSaleUseCase: DeleteWholesaleUseCase,
     private val getCurrentUserLoggedInUseCase: GetCurrentUserLoggedInUseCase
     ) : ViewModel() {
         val TAG = "CustomerDetailsViewModel"
@@ -107,9 +104,9 @@ class CustomerDetailsViewModel(
 
     private fun deleteProductSale(saleId: String) {
         viewModelScope.launch (Dispatchers.IO){
-            deleteProductSaleUseCase(
-                DeleteWholesaleProductSaleRequest(
-                    saleId = saleId,
+            deleteWholeSaleUseCase(
+                DeleteWholesaleRequest(
+                    id = saleId,
                     distributorId = uiState.value.currentDistributor.id,
                     distributorName = uiState.value.currentDistributor.fullName
                 )
@@ -124,9 +121,9 @@ class CustomerDetailsViewModel(
 
     private fun deleteGoldSale(saleId: String) {
         viewModelScope.launch (Dispatchers.IO){
-            deleteGoldSaleUseCase(
-                DeleteWholesaleGoldSaleRequest(
-                    saleId = saleId,
+            deleteWholeSaleUseCase(
+                DeleteWholesaleRequest(
+                    id = saleId,
                     distributorId = uiState.value.currentDistributor.id,
                     distributorName = uiState.value.currentDistributor.fullName
                 )

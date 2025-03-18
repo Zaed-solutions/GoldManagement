@@ -23,13 +23,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.sale.Product
+import com.zaed.common.ui.addpurchase.ProductType
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProductsTable(
     modifier: Modifier = Modifier,
     products: List<Product>,
-    isModifyEnabled: Boolean = true
+    isModifyEnabled: Boolean = true,
+    productType: ProductType
 ) {
     Surface(
         border = BorderStroke(
@@ -47,70 +49,142 @@ fun ProductsTable(
         ) {
             // Header
             stickyHeader {
-                Column {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        if (products.firstOrNull()?.name?.isNotEmpty() == true) {
-                            Text(
-                                text = stringResource(R.string.product),
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.weight(5f)
-                            )
-                        }
-                        Text(
-                            text = stringResource(R.string.grams),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.weight(3f),
-                            textAlign = TextAlign.Center
-                        )
-                        if (products.firstOrNull()?.name?.isEmpty() == true) {
-                            Text(
-                                text = stringResource(R.string.labor_cost),
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.weight(5f),
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                        Text(
-                            text = stringResource(R.string.price),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.weight(3f),
-                            textAlign = TextAlign.End
-                        )
-                    }
-                    HorizontalDivider()
+                when (productType) {
+                    ProductType.GOLD -> GoldItemHeader()
+                    ProductType.INGOT -> IngotItemHeader()
+                    ProductType.PRODUCT -> ProductItemHeader()
                 }
             }
             items(products) {
-                when (isModifyEnabled) {
-                    true -> {
-                        ProductItem(
-                            modifier = Modifier
-                                .animateItem(),
-                            product = it,
-                        )
-                    }
+                when (productType) {
+                    ProductType.GOLD -> GoldItem(
+                        modifier = Modifier
+                            .animateItem(),
+                        product = it,
+                    )
 
-                    false -> {
-                        ProductItem(
-                            modifier = Modifier
-                                .animateItem(),
-                            product = it,
-                        )
-                    }
+                    ProductType.INGOT -> IngotItem(
+                        modifier = Modifier
+                            .animateItem(),
+                        product = it,
+                    )
+
+                    ProductType.PRODUCT -> ProductItem(
+                        modifier = Modifier
+                            .animateItem(),
+                        product = it,
+                    )
                 }
-
             }
         }
+    }
+}
+
+@Composable
+fun ProductItemHeader() {
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.product),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(5f)
+            )
+
+            Text(
+                text = stringResource(R.string.grams),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(3f),
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = stringResource(R.string.price),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(3f),
+                textAlign = TextAlign.End
+            )
+        }
+        HorizontalDivider()
+    }
+}
+
+@Composable
+fun GoldItemHeader() {
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.grams),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(3f),
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = stringResource(R.string.price),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(5f),
+                textAlign = TextAlign.End
+            )
+            Text(
+                text = stringResource(R.string.labor_cost),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(3f),
+                textAlign = TextAlign.Center
+            )
+        }
+        HorizontalDivider()
+    }
+}
+
+@Composable
+fun IngotItemHeader() {
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.grams),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(3f),
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = stringResource(R.string.price),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(5f),
+                textAlign = TextAlign.End
+            )
+            Text(
+                text = stringResource(R.string.karat),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(3f),
+                textAlign = TextAlign.Center
+            )
+        }
+        HorizontalDivider()
     }
 }
 

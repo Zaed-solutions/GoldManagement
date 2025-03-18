@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,8 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
+import com.zaed.common.data.model.sale.Karat
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.ui.components.NumberInputTextField
+import com.zaed.common.ui.components.TitledDropDownTextField
 
 @Composable
 fun SaveGoldSheetContent(
@@ -66,6 +69,73 @@ fun SaveGoldSheetContent(
             },
             label = stringResource(R.string.labor_cost),
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        )
+
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp)
+                .heightIn(min = 48.dp),
+            shape = MaterialTheme.shapes.medium,
+            onClick = {
+                onSaveProduct(product)
+            },
+            enabled = product.grams > 0.0 && product.gramPrice > 0.0
+        ) {
+            Text(
+                text = stringResource(R.string.save)
+            )
+        }
+    }
+}
+@Composable
+fun SaveIngotSheetContent(
+    modifier: Modifier = Modifier,
+    initialProduct: Product,
+    onSaveProduct: (Product) -> Unit
+) {
+    var product by remember { mutableStateOf(initialProduct) }
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = stringResource(com.zaed.common.R.string.add_amount),
+            style = MaterialTheme.typography.headlineMedium
+        )
+
+        NumberInputTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = product.grams,
+            onValueChange = { value ->
+                product = product.copy(grams = value)
+            },
+            label = stringResource(R.string.grams),
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        )
+        NumberInputTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = product.gramPrice,
+            onValueChange = { value ->
+                product = product.copy(gramPrice = value)
+            },
+            label = stringResource(R.string.gram_price),
+
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        )
+        //karat
+        TitledDropDownTextField(
+            modifier = Modifier.fillMaxWidth(),
+            selectedValue = product.karat.value.toString(),
+            onValueChanged = { index ->
+                product = product.copy(karat = Karat.entries[index])
+            },
+            label = stringResource(id = R.string.karat),
+            options = Karat.entries.map { it.value.toString() },
+            shape = RoundedCornerShape(32.dp)
         )
 
         Button(

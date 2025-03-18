@@ -21,7 +21,9 @@ sealed interface AddPurchaseUiAction {
     data class OnRemovePayment(val paymentId: String): AddPurchaseUiAction
     data class OnAddNewCategory(val category: Category): AddPurchaseUiAction
     data class OnUpdateProducts(val products: List<Product>): AddPurchaseUiAction
+    data class OnProductTypeSelected(val productType: ProductType): AddPurchaseUiAction
     data object OnDeleteAllProducts: AddPurchaseUiAction
     data object OnAddSupplier: AddPurchaseUiAction
+    data object ReselectProductType: AddPurchaseUiAction
 
 }
