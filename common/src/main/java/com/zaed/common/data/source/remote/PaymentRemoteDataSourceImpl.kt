@@ -33,7 +33,7 @@ class PaymentRemoteDataSourceImpl(
     private val firestore: FirebaseFirestore,
     private val crashlytics: FirebaseCrashlytics
 ) : PaymentRemoteDataSource {
-    private val moneyPaymentsCollection = firestore.collection("money_payments")
+    private val moneyPaymentsCollection = firestore.collection("payments")
     private val customersCollection = firestore.collection("whole_sale_customers")
     override suspend fun addPayment(request: AddNewPaymentRequest): Result<String> {
         try {

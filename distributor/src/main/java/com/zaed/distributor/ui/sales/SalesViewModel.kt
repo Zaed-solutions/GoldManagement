@@ -3,14 +3,12 @@ package com.zaed.distributor.ui.sales
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zaed.common.data.model.sale.request.DeleteWholesaleGoldSaleRequest
-import com.zaed.common.data.model.sale.request.DeleteWholesaleProductSaleRequest
+import com.zaed.common.data.model.sale.request.DeleteWholesaleRequest
 import com.zaed.common.data.model.sale.request.FetchDistributorSalesRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.authentication.LogoutUserUseCase
 import com.zaed.common.domain.sale.ConvertSalesToDatedSalesUseCase
-import com.zaed.common.domain.sale.DeleteWholesaleGoldSaleUseCase
-import com.zaed.common.domain.sale.DeleteWholesaleProductSaleUseCase
+import com.zaed.common.domain.sale.DeleteWholesaleUseCase
 import com.zaed.common.domain.sale.FetchDistributorSalesUseCase
 import com.zaed.common.ui.util.DateFormat
 import kotlinx.coroutines.Dispatchers
@@ -23,8 +21,8 @@ import java.util.Date
 class SalesViewModel(
     private val fetchSalesUseCase: FetchDistributorSalesUseCase,
     private val getCurrentUserUseCase: GetCurrentUserLoggedInUseCase,
-    private val deleteProductSaleUseCase: DeleteWholesaleProductSaleUseCase,
-    private val deleteGoldSaleUseCase: DeleteWholesaleGoldSaleUseCase,
+    private val deleteProductSaleUseCase: DeleteWholesaleUseCase,
+    private val deleteGoldSaleUseCase: DeleteWholesaleUseCase,
     private val convertDateFormatUseCase: ConvertSalesToDatedSalesUseCase,
     private val logOutUseCase: LogoutUserUseCase
 ) : ViewModel() {
@@ -111,8 +109,8 @@ class SalesViewModel(
     private fun deleteProductSale(saleId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             deleteProductSaleUseCase(
-                DeleteWholesaleProductSaleRequest(
-                    saleId = saleId,
+                DeleteWholesaleRequest(
+                    id = saleId,
                     distributorId = uiState.value.currentUser.id,
                     distributorName = uiState.value.currentUser.fullName
                 )
@@ -128,8 +126,8 @@ class SalesViewModel(
     private fun deleteGoldSale(saleId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             deleteGoldSaleUseCase(
-                DeleteWholesaleGoldSaleRequest(
-                    saleId = saleId,
+                DeleteWholesaleRequest(
+                    id = saleId,
                     distributorId = uiState.value.currentUser.id,
                     distributorName = uiState.value.currentUser.fullName
                 )

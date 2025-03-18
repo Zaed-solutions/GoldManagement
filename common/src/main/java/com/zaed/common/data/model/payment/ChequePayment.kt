@@ -11,8 +11,10 @@ data class ChequePayment(
     val city : String = "",
     val receiverName : String = "",
     val chequeFor : String = "",
+    val cashed : Boolean = false,
     val chequeStatus : ChequeStatus = ChequeStatus.RECEIVED,
     val notes : String = "",
+    val customerName : String = "",
     override var given :Boolean = false,
     override val customerId: String = "",
     override val type: PaymentType = PaymentType.CHEQUE,
@@ -20,5 +22,6 @@ data class ChequePayment(
     override val deleted: Boolean = false,
     override var receiptNumber: String = "",
     override val createdAt: Date = Date(),
+
     override val logs: List<ChangeLog> = emptyList()
 ) : Payment(id, customerId, type,amount, deleted,given, receiptNumber, createdAt, logs)

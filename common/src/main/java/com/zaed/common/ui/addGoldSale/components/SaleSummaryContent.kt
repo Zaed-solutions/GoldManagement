@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.sp
 import com.zaed.common.R
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.CashPayment
-import com.zaed.common.data.model.sale.WholesaleProductTransaction
+import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.ui.components.DashedDivider
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.components.PriceCalculationItem
@@ -30,7 +30,7 @@ import java.util.Date
 fun SaleSummaryContent(
     modifier: Modifier = Modifier,
     customer: WholeSaleCustomer,
-    sale: WholesaleProductTransaction,
+    sale: WholesaleTransaction,
     cashPayments: List<CashPayment>,
     totalAmount: Double,
     totalPaid: Double,
@@ -63,6 +63,7 @@ fun SaleSummaryContent(
         ProductsTable(
             products = sale.products,
             isModifyEnabled = false,
+            productType = sale.productType
         )
         Spacer(modifier = Modifier.weight(1f))
         DashedDivider(

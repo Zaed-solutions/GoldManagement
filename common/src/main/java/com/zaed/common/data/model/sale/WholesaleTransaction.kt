@@ -2,22 +2,27 @@ package com.zaed.common.data.model.sale
 
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.payment.PaymentStatus
+import com.zaed.common.ui.addpurchase.ProductType
+import kotlinx.serialization.Transient
 import java.util.Date
 
-open class WholesaleTransaction(
-    override val id: String,
-    override val customerId: String,
-    override val customerName: String,
-    override val customerPhone: String,
-    override val createdAt: Date,
-    override val receiptNumber: String,
-    override val logs: List<ChangeLog>,
-    override val deleted: Boolean,
-    override val totalAmount: Double,
-    override val products: List<Product>,
-    open val paymentStatus: PaymentStatus,
-    open val distributorId: String,
-    open val distributorName: String
+data class WholesaleTransaction(
+    override val id: String = "",
+    override val customerId: String = "",
+    override val customerName: String = "",
+    override val customerPhone: String = "",
+    val distributorId: String = "",
+    val distributorName: String = "",
+    override val createdAt: Date = Date(),
+    override val logs: List<ChangeLog> = emptyList(),
+    override val deleted: Boolean = false,
+    val receiptStatus: ReceiptStatus = ReceiptStatus.NOT_REQUESTED,
+    override val products: List<Product> = emptyList(),
+    val paymentsIds: List<String> = emptyList(),
+    val paymentStatus: PaymentStatus = PaymentStatus.UNPAID,
+    override val receiptNumber: String = "",
+    val productType: ProductType = ProductType.PRODUCT,
+    val sale : Boolean = true
 ) : Transaction(
     id = id,
     customerId = customerId,
@@ -27,8 +32,14 @@ open class WholesaleTransaction(
     receiptNumber = receiptNumber,
     logs = logs,
     deleted = deleted,
-    totalAmount = totalAmount,
+    totalAmount = products.sumOf { it.totalPriceAfterDiscount },
     products = products
-)
+){
+    @Transient
+    val totalPriceBeforeDiscount
+        get() = products.sumOf { it.totalPriceBeforeDiscount }
+    override val totalAmount
+        get() = products.sumOf { it.totalPriceAfterDiscount }
+}
 
 

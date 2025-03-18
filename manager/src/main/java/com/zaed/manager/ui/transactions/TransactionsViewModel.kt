@@ -5,12 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
-import com.zaed.common.data.model.sale.request.DeleteWholesaleGoldSaleRequest
+import com.zaed.common.data.model.sale.request.DeleteWholesaleRequest
 import com.zaed.common.data.model.sale.request.FetchDistributorSalesRequest
 import com.zaed.common.data.model.sale.request.UpdatePurchaseRequest
 import com.zaed.common.domain.purchase.FetchPurchasesUseCase
 import com.zaed.common.domain.purchase.UpdatePurchaseUseCase
-import com.zaed.common.domain.sale.DeleteWholesaleGoldSaleUseCase
+import com.zaed.common.domain.sale.DeleteWholesaleUseCase
 import com.zaed.common.domain.sale.FetchDistributorSalesUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class TransactionsViewModel(
-    private val deleteGoldSaleUseCase: DeleteWholesaleGoldSaleUseCase,
+    private val deleteGoldSaleUseCase: DeleteWholesaleUseCase,
     private val fetchSalesUseCase: FetchDistributorSalesUseCase,
     private val fetchPurchasesUseCase: FetchPurchasesUseCase,
     private val updatePurchaseUseCase: UpdatePurchaseUseCase
@@ -83,8 +83,8 @@ class TransactionsViewModel(
     private fun deleteSale(saleId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             deleteGoldSaleUseCase(
-                DeleteWholesaleGoldSaleRequest(
-                    saleId = saleId,
+                DeleteWholesaleRequest(
+                    id = saleId,
                     distributorId = uiState.value.currentUser.id,
                     distributorName = uiState.value.currentUser.fullName
                 )

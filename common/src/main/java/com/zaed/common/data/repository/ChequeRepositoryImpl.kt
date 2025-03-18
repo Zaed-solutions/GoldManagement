@@ -44,6 +44,10 @@ class ChequeRepositoryImpl(
         return chequeRemoteSource.fetchSalesCheques()
     }
 
+    override suspend fun fetchAllUnCashedSalesCheque(): Result<List<ChequePayment>> {
+        return chequeRemoteSource.fetchAllUnCashedSalesCheque()
+    }
+
     override suspend fun deleteManagerCheque(request: DeleteManagerChequeRequest): Result<Unit> {
         return chequeRemoteSource.deleteManagerCheque(request)
     }

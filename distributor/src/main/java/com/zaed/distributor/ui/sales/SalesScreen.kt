@@ -31,7 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.sale.Product
-import com.zaed.common.data.model.sale.WholesaleProductTransaction
+import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.ui.components.ConfirmDeleteDialog
 import com.zaed.common.ui.components.DatedSalesWithSearchSection
 import com.zaed.distributor.ui.theme.DistributorAppTheme
@@ -141,7 +141,7 @@ fun SalesScreenContent(
                 datedSales = state.datedSales,
                 onSaleClicked = { saleId , type ->
                     when(type){
-                        WholesaleProductTransaction::class.qualifiedName -> onAction(SalesUiAction.OnProductSaleClicked(saleId))
+                        WholesaleTransaction::class.qualifiedName -> onAction(SalesUiAction.OnProductSaleClicked(saleId))
                         else -> onAction(SalesUiAction.OnGoldSaleClicked(saleId))
                     }
                 }
@@ -186,7 +186,7 @@ private fun SalesScreenContentPreview() {
                     fullName = "Mohamed Mahmoud"
                 ),
                 filteredSales = listOf(
-                    WholesaleProductTransaction(
+                    WholesaleTransaction(
                         createdAt = Date(),
                         customerName = "Ali",
                         products = listOf(

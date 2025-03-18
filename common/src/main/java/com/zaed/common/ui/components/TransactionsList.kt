@@ -34,10 +34,10 @@ fun TransactionsList(
             items(
                 items = transactions,
                 key = { it.id }
-            ) { transaction ->
+            ) { sale ->
                 TransactionItem(
                     modifier = Modifier.animateItem(),
-                    transaction = transaction,
+                    transaction = sale,
                     onTransactionClicked = {
                         onTransactionClicked(transaction, transaction is WholesaleProductTransaction)
                     },

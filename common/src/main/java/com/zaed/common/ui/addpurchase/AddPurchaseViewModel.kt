@@ -19,10 +19,10 @@ import com.zaed.common.data.model.supplier.request.FetchSupplierRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.category.AddCategoryUseCase
 import com.zaed.common.domain.category.FetchAllCategoriesUseCase
-import com.zaed.common.domain.customer.FetchSuppliersByNameUseCase
+import com.zaed.common.domain.cheque.FetchAllUnCashedSalesChequeUseCase
 import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
-import com.zaed.common.domain.purchase.FetchPurchaseUseCase
 import com.zaed.common.domain.purchase.AddPurchaseUseCase
+import com.zaed.common.domain.purchase.FetchPurchaseUseCase
 import com.zaed.common.domain.purchase.UpdatePurchaseUseCase
 import com.zaed.common.domain.supplier.AddSupplierUseCase
 import com.zaed.common.domain.supplier.FetchSupplierUseCase
@@ -39,13 +39,13 @@ class AddPurchaseViewModel(
     private val fetchPurchaseUseCase: FetchPurchaseUseCase,
     private val fetchSuppliersUseCase: FetchSuppliersUseCase,
     private val getCurrentUserUseCase: GetCurrentUserLoggedInUseCase,
-    private val getSupplierUseCase : FetchSupplierUseCase,
-    private val fetchSupplierByNameUseCase: FetchSuppliersByNameUseCase,
+    private val getSupplierUseCase: FetchSupplierUseCase,
     private val fetchMoneyPaymentsByIdsUseCase: FetchMoneyPaymentsByIdsUseCase,
     private val addPurchaseUseCase: AddPurchaseUseCase,
     private val updatePurchaseUseCase: UpdatePurchaseUseCase,
     private val addCategoryUseCase: AddCategoryUseCase,
-    private val addSupplierUseCase: AddSupplierUseCase
+    private val addSupplierUseCase: AddSupplierUseCase,
+    private val fetchAllUnCashedSalesChequesUseCase: FetchAllUnCashedSalesChequeUseCase
 ) : ViewModel() {
     private val TAG: String = "AddProductSaleVM"
     private val _uiState = MutableStateFlow(AddPurchaseUiState())
@@ -57,12 +57,27 @@ class AddPurchaseViewModel(
         fetchAllCategories()
         fetchCurrentUser()
         fetchSuppliers()
+        fetchSalesCheques()
+    }
+
+    private fun fetchSalesCheques() {
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchAllUnCashedSalesChequesUseCase().onSuccess {
+                _uiState.update { oldState ->
+                    oldState.copy(
+                        salesCheques = it
+                    )
+                }
+            }.onFailure {
+                Log.e(TAG, "fetchSalesCheques: ${it.message}", it)
+            }
+        }
     }
 
     private fun fetchPurchase(purchaseId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             fetchPurchaseUseCase(
-                    purchaseId
+                purchaseId
             ).onSuccess { data ->
                 _uiState.update { oldState ->
                     oldState.copy(
@@ -95,6 +110,7 @@ class AddPurchaseViewModel(
             }
         }
     }
+
     private fun fetchSuppliers() {
         viewModelScope.launch(Dispatchers.IO) {
             fetchSuppliersUseCase().collect { result ->
@@ -111,6 +127,7 @@ class AddPurchaseViewModel(
             }
         }
     }
+
     private fun fetchSupplier(supplierId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             getSupplierUseCase(
@@ -182,7 +199,34 @@ class AddPurchaseViewModel(
             AddPurchaseUiAction.OnDeleteAllProducts -> updateProductsPurchase(emptyList())
             is AddPurchaseUiAction.OnAddNewCategory -> addCategory(action.category)
             is AddPurchaseUiAction.OnAddNewSupplierClicked -> addSupplier(action.supplier)
+            is AddPurchaseUiAction.OnProductTypeSelected -> updateProductType(action.productType)
+
+            AddPurchaseUiAction.ReselectProductType -> {
+                _uiState.update { oldState ->
+                    oldState.copy(
+                        payments = emptyList(),
+                        purchase = oldState.purchase.copy(
+                            products = emptyList(),
+                            paymentsIds = emptyList(),
+                        ),
+                    )
+                }
+            }
+
             else -> Unit
+        }
+    }
+
+    private fun updateProductType(productType: ProductType) {
+        _uiState.update { oldState ->
+            oldState.copy(
+                purchase = oldState.purchase.copy(
+                    products = emptyList(),
+                    paymentsIds = emptyList(),
+                    productType = productType,
+                    sale = false
+                )
+            )
         }
     }
 
@@ -202,7 +246,7 @@ class AddPurchaseViewModel(
     }
 
     private fun addCategory(category: Category) {
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             addCategoryUseCase(category).onSuccess {
                 Log.d(TAG, "addCategory: $it")
             }.onFailure {
@@ -214,7 +258,11 @@ class AddPurchaseViewModel(
 
     private fun updateProductsPurchase(products: List<Product>) {
         _uiState.update { oldState ->
-            oldState.copy(purchase = oldState.purchase.copy(products = products))
+            oldState.copy(
+                purchase = oldState.purchase.copy(
+                    products = products
+                )
+            )
         }
     }
 
@@ -241,10 +289,11 @@ class AddPurchaseViewModel(
                 _uiState.update { oldState ->
                     oldState.copy(
                         purchase = uiState.value.purchase.copy(
-                            supplierId = customer.id,
-                            supplierName = customer.name,
-                            supplierPhone = customer.phone,
-                            paymentStatus = if ((uiState.value.purchase.totalAmount - uiState.value.totalPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID,
+                            customerId = customer.id,
+                            customerName = customer.name,
+                            customerPhone = customer.phone,
+                            paymentStatus =
+                            if ((uiState.value.purchase.totalAmount - uiState.value.totalPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID,
                             logs = oldState.purchase.logs + updateLog
                         ),
                     )
@@ -281,13 +330,14 @@ class AddPurchaseViewModel(
             _uiState.update { oldState ->
                 oldState.copy(
                     purchase = oldState.purchase.copy(
-                        supplierId = customer.id,
-                        supplierName = customer.name,
-                        supplierPhone = customer.phone,
+                        customerId = customer.id,
+                        customerName = customer.name,
+                        customerPhone = customer.phone,
                         distributorId = distributor.id,
                         distributorName = distributor.fullName,
                         createdAt = Date(),
-                        paymentStatus = if ((uiState.value.purchase.totalAmount - uiState.value.totalPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID
+                        paymentStatus =
+                        if ((uiState.value.purchase.totalAmount - uiState.value.totalPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID
                     )
                 )
             }
@@ -310,7 +360,9 @@ class AddPurchaseViewModel(
             ).onSuccess { id ->
                 _uiState.update { oldState ->
                     oldState.copy(
-                        purchase = oldState.purchase.copy(id = id), isLoading = false, isFinished = true
+                        purchase = oldState.purchase.copy(id = id),
+                        isLoading = false,
+                        isFinished = true
                     )
                 }
                 Log.d(TAG, "addSale success: $id")
@@ -328,7 +380,11 @@ class AddPurchaseViewModel(
             _uiState.update { oldState ->
                 oldState.copy(
                     supplierSearchQuery = query,
-                    suggestedSuppliers =if(query.isNotBlank()) uiState.value.allSuppliers.filter { it.name.contains(query) } else uiState.value.allSuppliers
+                    suggestedSuppliers = if (query.isNotBlank()) uiState.value.allSuppliers.filter {
+                        it.name.contains(
+                            query
+                        )
+                    } else uiState.value.allSuppliers
                 )
             }
 
@@ -348,13 +404,14 @@ class AddPurchaseViewModel(
         viewModelScope.launch {
             _uiState.update { oldState ->
                 if (oldState.purchase.products.any { it.name == product.name }) {
-                    oldState.copy(purchase = oldState.purchase.copy(products = oldState.purchase.products.map {
-                        if (it.name == product.name) {
-                            product
-                        } else {
-                            it
+                    oldState.copy(purchase = oldState.purchase.copy(
+                        products = oldState.purchase.products.map {
+                            if (it.name == product.name) {
+                                product
+                            } else {
+                                it
+                            }
                         }
-                    }
                     )
                     )
                 } else {

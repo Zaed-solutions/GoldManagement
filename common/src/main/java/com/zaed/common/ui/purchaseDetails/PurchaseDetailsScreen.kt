@@ -53,7 +53,7 @@ fun PurchaseDetailsScreen(
     ) { action ->
         when (action) {
             SaleDetailsUiAction.OnBackClicked -> onBackClicked()
-            SaleDetailsUiAction.OnCustomerClicked -> onNavigateToSupplierDetails(state.purchase.supplierId)
+            SaleDetailsUiAction.OnCustomerClicked -> onNavigateToSupplierDetails(state.purchase.customerId)
             SaleDetailsUiAction.OnEditClicked -> onNavigateToEditPurchase(purchaseId)
             else -> viewModel.handleAction(action)
         }
@@ -124,7 +124,8 @@ private fun ProductSaleDetailsContent(
             ) {
                 ProductsTable(
                     products = state.purchase.products,
-                    isModifyEnabled = false
+                    isModifyEnabled = false,
+                    productType = state.purchase.productType
                 )
             }
             //payments

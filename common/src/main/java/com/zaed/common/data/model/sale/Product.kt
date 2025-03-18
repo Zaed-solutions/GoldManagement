@@ -9,6 +9,7 @@ data class Product(
     val categoryId: String = "",
     val laborCost: Double = 0.0,
     val grams: Double = 0.0,
+    val karat: Karat = Karat.K18,
     val discount: Discount = Discount(),
 ){
     val priceForItem get() = grams*gramPrice

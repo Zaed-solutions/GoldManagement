@@ -4,13 +4,13 @@ import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.Payment
-import com.zaed.common.data.model.sale.WholesaleProductTransaction
+import com.zaed.common.data.model.sale.WholesaleTransaction
 
 data class AddProductSaleUiState(
     val isFinished: Boolean = false,
     val isLoading: Boolean = false,
-    val initialSale: WholesaleProductTransaction = WholesaleProductTransaction(),
-    val sale: WholesaleProductTransaction = WholesaleProductTransaction(),
+    val initialSale: WholesaleTransaction = WholesaleTransaction(),
+    val sale: WholesaleTransaction = WholesaleTransaction(),
     val selectedCustomer: WholeSaleCustomer = WholeSaleCustomer(),
     val customerSearchQuery: String = "",
     val suggestedCustomers: List<WholeSaleCustomer> = emptyList(),
