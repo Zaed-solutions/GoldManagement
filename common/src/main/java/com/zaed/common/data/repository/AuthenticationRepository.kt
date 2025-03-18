@@ -8,6 +8,7 @@ import com.zaed.common.data.model.authentication.request.FetchUsersByRoleRequest
 import com.zaed.common.data.model.authentication.request.LoginUserRequest
 import com.zaed.common.data.model.authentication.request.SignUpUserRequest
 import com.zaed.common.data.model.authentication.request.UpdateUserRequest
+import com.zaed.common.ui.util.AppLanguage
 import kotlinx.coroutines.flow.Flow
 
 interface AuthenticationRepository {
@@ -21,4 +22,6 @@ interface AuthenticationRepository {
     suspend fun deleteUser(request: DeleteUserRequest): Result<Unit>
     fun fetchUsersByRole(request: FetchUsersByRoleRequest): Flow<Result<List<User>>>
     suspend fun fetchDistributor(request: FetchDistributorRequest): Result<User>
+    fun fetchAppLanguage(): Flow<Result<AppLanguage>>
+    suspend fun setAppLanguage(appLanguage: AppLanguage): Result<Unit>
 }

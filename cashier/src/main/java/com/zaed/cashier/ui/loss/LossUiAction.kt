@@ -1,7 +1,9 @@
 package com.zaed.cashier.ui.loss
 
+import com.zaed.common.data.model.loss.Loss
 import com.zaed.common.data.model.loss.StoreLoss
 import com.zaed.common.ui.util.DateFormat
+import java.util.Date
 
 sealed interface LossUiAction {
     data object ShowNavDrawer : LossUiAction
@@ -19,4 +21,5 @@ sealed interface LossUiAction {
     data class UpdateGroupedByFilter(
         val format: DateFormat
     ) : LossUiAction
+    data class SetCustomRangeFilter(val range: Pair<Date?, Date?>) : LossUiAction
 }

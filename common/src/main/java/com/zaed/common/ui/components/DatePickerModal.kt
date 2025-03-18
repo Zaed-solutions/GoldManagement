@@ -11,23 +11,22 @@ import androidx.compose.ui.res.stringResource
 import com.zaed.common.R
 import java.util.Date
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerModal(
-    initialDate: Date = Date(),
-    onDateSelected: (Date) -> Unit,
+    initialValue: Date? = Date(),
+    onDateSelected: (Date?) -> Unit,
     onDismiss: () -> Unit
 ) {
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = initialDate.toInstant().toEpochMilli()
+        initialSelectedDateMillis = initialValue?.time?: System.currentTimeMillis()
     )
 
     DatePickerDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {
-                val selectedDate = Date(datePickerState.selectedDateMillis!!)
-                onDateSelected(selectedDate)
+                onDateSelected(datePickerState.selectedDateMillis?.let { Date(it) })
                 onDismiss()
             }) {
                 Text(stringResource(R.string.confirm))

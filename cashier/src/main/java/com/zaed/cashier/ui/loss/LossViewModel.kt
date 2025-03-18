@@ -94,7 +94,33 @@ class LossViewModel(
             LossUiAction.ResetError -> resetError()
             LossUiAction.ResetSuccess -> resetSuccessState()
             is LossUiAction.UpdateGroupedByFilter -> updateGroupedByFilter(action.format)
+            is LossUiAction.SetCustomRangeFilter -> setCustomRangeFilter(action.range)
             else -> {}
+        }
+    }
+
+    private fun setCustomRangeFilter(range: Pair<Date?, Date?>) {
+        viewModelScope.launch {
+            if(range.first == null && range.second == null) return@launch
+            _uiState.update { oldState -> oldState.copy(isLoading = true, groupedByFilter = DateFormat.CUSTOM_RANGE, selectedDateRange = range) }
+            filterLosses()
+        }
+    }
+
+    private fun filterLosses() {
+        viewModelScope.launch (Dispatchers.Default){
+            val range = _uiState.value.selectedDateRange
+            val filteredLosses = _uiState.value.losses.filter {
+                val beforeFlag = range.first?.let { date -> it.date >= date } ?: true
+                val afterFlag = range.second?.let { date -> it.date <= date } ?: true
+                beforeFlag && afterFlag
+            }
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    filteredLosses = filteredLosses
+                )
+            }
         }
     }
 

@@ -10,6 +10,7 @@ import com.zaed.common.data.model.authentication.request.SignUpUserRequest
 import com.zaed.common.data.model.authentication.request.UpdateUserRequest
 import com.zaed.common.data.source.local.LocalStorage
 import com.zaed.common.data.source.remote.AuthenticationRemoteSource
+import com.zaed.common.ui.util.AppLanguage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -103,5 +104,13 @@ class AuthenticationRepositoryImpl(
 
     override suspend fun fetchDistributor(request: FetchDistributorRequest): Result<User> {
         return remoteSource.fetchDistributor(request)
+    }
+
+    override fun fetchAppLanguage(): Flow<Result<AppLanguage>> {
+        return localStorage.fetchAppLanguage()
+    }
+
+    override suspend fun setAppLanguage(appLanguage: AppLanguage): Result<Unit> {
+        return localStorage.setAppLanguage(appLanguage)
     }
 }

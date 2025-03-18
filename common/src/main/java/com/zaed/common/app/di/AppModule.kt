@@ -58,12 +58,14 @@ import com.zaed.common.data.source.remote.SupplierRemoteSourceImpl
 import com.zaed.common.data.source.remote.WholeSalesCustomerRemoteDataSource
 import com.zaed.common.data.source.remote.WholeSalesCustomerRemoteDataSourceImpl
 import com.zaed.common.domain.authentication.DeleteUserUseCase
+import com.zaed.common.domain.authentication.FetchAppLanguageUseCase
 import com.zaed.common.domain.authentication.FetchDistributorUseCase
 import com.zaed.common.domain.authentication.FetchUsersByRoleUseCase
 import com.zaed.common.domain.authentication.FetchUsersUseCase
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.authentication.LoginUserUseCase
 import com.zaed.common.domain.authentication.LogoutUserUseCase
+import com.zaed.common.domain.authentication.SetAppLanguageUseCase
 import com.zaed.common.domain.authentication.SignUpUserUseCase
 import com.zaed.common.domain.authentication.UpdateUserUseCase
 import com.zaed.common.domain.category.AddCategoryUseCase
@@ -269,6 +271,8 @@ val useCaseModule = module {
     singleOf(::AddCategoryUseCase)
     singleOf(::FetchSupplierPurchasesUseCase)
     singleOf(::FetchPurchasesUseCase)
+    singleOf(::SetAppLanguageUseCase)
+    singleOf(::FetchAppLanguageUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }
