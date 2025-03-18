@@ -134,7 +134,8 @@ fun PurchasesScreenContent(
                         WholesaleTransaction::class.qualifiedName -> onAction(PurchasesUiAction.OnProductPurchasesClicked(saleId))
                         else -> onAction(PurchasesUiAction.OnGoldPurchasesClicked(saleId))
                     }
-                }
+                },
+                onCustomRangeSelected = {TODO()}
             )
 
             AnimatedVisibility(isConfirmDeleteVisible) {

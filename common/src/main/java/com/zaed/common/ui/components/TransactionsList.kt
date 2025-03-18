@@ -13,14 +13,14 @@ import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.ui.addpurchase.ProductType
 
 @Composable
-fun SalesList(
+fun TransactionsList(
     modifier: Modifier = Modifier,
     listState: LazyListState = LazyListState(),
     isLoading: Boolean,
-    sales: List<WholesaleTransaction>,
-    onSaleClicked: (id: String, isProduct: Boolean) -> Unit,
-    onDeleteSale: (id: String, isProduct: Boolean) -> Unit,
-    onEditSale: (id: String, isProduct: Boolean) -> Unit
+    transactions: List<WholesaleTransaction>,
+    onTransactionClicked: (id: String, isProduct: Boolean) -> Unit,
+    onDeleteTransaction: (id: String, isProduct: Boolean) -> Unit,
+    onEditTransaction: (id: String, isProduct: Boolean) -> Unit
 ) {
     ListWithLoading(
         isLoading = isLoading
@@ -32,20 +32,20 @@ fun SalesList(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(
-                items = sales,
+                items = transactions,
                 key = { it.id }
             ) { sale ->
-                SaleItem(
+                TransactionItem(
                     modifier = Modifier.animateItem(),
                     transaction = sale,
-                    onSaleClicked = {
-                        onSaleClicked(sale.id, sale.productType == ProductType.PRODUCT)
+                    onTransactionClicked = {
+                        onTransactionClicked(sale.id, sale.productType == ProductType.PRODUCT)
                     },
                     onDelete = {
-                        onDeleteSale(sale.id, sale.productType == ProductType.PRODUCT)
+                        onDeleteTransaction(sale.id, sale.productType == ProductType.PRODUCT)
                     },
                     onEdit = {
-                        onEditSale(sale.id, sale.productType == ProductType.PRODUCT)
+                        onEditTransaction(sale.id, sale.productType == ProductType.PRODUCT)
                     },
                     isDeletable = true,
                     isEditable = true,

@@ -27,6 +27,5 @@ val appModule = module {
     viewModelOf(::ManufacturerOrdersViewModel)
     viewModelOf(::SalesChequesScreenViewModel)
     viewModelOf(::PurchasesViewModel)
-
     viewModelOf(::TransactionsViewModel)
 }

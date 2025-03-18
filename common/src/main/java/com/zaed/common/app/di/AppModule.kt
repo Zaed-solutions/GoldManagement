@@ -120,12 +120,9 @@ import com.zaed.common.domain.purchase.AddPurchaseUseCase
 import com.zaed.common.domain.purchase.DeletePurchaseUseCase
 import com.zaed.common.domain.purchase.FetchPurchaseUseCase
 import com.zaed.common.domain.purchase.FetchPurchasesUseCase
-import com.zaed.common.domain.purchase.UpdatePurchaseUseCase
 import com.zaed.common.domain.purchase.FetchSupplierPurchasesUseCase
-import com.zaed.common.domain.sale.AddGoldSaleUseCase
 import com.zaed.common.domain.sale.AddIngotTransactionUseCase
-import com.zaed.common.domain.purchase.AddPurchaseUseCase
-import com.zaed.common.domain.purchase.FetchPurchasesUseCase
+
 import com.zaed.common.domain.sale.AddStoreSaleUseCase
 import com.zaed.common.domain.sale.AddWholesaleUseCase
 import com.zaed.common.domain.sale.ConvertIngotTransactionsToDatedUseCase

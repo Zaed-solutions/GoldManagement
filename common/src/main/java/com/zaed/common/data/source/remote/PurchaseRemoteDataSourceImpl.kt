@@ -4,15 +4,12 @@ import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Filter
-import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.cheque.ManagerCheque
-import com.zaed.common.data.model.customer.request.FetchSupplierPurchaseRequest
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
@@ -20,9 +17,8 @@ import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.LossPayment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.signedAmount
-import com.zaed.common.data.model.sale.WholesaleTransaction
-import com.zaed.common.data.model.purchase.Purchase
 import com.zaed.common.data.model.purchase.request.FetchSupplierPurchasesRequest
+import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.data.model.sale.request.AddPurchaseRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleRequest
@@ -54,35 +50,6 @@ class PurchaseRemoteDataSourceImpl(
         }
     }
 
-    override fun fetchSupplierPurchase(request: FetchSupplierPurchaseRequest): Flow<Result<List<WholesaleTransaction>>> =
-        callbackFlow {
-            var listener: ListenerRegistration? = null
-            try {
-                listener = purchaseCollection.where(
-                    Filter.and(
-                        Filter.equalTo("supplierId", request.supplierId),
-                        Filter.equalTo("deleted", false)
-                    )
-                ).addSnapshotListener { snapshot, error ->
-                    if (error != null) {
-                        close(error)
-                        trySend(Result.failure(error))
-                        return@addSnapshotListener
-                    } else {
-                        val result =
-                            snapshot?.toObjects(WholesaleTransaction::class.java) ?: emptyList()
-                        trySend(Result.success(result))
-                    }
-
-                }
-            } catch (e: Exception) {
-                crashlytics.recordException(e)
-                trySend(Result.failure(e))
-            }
-            awaitClose {
-                listener?.remove()
-            }
-        }
 
     override suspend fun fetchPurchase(request: FetchWholesaleRequest): Result<WholesaleTransaction> {
         return try {
@@ -95,18 +62,6 @@ class PurchaseRemoteDataSourceImpl(
         }
     }
 
-    override fun fetchPurchases(): Flow<Result<List<WholesaleTransaction>>> = callbackFlow {
-        try {
-            purchaseCollection.addSnapshotListener { snapshot, error ->
-                val result = snapshot?.toObjects(WholesaleTransaction::class.java) ?: emptyList()
-                trySend(Result.success(result))
-            }
-        } catch (e: Exception) {
-            crashlytics.recordException(e)
-            trySend(Result.failure(e))
-        }
-        awaitClose {}
-    }
 
     override suspend fun deletePurchase(request: DeleteWholesaleRequest): Result<Unit> {
         return try {
@@ -408,7 +363,7 @@ class PurchaseRemoteDataSourceImpl(
         }
     }
 
-    override fun fetchSupplierPurchases(request: FetchSupplierPurchasesRequest): Flow<Result<List<Purchase>>>
+    override fun fetchSupplierPurchases(request: FetchSupplierPurchasesRequest): Flow<Result<List<WholesaleTransaction>>>
     = callbackFlow {
         try {
             purchaseCollection
@@ -423,7 +378,7 @@ class PurchaseRemoteDataSourceImpl(
                         trySend(Result.failure(error))
                         return@addSnapshotListener
                     }
-                    val purchases = value?.toObjects(Purchase::class.java)?: emptyList()
+                    val purchases = value?.toObjects(WholesaleTransaction::class.java)?: emptyList()
                     trySend(Result.success(purchases))
                 }
         }catch ( e: Exception){
@@ -434,7 +389,7 @@ class PurchaseRemoteDataSourceImpl(
         awaitClose {  }
     }
 
-    override fun fetchPurchases(): Flow<Result<List<Purchase>>> = callbackFlow {
+    override fun fetchPurchases(): Flow<Result<List<WholesaleTransaction>>> = callbackFlow {
         try {
             purchaseCollection
                 .whereEqualTo("deleted", false)
@@ -443,7 +398,7 @@ class PurchaseRemoteDataSourceImpl(
                         trySend(Result.failure(error))
                         return@addSnapshotListener
                     }
-                    val purchases = value?.toObjects(Purchase::class.java)?: emptyList()
+                    val purchases = value?.toObjects(WholesaleTransaction::class.java)?: emptyList()
                     trySend(Result.success(purchases))
                 }
         } catch (e: Exception){

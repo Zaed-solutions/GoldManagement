@@ -25,7 +25,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.purchase.Purchase
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.StoreTransaction
 import com.zaed.common.data.model.sale.Transaction
@@ -55,7 +54,7 @@ fun TransactionItem(
     }
     val title = when{
         transaction is StoreTransaction -> "CR-${transaction.receiptNumber}"
-        transaction is Purchase -> "PR-${transaction.receiptNumber}"
+        transaction is WholesaleTransaction -> "PR-${transaction.receiptNumber}"
         else -> "DR-${transaction.receiptNumber}"
     }
     val context = LocalContext.current
@@ -147,7 +146,7 @@ fun TransactionItem(
 @Composable
 private fun Preview() {
     GoldManagementTheme {
-        SaleItem(
+        TransactionItem(
             transaction = WholesaleTransaction(
                 receiptNumber = "123456",
                 createdAt = Date(),

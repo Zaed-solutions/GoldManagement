@@ -1,7 +1,6 @@
 package com.zaed.common.data.repository
 
 import com.zaed.common.data.model.sale.WholesaleTransaction
-import com.zaed.common.data.model.purchase.Purchase
 import com.zaed.common.data.model.purchase.request.FetchSupplierPurchasesRequest
 import com.zaed.common.data.model.sale.request.AddPurchaseRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleRequest
@@ -28,15 +27,11 @@ class PurchaseRepositoryImpl(
         return purchaseRemoteDataSource.deletePurchase(request)
     }
 
-    override fun fetchPurchasesUseCase(): Flow<Result<List<WholesaleTransaction>>> {
-        return purchaseRemoteDataSource.fetchPurchases()
-    }
-
-    override fun fetchSupplierPurchases(request: FetchSupplierPurchasesRequest): Flow<Result<List<Purchase>>> {
+    override fun fetchSupplierPurchases(request: FetchSupplierPurchasesRequest): Flow<Result<List<WholesaleTransaction>>> {
         return purchaseRemoteDataSource.fetchSupplierPurchases(request)
     }
 
-    override fun fetchPurchases(): Flow<Result<List<Purchase>>> {
+    override fun fetchPurchases(): Flow<Result<List<WholesaleTransaction>>> {
         return purchaseRemoteDataSource.fetchPurchases()
     }
 }
