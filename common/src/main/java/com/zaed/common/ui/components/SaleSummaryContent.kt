@@ -25,6 +25,7 @@ import com.zaed.common.R
 import com.zaed.common.data.model.customer.Account
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.sale.Product
+import com.zaed.common.ui.addpurchase.ProductType
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
 import java.util.Date
@@ -39,7 +40,8 @@ fun SaleSummaryContent(
     totalPaid: Double,
     onCreate: () -> Unit = {},
     isPurchase : Boolean = false,
-    isLoading: Boolean = false
+    isLoading: Boolean = false,
+    productType: ProductType
 ) {
 
     Column(
@@ -70,6 +72,7 @@ fun SaleSummaryContent(
         ProductsTable(
             products = products,
             isModifyEnabled = false,
+            productType =productType
         )
         Spacer(modifier = Modifier.weight(1f))
         DashedDivider(
@@ -151,7 +154,8 @@ private fun Preview() {
             )
         ),
         totalAmount = 1253.0,
-        totalPaid = 1243.0
+        totalPaid = 1243.0,
+        productType = ProductType.GOLD
     )
 
 }

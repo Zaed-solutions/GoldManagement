@@ -63,6 +63,7 @@ fun SaleSummaryContent(
         ProductsTable(
             products = sale.products,
             isModifyEnabled = false,
+            productType = sale.productType
         )
         Spacer(modifier = Modifier.weight(1f))
         DashedDivider(

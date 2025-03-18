@@ -25,6 +25,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.ui.addGoldSale.components.SelectGoldContent
+import com.zaed.common.ui.addGoldSale.components.SelectIngotsContent
 import com.zaed.common.ui.addpurchase.components.SelectProductType
 import com.zaed.common.ui.components.PreviewSaleContent
 import com.zaed.common.ui.components.ProgressIndicatorTopAppBar
@@ -185,12 +186,12 @@ private fun AddPurchaseScreenContent(
                             }
 
                             ProductType.INGOT -> {
-                                SelectGoldContent(
+                                SelectIngotsContent(
                                     sale = state.purchase,
-                                    onAddGold = {
+                                    onAddIngot = {
                                         onAction(AddPurchaseUiAction.OnAddProduct(it))
                                     },
-                                    onRemoveGold = {productId->
+                                    onRemoveIngot = {productId->
                                         state.purchase.products.firstOrNull { productId == it.id }?.let {
                                             onAction(AddPurchaseUiAction.OnDeleteProduct(it))
                                         }
@@ -321,7 +322,8 @@ private fun AddPurchaseScreenContent(
                             isPurchase = true,
                             onCreate = {
                                 onAction(AddPurchaseUiAction.OnSubmitClicked)
-                            }
+                            },
+                            productType = selectedProductType
                         )
                     }
                 }

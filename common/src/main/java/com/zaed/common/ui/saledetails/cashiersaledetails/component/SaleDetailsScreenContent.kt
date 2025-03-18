@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
+import com.zaed.common.ui.addpurchase.ProductType
 import com.zaed.common.ui.components.ChangeLogList
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
 import com.zaed.common.ui.components.CustomerInfoSection
@@ -91,7 +92,8 @@ fun SaleDetailsScreenContent(
             ) {
                 ProductsTable(
                     products = state.storeSale.products,
-                    isModifyEnabled = false
+                    isModifyEnabled = false,
+                    productType = ProductType.PRODUCT
                 )
             }
             if (isAdmin && state.storeSale.logs.isNotEmpty()){

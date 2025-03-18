@@ -219,7 +219,8 @@ private fun AddGoldSaleScreenContent(
                             isLoading = state.isLoading,
                             onCreate = {
                                 onAction(AddGoldSaleUiAction.OnSubmitClicked)
-                            }
+                            },
+                            productType = state.sale.productType
                         )
                     }
                 }
