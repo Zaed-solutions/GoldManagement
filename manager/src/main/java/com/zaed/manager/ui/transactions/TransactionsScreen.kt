@@ -161,14 +161,14 @@ private fun TransactionsScreenContent(
                         TransactionsList(
                             isLoading = state.isLoading,
                             transactions = state.displayedSales,
-                            onTransactionClicked = { saleId, isProductSale ->
-                                onAction(TransactionsUiAction.OnSaleClicked(saleId))
+                            onTransactionClicked = { sale, isProductSale ->
+                                onAction(TransactionsUiAction.OnSaleClicked(sale.id))
                             },
-                            onEditTransaction = { saleId, isProductSale ->
-                                onAction(TransactionsUiAction.OnEditSaleClicked(saleId))
+                            onEditTransaction = { sale, isProductSale ->
+                                onAction(TransactionsUiAction.OnEditSaleClicked(sale.id))
                             },
-                            onDeleteTransaction = { saleId, isProductSale ->
-                                selectedTransactionId = saleId
+                            onDeleteTransaction = { sale, isProductSale ->
+                                selectedTransactionId = sale.id
                                 isSale = true
                                 isConfirmDeleteSheetVisible = true
                             },
@@ -179,20 +179,19 @@ private fun TransactionsScreenContent(
                         TransactionsList(
                             isLoading = state.isLoading,
                             transactions = state.displayedPurchases,
-                            onTransactionClicked = { purchaseId, _ ->
-                                onAction(TransactionsUiAction.OnPurchaseClicked(purchaseId))
+                            onTransactionClicked = { purchase, _ ->
+                                onAction(TransactionsUiAction.OnPurchaseClicked(purchase.id))
                             },
-                            onEditTransaction = { purchaseId, _ ->
-                                onAction(TransactionsUiAction.OnEditPurchaseClicked(purchaseId))
+                            onEditTransaction = { purchase, _ ->
+                                onAction(TransactionsUiAction.OnEditPurchaseClicked(purchase.id))
                             },
-                            onDeleteTransaction = { purchaseId, _ ->
-                                selectedTransactionId = purchaseId
+                            onDeleteTransaction = { purchase, _ ->
+                                selectedTransactionId = purchase.id
                                 isSale = false
                                 isConfirmDeleteSheetVisible = true
                             },
                         )
                     }
-
                 }
             }
             ConfirmDeleteBottomSheet(

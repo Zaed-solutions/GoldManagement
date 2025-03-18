@@ -220,15 +220,15 @@ private fun SupplierDetailsScreenContent(
                             TransactionsList(
                                 isLoading = false,
                                 transactions = state.allPurchases,
-                                onTransactionClicked = { purchaseId, _ ->
-                                    onAction(SupplierDetailsUiAction.OnPurchaseClicked(purchaseId))
+                                onTransactionClicked = { purchase, _ ->
+                                    onAction(SupplierDetailsUiAction.OnPurchaseClicked(purchase.id))
                                 },
-                                onEditTransaction = { purchaseId, _ ->
-                                    onAction(SupplierDetailsUiAction.OnEditPurchase(purchaseId))
+                                onEditTransaction = { purchase, _ ->
+                                    onAction(SupplierDetailsUiAction.OnEditPurchase(purchase.id))
                                 },
-                                onDeleteTransaction = { purchaseId, _ ->
+                                onDeleteTransaction = { purchase, _ ->
                                     isPurchase = true
-                                    selectedPurchaseId = purchaseId
+                                    selectedPurchaseId = purchase.id
                                     isConfirmDeletePaymentSheetVisible = true
                                 }
                             )

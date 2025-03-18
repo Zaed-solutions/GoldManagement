@@ -207,7 +207,7 @@ class DistributorDetailsViewModel(
             is DistributorDetailsUiAction.UpdateLossesDateFilter -> updateLossesDateFilterAndFilter(
                 action.dateFormat
             )
-
+            is DistributorDetailsUiAction.SetCustomRange -> setCustomRangeFilter(action.range)
             is DistributorDetailsUiAction.UpdateSalesDateFilter -> updateSalesDateFilterAndFilter(
                 action.dateFormat
             )
@@ -216,6 +216,20 @@ class DistributorDetailsViewModel(
             )
 
             else -> Unit
+        }
+    }
+
+    private fun setCustomRangeFilter(range: Pair<Date?, Date?>) {
+        viewModelScope.launch {
+            if(range.first == null && range.second == null) return@launch
+            _uiState.update {
+                it.copy(
+                    isLoading = true,
+                    selectedSalesFilter = DateFormat.CUSTOM_RANGE,
+                    selectedDateRange = range
+                )
+            }
+            filterSales()
         }
     }
 
@@ -400,7 +414,20 @@ class DistributorDetailsViewModel(
                     )
                 }
             }
-            convertSalesToDatedSales()
+            if(uiState.value.selectedSalesFilter == DateFormat.CUSTOM_RANGE) {
+                val filteredSales = uiState.value.filteredSales.filter { sale ->
+                    val beforeFlag = uiState.value.selectedDateRange.first?.let {  sale.createdAt >= it} ?: true
+                    val afterFlag = uiState.value.selectedDateRange.second?.let {  sale.createdAt <= it} ?: true
+                    beforeFlag && afterFlag
+                }
+                _uiState.update {
+                    it.copy(
+                        filteredSales = filteredSales
+                    )
+                }
+            } else {
+                convertSalesToDatedSales()
+            }
         }
     }
 

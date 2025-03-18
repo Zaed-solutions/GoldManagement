@@ -204,7 +204,11 @@ fun StoreDetailsScreenContent(
                 when (page) {
                     StoreDetailsTab.SALES.ordinal -> {
                         DatedSalesWithSearchSection(
-                            onCustomRangeSelected = {TODO()},
+                            onCustomRangeSelected = {
+                                onAction(StoreDetailsUiAction.SetCustomRange(it))
+                            },
+                            selectedRange = state.selectedRange,
+                            sales = state.filteredSales,
                             modifier = Modifier.fillMaxSize(),
                             isLoading = state.isLoading,
                             query = state.salesQuery,

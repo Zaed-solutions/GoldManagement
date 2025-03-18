@@ -119,7 +119,6 @@ fun DistributorScreenContent(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-
             PrimaryTabRow(
                 selectedTabIndex = pagerState.currentPage,
                 indicator = {
@@ -157,7 +156,11 @@ fun DistributorScreenContent(
                 when (page) {
                     DistributorDetailsTab.SALES.ordinal -> {
                         DatedSalesWithSearchSection(
-                            onCustomRangeSelected = {TODO()},
+                            onCustomRangeSelected = {
+                                onAction(DistributorDetailsUiAction.SetCustomRange(it))
+                            },
+                            selectedRange = state.selectedDateRange,
+                            sales = state.filteredSales,
                             modifier = Modifier.fillMaxSize(),
                             isLoading = state.isLoading,
                             query = state.salesQuery,

@@ -1,5 +1,6 @@
 package com.zaed.common.ui.components
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,7 +22,9 @@ fun DatedSalesWithSearchSection(
     query: String,
     onQueryChanged: (String) -> Unit,
     selectedFilter: DateFormat,
+    sales: List<Transaction>,
     onFilterClicked: (DateFormat) -> Unit,
+    selectedRange: Pair<Date?, Date?>,
     onCustomRangeSelected: (Pair<Date?, Date?>) -> Unit,
     datedSales: List<DatedSales>,
     onSaleClicked: (String,String) -> Unit,
@@ -44,17 +47,42 @@ fun DatedSalesWithSearchSection(
             modifier = modifier,
             selectedFilter = selectedFilter,
             onFilterClicked = onFilterClicked,
+            selectedRange = selectedRange,
             onCustomRangeSelected = onCustomRangeSelected
         ) {
-            DatedSalesList(
-                isLoading = isLoading,
-                datedSales = datedSales,
-                onSaleClicked = onSaleClicked,
-                isEditable = isEditable,
-                onEdit = onEdit,
-                isDeletable = isDeletable,
-                onDelete = onDelete
-            )
+            AnimatedContent(
+                targetState = selectedFilter
+            ) { contentState ->
+                when (contentState) {
+                    DateFormat.CUSTOM_RANGE -> {
+                        TransactionsList(
+                            isLoading = isLoading,
+                            transactions = sales,
+                            onTransactionClicked = { sale,_ ->
+                                onSaleClicked(sale.id, sale::class.qualifiedName?:"")
+                            },
+                            onDeleteTransaction = { sale,_ ->
+                                onDelete(sale)
+                            },
+                            onEditTransaction = {sale, _ ->
+                                onEdit(sale)
+                            }
+                        )
+                    }
+
+                    else -> {
+                        DatedSalesList(
+                            isLoading = isLoading,
+                            datedSales = datedSales,
+                            onSaleClicked = onSaleClicked,
+                            isEditable = isEditable,
+                            onEdit = onEdit,
+                            isDeletable = isDeletable,
+                            onDelete = onDelete
+                        )
+                    }
+                }
+            }
         }
     }
 

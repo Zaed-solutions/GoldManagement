@@ -168,12 +168,27 @@ class StoreDetailsViewModel(
         when (action) {
             StoreDetailsUiAction.OnDeleteStore -> deleteStore()
             is StoreDetailsUiAction.UpdateSalesDateFilter -> updateSalesDateFilterAndFilter(format = action.format)
+            is StoreDetailsUiAction.SetCustomRange -> setCustomRangeFilter(action.range)
             is StoreDetailsUiAction.OnInventoryQueryChanged -> updateInventoryQueryAndFilter(action.query)
             is StoreDetailsUiAction.OnSalesQueryChanged -> updateSalesQueryAndFilter(query = action.query)
             is StoreDetailsUiAction.OnUpdateStore -> updateStore(action.store)
             is StoreDetailsUiAction.UpdateLossesDateFilter -> updateLossesDateFilterAndFilter(action.format)
             is StoreDetailsUiAction.OnSaveInventory -> saveInventory(action.inventory)
             else -> Unit
+        }
+    }
+
+    private fun setCustomRangeFilter(range: Pair<Date?, Date?>) {
+        viewModelScope.launch {
+            if(range.first == null && range.second == null) return@launch
+            _uiState.update {
+                it.copy(
+                    isLoading = true,
+                    selectedSalesFilter = DateFormat.CUSTOM_RANGE,
+                    selectedRange = range
+                )
+            }
+            filterSales()
         }
     }
 
@@ -315,7 +330,20 @@ class StoreDetailsViewModel(
                     )
                 }
             }
-            convertSalesToDatedSales()
+            if(_uiState.value.selectedSalesFilter == DateFormat.CUSTOM_RANGE){
+                val filteredSales = uiState.value.filteredSales.filter{
+                    val beforeFlag = uiState.value.selectedRange.first?.let { date ->
+                        it.createdAt >= date
+                    } ?: true
+                    val afterFlag = uiState.value.selectedRange.second?.let { date ->
+                        it.createdAt <= date
+                    } ?: true
+                    beforeFlag && afterFlag
+                }
+                _uiState.update { it.copy(filteredSales = filteredSales) }
+            } else {
+                convertSalesToDatedSales()
+            }
         }
     }
 

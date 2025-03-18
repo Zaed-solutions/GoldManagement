@@ -2,6 +2,7 @@ package com.zaed.manager.ui.distributordetails
 
 import com.zaed.common.data.model.inventory.Inventory
 import com.zaed.common.ui.util.DateFormat
+import java.util.Date
 
 sealed interface DistributorDetailsUiAction {
     data object OnBackClicked: DistributorDetailsUiAction
@@ -12,4 +13,5 @@ sealed interface DistributorDetailsUiAction {
     data class UpdateLossesDateFilter(val dateFormat: DateFormat): DistributorDetailsUiAction
     data class UpdateIngotTransactionsDateFilter(val dateFormat: DateFormat): DistributorDetailsUiAction
     data class OnSaveInventory(val inventory: Inventory): DistributorDetailsUiAction
+    data class SetCustomRange(val range: Pair<Date?, Date?>): DistributorDetailsUiAction
 }

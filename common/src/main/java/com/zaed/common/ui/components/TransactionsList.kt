@@ -18,9 +18,9 @@ fun TransactionsList(
     listState: LazyListState = LazyListState(),
     isLoading: Boolean,
     transactions: List<Transaction>,
-    onTransactionClicked: (id: String, isProduct: Boolean) -> Unit,
-    onDeleteTransaction: (id: String, isProduct: Boolean) -> Unit,
-    onEditTransaction: (id: String, isProduct: Boolean) -> Unit
+    onTransactionClicked: (transaction: Transaction, isProduct: Boolean) -> Unit,
+    onDeleteTransaction: (transaction: Transaction, isProduct: Boolean) -> Unit,
+    onEditTransaction: (transaction: Transaction, isProduct: Boolean) -> Unit
 ) {
     ListWithLoading(
         isLoading = isLoading
@@ -39,13 +39,13 @@ fun TransactionsList(
                     modifier = Modifier.animateItem(),
                     transaction = transaction,
                     onTransactionClicked = {
-                        onTransactionClicked(transaction.id, transaction is WholesaleProductTransaction)
+                        onTransactionClicked(transaction, transaction is WholesaleProductTransaction)
                     },
                     onDelete = {
-                        onDeleteTransaction(transaction.id, transaction is WholesaleProductTransaction)
+                        onDeleteTransaction(transaction, transaction is WholesaleProductTransaction)
                     },
                     onEdit = {
-                        onEditTransaction(transaction.id, transaction is WholesaleProductTransaction)
+                        onEditTransaction(transaction, transaction is WholesaleProductTransaction)
                     },
                     isDeletable = true,
                     isEditable = true,
