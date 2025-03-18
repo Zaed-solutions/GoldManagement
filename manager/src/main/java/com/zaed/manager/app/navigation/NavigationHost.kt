@@ -26,7 +26,6 @@ import com.zaed.manager.ui.distributors.DistributorsScreen
 import com.zaed.manager.ui.distributorssales.DistributorsSalesScreen
 import com.zaed.manager.ui.losses.LossesScreen
 import com.zaed.manager.ui.manufacturerorders.ManufacturerOrdersScreen
-import com.zaed.manager.ui.purchases.PurchasesScreen
 import com.zaed.manager.ui.salescheques.SalesChequesScreen
 import com.zaed.manager.ui.storedetails.StoreDetailsScreen
 import com.zaed.manager.ui.stores.StoresScreen
@@ -166,29 +165,6 @@ fun NavigationHost(
         composable<Route.UserManagementRoute> {
             UserManagementScreen(
                 onShowNavDrawer = onShowNavDrawer
-            )
-        }
-        composable<Route.PurchasesRoute> {
-            PurchasesScreen(
-                onShowNavDrawer = onShowNavDrawer,
-                onNavigateToAddProductPurchase = {
-                    navController.navigate(Route.AddPurchaseRoute(it))
-                },
-                onNavigateToAddGoldPurchase = {
-                    navController.navigate(Route.AddPurchaseRoute(it))
-                },
-                onNavigateToProductPurchaseDetails = {
-                    navController.navigate(Route.PurchaseDetailsRoute(it))
-                },
-                onNavigateToGoldPurchaseDetails = {
-                    navController.navigate(Route.PurchaseDetailsRoute(it))
-                },
-                onNavigateToGoldIngotsDetails = {
-                    navController.navigate(Route.PurchaseDetailsRoute(it))
-                },
-                onNavigateToAddIngotPurchase = {
-                    navController.navigate(Route.AddPurchaseRoute(it))
-                }
             )
         }
         composable<Route.StoresRoute> {
