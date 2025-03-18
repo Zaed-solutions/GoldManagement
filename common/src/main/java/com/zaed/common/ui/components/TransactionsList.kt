@@ -10,7 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.zaed.common.data.model.sale.Transaction
-import com.zaed.common.data.model.sale.WholesaleProductTransaction
+import com.zaed.common.data.model.sale.WholesaleTransaction
+import com.zaed.common.ui.addpurchase.ProductType
 
 @Composable
 fun TransactionsList(
@@ -34,18 +35,18 @@ fun TransactionsList(
             items(
                 items = transactions,
                 key = { it.id }
-            ) { sale ->
+            ) { transaction ->
                 TransactionItem(
                     modifier = Modifier.animateItem(),
-                    transaction = sale,
+                    transaction = transaction,
                     onTransactionClicked = {
-                        onTransactionClicked(transaction, transaction is WholesaleProductTransaction)
+                        onTransactionClicked(transaction, transaction is WholesaleTransaction && transaction.productType == ProductType.PRODUCT)
                     },
                     onDelete = {
-                        onDeleteTransaction(transaction, transaction is WholesaleProductTransaction)
+                        onDeleteTransaction(transaction, transaction is WholesaleTransaction && transaction.productType == ProductType.PRODUCT)
                     },
                     onEdit = {
-                        onEditTransaction(transaction, transaction is WholesaleProductTransaction)
+                        onEditTransaction(transaction, transaction is WholesaleTransaction && transaction.productType == ProductType.PRODUCT)
                     },
                     isDeletable = true,
                     isEditable = true,

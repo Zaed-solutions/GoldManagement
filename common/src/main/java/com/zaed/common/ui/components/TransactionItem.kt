@@ -49,7 +49,8 @@ fun TransactionItem(
     onDelete: () -> Unit = {},
 ) {
     val (icon, iconBackgroundColor, iconColor) = when{
-        transaction is WholesaleTransaction && transaction.productType == ProductType.GOLD  -> Triple(R.drawable.ic_ingot, GoldenCustomColors.current.color, GoldenCustomColors.current.onColor)
+        transaction is WholesaleTransaction && transaction.productType == ProductType.GOLD  -> Triple(R.drawable.ic_gold, GoldenCustomColors.current.color, GoldenCustomColors.current.onColor)
+        transaction is WholesaleTransaction && transaction.productType == ProductType.INGOT  -> Triple(R.drawable.ic_ingot, GoldenCustomColors.current.color, GoldenCustomColors.current.onColor)
         else -> Triple(R.drawable.ic_shopping, MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.onSecondary)
     }
     val title = when{
@@ -95,18 +96,32 @@ fun TransactionItem(
                 modifier = Modifier.padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(
-                    painter = painterResource(icon),
-                    contentDescription = null,
-                    tint = iconColor,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(
-                            color = iconBackgroundColor,
-                            shape = CircleShape
-                        )
-                        .padding(8.dp)
-                )
+                if(transaction is WholesaleTransaction && transaction.productType == ProductType.GOLD){
+                    Icon(
+                        painter = painterResource(icon),
+                        contentDescription = null,
+                        tint = iconBackgroundColor,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(
+                                color = iconColor,
+                                shape = CircleShape
+                            )
+                    )
+                } else {
+                    Icon(
+                        painter = painterResource(icon),
+                        contentDescription = null,
+                        tint = iconColor,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(
+                                color = iconBackgroundColor,
+                                shape = CircleShape
+                            )
+                            .padding(8.dp)
+                    )
+                }
                 Column (
                     modifier = Modifier
                         .padding(start = 16.dp)

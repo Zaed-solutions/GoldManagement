@@ -135,6 +135,8 @@ fun PurchasesScreenContent(
                         else -> onAction(PurchasesUiAction.OnGoldPurchasesClicked(saleId))
                     }
                 },
+                selectedRange = null to null,
+                sales = emptyList(),
                 onCustomRangeSelected = {TODO()}
             )
 

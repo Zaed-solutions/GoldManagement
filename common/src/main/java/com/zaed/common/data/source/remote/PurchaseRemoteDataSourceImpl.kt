@@ -366,12 +366,17 @@ class PurchaseRemoteDataSourceImpl(
     override fun fetchSupplierPurchases(request: FetchSupplierPurchasesRequest): Flow<Result<List<WholesaleTransaction>>>
     = callbackFlow {
         try {
+            val filter = if(request.isManager){
+                    Filter.equalTo("customerId", request.supplierId)
+            } else {
+                Filter.and(
+                    Filter.equalTo("customerId", request.supplierId),
+                    Filter.equalTo("deleted", false)
+                )
+            }
             purchaseCollection
                 .where(
-                    Filter.and(
-                        Filter.equalTo("supplierId", request.supplierId),
-                        Filter.equalTo("deleted", false)
-                    )
+                    filter
                 )
                 .addSnapshotListener{ value, error ->
                     if (error != null){

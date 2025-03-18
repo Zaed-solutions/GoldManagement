@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.Category
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
+import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentStatus
 import com.zaed.common.data.model.payment.PaymentType
@@ -436,8 +437,11 @@ class AddPurchaseViewModel(
 
     private fun addPayment(payment: Payment) {
         viewModelScope.launch {
+            val updatedPayment = payment.apply {
+                this.given = this !is FuturePayment
+            }
             _uiState.update { oldState ->
-                oldState.copy(payments = oldState.payments + payment)
+                oldState.copy(payments = oldState.payments + updatedPayment)
             }
             updateTotalAmounts()
         }

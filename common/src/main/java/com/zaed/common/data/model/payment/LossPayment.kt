@@ -5,7 +5,7 @@ import java.util.Date
 
 data class LossPayment(
     override var id: String = "",
-    override val customerId: String = "",
+    override var customerId: String = "",
     override val type: PaymentType = PaymentType.LOSS,
     override var amount: Double = 0.0,
     override val deleted: Boolean = false,

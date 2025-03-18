@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
+import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.DeletePaymentRequest
@@ -58,7 +59,7 @@ class SupplierDetailsViewModel(
                 result.onSuccess { data ->
                     _uiState.update {
                         it.copy(
-                            currentUser = data
+                            currentUser = data,
                         )
                     }
                 }
@@ -70,6 +71,7 @@ class SupplierDetailsViewModel(
         viewModelScope.launch (Dispatchers.IO){
             fetchPurchasesUseCase(
                 FetchSupplierPurchasesRequest(
+                    isManager = uiState.value.currentUser.role == UserRole.MANAGER,
                     supplierId = supplierId
                 )
             ).collect{ result ->
@@ -103,7 +105,8 @@ class SupplierDetailsViewModel(
         viewModelScope.launch (Dispatchers.IO){
             fetchSupplierPaymentsUseCase(
                 FetchSupplierPaymentsRequest(
-                    supplierId = supplierId
+                    supplierId = supplierId,
+                    isManager = uiState.value.currentUser.role == UserRole.MANAGER
                 )
             ).collect{ result ->
                 result.onSuccess { data->
@@ -238,7 +241,7 @@ class SupplierDetailsViewModel(
             addPaymentUseCase(
                 request = AddNewPaymentRequest(
                     customerId = uiState.value.supplier.id,
-                    payment = payment
+                    payment = payment.apply { this.customerId = uiState.value.supplier.id }
                 )
             ).onSuccess {
                 Log.d(TAG, "addPayment: success")
