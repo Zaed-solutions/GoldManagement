@@ -142,11 +142,13 @@ class PurchaseRemoteDataSourceImpl(
             val batch = firestore.batch()
             val docRef = purchaseCollection.document()
             val paymentsIds = mutableListOf<String>()
-            val receiptNumber = purchaseCollection.orderBy(
+            val lastSale = purchaseCollection.orderBy(
                 "createdAt",
                 Query.Direction.DESCENDING
             ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")
-                ?.toLongOrNull() ?: 0.plus(1)
+                ?.toLongOrNull() ?: 0L
+
+            val receiptNumber = lastSale +1L
             request.payments.filter { it.type==PaymentType.CHEQUE }.forEach {
                 paymentsIds.add(it.id)
                 val paymentRef = paymentCollection.document(it.id)
