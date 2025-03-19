@@ -297,9 +297,9 @@ class AddGoldSaleViewModel(
     private fun addProduct(product: Product) {
         viewModelScope.launch {
             _uiState.update { oldState ->
-                if (oldState.sale.products.any { it.name == product.name }) {
+                if (oldState.sale.products.any { it.categoryId == product.categoryId }) {
                     oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products.map {
-                        if (it.name == product.name) {
+                        if (it.categoryId == product.categoryId) {
                             product
                         } else {
                             it
