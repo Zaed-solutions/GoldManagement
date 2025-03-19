@@ -169,6 +169,13 @@ fun SelectPaymentsContent(
                         )
                         simplePaymentBottomSheet = true
                     }
+                    PaymentType.MANAGER_CHEQUES ->{
+                        selectedPayment = ManagerCheque(
+                            type = type,
+                            id = "Destributor-" + UUID.randomUUID().toString()
+                        )
+                        simplePaymentBottomSheet = true
+                    }
 
                     else -> {}
                 }
