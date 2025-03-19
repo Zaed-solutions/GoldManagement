@@ -34,9 +34,11 @@ fun PaymentsList(
                 items = payments,
                 key = { it.id }
             ) { payment ->
-                Column {
+                Column (
+                    modifier = Modifier.animateItem(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ){
                     PaymentItem(
-                        modifier = Modifier.padding(bottom = 8.dp).animateItem(),
                         payment = payment,
                         onEdit = { onEditPayment(payment) },
                         onDelete = { onRemovePayment(payment) }

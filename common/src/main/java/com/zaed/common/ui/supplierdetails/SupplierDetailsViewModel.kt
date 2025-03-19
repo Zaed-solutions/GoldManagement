@@ -207,12 +207,14 @@ class SupplierDetailsViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             editPaymentUseCase(
                 request = EditPaymentRequest(
+                    isSupplier = false,
                     customerId = uiState.value.supplier.id,
                     oldPayment = oldPayment,
                     newPayment = newPayment
                 )
             ).onSuccess {
                 Log.d(TAG, "updatePayment: success")
+                fetchSupplier(uiState.value.supplier.id)
             }.onFailure {
                 Log.e(TAG, "updatePayment: ${it.message}", it)
             }
@@ -223,12 +225,14 @@ class SupplierDetailsViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             deletePaymentUseCase.invoke(
                 DeletePaymentRequest(
+                    isSupplier = true,
                     payment = payment,
                     employeeId = uiState.value.currentUser.id,
                     employeeName = uiState.value.currentUser.fullName,
                 )
             ).onSuccess {
                 Log.d(TAG, "deletePayment: ")
+                fetchSupplier(uiState.value.supplier.id)
             }.onFailure {
                 Log.e(TAG, "deletePayment: ${it.message}", it)
             }
@@ -240,11 +244,13 @@ class SupplierDetailsViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             addPaymentUseCase(
                 request = AddNewPaymentRequest(
+                    isSupplier = true,
                     customerId = uiState.value.supplier.id,
                     payment = payment.apply { this.customerId = uiState.value.supplier.id }
                 )
             ).onSuccess {
                 Log.d(TAG, "addPayment: success")
+                fetchSupplier(uiState.value.supplier.id)
             }.onFailure {
                 Log.e(TAG, "addPayment: ${it.message}", it)
             }

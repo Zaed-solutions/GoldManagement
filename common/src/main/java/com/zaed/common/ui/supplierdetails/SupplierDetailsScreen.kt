@@ -1,6 +1,7 @@
 package com.zaed.common.ui.supplierdetails
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -166,7 +167,7 @@ private fun SupplierDetailsScreenContent(
         ) {
             //supplier details
             DetailRow(
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp),
                 label = stringResource(R.string.phone_number),
                 value = state.supplier.phone
             )
@@ -176,7 +177,9 @@ private fun SupplierDetailsScreenContent(
                 value = state.supplier.email
             )
             //tab row
-            PrimaryTabRow(selectedTabIndex = pagerState.currentPage, indicator = {
+            PrimaryTabRow(
+                modifier = Modifier.padding(top = 16.dp),
+                selectedTabIndex = pagerState.currentPage, indicator = {
                 TabRowDefaults.PrimaryIndicator(
                     modifier = Modifier
                         .run {
@@ -207,6 +210,7 @@ private fun SupplierDetailsScreenContent(
             }
             //horizontal pager
             HorizontalPager(
+                modifier = Modifier.padding(top = 16.dp),
                 state = pagerState,
                 userScrollEnabled = false,
             ) { value ->
@@ -214,7 +218,7 @@ private fun SupplierDetailsScreenContent(
                     SupplierDetailsTabs.PURCHASES.ordinal -> {
                         Column {
                             SearchBar(
-                                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                                 query = state.purchasesSearchQuery,
                                 onQueryChanged = {
                                     onAction(SupplierDetailsUiAction.UpdatePurchasesSearchQuery(it))
@@ -242,7 +246,7 @@ private fun SupplierDetailsScreenContent(
                         //payments
                         Column {
                             BalanceSection(
-                                modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+                                modifier = Modifier.padding(horizontal = 16.dp),
                                 isSupplier = true,
                                 amount = state.supplier.debtAmount,
                             )
