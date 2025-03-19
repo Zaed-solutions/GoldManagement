@@ -14,6 +14,9 @@ import com.zaed.common.domain.loss.AddDistributorLossUseCase
 import com.zaed.common.domain.loss.ConvertLossesToDatedLossesUseCase
 import com.zaed.common.domain.loss.FetchDistributorLossesUseCase
 import com.zaed.common.domain.loss.UpdateDistributorLossUseCase
+import com.zaed.common.ui.util.DateFormat
+import com.zaed.common.ui.util.isAfter
+import com.zaed.common.ui.util.isBefore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -65,14 +68,16 @@ class LossesViewModel(
             ).collect { result ->
                 result.onSuccess { data ->
                     launch(Dispatchers.Default) {
-                        convertToDatedLossesUseCase(data).let { datedLosses ->
-                            _uiState.update { oldState ->
-                                oldState.copy(
-                                    losses = data,
-                                    datedLosses = datedLosses,
-                                    isLoading = false
-                                )
-                            }
+                        _uiState.update { oldState ->
+                            oldState.copy(
+                                losses = data,
+                                isLoading = true
+                            )
+                        }
+                        if(uiState.value.selectedDateFilter == DateFormat.CUSTOM_RANGE){
+                            filterLosses()
+                        } else {
+                            convertToDatedLosses()
                         }
                     }
                 }.onFailure { e ->
@@ -87,7 +92,57 @@ class LossesViewModel(
             is LossesUiAction.OnAddLoss -> addLoss(action.loss)
             is LossesUiAction.OnDeleteLoss -> deleteLoss(action.loss)
             is LossesUiAction.OnUpdateLoss -> updateLoss(action.loss)
+            is LossesUiAction.UpdateSelectedDateFilter -> updateSelectedFilter(action.filter)
+            is LossesUiAction.SetCustomRangeFilter -> setCustomRangeFilter(action.range)
             else -> Unit
+        }
+    }
+
+    private fun setCustomRangeFilter(range: Pair<Date?, Date?>) {
+        viewModelScope.launch {
+            if(range.first == null && range.second == null) return@launch
+            _uiState.update { it.copy(isLoading = true, selectedDateFilter = DateFormat.CUSTOM_RANGE, selectedDateRange = range) }
+            filterLosses()
+        }
+    }
+
+    private fun filterLosses() {
+        viewModelScope.launch (Dispatchers.Default){
+            val range = _uiState.value.selectedDateRange
+            val filteredLosses = _uiState.value.losses.filter {
+                val afterFlag = range.first?.let { date -> it.date.isAfter(date)} ?: true
+                val beforeFlag = range.second?.let { date -> it.date.isBefore(date) } ?: true
+                beforeFlag && afterFlag
+            }
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    filteredLosses = filteredLosses
+                )
+            }
+        }
+    }
+
+    private fun updateSelectedFilter(filter: DateFormat) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, selectedDateFilter = filter) }
+            convertToDatedLosses()
+        }
+    }
+
+    private fun convertToDatedLosses() {
+        viewModelScope.launch(Dispatchers.Default) {
+            convertToDatedLossesUseCase(
+                losses = uiState.value.losses,
+                format = uiState.value.selectedDateFilter
+            ).let { datedLosses ->
+                _uiState.update { oldState ->
+                    oldState.copy(
+                        datedLosses = datedLosses,
+                        isLoading = false
+                    )
+                }
+            }
         }
     }
 
@@ -116,7 +171,7 @@ class LossesViewModel(
     }
 
     private fun deleteLoss(loss: DistributorLoss) {
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             val newLogs = loss.logs.toMutableList()
             val distributor = _uiState.value.currentUser
             newLogs.add(
@@ -140,7 +195,7 @@ class LossesViewModel(
     }
 
     private fun addLoss(loss: DistributorLoss) {
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             val distributor = _uiState.value.currentUser
             val newLogs = listOf(
                 ChangeLog(
