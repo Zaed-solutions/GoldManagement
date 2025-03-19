@@ -11,6 +11,8 @@ import com.zaed.common.domain.sale.ConvertSalesToDatedSalesUseCase
 import com.zaed.common.domain.sale.DeleteWholesaleUseCase
 import com.zaed.common.domain.sale.FetchDistributorSalesUseCase
 import com.zaed.common.ui.util.DateFormat
+import com.zaed.common.ui.util.isAfter
+import com.zaed.common.ui.util.isBefore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -166,7 +168,7 @@ class SalesViewModel(
             if (searchQuery.isBlank()) {
                 //no search query and payment status is all
                 _uiState.update { oldState ->
-                    oldState.copy(isLoading = false, filteredSales = oldState.allSales)
+                    oldState.copy(filteredSales = oldState.allSales)
                 }
             } else {
                 //search query is not blank & payment status is not all
@@ -182,14 +184,14 @@ class SalesViewModel(
                     }
                 }
                 _uiState.update { oldState ->
-                    oldState.copy(isLoading = false, filteredSales = filteredSales)
+                    oldState.copy(filteredSales = filteredSales)
                 }
             }
             if(filter == DateFormat.CUSTOM_RANGE){
-                val filteredSales = uiState.value.filteredSales.filter {
-                    val fromFlag = range.first?.let { it >= it  } ?: true
-                    val toFlag = range.second?.let { it >= it  } ?: true
-                    fromFlag && toFlag
+                val filteredSales = uiState.value.filteredSales.filter { sale ->
+                    val afterFlag = range.first?.let { sale.createdAt.isAfter(it)  } ?: true
+                    val beforeFlag = range.second?.let { sale.createdAt.isBefore(it)  } ?: true
+                    afterFlag && beforeFlag
                 }
                 _uiState.update { oldState ->
                     oldState.copy(isLoading = false, filteredSales = filteredSales)
