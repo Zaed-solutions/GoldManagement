@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
+import com.zaed.common.data.model.cheque.ManagerCheque
 import com.zaed.common.data.model.customer.Account
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.BankTransferPayment
@@ -345,6 +346,28 @@ fun SelectPaymentsContent(
                         }
                     }
 
+                    PaymentType.MANAGER_CHEQUES -> {
+                        selectedPayment?.let {
+                            SaveManagerChequePaymentBottomSheetContent(
+                                initialPayment = selectedPayment as ManagerCheque,
+                                remainsAmount = remainsAmount,
+                                onSave = { newPayment ->
+                                    if (selectedPayment!!.id.startsWith("Destributor")) {
+                                        onAddPayment(
+                                            newPayment.copy(
+                                                id = "Payment-" + UUID.randomUUID().toString(),
+                                                customerId = selectedAccount.id,
+                                            )
+                                        )
+                                    } else {
+                                        onEditPayment(newPayment)
+                                    }
+                                    simplePaymentBottomSheet = false
+                                }
+                            )
+                        }
+                    }
+
                     else -> {}
                 }
 
@@ -565,14 +588,15 @@ fun SelectFromSalesChequesBottomSheetContent(
                 onClick = onDismiss,
                 enabled = selectedChequesPayment.sumOf { it.amount } <= remainsAmount,
                 modifier = Modifier
-                    .fillMaxWidth().padding(8.dp),
+                    .fillMaxWidth()
+                    .padding(8.dp),
                 shape = RoundedCornerShape(4.dp),
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    if(selectedChequesPayment.sumOf { it.amount } <= remainsAmount) {
+                    if (selectedChequesPayment.sumOf { it.amount } <= remainsAmount) {
                         Text(
                             selectedChequesPayment.sumOf { it.amount }.toMoneyFormat(2),
                             style = MaterialTheme.typography.titleLarge
@@ -581,7 +605,7 @@ fun SelectFromSalesChequesBottomSheetContent(
                             text = stringResource(R.string.select_cheques),
                             style = MaterialTheme.typography.titleMedium
                         )
-                    }else{
+                    } else {
                         Text(
                             text = stringResource(R.string.selected_cheques_amount_is_greater_than_the_remaining_amount),
                             style = MaterialTheme.typography.titleMedium
