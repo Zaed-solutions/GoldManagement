@@ -83,7 +83,8 @@ class AddPurchaseViewModel(
                 _uiState.update { oldState ->
                     oldState.copy(
                         initialPurchase = data,
-                        purchase = data
+                        purchase = data,
+                        selectedProductType = data.productType
                     )
                 }
                 fetchSupplier(data.customerId)
