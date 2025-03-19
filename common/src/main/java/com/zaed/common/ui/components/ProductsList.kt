@@ -109,7 +109,7 @@ fun GoldItem(
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
-        tonalElevation = 2.dp
+        tonalElevation = 2.dp,
     ) {
         Row(
             modifier = Modifier

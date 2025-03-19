@@ -143,7 +143,10 @@ fun SelectProductsContent(
                         onClick = {
                             selectedProduct =
                                 transaction.products.firstOrNull { it.categoryId == category.id }
-                                    ?: Product(categoryId = category.id)
+                                    ?: Product(
+                                        categoryId = category.id,
+                                        name = if (isStoreSale) "" else category.name
+                                    )
                             enterProductSheetVisible = true
                         }
                     )

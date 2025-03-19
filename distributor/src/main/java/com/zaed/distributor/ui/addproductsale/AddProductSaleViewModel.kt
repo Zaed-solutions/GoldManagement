@@ -313,16 +313,14 @@ class AddProductSaleViewModel(
     private fun addProduct(product: Product) {
         viewModelScope.launch {
             _uiState.update { oldState ->
-                if (oldState.sale.products.any { it.name == product.name }) {
+                if (oldState.sale.products.any { it.categoryId == product.categoryId }) {
                     oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products.map {
-                        if (it.name == product.name) {
+                        if (it.categoryId == product.categoryId) {
                             product
                         } else {
                             it
                         }
-                    }
-                    )
-                    )
+                    }))
                 } else {
                     oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products + product))
                 }
@@ -334,8 +332,8 @@ class AddProductSaleViewModel(
     private fun updateTotalAmounts() {
         viewModelScope.launch(Dispatchers.Default) {
             val totalAmount = uiState.value.sale.products.sumOf { it.grams * it.gramPrice }
-            val totalPaid = uiState.value.payments.filter { it.type != PaymentType.FUTURES }
-                .sumOf { it.amount }
+            val totalPaid =
+                uiState.value.payments.filter { it.type != PaymentType.FUTURES }.sumOf { it.amount }
             _uiState.update {
                 it.copy(totalPaid = totalPaid)
             }

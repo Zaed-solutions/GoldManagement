@@ -29,6 +29,7 @@ import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.ui.addpurchase.ProductType
 import com.zaed.common.ui.components.ProductsList
 import com.zaed.common.ui.util.toMoneyFormat
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,7 +59,12 @@ fun SelectGoldContent(
         ProductsList(
             modifier = Modifier.padding(horizontal = 8.dp),
             products = sale.products,
-            onAddProduct = { isAddProductSheetVisible = true },
+            onAddProduct = {
+                isAddProductSheetVisible = true
+                selectedProduct = selectedProduct.copy(
+                    categoryId = UUID.randomUUID().toString(),
+                )
+            },
             onRemoveProduct = onRemoveGold,
             label = stringResource(com.zaed.common.R.string.gold),
             onEditProduct = {
@@ -137,12 +143,19 @@ fun SelectIngotsContent(
         ProductsList(
             modifier = Modifier.padding(horizontal = 8.dp),
             products = sale.products,
-            onAddProduct = { isAddProductSheetVisible = true },
+            onAddProduct = {
+                isAddProductSheetVisible = true
+                selectedProduct = selectedProduct.copy(
+                    categoryId = UUID.randomUUID().toString(),
+                )
+            },
             onRemoveProduct = onRemoveIngot,
             label = stringResource(com.zaed.common.R.string.ingots),
             onEditProduct = {
-                selectedProduct = it
                 isAddProductSheetVisible = true
+                selectedProduct = selectedProduct.copy(
+                    categoryId = UUID.randomUUID().toString(),
+                )
             },
             productType = ProductType.INGOT
         )

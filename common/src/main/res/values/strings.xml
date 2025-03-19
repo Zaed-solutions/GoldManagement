@@ -322,4 +322,6 @@
     <string name="from_template">From: %1$s</string>
     <string name="to_template">To: %1$s</string>
     <string name="credit">Credit</string>
+    <string name="personal">Personal Cheque</string>
+    <string name="company">Company Cheque</string>
 </resources>
