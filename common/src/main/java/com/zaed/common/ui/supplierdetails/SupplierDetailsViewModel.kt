@@ -17,6 +17,7 @@ import com.zaed.common.data.model.supplier.Supplier
 import com.zaed.common.data.model.supplier.request.FetchSupplierRequest
 import com.zaed.common.data.model.supplier.request.UpdateSupplierRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
+import com.zaed.common.domain.cheque.FetchAllUnCashedSalesChequeUseCase
 import com.zaed.common.domain.payment.AddNewPaymentUseCase
 import com.zaed.common.domain.payment.DeletePaymentUseCase
 import com.zaed.common.domain.payment.EditPaymentUseCase
@@ -40,8 +41,9 @@ class SupplierDetailsViewModel(
     private val fetchSupplierUseCase: FetchSupplierUseCase,
     private val updateSupplierUseCase: UpdateSupplierUseCase,
     private val fetchPurchasesUseCase: FetchSupplierPurchasesUseCase,
-    private val updatePurchaseUseCase: UpdatePurchaseUseCase
-    ) : ViewModel() {
+    private val updatePurchaseUseCase: UpdatePurchaseUseCase,
+    private val fetchAllUnCashedSalesChequesUseCase: FetchAllUnCashedSalesChequeUseCase
+) : ViewModel() {
     private val TAG: String = "SupplierDetailsViewModel"
     private val _uiState = MutableStateFlow(SupplierDetailsUiState())
     val uiState = _uiState.asStateFlow()
@@ -51,6 +53,7 @@ class SupplierDetailsViewModel(
         fetchSupplier(supplierId)
         fetchPayments(supplierId)
         fetchPurchases(supplierId)
+        fetchSalesCheques()
     }
 
     private fun fetchCurrentUser() {
@@ -97,6 +100,20 @@ class SupplierDetailsViewModel(
                 it.copy(
                     filteredPurchases = filteredPurchases
                 )
+            }
+        }
+    }
+
+    private fun fetchSalesCheques() {
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchAllUnCashedSalesChequesUseCase().onSuccess {
+                _uiState.update { oldState ->
+                    oldState.copy(
+                        salesCheques = it
+                    )
+                }
+            }.onFailure {
+                Log.e(TAG, "fetchSalesCheques: ${it.message}", it)
             }
         }
     }

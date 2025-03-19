@@ -25,6 +25,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -44,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
 import com.zaed.common.data.model.authentication.UserRole
+import com.zaed.common.data.model.cheque.ManagerCheque
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
@@ -51,6 +53,7 @@ import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.getProductSalePayments
+import com.zaed.common.data.model.payment.getSupplierPaymentTypes
 import com.zaed.common.ui.components.BackIcon
 import com.zaed.common.ui.components.BalanceSection
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
@@ -61,7 +64,9 @@ import com.zaed.common.ui.components.SaveBankTransferPaymentBottomSheetContent
 import com.zaed.common.ui.components.SaveCashPaymentBottomSheetContent
 import com.zaed.common.ui.components.SaveChequePaymentBottomSheetContent
 import com.zaed.common.ui.components.SaveFuturePaymentBottomSheetContent
+import com.zaed.common.ui.components.SaveManagerChequePaymentBottomSheetContent
 import com.zaed.common.ui.components.SearchBar
+import com.zaed.common.ui.components.SelectFromSalesChequesBottomSheetContent
 import com.zaed.common.ui.components.TransactionsList
 import com.zaed.common.ui.suppliers.components.SaveSupplierBottomSheet
 import com.zaed.common.ui.util.toMoneyFormat
@@ -318,6 +323,7 @@ private fun SupplierDetailsScreenContent(
                     onDismissRequest = {
                         isSavePaymentSheetVisible = false
                     },
+                    sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
                 ) {
                     when (selectedPayment.type) {
                         PaymentType.CASH -> {
@@ -347,28 +353,60 @@ private fun SupplierDetailsScreenContent(
                         }
 
                         PaymentType.CHEQUE -> {
-                            SaveChequePaymentBottomSheetContent(initialPayment = selectedPayment as ChequePayment,
-                                remainsAmount = Double.MAX_VALUE,
-                                onSave = { updatedPayment ->
-                                    isSavePaymentSheetVisible = false
-                                    if (selectedPayment.id.isBlank()) {
-                                        onAction(
-                                            SupplierDetailsUiAction.AddPayment(
-                                                updatedPayment.copy(
-                                                    given = !isTaken
+                            if(!isTaken) {
+                                SelectFromSalesChequesBottomSheetContent(
+                                    salesCheques = state.salesCheques,
+                                    onSelect = { updatedPayment ->
+                                        isSavePaymentSheetVisible = false
+                                        if (selectedPayment.id.isBlank()) {
+                                            onAction(
+                                                SupplierDetailsUiAction.AddPayment(
+                                                    updatedPayment.copy(
+                                                        given = !isTaken
+                                                    )
                                                 )
                                             )
-                                        )
-                                    } else {
-                                        onAction(
-                                            SupplierDetailsUiAction.UpdatePayment(
-                                                selectedPayment,
-                                                updatedPayment
+                                        } else {
+                                            onAction(
+                                                SupplierDetailsUiAction.UpdatePayment(
+                                                    selectedPayment,
+                                                    updatedPayment
+                                                )
                                             )
-                                        )
+                                        }
+                                    },
+                                    onDismiss = {
+                                        isSavePaymentSheetVisible = false
+                                    },
+                                    selectedChequesPayment = state.payments.filterIsInstance<ChequePayment>(),
+                                    onRemove = {},
+                                    remainsAmount = Double.MAX_VALUE
+                                )
+                            } else {
+                                SaveChequePaymentBottomSheetContent(
+                                    initialPayment = selectedPayment as ChequePayment,
+                                    remainsAmount = Double.MAX_VALUE,
+                                    onSave = { updatedPayment ->
+                                        isSavePaymentSheetVisible = false
+                                        if (selectedPayment.id.isBlank()) {
+                                            onAction(
+                                                SupplierDetailsUiAction.AddPayment(
+                                                    updatedPayment.copy(
+                                                        given = !isTaken
+                                                    )
+                                                )
+                                            )
+                                        } else {
+                                            onAction(
+                                                SupplierDetailsUiAction.UpdatePayment(
+                                                    selectedPayment,
+                                                    updatedPayment
+                                                )
+                                            )
+                                        }
                                     }
-                                }
-                            )
+                                )
+                            }
                         }
 
                         PaymentType.BANK_TRANSFER -> {
@@ -424,6 +462,29 @@ private fun SupplierDetailsScreenContent(
                             )
                         }
 
+                        PaymentType.MANAGER_CHEQUES -> {
+                            SaveManagerChequePaymentBottomSheetContent(initialPayment = selectedPayment as ManagerCheque,
+                                remainsAmount = Double.MAX_VALUE,
+                                onSave = { updatedPayment ->
+                                    isSavePaymentSheetVisible = false
+                                    if (selectedPayment.id.isBlank()) {
+                                        onAction(
+                                            SupplierDetailsUiAction.AddPayment(
+                                                updatedPayment.copy(
+                                                    given = !isTaken
+                                                )
+                                            )
+                                        )
+                                    } else {
+                                        onAction(
+                                            SupplierDetailsUiAction.UpdatePayment(
+                                                selectedPayment,
+                                                updatedPayment
+                                            )
+                                        )
+                                    }
+                                })
+                        }
 
                         else -> {}
                     }
@@ -438,7 +499,7 @@ private fun SupplierDetailsScreenContent(
                     }
                 ) {
                     PaymentTypes(
-                        types = getProductSalePayments(),
+                        types = getSupplierPaymentTypes(given = !isTaken),
                         onPaymentTypeSelected = { type ->
                             when (type) {
                                 PaymentType.CASH -> {
@@ -455,6 +516,12 @@ private fun SupplierDetailsScreenContent(
 
                                 PaymentType.CHEQUE -> {
                                     selectedPayment = ChequePayment(type = type)
+                                    isSelectPaymentTypeSheetVisible = false
+                                    isSavePaymentSheetVisible = true
+                                }
+
+                                PaymentType.MANAGER_CHEQUES -> {
+                                    selectedPayment = ManagerCheque(type = type)
                                     isSelectPaymentTypeSheetVisible = false
                                     isSavePaymentSheetVisible = true
                                 }

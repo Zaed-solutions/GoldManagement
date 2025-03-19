@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -35,7 +36,8 @@ fun PaymentTypes(
     LazyColumn {
         items(types) { paymentType ->
             Surface(
-                onClick = { onPaymentTypeSelected(paymentType) }
+                onClick = { onPaymentTypeSelected(paymentType) },
+                color = Color.Transparent
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
