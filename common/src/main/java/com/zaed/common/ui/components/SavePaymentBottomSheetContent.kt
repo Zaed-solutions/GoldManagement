@@ -416,16 +416,18 @@ fun SaveManagerChequePaymentBottomSheetContent(
                 payment = payment.copy(receiverName = it)
             },
         )
-        TitledDropDownTextField2<ChequeType>(
+        TitledDropDownTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
             label = stringResource(R.string.cheque_type),
-            selectedValue = payment.chequeType,
+            selectedValue = stringResource(payment.chequeType.titleRes),
             onValueChanged = {
-                payment = payment.copy(chequeType = it)
+                payment = payment.copy(
+                    chequeType = ChequeType.entries[it],
+                )
             },
-            options = ChequeType.entries.toList()
+            options = ChequeType.entries.map { stringResource(it.titleRes) }
         )
 
         //VALUE
