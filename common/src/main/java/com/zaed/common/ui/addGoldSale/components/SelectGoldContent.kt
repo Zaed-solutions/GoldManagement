@@ -147,8 +147,10 @@ fun SelectIngotsContent(
             onRemoveProduct = onRemoveIngot,
             label = stringResource(com.zaed.common.R.string.ingots),
             onEditProduct = {
-                selectedProduct = it
                 isAddProductSheetVisible = true
+                selectedProduct = selectedProduct.copy(
+                    categoryId = UUID.randomUUID().toString(),
+                )
             },
             productType = ProductType.INGOT
         )
