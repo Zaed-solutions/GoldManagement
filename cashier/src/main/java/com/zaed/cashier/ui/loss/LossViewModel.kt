@@ -18,6 +18,8 @@ import com.zaed.common.domain.loss.DeleteLossUseCase
 import com.zaed.common.domain.loss.GetStoreLossesUseCase
 import com.zaed.common.domain.loss.UpdateLossUseCase
 import com.zaed.common.ui.util.DateFormat
+import com.zaed.common.ui.util.isAfter
+import com.zaed.common.ui.util.isBefore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -111,8 +113,8 @@ class LossViewModel(
         viewModelScope.launch (Dispatchers.Default){
             val range = _uiState.value.selectedDateRange
             val filteredLosses = _uiState.value.losses.filter {
-                val beforeFlag = range.first?.let { date -> it.date >= date } ?: true
-                val afterFlag = range.second?.let { date -> it.date <= date } ?: true
+                val afterFlag = range.first?.let { date -> it.date.isAfter(date)} ?: true
+                val beforeFlag = range.second?.let { date -> it.date.isBefore(date) } ?: true
                 beforeFlag && afterFlag
             }
             _uiState.update {

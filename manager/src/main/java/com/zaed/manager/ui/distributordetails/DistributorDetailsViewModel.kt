@@ -485,7 +485,6 @@ class DistributorDetailsViewModel(
             if (_uiState.value.salesQuery.isBlank()) {
                 _uiState.update { oldState ->
                     oldState.copy(
-                        isLoading = false,
                         filteredSales = oldState.allSales
                     )
                 }
@@ -500,7 +499,6 @@ class DistributorDetailsViewModel(
                 }
                 _uiState.update {
                     it.copy(
-                        isLoading = false,
                         filteredSales = filteredSales
                     )
                 }
@@ -519,6 +517,7 @@ class DistributorDetailsViewModel(
                 }
                 _uiState.update {
                     it.copy(
+                        isLoading = false,
                         filteredSales = filteredSales
                     )
                 }
@@ -537,6 +536,7 @@ class DistributorDetailsViewModel(
             ).let { datedSales ->
                 _uiState.update { oldState ->
                     oldState.copy(
+                        isLoading = false,
                         datedSales = datedSales
                     )
                 }
