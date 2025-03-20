@@ -573,10 +573,12 @@ fun SelectFromSalesChequesBottomSheetContent(
                     verticalArrangement = Arrangement.Center
                 ) {
                     if(selectedChequesPayment.sumOf { it.amount } <= remainsAmount) {
-                        Text(
-                            selectedChequesPayment.sumOf { it.amount }.toMoneyFormat(2),
-                            style = MaterialTheme.typography.titleLarge
-                        )
+                        if(remainsAmount < Double.MAX_VALUE){
+                            Text(
+                                selectedChequesPayment.sumOf { it.amount }.toMoneyFormat(2),
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                        }
                         Text(
                             text = stringResource(R.string.select_cheques),
                             style = MaterialTheme.typography.titleMedium

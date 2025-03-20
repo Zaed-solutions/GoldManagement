@@ -17,6 +17,7 @@ import com.zaed.common.data.model.supplier.Supplier
 import com.zaed.common.data.model.supplier.request.FetchSupplierRequest
 import com.zaed.common.data.model.supplier.request.UpdateSupplierRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
+import com.zaed.common.domain.cheque.FetchAllUnCashedSalesChequeUseCase
 import com.zaed.common.domain.payment.AddNewPaymentUseCase
 import com.zaed.common.domain.payment.DeletePaymentUseCase
 import com.zaed.common.domain.payment.EditPaymentUseCase
@@ -40,8 +41,9 @@ class SupplierDetailsViewModel(
     private val fetchSupplierUseCase: FetchSupplierUseCase,
     private val updateSupplierUseCase: UpdateSupplierUseCase,
     private val fetchPurchasesUseCase: FetchSupplierPurchasesUseCase,
-    private val updatePurchaseUseCase: UpdatePurchaseUseCase
-    ) : ViewModel() {
+    private val updatePurchaseUseCase: UpdatePurchaseUseCase,
+    private val fetchAllUnCashedSalesChequesUseCase: FetchAllUnCashedSalesChequeUseCase
+) : ViewModel() {
     private val TAG: String = "SupplierDetailsViewModel"
     private val _uiState = MutableStateFlow(SupplierDetailsUiState())
     val uiState = _uiState.asStateFlow()
@@ -51,6 +53,7 @@ class SupplierDetailsViewModel(
         fetchSupplier(supplierId)
         fetchPayments(supplierId)
         fetchPurchases(supplierId)
+        fetchSalesCheques()
     }
 
     private fun fetchCurrentUser() {
@@ -97,6 +100,20 @@ class SupplierDetailsViewModel(
                 it.copy(
                     filteredPurchases = filteredPurchases
                 )
+            }
+        }
+    }
+
+    private fun fetchSalesCheques() {
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchAllUnCashedSalesChequesUseCase().onSuccess {
+                _uiState.update { oldState ->
+                    oldState.copy(
+                        salesCheques = it
+                    )
+                }
+            }.onFailure {
+                Log.e(TAG, "fetchSalesCheques: ${it.message}", it)
             }
         }
     }
@@ -207,12 +224,14 @@ class SupplierDetailsViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             editPaymentUseCase(
                 request = EditPaymentRequest(
+                    isSupplier = false,
                     customerId = uiState.value.supplier.id,
                     oldPayment = oldPayment,
                     newPayment = newPayment
                 )
             ).onSuccess {
                 Log.d(TAG, "updatePayment: success")
+                fetchSupplier(uiState.value.supplier.id)
             }.onFailure {
                 Log.e(TAG, "updatePayment: ${it.message}", it)
             }
@@ -223,12 +242,14 @@ class SupplierDetailsViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             deletePaymentUseCase.invoke(
                 DeletePaymentRequest(
+                    isSupplier = true,
                     payment = payment,
                     employeeId = uiState.value.currentUser.id,
                     employeeName = uiState.value.currentUser.fullName,
                 )
             ).onSuccess {
                 Log.d(TAG, "deletePayment: ")
+                fetchSupplier(uiState.value.supplier.id)
             }.onFailure {
                 Log.e(TAG, "deletePayment: ${it.message}", it)
             }
@@ -240,11 +261,13 @@ class SupplierDetailsViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             addPaymentUseCase(
                 request = AddNewPaymentRequest(
+                    isSupplier = true,
                     customerId = uiState.value.supplier.id,
                     payment = payment.apply { this.customerId = uiState.value.supplier.id }
                 )
             ).onSuccess {
                 Log.d(TAG, "addPayment: success")
+                fetchSupplier(uiState.value.supplier.id)
             }.onFailure {
                 Log.e(TAG, "addPayment: ${it.message}", it)
             }

@@ -5,6 +5,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.toObjects
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
@@ -35,51 +36,43 @@ class PaymentRemoteDataSourceImpl(
 ) : PaymentRemoteDataSource {
     private val moneyPaymentsCollection = firestore.collection("payments")
     private val customersCollection = firestore.collection("whole_sale_customers")
+    private val suppliersCollection = firestore.collection("suppliers")
     override suspend fun addPayment(request: AddNewPaymentRequest): Result<String> {
         try {
             Log.d("PaymentRemoteDataSource", "addPayment: ${request.payment}")
+            val batch = firestore.batch()
             val document = moneyPaymentsCollection.document()
             when(request.payment){
                 is CashPayment->{
-                    document.set(
-                        request.payment.copy(id = document.id, customerId = request.customerId)
-                    ).await()
+                    batch.set(document, request.payment.copy(id = document.id, customerId = request.customerId))
                 }
                 is BankTransferPayment->{
-                    document.set(
-                        request.payment.copy(id = document.id, customerId = request.customerId)
-                    ).await()
+                    batch.set(document, request.payment.copy(id = document.id, customerId = request.customerId))
                 }
                 is ChequePayment->{
-                    document.set(
-                        request.payment.copy(id = document.id, customerId = request.customerId)
-                    ).await()
+                    batch.set(document, request.payment.copy(id = document.id, customerId = request.customerId))
                 }
                 is FuturePayment->{
-                    document.set(
-                        request.payment.copy(id = document.id, customerId = request.customerId)
-                    ).await()
+                    batch.set(document, request.payment.copy(id = document.id, customerId = request.customerId))
                 }
                 is LossPayment->{
-                    document.set(
-                        request.payment.copy(id = document.id, customerId = request.customerId)
-                    ).await()
+                    batch.set(document, request.payment.copy(id = document.id, customerId = request.customerId))
                 }
                 is GoldPayment->{
-                    document.set(
-                        request.payment.copy(id = document.id, customerId = request.customerId)
-                    ).await()
+                    batch.set(document, request.payment.copy(id = document.id, customerId = request.customerId))
                 }
                 is ManagerCheque->{
-                    document.set(
-                        request.payment.copy(id = document.id, customerId = request.customerId)
-                    ).await()
+                    batch.set(document, request.payment.copy(id = document.id, customerId = request.customerId))
                 }
             }
-            customersCollection.document(request.customerId).update(
-                "debtAmount",
-                FieldValue.increment(request.payment.signedAmount()),
-            ).await()
+            if(request.isSupplier){
+                val docRef = suppliersCollection.document(request.customerId)
+                batch.update(docRef, "debtAmount", FieldValue.increment(request.payment.signedAmount().unaryMinus()))
+            } else {
+                val docRef = customersCollection.document(request.customerId)
+                batch.update(docRef, "debtAmount", FieldValue.increment(request.payment.signedAmount()))
+            }
+            batch.commit().await()
             return Result.success(document.id)
         } catch (e: Exception) {
             crashlytics.recordException(e)
@@ -164,7 +157,11 @@ class PaymentRemoteDataSourceImpl(
     = callbackFlow {
         try{
             val filter = if(request.isManager) {
-                Filter.equalTo("customerId", request.supplierId)
+//                Filter.equalTo("customerId", request.supplierId)
+                Filter.and(
+                    Filter.equalTo("customerId", request.supplierId),
+                    Filter.equalTo("deleted", false)
+                )
             } else {
                 Filter.and(
                     Filter.equalTo("customerId", request.supplierId),
@@ -173,7 +170,7 @@ class PaymentRemoteDataSourceImpl(
             }
             moneyPaymentsCollection.where(
                 filter
-            ).addSnapshotListener{ snapshot, error ->
+            ).orderBy("createdAt", Query.Direction.DESCENDING).addSnapshotListener{ snapshot, error ->
                 if(error != null){
                     crashlytics.recordException(error)
                     trySend(Result.failure(error))
@@ -202,12 +199,22 @@ class PaymentRemoteDataSourceImpl(
 
     override suspend fun editPayment(request: EditPaymentRequest): Result<Unit> {
         try {
-            moneyPaymentsCollection.document(request.oldPayment.id).set(request.newPayment)
-                .await()
-            customersCollection.document(request.customerId).update(
-                "debtAmount",
-                FieldValue.increment(request.diff),
-            ).await()
+            val batch = firestore.batch()
+            batch.set(
+                moneyPaymentsCollection.document(request.oldPayment.id),
+                request.newPayment
+            )
+            batch.update(
+                if(request.isSupplier){
+                    suppliersCollection.document(request.customerId)
+                } else {
+                    customersCollection.document(request.customerId)
+                },
+                mapOf(
+                    "debtAmount" to FieldValue.increment(request.diff.let { if (request.isSupplier) it.unaryMinus() else it})
+                )
+            )
+            batch.commit().await()
             return Result.success(Unit)
         } catch (e: Exception) {
             crashlytics.recordException(e)
@@ -218,7 +225,9 @@ class PaymentRemoteDataSourceImpl(
 
     override suspend fun deletePayment(request: DeletePaymentRequest): Result<Unit> {
         try {
-            moneyPaymentsCollection.document(request.payment.id).update(
+            val batch = firestore.batch()
+            batch.set(
+                moneyPaymentsCollection.document(request.payment.id),
                 mapOf(
                     "deleted" to true,
                     "logs" to FieldValue.arrayUnion(
@@ -228,12 +237,19 @@ class PaymentRemoteDataSourceImpl(
                             type = LogType.DELETE
                         )
                     )
+                ),
+            )
+            batch.update(
+                if(request.isSupplier){
+                    suppliersCollection.document(request.payment.customerId)
+                } else {
+                    customersCollection.document(request.payment.customerId)
+                },
+                mapOf(
+                    "debtAmount" to FieldValue.increment(request.payment.signedAmount().let { if (request.isSupplier) it else it.unaryMinus()})
                 )
-            ).await()
-            customersCollection.document(request.payment.customerId).update(
-                "debtAmount",
-                FieldValue.increment(request.payment.signedAmount().unaryMinus()),
-            ).await()
+            )
+            batch.commit().await()
             return Result.success(Unit)
         } catch (e: Exception) {
             crashlytics.recordException(e)

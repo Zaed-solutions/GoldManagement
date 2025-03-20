@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.Category
+import com.zaed.common.data.model.category.Category
 
 @Composable
 fun AddCategorySheetContent(

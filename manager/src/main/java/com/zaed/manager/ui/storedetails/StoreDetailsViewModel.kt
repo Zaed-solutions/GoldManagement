@@ -24,6 +24,8 @@ import com.zaed.common.domain.store.DeleteStoreUseCase
 import com.zaed.common.domain.store.FetchStoreByIdUseCase
 import com.zaed.common.domain.store.UpdateStoreUseCase
 import com.zaed.common.ui.util.DateFormat
+import com.zaed.common.ui.util.isAfter
+import com.zaed.common.ui.util.isBefore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -198,11 +200,11 @@ class StoreDetailsViewModel(
     private fun filterLosses() {
         viewModelScope.launch (Dispatchers.Default){
             val filteredLosses = uiState.value.allLosses.filter{
-                val beforeFlag = uiState.value.selectedLossesRange.first?.let { date ->
-                    it.date >= date
+                val afterFlag = uiState.value.selectedLossesRange.first?.let { date ->
+                    it.date.isAfter(date)
                 } ?: true
-                val afterFlag = uiState.value.selectedLossesRange.second?.let { date ->
-                    it.date  <= date
+                val beforeFlag = uiState.value.selectedLossesRange.second?.let { date ->
+                    it.date.isBefore(date)
                 } ?: true
                 beforeFlag && afterFlag
             }
@@ -364,15 +366,15 @@ class StoreDetailsViewModel(
             }
             if(_uiState.value.selectedSalesFilter == DateFormat.CUSTOM_RANGE){
                 val filteredSales = uiState.value.filteredSales.filter{
-                    val beforeFlag = uiState.value.selectedSalesRange.first?.let { date ->
-                        it.createdAt >= date
+                    val afterFlag = uiState.value.selectedSalesRange.first?.let { date ->
+                        it.createdAt.isAfter(date)
                     } ?: true
-                    val afterFlag = uiState.value.selectedSalesRange.second?.let { date ->
-                        it.createdAt <= date
+                    val beforeFlag = uiState.value.selectedSalesRange.second?.let { date ->
+                        it.createdAt.isBefore(date)
                     } ?: true
                     beforeFlag && afterFlag
                 }
-                _uiState.update { it.copy(filteredSales = filteredSales) }
+                _uiState.update { it.copy(isLoading = false, filteredSales = filteredSales) }
             } else {
                 convertSalesToDatedSales()
             }
@@ -388,6 +390,7 @@ class StoreDetailsViewModel(
             ).let { datedSales ->
                 _uiState.update {oldState ->
                     oldState.copy(
+                        isLoading = false,
                         datedSales = datedSales
                     )
                 }

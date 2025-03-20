@@ -3,9 +3,10 @@ package com.zaed.common.ui.addpurchase
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zaed.common.data.model.Category
+import com.zaed.common.data.model.category.Category
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
+import com.zaed.common.data.model.category.request.AddCategoryRequest
 import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentStatus
@@ -248,7 +249,9 @@ class AddPurchaseViewModel(
 
     private fun addCategory(category: Category) {
         viewModelScope.launch(Dispatchers.IO) {
-            addCategoryUseCase(category).onSuccess {
+            addCategoryUseCase(
+                AddCategoryRequest( category)
+            ).onSuccess {
                 Log.d(TAG, "addCategory: $it")
             }.onFailure {
                 Log.e(TAG, "addCategory: ${it.message}", it)

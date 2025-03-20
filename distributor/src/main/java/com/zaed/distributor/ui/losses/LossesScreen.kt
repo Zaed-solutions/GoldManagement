@@ -1,5 +1,6 @@
 package com.zaed.distributor.ui.losses
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -27,8 +28,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
 import com.zaed.common.data.model.loss.DistributorLoss
+import com.zaed.common.data.model.loss.StoreLoss
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
+import com.zaed.common.ui.components.DatedListWithFilter
 import com.zaed.common.ui.components.DatedLossesList
+import com.zaed.common.ui.components.LossesList
+import com.zaed.common.ui.util.DateFormat
 import com.zaed.distributor.ui.losses.components.SaveLossBottomSheet
 import org.koin.androidx.compose.koinViewModel
 
@@ -106,18 +111,53 @@ fun LossesScreenContent(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            DatedLossesList(
-                isLoading = state.isLoading,
-                datedLosses = state.datedLosses,
-                isDeleteEnabled = true,
-                onDeleteLoss = {
-                    selectedLoss = it as DistributorLoss
-                    isConfirmDeleteSheetVisible = true
+            DatedListWithFilter(
+                selectedFilter = state.selectedDateFilter,
+                selectedRange = state.selectedDateRange,
+                onFilterClicked = { onAction(LossesUiAction.UpdateSelectedDateFilter(it)) },
+                onCustomRangeSelected = { dateRange ->
+                    onAction(LossesUiAction.SetCustomRangeFilter(dateRange))
                 },
-                isEditEnabled = true,
-                onUpdateLoss = {
-                    selectedLoss = it as DistributorLoss
-                    isSaveLossSheetVisible = true
+                content = {
+                    AnimatedContent(
+                        targetState = state.selectedDateFilter
+                    ) { contentState ->
+                        when (contentState) {
+                            DateFormat.CUSTOM_RANGE -> {
+                                LossesList(
+                                    isLoading = state.isLoading,
+                                    losses = state.filteredLosses,
+                                    isDeletable = true,
+                                    onDelete = {
+                                        selectedLoss = it as DistributorLoss
+                                        isConfirmDeleteSheetVisible = true
+                                    },
+                                    isEditable = true,
+                                    onEdit = {
+                                        selectedLoss = it as DistributorLoss
+                                        isSaveLossSheetVisible = true
+                                    }
+                                )
+                            }
+
+                            else -> {
+                                DatedLossesList(
+                                    isLoading = state.isLoading,
+                                    datedLosses = state.datedLosses,
+                                    isDeleteEnabled = true,
+                                    onDeleteLoss = {
+                                        selectedLoss = it as DistributorLoss
+                                        isConfirmDeleteSheetVisible = true
+                                    },
+                                    isEditEnabled = true,
+                                    onUpdateLoss = {
+                                        selectedLoss = it as DistributorLoss
+                                        isSaveLossSheetVisible = true
+                                    }
+                                )
+                            }
+                        }
+                    }
                 }
             )
             SaveLossBottomSheet(

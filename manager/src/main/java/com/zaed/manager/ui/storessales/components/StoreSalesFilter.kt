@@ -1,6 +1,6 @@
 package com.zaed.manager.ui.storessales.components
 
-import com.zaed.common.data.model.Category
+import com.zaed.common.data.model.category.Category
 import com.zaed.common.data.model.authentication.User
 import java.util.Date
 
