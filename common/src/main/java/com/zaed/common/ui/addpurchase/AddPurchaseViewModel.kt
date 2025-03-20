@@ -407,10 +407,10 @@ class AddPurchaseViewModel(
     private fun addProduct(product: Product) {
         viewModelScope.launch {
             _uiState.update { oldState ->
-                if (oldState.purchase.products.any { it.name == product.name }) {
+                if (oldState.purchase.products.any { it.categoryId == product.categoryId }) {
                     oldState.copy(purchase = oldState.purchase.copy(
                         products = oldState.purchase.products.map {
-                            if (it.name == product.name) {
+                            if (it.categoryId == product.categoryId) {
                                 product
                             } else {
                                 it

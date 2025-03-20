@@ -545,11 +545,13 @@ class SaleRemoteSourceImpl(
             val batch = firestore.batch()
             val docRef = wholesalesCollection.document()
             val paymentsIds = mutableListOf<String>()
-            val receiptNumber = wholesalesCollection.orderBy(
+            val lastSale = wholesalesCollection.orderBy(
                 "createdAt",
                 Query.Direction.DESCENDING
             ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")
-                ?.toLongOrNull() ?: 0 .plus(1)
+                ?.toLongOrNull() ?: 0L
+
+            val receiptNumber = lastSale +1L
 
             request.payments.forEach {
                 val ref = moneyPaymentCollection.document()

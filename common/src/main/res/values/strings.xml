@@ -324,4 +324,6 @@
     <string name="credit">Credit</string>
     <string name="available_stock_template">Available Stock: %1$s</string>
     <string name="update_product">Update Product</string>
+    <string name="personal">Personal Cheque</string>
+    <string name="company">Company Cheque</string>
 </resources>

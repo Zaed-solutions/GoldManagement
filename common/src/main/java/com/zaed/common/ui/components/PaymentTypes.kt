@@ -1,9 +1,11 @@
 package com.zaed.common.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -12,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -62,7 +65,6 @@ fun PaymentTypes(
                         text = stringResource(paymentType.titleRes),
                         style = MaterialTheme.typography.titleMedium,
                     )
-                    Spacer(modifier = Modifier.weight(1f))
                     Icon(
                         imageVector = Icons.AutoMirrored.Default.ArrowForwardIos,
                         contentDescription = null,
@@ -79,41 +81,45 @@ fun PaymentTypes(
 fun ProductTypes(
     onProductTypeSelected: (ProductType) -> Unit = {}
 ) {
-    LazyColumn {
-        items(ProductType.entries) { productType ->
-            Surface(
-                onClick = { onProductTypeSelected(productType) },
-                modifier = Modifier.padding(vertical = 16.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+    Surface (
+        modifier = Modifier.padding(8.dp),
+        border = BorderStroke(2.dp,MaterialTheme.colorScheme.primary),
+        shape = MaterialTheme.shapes.medium
+    ){
+        LazyColumn(
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            items(ProductType.entries) { productType ->
+                Surface(
+                    onClick = { onProductTypeSelected(productType) },
+                    modifier = Modifier.padding(vertical = 16.dp)
                 ) {
-                    Box(
-                        Modifier
-                            .padding(16.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f))
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        Icon(
-                            painter = painterResource(productType.iconRes),
-                            modifier = Modifier
-                                .size(48.dp)
-                                .padding(8.dp),
-                            tint = MaterialTheme.colorScheme.primary,
-                            contentDescription = null
+                        Box(
+                            Modifier
+                                .padding(16.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f))
+                        ) {
+                            Icon(
+                                painter = painterResource(productType.iconRes),
+                                modifier = Modifier
+                                    .size(64.dp)
+                                    .padding(8.dp),
+                                tint = MaterialTheme.colorScheme.primary,
+                                contentDescription = null
+                            )
+                        }
+                        Text(
+                            text = stringResource(productType.titleRes),
+                            style = MaterialTheme.typography.headlineMedium,
                         )
                     }
-                    Text(
-                        text = stringResource(productType.titleRes),
-                        style = MaterialTheme.typography.titleLarge,
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Default.ArrowForwardIos,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
-                    )
+                    HorizontalDivider()
                 }
             }
         }
