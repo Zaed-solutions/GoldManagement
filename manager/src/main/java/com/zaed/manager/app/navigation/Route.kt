@@ -53,4 +53,6 @@ sealed interface Route {
     data class AddPurchaseRoute(val purchaseId: String = "") : Route
     @Serializable
     data object TransactionsRoute: Route
+    @Serializable
+    data object DashboardRoute: Route
 }

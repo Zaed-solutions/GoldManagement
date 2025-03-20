@@ -324,4 +324,5 @@
     <string name="credit">Credit</string>
     <string name="personal">Personal Cheque</string>
     <string name="company">Company Cheque</string>
+    <string name="dashboard">Dashboard</string>
 </resources>
