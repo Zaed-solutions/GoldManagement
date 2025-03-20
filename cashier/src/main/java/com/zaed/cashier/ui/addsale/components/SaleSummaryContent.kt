@@ -28,6 +28,7 @@ import com.zaed.common.data.model.sale.Discount
 import com.zaed.common.data.model.sale.DiscountType
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.StoreTransaction
+import com.zaed.common.ui.addpurchase.ProductType
 import com.zaed.common.ui.components.DashedDivider
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.components.PriceCalculationItem
@@ -79,7 +80,8 @@ fun SaleSummaryContent(
             isDividerVisible = false
         )
         ProductsTable(
-            products = sale.products
+            products = sale.products,
+            productType = ProductType.PRODUCT
         )
         Spacer(modifier = Modifier.weight(1f))
         DashedDivider(

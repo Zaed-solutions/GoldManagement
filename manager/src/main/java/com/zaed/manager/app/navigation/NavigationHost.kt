@@ -21,6 +21,7 @@ import com.zaed.common.ui.saledetails.goldsaledetails.GoldSaleDetailsScreen
 import com.zaed.common.ui.saledetails.productsaledetails.ProductSaleDetailsScreen
 import com.zaed.common.ui.supplierdetails.SupplierDetailsScreen
 import com.zaed.common.ui.suppliers.SuppliersScreen
+import com.zaed.manager.ui.categories.CategoriesScreen
 import com.zaed.manager.ui.distributordetails.DistributorDetailsScreen
 import com.zaed.manager.ui.distributors.DistributorsScreen
 import com.zaed.manager.ui.distributorssales.DistributorsSalesScreen
@@ -363,6 +364,11 @@ fun NavigationHost(
                 onNavigateToSaleDetails = {
                     navController.navigate(Route.GoldSaleDetailsRoute(it))
                 }
+            )
+        }
+        composable<Route.CategoriesRoute> {
+            CategoriesScreen(
+                onShowNavDrawer = onShowNavDrawer
             )
         }
     }

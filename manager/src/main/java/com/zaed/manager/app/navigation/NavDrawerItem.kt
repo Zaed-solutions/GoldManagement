@@ -85,5 +85,10 @@ enum class NavDrawerItem(
         title = R.string.transactions,
         icon = R.drawable.ic_store,
         route = Route.TransactionsRoute
+    ),
+    CATEGORIES(
+        title = R.string.categories,
+        icon = R.drawable.ic_shopping,
+        route = Route.CategoriesRoute
     )
 }

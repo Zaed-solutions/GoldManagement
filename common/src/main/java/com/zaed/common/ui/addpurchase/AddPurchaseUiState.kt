@@ -1,6 +1,6 @@
 package com.zaed.common.ui.addpurchase
 
-import com.zaed.common.data.model.Category
+import com.zaed.common.data.model.category.Category
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.payment.ChequePayment
 import com.zaed.common.data.model.payment.Payment

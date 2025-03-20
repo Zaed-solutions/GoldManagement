@@ -1,6 +1,6 @@
 package com.zaed.cashier.ui.addsale
 
-import com.zaed.common.data.model.Category
+import com.zaed.common.data.model.category.Category
 import com.zaed.common.data.model.sale.StoreTransaction
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.customer.WholeSaleCustomer

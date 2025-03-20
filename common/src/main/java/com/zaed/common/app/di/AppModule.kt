@@ -71,7 +71,10 @@ import com.zaed.common.domain.authentication.SetAppLanguageUseCase
 import com.zaed.common.domain.authentication.SignUpUserUseCase
 import com.zaed.common.domain.authentication.UpdateUserUseCase
 import com.zaed.common.domain.category.AddCategoryUseCase
+import com.zaed.common.domain.category.DeleteCategoryUseCase
 import com.zaed.common.domain.category.FetchAllCategoriesUseCase
+import com.zaed.common.domain.category.FetchCategoriesWithInventoriesUseCase
+import com.zaed.common.domain.category.UpdateCategoryUseCase
 import com.zaed.common.domain.cheque.AddManagerChequeUseCase
 import com.zaed.common.domain.cheque.AddSalesChequeUseCase
 import com.zaed.common.domain.cheque.DeleteManagerChequeUseCase
@@ -272,6 +275,9 @@ val useCaseModule = module {
     singleOf(::FetchAppLanguageUseCase)
     singleOf(::FetchPurchasesUseCase)
     singleOf(::FetchAllUnCashedSalesChequeUseCase)
+    singleOf(::UpdateCategoryUseCase)
+    singleOf(::DeleteCategoryUseCase)
+    singleOf(::FetchCategoriesWithInventoriesUseCase)
 }
 val repositoryModule = module {
     singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }

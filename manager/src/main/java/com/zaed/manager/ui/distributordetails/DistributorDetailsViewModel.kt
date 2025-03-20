@@ -24,11 +24,14 @@ import com.zaed.common.domain.sale.ConvertSalesToDatedSalesUseCase
 import com.zaed.common.domain.sale.FetchDistributorSalesUseCase
 import com.zaed.common.domain.sale.FetchIngotTransactionsUseCase
 import com.zaed.common.ui.util.DateFormat
+import com.zaed.common.ui.util.isAfter
+import com.zaed.common.ui.util.isBefore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import java.util.Date
 
 class DistributorDetailsViewModel(
@@ -87,7 +90,7 @@ class DistributorDetailsViewModel(
                             allIngotTransactions = data
                         )
                     }
-                    if(uiState.value.ingotTransactionsDateFormat == DateFormat.CUSTOM_RANGE){
+                    if (uiState.value.ingotTransactionsDateFormat == DateFormat.CUSTOM_RANGE) {
                         filterIngots()
                     } else {
                         convertIngotTransactionsToDated()
@@ -149,7 +152,7 @@ class DistributorDetailsViewModel(
                             allLosses = data
                         )
                     }
-                    if(uiState.value.selectedLossesFilter == DateFormat.CUSTOM_RANGE){
+                    if (uiState.value.selectedLossesFilter == DateFormat.CUSTOM_RANGE) {
                         filterLosses()
                     } else {
                         convertToDatedLosses()
@@ -215,24 +218,28 @@ class DistributorDetailsViewModel(
             is DistributorDetailsUiAction.UpdateLossesDateFilter -> updateLossesDateFilterAndFilter(
                 action.dateFormat
             )
+
             is DistributorDetailsUiAction.SetSalesDateRange -> setCustomRangeFilter(action.range)
             is DistributorDetailsUiAction.UpdateSalesDateFilter -> updateSalesDateFilterAndFilter(
                 action.dateFormat
             )
+
             is DistributorDetailsUiAction.UpdateIngotTransactionsDateFilter -> updateIngotTransactionsDateFilterAndFilter(
                 action.dateFormat
             )
+
             is DistributorDetailsUiAction.SetLossesDateRange -> setLossesDateRange(action.range)
             is DistributorDetailsUiAction.SetIngotTransactionsDateRange -> setIngotTransactionsDateRange(
                 action.range
             )
+
             else -> Unit
         }
     }
 
     private fun setIngotTransactionsDateRange(range: Pair<Date?, Date?>) {
         viewModelScope.launch {
-            if(range.first == null && range.second == null) return@launch
+            if (range.first == null && range.second == null) return@launch
             _uiState.update {
                 it.copy(
                     isLoading = true,
@@ -245,10 +252,15 @@ class DistributorDetailsViewModel(
     }
 
     private fun filterIngots() {
-        viewModelScope.launch (Dispatchers.Default){
+        viewModelScope.launch(Dispatchers.Default) {
             val filteredTransactions = uiState.value.allIngotTransactions.filter { transaction ->
-                val beforeFlag = uiState.value.selectedIngotsRange.first?.let {  transaction.createdAt >= it} ?: true
-                val afterFlag = uiState.value.selectedIngotsRange.second?.let {  transaction.createdAt <= it} ?: true
+                val afterFlag =
+                    uiState.value.selectedIngotsRange.first?.let { transaction.createdAt.isAfter(it)}
+                        ?: true
+                val beforeFlag =
+                    uiState.value.selectedIngotsRange.second?.let {
+                        transaction.createdAt.isBefore(it)
+                    } ?: true
                 beforeFlag && afterFlag
             }
             _uiState.update {
@@ -262,7 +274,7 @@ class DistributorDetailsViewModel(
 
     private fun setLossesDateRange(range: Pair<Date?, Date?>) {
         viewModelScope.launch {
-            if(range.first == null && range.second == null) return@launch
+            if (range.first == null && range.second == null) return@launch
             _uiState.update {
                 it.copy(
                     isLoading = true,
@@ -275,10 +287,14 @@ class DistributorDetailsViewModel(
     }
 
     private fun filterLosses() {
-        viewModelScope.launch (Dispatchers.Default){
+        viewModelScope.launch(Dispatchers.Default) {
             val filteredLosses = uiState.value.allLosses.filter { loss ->
-                val beforeFlag = uiState.value.selectedLossesRange.first?.let {  loss.date >= it} ?: true
-                val afterFlag = uiState.value.selectedLossesRange.second?.let {  loss.date <= it} ?: true
+                val afterFlag =
+                    uiState.value.selectedLossesRange.first?.let { loss.date.isAfter(it) } ?: true
+                val beforeFlag =
+                    uiState.value.selectedLossesRange.second?.let {
+                        loss.date.isBefore(it)
+                    } ?: true
                 beforeFlag && afterFlag
             }
             _uiState.update {
@@ -292,7 +308,7 @@ class DistributorDetailsViewModel(
 
     private fun setCustomRangeFilter(range: Pair<Date?, Date?>) {
         viewModelScope.launch {
-            if(range.first == null && range.second == null) return@launch
+            if (range.first == null && range.second == null) return@launch
             _uiState.update {
                 it.copy(
                     isLoading = true,
@@ -324,7 +340,9 @@ class DistributorDetailsViewModel(
     }
 
     private fun isOldInventory(inventory: Inventory): Boolean {
-        return isOldProductInventory(inventory) || isOldGoldInventory(inventory) || isOldIngotInventory(inventory)
+        return isOldProductInventory(inventory) || isOldGoldInventory(inventory) || isOldIngotInventory(
+            inventory
+        )
     }
 
     private fun isOldIngotInventory(inventory: Inventory): Boolean {
@@ -336,7 +354,7 @@ class DistributorDetailsViewModel(
     }
 
     private fun isOldGoldInventory(inventory: Inventory): Boolean {
-        return inventory.type  == InventoryType.GOLD && uiState.value.allInventories.any { it.type == InventoryType.GOLD }
+        return inventory.type == InventoryType.GOLD && uiState.value.allInventories.any { it.type == InventoryType.GOLD }
     }
 
     private fun updateInventory(inventory: Inventory) {
@@ -485,14 +503,21 @@ class DistributorDetailsViewModel(
                     )
                 }
             }
-            if(uiState.value.selectedSalesFilter == DateFormat.CUSTOM_RANGE) {
+            if (uiState.value.selectedSalesFilter == DateFormat.CUSTOM_RANGE) {
                 val filteredSales = uiState.value.filteredSales.filter { sale ->
-                    val beforeFlag = uiState.value.selectedSalesDateRange.first?.let {  sale.createdAt >= it} ?: true
-                    val afterFlag = uiState.value.selectedSalesDateRange.second?.let {  sale.createdAt <= it} ?: true
+                    val afterFlag =
+                        uiState.value.selectedSalesDateRange.first?.let {
+                            sale.createdAt.isAfter(it)
+                        }
+                            ?: true
+                    val beforeFlag = uiState.value.selectedSalesDateRange.second?.let {
+                        sale.createdAt.isBefore(it)
+                    } ?: true
                     beforeFlag && afterFlag
                 }
                 _uiState.update {
                     it.copy(
+                        isLoading = false,
                         filteredSales = filteredSales
                     )
                 }
@@ -511,6 +536,7 @@ class DistributorDetailsViewModel(
             ).let { datedSales ->
                 _uiState.update { oldState ->
                     oldState.copy(
+                        isLoading = false,
                         datedSales = datedSales
                     )
                 }

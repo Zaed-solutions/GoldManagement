@@ -14,11 +14,14 @@ import com.zaed.common.domain.loss.DeleteManagerLossUseCase
 import com.zaed.common.domain.loss.FetchManagerLossesUseCase
 import com.zaed.common.domain.loss.UpdateManagerLossUseCase
 import com.zaed.common.ui.util.DateFormat
+import com.zaed.common.ui.util.isAfter
+import com.zaed.common.ui.util.isBefore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import java.util.Date
 
 class LossesViewModel(
@@ -95,8 +98,10 @@ class LossesViewModel(
     private fun filterPersonalExpenses() {
         viewModelScope.launch (Dispatchers.Default){
             val filteredPersonalExpenses = _uiState.value.personalExpenses.filter { loss ->
-                val fromFlag = _uiState.value.personalExpensesDateRange.first?.let { it <= loss.date } ?: true
-                val toFlag = _uiState.value.personalExpensesDateRange.second?.let { it >= loss.date } ?: true
+                val fromFlag = _uiState.value.personalExpensesDateRange.first?.let { loss.date.isAfter(it) } ?: true
+                val toFlag = _uiState.value.personalExpensesDateRange.second?.let {
+                    loss.date.isBefore(it)
+                } ?: true
                 fromFlag && toFlag
             }
             _uiState.update {
@@ -115,7 +120,7 @@ class LossesViewModel(
                 it.copy(
                     isLoading = true,
                     lossesDateRange = range,
-                    selectedPersonalExpensesFilter = DateFormat.CUSTOM_RANGE
+                    selectedLossesFilter = DateFormat.CUSTOM_RANGE
                 )
             }
             filterLosses()
@@ -125,8 +130,10 @@ class LossesViewModel(
     private fun filterLosses() {
         viewModelScope.launch (Dispatchers.Default){
             val filteredLosses = _uiState.value.losses.filter { loss ->
-                val fromFlag = _uiState.value.lossesDateRange.first?.let { it <= loss.date } ?: true
-                val toFlag = _uiState.value.lossesDateRange.second?.let { it >= loss.date } ?: true
+                val fromFlag = _uiState.value.lossesDateRange.first?.let { loss.date.isAfter(it) } ?: true
+                val toFlag = _uiState.value.lossesDateRange.second?.let {
+                    loss.date.isBefore(it)
+                } ?: true
                 fromFlag && toFlag
             }
             _uiState.update {

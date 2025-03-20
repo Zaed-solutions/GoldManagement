@@ -16,6 +16,8 @@ import com.zaed.common.domain.sale.ConvertIngotTransactionsToDatedUseCase
 import com.zaed.common.domain.sale.FetchIngotTransactionsUseCase
 import com.zaed.common.domain.sale.UpdateIngotTransactionUseCase
 import com.zaed.common.ui.util.DateFormat
+import com.zaed.common.ui.util.isAfter
+import com.zaed.common.ui.util.isBefore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -125,9 +127,9 @@ class IngotTransactionsViewModel(
         viewModelScope.launch (Dispatchers.Default){
             val range = _uiState.value.dateRange
             val filteredTransactions = _uiState.value.allTransactions.filter { transaction ->
-                val fromFlag = range.first?.let { transaction.createdAt >= it } ?: true
-                val toFlag = range.second?.let { transaction.createdAt <= it } ?: true
-                fromFlag && toFlag
+                val afterFlag = range.first?.let { transaction.createdAt.isAfter(it) } ?: true
+                val beforeFlag = range.second?.let { transaction.createdAt.isBefore(it) } ?: true
+                afterFlag && beforeFlag
             }
             _uiState.update {
                 it.copy(

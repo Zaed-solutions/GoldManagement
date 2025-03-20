@@ -10,6 +10,8 @@ import com.zaed.common.domain.sale.ConvertSalesToDatedSalesUseCase
 import com.zaed.common.domain.sale.DeleteStoreSaleUseCase
 import com.zaed.common.domain.sale.FetchStoreSalesUseCase
 import com.zaed.common.ui.util.DateFormat
+import com.zaed.common.ui.util.isAfter
+import com.zaed.common.ui.util.isBefore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -142,11 +144,11 @@ class SalesViewModel(
             if(uiState.value.selectedDateFilter == DateFormat.CUSTOM_RANGE){
                 val sales = uiState.value.filteredSales
                 val filteredSales = sales.filter{
-                    val beforeFlag = uiState.value.selectedDateRange.first?.let { date -> it.createdAt >= date } ?: true
-                    val afterFlag = uiState.value.selectedDateRange.second?.let { date -> it.createdAt <= date } ?: true
+                    val afterFlag = uiState.value.selectedDateRange.first?.let { date -> it.createdAt.isAfter(date) } ?: true
+                    val beforeFlag = uiState.value.selectedDateRange.second?.let { date -> it.createdAt.isBefore(date) } ?: true
                     beforeFlag && afterFlag
                 }
-                _uiState.update { it.copy(filteredSales = filteredSales) }
+                _uiState.update { it.copy(isLoading = false, filteredSales = filteredSales) }
             } else {
                 convertToDatedSales()
             }
@@ -160,7 +162,7 @@ class SalesViewModel(
                 _uiState.value.selectedDateFilter
             ).let{
                 _uiState.update { oldState ->
-                    oldState.copy(datedSales = it)
+                    oldState.copy(isLoading = false, datedSales = it)
                 }
             }
         }

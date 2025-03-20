@@ -141,7 +141,7 @@ fun PaymentItem(
             ) {
                 Text(
                     text = payment.createdAt.format(DateFormat.DATE_TIME),
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.weight(1f)
                 )
                 Text(
