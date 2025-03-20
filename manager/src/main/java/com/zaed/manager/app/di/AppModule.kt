@@ -1,5 +1,6 @@
 package com.zaed.manager.app.di
 
+import com.zaed.manager.ui.categories.CategoriesViewModel
 import com.zaed.manager.ui.distributordetails.DistributorDetailsViewModel
 import com.zaed.manager.ui.distributors.DistributorsViewModel
 import com.zaed.manager.ui.distributorssales.DistributorsSalesViewModel
@@ -26,4 +27,5 @@ val appModule = module {
     viewModelOf(::ManufacturerOrdersViewModel)
     viewModelOf(::SalesChequesScreenViewModel)
     viewModelOf(::TransactionsViewModel)
+    viewModelOf(::CategoriesViewModel)
 }

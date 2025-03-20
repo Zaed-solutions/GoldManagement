@@ -1,4 +1,4 @@
-package com.zaed.common.data.model
+package com.zaed.common.data.model.category
 
 data class Category(
     val id: String = "",

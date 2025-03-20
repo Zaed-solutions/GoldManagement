@@ -322,4 +322,6 @@
     <string name="from_template">From: %1$s</string>
     <string name="to_template">To: %1$s</string>
     <string name="credit">Credit</string>
+    <string name="available_stock_template">Available Stock: %1$s</string>
+    <string name="update_product">Update Product</string>
 </resources>
