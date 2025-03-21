@@ -1,22 +1,24 @@
 package com.zaed.common.data.repository
 
-import com.zaed.common.data.model.dashboard.Dashboard
+import com.zaed.common.data.source.remote.DashboardRemoteSource
 
-class DashboardRepositoryImpl : DashboardRepository {
-    override suspend fun getDashboardData(): Result<Dashboard> {
-        return Result.success(
-            Dashboard(
-                totalProfit = 15000.0,
-                totalLoss = 6219.19,
-                totalNetProfit = 8780.81,
-                totalStoreSales = 24805.0,
-                totalPurchases = 10580.0,
-                totalManagerSales = 11250.0,
-                totalStoreLoss = 11250.0,
-                totalDistributorsLoss = 11250.0,
-                totalManagerLoss = 11250.0,
-                totalWholesaleSales = 11250.0,
-            )
-        )
-    }
+class DashboardRepositoryImpl(
+    private val dashboardRemoteSource: DashboardRemoteSource
+) : DashboardRepository {
+    override suspend fun getStoresProfits(): Result<Double> = dashboardRemoteSource.getStoresProfits()
+    override suspend fun getWholesaleProfits(managerId: String): Result<Double>  = dashboardRemoteSource.getWholesaleProfits(managerId)
+
+    override suspend fun getManagerProfits(managerId: String): Result<Double>  = dashboardRemoteSource.getManagerProfits(managerId)
+
+    override suspend fun getStoreSales(): Result<Double>  = dashboardRemoteSource.getStoreSales()
+
+    override suspend fun getWholesaleSales(managerId: String): Result<Double>  = dashboardRemoteSource.getWholesaleSales(managerId)
+
+    override suspend fun getManagerSales(managerId: String): Result<Double>  = dashboardRemoteSource.getManagerSales(managerId)
+
+    override suspend fun getStoreLoss(): Result<Double>  = dashboardRemoteSource.getStoreLoss()
+
+    override suspend fun getWholesaleLoss(): Result<Double>  = dashboardRemoteSource.getWholesaleLoss()
+
+    override suspend fun getManagerLoss(): Result<Double>  = dashboardRemoteSource.getManagerLoss()
 }

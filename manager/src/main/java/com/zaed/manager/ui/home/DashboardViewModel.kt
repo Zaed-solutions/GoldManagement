@@ -3,10 +3,10 @@ package com.zaed.manager.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.repository.DashboardRepository
+import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.manager.ui.home.component.DateFilter
 import com.zaed.manager.ui.home.component.DateFilterType
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,14 +17,169 @@ import java.util.Calendar
 import java.util.Date
 
 class DashboardViewModel(
-    private val repository: DashboardRepository
+    private val repository: DashboardRepository,
+    private val getCurrentUserLoggedInUseCase: GetCurrentUserLoggedInUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DashboardUiState())
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
 
     init {
-        loadDashboardData()
+        getCurrentUser()
+
+    }
+
+    private fun getCurrentUser() {
+        viewModelScope.launch(Dispatchers.IO) {
+            getCurrentUserLoggedInUseCase().collect { result ->
+                result.onSuccess { data ->
+                    _uiState.update {
+                        it.copy(
+                            currentUser = data, isLoading = false, error = null
+                        )
+                    }
+                    loadAllData()
+                }.onFailure { error ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false, error = error.message ?: "Unknown error occurred"
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun loadAllData() {
+        loadStoresProfits()
+        loadWholeSalesProfits()
+        loadManagerProfits()
+        loadStoreSales()
+        loadManagerSales()
+        loadWholesaleSales()
+        loadStoreLoss()
+        loadWholesaleLoss()
+        loadManagerLoss()
+    }
+
+    private fun loadManagerLoss() {
+
+    }
+
+    private fun loadWholesaleLoss() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { it.copy(isLoading = true) }
+
+            repository.getWholesaleLoss().onSuccess { data ->
+                _uiState.update {
+                    it.copy(
+                        wholesaleLoss = data, isLoading = false, error = null
+                    )
+                }
+            }.onFailure { error ->
+                _uiState.update {
+                    it.copy(
+                        isLoading = false, error = error.message ?: "Unknown error occurred"
+                    )
+                }
+            }
+        }
+    }
+
+    private fun loadStoreLoss() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { it.copy(isLoading = true) }
+
+            repository.getStoreLoss().onSuccess { data ->
+                _uiState.update {
+                    it.copy(
+                        storesLoss = data, isLoading = false, error = null
+                    )
+                }
+            }.onFailure { error ->
+                _uiState.update {
+                    it.copy(
+                        isLoading = false, error = error.message ?: "Unknown error occurred"
+                    )
+                }
+            }
+        }    }
+
+    private fun loadWholesaleSales() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { it.copy(isLoading = true) }
+
+            repository.getWholesaleSales(uiState.value.currentUser.id).onSuccess { data ->
+                _uiState.update {
+                    it.copy(
+                        wholesaleSales = data, isLoading = false, error = null
+                    )
+                }
+            }.onFailure { error ->
+                _uiState.update {
+                    it.copy(
+                        isLoading = false, error = error.message ?: "Unknown error occurred"
+                    )
+                }
+            }
+        }    }
+
+    private fun loadManagerSales() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { it.copy(isLoading = true) }
+
+            repository.getManagerSales(uiState.value.currentUser.id).onSuccess { data ->
+                _uiState.update {
+                    it.copy(
+                        managerSales = data, isLoading = false, error = null
+                    )
+                }
+            }.onFailure { error ->
+                _uiState.update {
+                    it.copy(
+                        isLoading = false, error = error.message ?: "Unknown error occurred"
+                    )
+                }
+            }
+        }    }
+
+    private fun loadManagerProfits() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { it.copy(isLoading = true) }
+
+            repository.getManagerProfits(uiState.value.currentUser.id).onSuccess { data ->
+                _uiState.update {
+                    it.copy(
+                        managerProfit = data, isLoading = false, error = null
+                    )
+                }
+            }.onFailure { error ->
+                _uiState.update {
+                    it.copy(
+                        isLoading = false, error = error.message ?: "Unknown error occurred"
+                    )
+                }
+            }
+        }    }
+
+    private fun loadStoreSales() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { it.copy(isLoading = true) }
+
+            repository.getStoreSales().onSuccess { data ->
+                _uiState.update {
+                    it.copy(
+                        storesSales = data, isLoading = false, error = null
+                    )
+                }
+            }.onFailure { error ->
+                _uiState.update {
+                    it.copy(
+                        isLoading = false, error = error.message ?: "Unknown error occurred"
+                    )
+                }
+            }
+        }
     }
 
     fun handleAction(action: DashboardUiAction) {
@@ -45,14 +200,34 @@ class DashboardViewModel(
         }
     }
 
-    private fun loadDashboardData() {
+    private fun loadStoresProfits() {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update { it.copy(isLoading = true) }
 
-            repository.getDashboardData().onSuccess { data ->
+            repository.getStoresProfits().onSuccess { data ->
                 _uiState.update {
                     it.copy(
-                        dashboardData = data, isLoading = false, error = null
+                        storesProfit = data, isLoading = false, error = null
+                    )
+                }
+            }.onFailure { error ->
+                _uiState.update {
+                    it.copy(
+                        isLoading = false, error = error.message ?: "Unknown error occurred"
+                    )
+                }
+            }
+        }
+    }
+
+    private fun loadWholeSalesProfits() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { it.copy(isLoading = true) }
+
+            repository.getWholesaleProfits(uiState.value.currentUser.id).onSuccess { data ->
+                _uiState.update {
+                    it.copy(
+                        wholesaleProfit = data, isLoading = false, error = null
                     )
                 }
             }.onFailure { error ->
@@ -214,29 +389,8 @@ class DashboardViewModel(
             )
         }
 
-        loadFilteredDashboardData(startDate, endDate)
+        loadStoresProfits()
     }
 
-    private fun loadFilteredDashboardData(startDate: Date, endDate: Date) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update { it.copy(isLoading = true) }
 
-            //TODO USE DATES
-            delay(500)
-
-            repository.getDashboardData().onSuccess { data ->
-                _uiState.update {
-                    it.copy(
-                        dashboardData = data, isLoading = false, error = null
-                    )
-                }
-            }.onFailure { error ->
-                _uiState.update {
-                    it.copy(
-                        isLoading = false, error = error.message ?: "Unknown error occurred"
-                    )
-                }
-            }
-        }
-    }
 }

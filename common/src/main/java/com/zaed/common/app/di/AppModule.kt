@@ -41,6 +41,8 @@ import com.zaed.common.data.source.remote.CategoryRemoteSource
 import com.zaed.common.data.source.remote.CategoryRemoteSourceImpl
 import com.zaed.common.data.source.remote.ChequeRemoteSource
 import com.zaed.common.data.source.remote.ChequeRemoteSourceImpl
+import com.zaed.common.data.source.remote.DashboardRemoteSource
+import com.zaed.common.data.source.remote.DashboardRemoteSourceImpl
 import com.zaed.common.data.source.remote.InventoryRemoteSource
 import com.zaed.common.data.source.remote.InventoryRemoteSourceImpl
 import com.zaed.common.data.source.remote.LossRemoteDataSource
@@ -320,6 +322,7 @@ val remoteSourceModule = module {
     singleOf(::LossRemoteDataSourceImpl) { bind<LossRemoteDataSource>() }
     singleOf(::StoreRemoteDataSourceImpl) { bind<StoreRemoteDataSource>() }
     singleOf(::PaymentRemoteDataSourceImpl) { bind<PaymentRemoteDataSource>() }
+    singleOf(::DashboardRemoteSourceImpl) { bind<DashboardRemoteSource>() }
     singleOf(::WholeSalesCustomerRemoteDataSourceImpl) { bind<WholeSalesCustomerRemoteDataSource>() }
     singleOf(::ChequeRemoteSourceImpl) { bind<ChequeRemoteSource>() }
     singleOf(::InventoryRemoteSourceImpl) { bind<InventoryRemoteSource>() }
