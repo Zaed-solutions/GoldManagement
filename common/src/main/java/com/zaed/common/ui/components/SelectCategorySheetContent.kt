@@ -113,22 +113,18 @@ private fun Preview() {
                 Category(
                     id = "1",
                     name = "Category 1",
-                    minimumPrice = 10.0
                 ),
                 Category(
                     id = "2",
                     name = "Category 2",
-                    minimumPrice = 10.0
                 ),
                 Category(
                     id = "3",
                     name = "Category 3",
-                    minimumPrice = 10.0
                 ),
                 Category(
                     id = "4",
                     name = "Category 4",
-                    minimumPrice = 10.0
                 )
 
             )

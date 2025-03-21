@@ -1,9 +1,9 @@
 package com.zaed.cashier.ui.addsale
 
-import com.zaed.common.data.model.category.Category
-import com.zaed.common.data.model.sale.StoreTransaction
 import com.zaed.common.data.model.authentication.User
+import com.zaed.common.data.model.category.Category
 import com.zaed.common.data.model.customer.WholeSaleCustomer
+import com.zaed.common.data.model.sale.StoreTransaction
 
 data class AddSaleUiState(
     val categories: List<Category> = emptyList(),
@@ -13,3 +13,5 @@ data class AddSaleUiState(
     val isFinished: Boolean = false,
     val isLoading: Boolean = false
 )
+
+
