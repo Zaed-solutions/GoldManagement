@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
+import com.zaed.common.data.model.cheque.ManagerCheque
 import com.zaed.common.data.model.customer.Account
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.BankTransferPayment
@@ -163,6 +164,13 @@ fun SelectPaymentsContent(
 
                     PaymentType.GOLD -> {
                         selectedPayment = GoldPayment(
+                            type = type,
+                            id = "Destributor-" + UUID.randomUUID().toString()
+                        )
+                        simplePaymentBottomSheet = true
+                    }
+                    PaymentType.MANAGER_CHEQUES ->{
+                        selectedPayment = ManagerCheque(
                             type = type,
                             id = "Destributor-" + UUID.randomUUID().toString()
                         )
@@ -327,6 +335,28 @@ fun SelectPaymentsContent(
                         selectedPayment?.let {
                             SaveBankTransferPaymentBottomSheetContent(
                                 initialPayment = selectedPayment as BankTransferPayment,
+                                remainsAmount = remainsAmount,
+                                onSave = { newPayment ->
+                                    if (selectedPayment!!.id.startsWith("Destributor")) {
+                                        onAddPayment(
+                                            newPayment.copy(
+                                                id = "Payment-" + UUID.randomUUID().toString(),
+                                                customerId = selectedAccount.id,
+                                            )
+                                        )
+                                    } else {
+                                        onEditPayment(newPayment)
+                                    }
+                                    simplePaymentBottomSheet = false
+                                }
+                            )
+                        }
+                    }
+
+                    PaymentType.MANAGER_CHEQUES -> {
+                        selectedPayment?.let {
+                            SaveManagerChequePaymentBottomSheetContent(
+                                initialPayment = selectedPayment as ManagerCheque,
                                 remainsAmount = remainsAmount,
                                 onSave = { newPayment ->
                                     if (selectedPayment!!.id.startsWith("Destributor")) {
@@ -565,7 +595,8 @@ fun SelectFromSalesChequesBottomSheetContent(
                 onClick = onDismiss,
                 enabled = selectedChequesPayment.sumOf { it.amount } <= remainsAmount,
                 modifier = Modifier
-                    .fillMaxWidth().padding(8.dp),
+                    .fillMaxWidth()
+                    .padding(8.dp),
                 shape = RoundedCornerShape(4.dp),
             ) {
                 Column(
@@ -583,7 +614,7 @@ fun SelectFromSalesChequesBottomSheetContent(
                             text = stringResource(R.string.select_cheques),
                             style = MaterialTheme.typography.titleMedium
                         )
-                    }else{
+                    } else {
                         Text(
                             text = stringResource(R.string.selected_cheques_amount_is_greater_than_the_remaining_amount),
                             style = MaterialTheme.typography.titleMedium

@@ -13,6 +13,8 @@ import com.zaed.common.data.repository.CategoryRepository
 import com.zaed.common.data.repository.CategoryRepositoryImpl
 import com.zaed.common.data.repository.ChequeRepository
 import com.zaed.common.data.repository.ChequeRepositoryImpl
+import com.zaed.common.data.repository.DashboardRepository
+import com.zaed.common.data.repository.DashboardRepositoryImpl
 import com.zaed.common.data.repository.InventoryRepository
 import com.zaed.common.data.repository.InventoryRepositoryImpl
 import com.zaed.common.data.repository.LossRepository
@@ -124,8 +126,8 @@ import com.zaed.common.domain.purchase.DeletePurchaseUseCase
 import com.zaed.common.domain.purchase.FetchPurchaseUseCase
 import com.zaed.common.domain.purchase.FetchPurchasesUseCase
 import com.zaed.common.domain.purchase.FetchSupplierPurchasesUseCase
+import com.zaed.common.domain.purchase.UpdatePurchaseUseCase
 import com.zaed.common.domain.sale.AddIngotTransactionUseCase
-
 import com.zaed.common.domain.sale.AddStoreSaleUseCase
 import com.zaed.common.domain.sale.AddWholesaleUseCase
 import com.zaed.common.domain.sale.ConvertIngotTransactionsToDatedUseCase
@@ -140,7 +142,6 @@ import com.zaed.common.domain.sale.FetchStoreSalesUseCase
 import com.zaed.common.domain.sale.FetchWholesaleUseCase
 import com.zaed.common.domain.sale.GetStoreSaleUseCase
 import com.zaed.common.domain.sale.UpdateIngotTransactionUseCase
-import com.zaed.common.domain.purchase.UpdatePurchaseUseCase
 import com.zaed.common.domain.sale.UpdateStoreSaleUseCase
 import com.zaed.common.domain.sale.UpdateWholesaleUseCase
 import com.zaed.common.domain.store.AddStoreUseCase
@@ -291,6 +292,7 @@ val repositoryModule = module {
     singleOf(::ManufacturerOrderRepositoryImpl) { bind<ManufacturerOrderRepository>() }
     singleOf(::SupplierRepositoryImpl) { bind<SupplierRepository>() }
     singleOf(::PurchaseRepositoryImpl) { bind<PurchaseRepository>() }
+    singleOf(::DashboardRepositoryImpl) { bind<DashboardRepository>() }
 }
 val viewModelModule = module {
     viewModelOf(::SignUpViewModel)

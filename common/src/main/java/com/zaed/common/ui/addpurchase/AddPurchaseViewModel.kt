@@ -3,9 +3,9 @@ package com.zaed.common.ui.addpurchase
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zaed.common.data.model.category.Category
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
+import com.zaed.common.data.model.category.Category
 import com.zaed.common.data.model.category.request.AddCategoryRequest
 import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.Payment
@@ -22,6 +22,7 @@ import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.category.AddCategoryUseCase
 import com.zaed.common.domain.category.FetchAllCategoriesUseCase
 import com.zaed.common.domain.cheque.FetchAllUnCashedSalesChequeUseCase
+import com.zaed.common.domain.inventory.FetchInventoriesUseCase
 import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
 import com.zaed.common.domain.purchase.AddPurchaseUseCase
 import com.zaed.common.domain.purchase.FetchPurchaseUseCase
@@ -47,7 +48,7 @@ class AddPurchaseViewModel(
     private val updatePurchaseUseCase: UpdatePurchaseUseCase,
     private val addCategoryUseCase: AddCategoryUseCase,
     private val addSupplierUseCase: AddSupplierUseCase,
-    private val fetchAllUnCashedSalesChequesUseCase: FetchAllUnCashedSalesChequeUseCase
+    private val fetchAllUnCashedSalesChequesUseCase: FetchAllUnCashedSalesChequeUseCase,
 ) : ViewModel() {
     private val TAG: String = "AddProductSaleVM"
     private val _uiState = MutableStateFlow(AddPurchaseUiState())
@@ -84,7 +85,8 @@ class AddPurchaseViewModel(
                 _uiState.update { oldState ->
                     oldState.copy(
                         initialPurchase = data,
-                        purchase = data
+                        purchase = data,
+                        selectedProductType = data.productType
                     )
                 }
                 fetchSupplier(data.customerId)
