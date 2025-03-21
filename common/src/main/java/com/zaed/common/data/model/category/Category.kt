@@ -6,12 +6,14 @@ data class Category(
     val id: String = "",
     val name: String = "",
     val availableGrams: Double = 0.0,
+    val buyingPrice: Double = 0.0
 )
 
 fun Inventory.toCategory(): Category {
     return Category(
         id = productId,
         name = productName,
-        availableGrams = quantity
+        availableGrams = quantity,
+        buyingPrice = buyingPrice
     )
 }

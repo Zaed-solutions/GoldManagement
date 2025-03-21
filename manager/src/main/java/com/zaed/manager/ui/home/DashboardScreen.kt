@@ -25,7 +25,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.zaed.common.data.model.dashboard.Dashboard
 import com.zaed.manager.ui.home.component.DateFilterDialog
 import com.zaed.manager.ui.home.component.ReportGrid
 import com.zaed.manager.ui.home.component.SummaryCards
@@ -111,9 +110,8 @@ fun DashboardScreenContent(
         ) {
 
             SummaryCards(
-                totalProfit = uiState.dashboardData.totalNetProfit,
-                totalLoss = uiState.dashboardData.totalLoss,
-                changePercentage = 20
+                totalProfit = uiState.totalProfit,
+                totalLoss = uiState.totalLoss,
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -127,10 +125,15 @@ fun DashboardScreenContent(
             Spacer(modifier = Modifier.height(8.dp))
 
             ReportGrid(
-                totalStoreSales = uiState.dashboardData.totalStoreSales,
-                totalPurchases = uiState.dashboardData.totalPurchases,
-                totalLosses = uiState.dashboardData.totalLoss,
-                totalWholesaleSales = uiState.dashboardData.totalWholesaleSales,
+                totalStoreSales = uiState.storesSales,
+                totalStoreProfit = uiState.storesProfit,
+                totalStoreLoss =  uiState.storesLoss,
+                totalWholesaleSales =  uiState.wholesaleSales,
+                totalWholesaleProfit =  uiState.wholesaleProfit,
+                totalWholesaleLoss =  uiState.wholesaleLoss,
+                totalManagerSales =  uiState.managerSales,
+                totalManagerProfit =  uiState.managerProfit,
+                totalManagerLoss =  uiState.managerLoss,
                 onReportClick = { reportType ->
                     onAction(DashboardUiAction.NavigateToDetail(reportType))
                 }
@@ -162,14 +165,7 @@ fun DashboardScreenPreview() {
     ManagerTheme {
         DashboardScreenContent(
             uiState = DashboardUiState(
-                dashboardData = Dashboard(
-                    totalProfit = 15000.0,
-                    totalLoss = 6219.19,
-                    totalNetProfit = 8780.81,
-                    totalStoreSales = 24805.0,
-                    totalPurchases = 10580.0,
-                    totalWholesaleSales = 11250.0
-                )
+
             ),
             onAction = {}
         )

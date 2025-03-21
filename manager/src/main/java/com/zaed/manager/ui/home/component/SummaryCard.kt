@@ -20,7 +20,6 @@ import com.zaed.common.ui.util.toMoneyFormat
 fun SummaryCard(
     title: String,
     value: Double,
-    changePercentage: Int,
     isTrending: Boolean,
     backgroundColor: Color,
     modifier: Modifier = Modifier
