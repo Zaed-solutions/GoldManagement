@@ -96,11 +96,45 @@ class DashboardRemoteSourceImpl(
     }
 
     override suspend fun getManagerSales(managerId: String): Result<Double> {
-        return Result.success(0.0)
+        try {
+            val query = wholesalesCollection.where(
+                Filter.and(
+                    Filter.notEqualTo("distributorId", managerId),
+                    Filter.equalTo("deleted", false)
+                )
+            )
+            val aggregateQuery = query.aggregate(AggregateField.sum("totalAmount"))
+            val result = aggregateQuery.get(AggregateSource.SERVER).await()
+
+            val sum = result.get(AggregateField.sum("totalAmount"))
+            return Result.success((sum as Double).toDouble())
+
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            e.printStackTrace()
+            return Result.failure(e)
+        }
     }
 
     override suspend fun getWholesaleSales(managerId: String): Result<Double> {
-        return Result.success(0.0)
+        try {
+            val query = wholesalesCollection.where(
+                Filter.and(
+                    Filter.notEqualTo("distributorId", managerId),
+                    Filter.equalTo("deleted", false)
+                )
+            )
+            val aggregateQuery = query.aggregate(AggregateField.sum("totalAmount"))
+            val result = aggregateQuery.get(AggregateSource.SERVER).await()
+
+            val sum = result.get(AggregateField.sum("totalAmount"))
+            return Result.success((sum as Double).toDouble())
+
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            e.printStackTrace()
+            return Result.failure(e)
+        }
     }
 
     override suspend fun getStoreLoss(): Result<Double> {

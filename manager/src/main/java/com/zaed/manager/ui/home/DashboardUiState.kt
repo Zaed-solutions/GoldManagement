@@ -14,7 +14,6 @@ data class DashboardUiState(
     val managerSales: Double = 0.0,
     val managerProfit: Double = 0.0,
     val managerLoss: Double = 0.0,
-
     val dateFilter: DateFilter = DateFilter(),
     val isLoading: Boolean = false,
     val error: String? = null
@@ -23,5 +22,4 @@ data class DashboardUiState(
     get() = storesProfit + wholesaleProfit + managerProfit
     val totalLoss
     get() = storesLoss + wholesaleLoss + managerLoss
-
 }
