@@ -677,7 +677,10 @@ class SaleRemoteSourceImpl(
             val existingPayment = moneyPaymentCollection.where(
                 Filter.and(
                     Filter.inArray("id", existingPaymentIds),
-                    Filter.equalTo("type", PaymentType.FUTURES)
+                    Filter.or(
+                    Filter.equalTo("type", PaymentType.FUTURES),
+                    Filter.equalTo("type", PaymentType.REMAIN),
+                )
                 )
             ).get().await().documents.firstOrNull()?.toObject(CashPayment::class.java)
                 ?: CashPayment()
@@ -711,7 +714,15 @@ class SaleRemoteSourceImpl(
                             mapOf("moneyDebtAmount" to FieldValue.increment(payment.signedAmount()))
                         )
                         payment.amount
-                    } else {
+                    }else if (payment.type == PaymentType.REMAIN) {
+                        val customerRef =
+                            wholesaleCustomersCollection.document(request.sale.customerId)
+                        batch.update(
+                            customerRef,
+                            mapOf("moneyDebtAmount" to FieldValue.increment(payment.signedAmount()))
+                        )
+                        payment.amount
+                    }else {
                         payment.amount
                     }
                     when (payment) {

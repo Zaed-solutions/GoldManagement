@@ -7,9 +7,9 @@ import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.customer.FetchWholesaleCustomersByNameRequest
 import com.zaed.common.data.model.customer.WholeSaleCustomer
+import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentStatus
-import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.request.AddWholesaleRequest
@@ -80,7 +80,7 @@ class AddProductSaleViewModel(
                 )
             ).onSuccess { data ->
                 _uiState.update { oldState ->
-                    oldState.copy(payments = data.filter { it.type != PaymentType.FUTURES })
+                    oldState.copy(payments = data.filter { it !is FuturePayment })
                 }
 
             }.onFailure { e ->
