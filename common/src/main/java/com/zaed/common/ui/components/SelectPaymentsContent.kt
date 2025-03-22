@@ -55,7 +55,6 @@ import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.LossPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
-import com.zaed.common.data.model.payment.RemainPayment
 import com.zaed.common.data.model.payment.getProductSalePayments
 import com.zaed.common.data.model.supplier.Supplier
 import com.zaed.common.ui.suppliers.SelectSupplierSheet
@@ -90,6 +89,7 @@ fun SelectPaymentsContent(
     filteredSuppliers: List<Supplier> = emptyList(),
     onSupplierClicked: (String) -> Unit = {},
     onAddSupplier: (Supplier) -> Unit = {},
+    totalPaid: Double ,
     salesCheques: List<ChequePayment> = emptyList(),
 ) {
     var showSupplierSheet by remember { mutableStateOf(false) }
@@ -99,7 +99,6 @@ fun SelectPaymentsContent(
     var warningNotFullyPaidSheet by remember { mutableStateOf(false) }
     var selectCustomerSheet by remember { mutableStateOf(false) }
     var confirmTheRemainsSheetVisible by remember { mutableStateOf(false) }
-    val totalPaid by rememberUpdatedState(payments.sumOf { it.amount })
     val remainsAmount by rememberUpdatedState(totalAmount - totalPaid)
     Column(
         modifier = modifier
@@ -261,7 +260,7 @@ fun SelectPaymentsContent(
                             if (selectedAccount.id.isNotBlank()) {
                                 if(selectedAccount is WholeSaleCustomer) {
                                     onAddPayment(
-                                        RemainPayment(
+                                        FuturePayment(
                                             customerId = selectedAccount.id,
                                             amount = remainsAmount.absoluteValue,
                                             given = false,
@@ -270,7 +269,7 @@ fun SelectPaymentsContent(
                                     )
                                 }else{
                                     onAddPayment(
-                                        RemainPayment(
+                                        FuturePayment(
                                             customerId = selectedAccount.id,
                                             amount = remainsAmount.absoluteValue,
                                             given = true,
@@ -283,9 +282,8 @@ fun SelectPaymentsContent(
                             } else {
                                 showSupplierSheet = true
                             }
-                            warningNotFullyPaidSheet = false
+                            confirmTheRemainsSheetVisible = false
                         },
-                        modifier = Modifier.weight(1f)
                     ) {
                         Text(
                             text = if (!isPurchase) stringResource(R.string.balance_for_customer) else stringResource(
@@ -731,6 +729,7 @@ private fun SelectPaymentsContentPreview() {
         onQueryChanged = {},
         onAccountSelected = {},
         suggestedAccount = listOf(),
+        totalPaid = 20.0,
     )
 
 }

@@ -68,7 +68,8 @@ class SaleRemoteSourceImpl(
                         trySend(Result.failure(e))
                         return@addSnapshotListener
                     }
-                    val storeSales = snapshot?.toObjects(StoreTransaction::class.java) ?: emptyList()
+                    val storeSales =
+                        snapshot?.toObjects(StoreTransaction::class.java) ?: emptyList()
                     trySend(Result.success(storeSales))
                 }
             } catch (e: Exception) {
@@ -239,7 +240,8 @@ class SaleRemoteSourceImpl(
     override suspend fun getStoreSale(saleId: String): Result<StoreTransaction> {
         return try {
             val storeSale =
-                storeSalesCollection.document(saleId).get().await().toObject(StoreTransaction::class.java)
+                storeSalesCollection.document(saleId).get().await()
+                    .toObject(StoreTransaction::class.java)
             if (storeSale != null) {
                 Result.success(storeSale)
             } else {
@@ -264,8 +266,9 @@ class SaleRemoteSourceImpl(
                     if (error != null) {
                         close(error)
                         trySend(Result.failure(error))
-                    }else{
-                        val sales = snapshot?.toObjects(WholesaleTransaction::class.java) ?: emptyList()
+                    } else {
+                        val sales =
+                            snapshot?.toObjects(WholesaleTransaction::class.java) ?: emptyList()
                         trySend(Result.success(sales))
                     }
                 }
@@ -293,8 +296,9 @@ class SaleRemoteSourceImpl(
                     if (error != null) {
                         close(error)
                         trySend(Result.failure(error))
-                    }else{
-                        val sales = snapshot?.toObjects(WholesaleTransaction::class.java) ?: emptyList()
+                    } else {
+                        val sales =
+                            snapshot?.toObjects(WholesaleTransaction::class.java) ?: emptyList()
                         trySend(Result.success(sales))
                     }
                 }
@@ -419,7 +423,8 @@ class SaleRemoteSourceImpl(
                             trySend(Result.failure(e))
                             return@addSnapshotListener
                         }
-                        val storeSales = snapshot?.toObjects(StoreTransaction::class.java) ?: emptyList()
+                        val storeSales =
+                            snapshot?.toObjects(StoreTransaction::class.java) ?: emptyList()
                         trySend(Result.success(storeSales))
                     }
             } catch (e: Exception) {
@@ -429,28 +434,30 @@ class SaleRemoteSourceImpl(
             awaitClose { }
         }
 
-    override fun fetchAllDistributorsSales(): Flow<Result<List<WholesaleTransaction>>> = callbackFlow {
-        var sListener: ListenerRegistration? = null
-        try {
+    override fun fetchAllDistributorsSales(): Flow<Result<List<WholesaleTransaction>>> =
+        callbackFlow {
+            var sListener: ListenerRegistration? = null
+            try {
 
-            sListener =
-                wholesalesCollection.addSnapshotListener { snapshot, error ->
-                    if (error != null) {
-                        close(error)
-                        trySend(Result.failure(error))
+                sListener =
+                    wholesalesCollection.addSnapshotListener { snapshot, error ->
+                        if (error != null) {
+                            close(error)
+                            trySend(Result.failure(error))
+                        }
+                        val sales =
+                            snapshot?.toObjects(WholesaleTransaction::class.java) ?: emptyList()
+                        trySend(Result.success(sales))
                     }
-                    val sales = snapshot?.toObjects(WholesaleTransaction::class.java) ?: emptyList()
-                    trySend(Result.success(sales))
-                }
-        } catch (e: Exception) {
-            crashlytics.recordException(e)
-            trySend(Result.failure(e))
+            } catch (e: Exception) {
+                crashlytics.recordException(e)
+                trySend(Result.failure(e))
+            }
+            awaitClose {
+                sListener?.remove()
+                sListener?.remove()
+            }
         }
-        awaitClose {
-            sListener?.remove()
-            sListener?.remove()
-        }
-    }
 
 
     override suspend fun deleteWholesale(request: DeleteWholesaleRequest): Result<Unit> {
@@ -491,7 +498,7 @@ class SaleRemoteSourceImpl(
                     }
                     batch.update(
                         customerRef,
-                        mapOf("debtAmount" to FieldValue.increment(totalPaymentDeleted))
+                        mapOf("moneyDebtAmount" to FieldValue.increment(totalPaymentDeleted))
                     )
                 }
             }
@@ -540,6 +547,7 @@ class SaleRemoteSourceImpl(
     }
 
     override suspend fun addWholesale(request: AddWholesaleRequest): Result<String> {
+        Log.d("add_sale", "invoke remote: ${request.payments.map { it.type } }")
         return try {
             Log.d("add_sale", "invoke remote: $request")
             val batch = firestore.batch()
@@ -551,17 +559,27 @@ class SaleRemoteSourceImpl(
             ).limit(1).get().await().documents.firstOrNull()?.getString("receiptNumber")
                 ?.toLongOrNull() ?: 0L
 
-            val receiptNumber = lastSale +1L
+            val receiptNumber = lastSale + 1L
 
             request.payments.forEach {
                 val ref = moneyPaymentCollection.document()
                 paymentsIds.add(ref.id)
 
                 if (it.type == PaymentType.FUTURES) {
-                    val customerRef = wholesaleCustomersCollection.document(request.sale.customerId)
+                    val customerRef =
+                        wholesaleCustomersCollection.document(request.sale.customerId)
+
                     batch.update(
                         customerRef,
-                        mapOf("debtAmount" to FieldValue.increment(it.amount.unaryMinus()))
+                        mapOf("moneyDebtAmount" to FieldValue.increment(it.amount.unaryMinus()))
+                    )
+
+                } else if (it.type == PaymentType.REMAIN) {
+                    val customerRef =
+                        wholesaleCustomersCollection.document(request.sale.customerId)
+                    batch.update(
+                        customerRef,
+                        mapOf("moneyDebtAmount" to FieldValue.increment(it.amount))
                     )
                 } else if (it.type == PaymentType.LOSS) {
                     val document = distributorLossesCollection.document()
@@ -647,7 +665,6 @@ class SaleRemoteSourceImpl(
     }
 
 
-
     override suspend fun updateWholesale(request: UpdateWholesaleRequest): Result<Unit> {
         return try {
             val batch = firestore.batch()
@@ -672,7 +689,7 @@ class SaleRemoteSourceImpl(
                 batch.update(
                     customerRef,
                     mapOf(
-                        "debtAmount" to FieldValue.increment(
+                        "moneyDebtAmount" to FieldValue.increment(
                             existingPayment.signedAmount().unaryMinus()
                         )
                     )
@@ -691,7 +708,7 @@ class SaleRemoteSourceImpl(
                             wholesaleCustomersCollection.document(request.sale.customerId)
                         batch.update(
                             customerRef,
-                            mapOf("debtAmount" to FieldValue.increment(payment.signedAmount()))
+                            mapOf("moneyDebtAmount" to FieldValue.increment(payment.signedAmount()))
                         )
                         payment.amount
                     } else {
@@ -777,7 +794,7 @@ class SaleRemoteSourceImpl(
         }
     }
 
-     companion object {
+    companion object {
         fun isProductsDifferent(sale1: StoreTransaction, sale2: StoreTransaction): Boolean {
             return sale1.products != sale2.products
         }

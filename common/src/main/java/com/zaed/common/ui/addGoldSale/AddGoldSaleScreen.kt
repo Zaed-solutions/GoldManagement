@@ -49,6 +49,8 @@ fun AddGoldSaleScreen(
             onNavigateToGoldSaleDetails(state.sale.id)
         }
     }
+    Log.d("CREATED89",state.payments.map { it.amount to it.type }.toString())
+    Log.d("CREATED89",state.totalPaid.toString())
     AddGoldSaleScreenContent(
         state = state,
         onOpenDrawer = onOpenDrawer,
@@ -178,6 +180,7 @@ private fun AddGoldSaleScreenContent(
                     2 -> {
                         SelectPaymentsContent(
                             totalAmount = state.sale.totalAmount,
+                            totalPaid = state.totalPaid,
                             payments = state.payments,
                             selectedAccount = state.selectedCustomer,
                             query = state.customerSearchQuery,

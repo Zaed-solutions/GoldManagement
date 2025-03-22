@@ -76,15 +76,6 @@ fun SaveCashPaymentBottomSheetContent(
                 .heightIn(min = 48.dp)
                 .padding(top = 24.dp),
             onClick = {
-                if (initialPayment.amount == 0.0 && payment.amount > remainsAmount) {
-                    payment = payment.copy(
-                        amount = remainsAmount,
-                    )
-                } else if (initialPayment.amount != 0.0 && payment.amount > (remainsAmount + initialPayment.amount)) {
-                    payment = payment.copy(
-                        amount = remainsAmount + initialPayment.amount,
-                    )
-                }
                 onSave(payment)
             },
             enabled = payment.amount != 0.0
@@ -146,15 +137,6 @@ fun SaveFuturePaymentBottomSheetContent(
                 .heightIn(min = 48.dp)
                 .padding(top = 24.dp),
             onClick = {
-                if (initialPayment.amount == 0.0 && payment.amount > remainsAmount) {
-                    payment = payment.copy(
-                        amount = remainsAmount,
-                    )
-                } else if (initialPayment.amount != 0.0 && payment.amount > (remainsAmount + initialPayment.amount)) {
-                    payment = payment.copy(
-                        amount = remainsAmount + initialPayment.amount,
-                    )
-                }
                 onSave(payment)
             },
             enabled = payment.amount != 0.0
@@ -354,15 +336,6 @@ fun SaveChequePaymentBottomSheetContent(
                 .heightIn(min = 48.dp)
                 .padding(top = 24.dp),
             onClick = {
-                if (initialPayment.amount == 0.0 && payment.amount > remainsAmount) {
-                    payment = payment.copy(
-                        amount = remainsAmount,
-                    )
-                } else if (initialPayment.amount != 0.0 && payment.amount > (remainsAmount + initialPayment.amount)) {
-                    payment = payment.copy(
-                        amount = remainsAmount + initialPayment.amount,
-                    )
-                }
                 onSave(payment)
             },
             enabled = payment.amount != 0.0
@@ -471,15 +444,6 @@ fun SaveManagerChequePaymentBottomSheetContent(
                 .heightIn(min = 48.dp)
                 .padding(top = 24.dp),
             onClick = {
-                if (initialPayment.amount == 0.0 && payment.amount > remainsAmount) {
-                    payment = payment.copy(
-                        amount = remainsAmount,
-                    )
-                } else if (initialPayment.amount != 0.0 && payment.amount > (remainsAmount + initialPayment.amount)) {
-                    payment = payment.copy(
-                        amount = remainsAmount + initialPayment.amount,
-                    )
-                }
                 onSave(payment)
             },
             enabled = payment.amount != 0.0
@@ -575,15 +539,6 @@ fun SaveBankTransferPaymentBottomSheetContent(
                 .heightIn(min = 48.dp)
                 .padding(top = 24.dp),
             onClick = {
-                if (initialPayment.amount == 0.0 && payment.amount > remainsAmount) {
-                    payment = payment.copy(
-                        amount = remainsAmount,
-                    )
-                } else if (initialPayment.amount != 0.0 && payment.amount > (remainsAmount + initialPayment.amount)) {
-                    payment = payment.copy(
-                        amount = remainsAmount + initialPayment.amount,
-                    )
-                }
                 onSave(payment)
             },
             enabled = payment.amount != 0.0

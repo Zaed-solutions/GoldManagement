@@ -80,7 +80,6 @@ class AddGoldSaleViewModel(
                 _uiState.update { oldState ->
                     oldState.copy(payments = data.filter { it.type != PaymentType.FUTURES })
                 }
-                updateTotalAmounts()
             }.onFailure { e ->
                 Log.e(TAG, "fetchPayments: ${e.message}", e)
             }
@@ -309,28 +308,16 @@ class AddGoldSaleViewModel(
                     oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products + product))
                 }
             }
-            updateTotalAmounts()
         }
     }
 
-    private fun updateTotalAmounts() {
-        viewModelScope.launch(Dispatchers.Default) {
-            val totalAmount = uiState.value.sale.products.sumOf { it.grams * it.gramPrice }
-            val totalPaid =
-                uiState.value.payments.filter { it.type != PaymentType.FUTURES }.sumOf { it.amount }
-            _uiState.update {
-                it.copy(totalPaid = totalPaid)
-            }
-            Log.d(TAG, "updateTotalAmounts: totalAmount: $totalAmount, totalPaid: $totalPaid")
-        }
-    }
+
 
     private fun addPayment(payment: Payment) {
         viewModelScope.launch {
             _uiState.update { oldState ->
                 oldState.copy(payments = oldState.payments + payment)
             }
-            updateTotalAmounts()
         }
     }
 
@@ -341,7 +328,6 @@ class AddGoldSaleViewModel(
             _uiState.update { oldState ->
                 oldState.copy(payments = oldState.payments.filter { it.id != paymentId })
             }
-            updateTotalAmounts()
         }
     }
 
@@ -350,7 +336,6 @@ class AddGoldSaleViewModel(
             _uiState.update { oldState ->
                 oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products.filter { it.id != productId }))
             }
-            updateTotalAmounts()
         }
     }
 
@@ -359,7 +344,6 @@ class AddGoldSaleViewModel(
             _uiState.update { oldState ->
                 oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products.filter { it != product }))
             }
-            updateTotalAmounts()
         }
     }
 
@@ -374,7 +358,6 @@ class AddGoldSaleViewModel(
                     }
                 })
             }
-            updateTotalAmounts()
         }
     }
 
@@ -390,7 +373,6 @@ class AddGoldSaleViewModel(
                     }
                 }))
             }
-            updateTotalAmounts()
         }
     }
 }
