@@ -328,4 +328,9 @@
     <string name="company">Company Cheque</string>
     <string name="dashboard">Dashboard</string>
     <string name="remains_for_client">Remains</string>
+    <string name="the_payment_amount_is_greater_than_the_total_amount">The Payment Amount is greater than the total amount</string>
+    <string name="do_you_want_to_make_is_balance_for_the_customer">Do you want to make is balance for the customer</string>
+    <string name="do_you_want_to_make_is_balance_for_you">Do you want to make is balance for you</string>
+    <string name="balance_for_customer">Balance For Customer</string>
+    <string name="balance_for_you">Balance For You</string>
 </resources>
