@@ -327,4 +327,5 @@
     <string name="personal">Personal Cheque</string>
     <string name="company">Company Cheque</string>
     <string name="dashboard">Dashboard</string>
+    <string name="remains_for_client">Remains</string>
 </resources>

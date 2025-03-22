@@ -194,8 +194,7 @@ fun SelectPaymentsContent(
 
         Button(
             onClick = {
-                if (payments.filterIsInstance<GoldPayment>()
-                        .any { it.pricePerGram == 0.0 } && selectedAccount.id.isBlank()
+                if (payments.filterIsInstance<GoldPayment>().any { it.pricePerGram == 0.0 } && selectedAccount.id.isBlank()
                 ) {
                     if (selectedAccount is WholeSaleCustomer) {
                         selectCustomerSheet = true

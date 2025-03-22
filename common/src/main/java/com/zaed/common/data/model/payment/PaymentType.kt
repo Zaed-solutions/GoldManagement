@@ -9,6 +9,7 @@ enum class PaymentType(@StringRes val titleRes: Int, val iconRes: Int) : Dropdow
     BANK_TRANSFER(R.string.bank_transfer, R.drawable.bank_ic),
     CHEQUE(R.string.cheque, R.drawable.ic_cheque),
     FUTURES(R.string.futures, R.drawable.customer_credit),
+    REMAIN(R.string.remains_for_client, R.drawable.ic_person),
     GOLD(R.string.gold, R.drawable.ic_ingot),
     LOSS(R.string.loss, R.drawable.ic_money_minus),
     MANAGER_CHEQUES(R.string.manager_cheques, R.drawable.ic_cheque);
