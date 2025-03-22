@@ -106,7 +106,7 @@ class DisplayCustomersViewModel(
                     _state.update {
                         it.copy(
                             customers = customers,
-                            displayedCustomers = customers.sortedByDescending { it.debtAmount },
+                            displayedCustomers = customers.sortedByDescending { it.moneyDebtAmount },
                             isLoading = false,
                             error = null,
                         )

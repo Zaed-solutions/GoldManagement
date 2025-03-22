@@ -95,7 +95,7 @@ fun PreviewSaleContent(
             CustomerInfoSection(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 customerName = selectedAccount.name,
-                customerDebt = selectedAccount.debtAmount,
+                customerDebt = selectedAccount.moneyDebtAmount,
                 onCustomerClicked = {}
             )
             Spacer(modifier = Modifier.height(8.dp))
