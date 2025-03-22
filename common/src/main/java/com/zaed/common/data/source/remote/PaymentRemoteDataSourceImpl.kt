@@ -18,6 +18,7 @@ import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.LossPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
+import com.zaed.common.data.model.payment.RemainPayment
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.DeletePaymentRequest
 import com.zaed.common.data.model.payment.request.EditPaymentRequest
@@ -103,6 +104,7 @@ class PaymentRemoteDataSourceImpl(
                                 PaymentType.LOSS -> it.toObject(LossPayment::class.java)
                                 PaymentType.GOLD -> it.toObject(GoldPayment::class.java)
                                 PaymentType.MANAGER_CHEQUES -> it.toObject(ManagerCheque::class.java)
+                                PaymentType.REMAIN -> it.toObject(RemainPayment::class.java)
                             }
                         } ?: emptyList()
                         trySend(Result.success(payments))
@@ -134,6 +136,7 @@ class PaymentRemoteDataSourceImpl(
                     PaymentType.LOSS -> it.toObject(LossPayment::class.java)
                     PaymentType.GOLD -> it.toObject(GoldPayment::class.java)
                     PaymentType.MANAGER_CHEQUES -> it.toObject(ManagerCheque::class.java)
+                    PaymentType.REMAIN -> it.toObject(RemainPayment::class.java)
                 }
             }
             Result.success(payments)
@@ -185,6 +188,7 @@ class PaymentRemoteDataSourceImpl(
                             PaymentType.LOSS -> it.toObject(LossPayment::class.java)
                             PaymentType.GOLD -> it.toObject(GoldPayment::class.java)
                             PaymentType.MANAGER_CHEQUES -> it.toObject(ManagerCheque::class.java)
+                            PaymentType.REMAIN -> it.toObject(RemainPayment::class.java)
                         }
                     } ?: emptyList()
                     trySend(Result.success(payments))
