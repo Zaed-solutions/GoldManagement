@@ -185,6 +185,7 @@ private fun AddProductSaleScreenContent(
                         SelectPaymentsContent(
                             totalAmount = state.sale.totalAmount,
                             payments = state.payments,
+                            totalPaid = state.totalPaid,
                             selectedAccount = state.selectedCustomer,
                             query = state.customerSearchQuery,
                             onQueryChanged = {

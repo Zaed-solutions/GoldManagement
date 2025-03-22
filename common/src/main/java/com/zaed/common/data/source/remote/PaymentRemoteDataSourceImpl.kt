@@ -18,7 +18,6 @@ import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.LossPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
-import com.zaed.common.data.model.payment.RemainPayment
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.DeletePaymentRequest
 import com.zaed.common.data.model.payment.request.EditPaymentRequest
@@ -43,35 +42,70 @@ class PaymentRemoteDataSourceImpl(
             Log.d("PaymentRemoteDataSource", "addPayment: ${request.payment}")
             val batch = firestore.batch()
             val document = moneyPaymentsCollection.document()
-            when(request.payment){
-                is CashPayment->{
-                    batch.set(document, request.payment.copy(id = document.id, customerId = request.customerId))
+            when (request.payment) {
+                is CashPayment -> {
+                    batch.set(
+                        document,
+                        request.payment.copy(id = document.id, customerId = request.customerId)
+                    )
                 }
-                is BankTransferPayment->{
-                    batch.set(document, request.payment.copy(id = document.id, customerId = request.customerId))
+
+                is BankTransferPayment -> {
+                    batch.set(
+                        document,
+                        request.payment.copy(id = document.id, customerId = request.customerId)
+                    )
                 }
-                is ChequePayment->{
-                    batch.set(document, request.payment.copy(id = document.id, customerId = request.customerId))
+
+                is ChequePayment -> {
+                    batch.set(
+                        document,
+                        request.payment.copy(id = document.id, customerId = request.customerId)
+                    )
                 }
-                is FuturePayment->{
-                    batch.set(document, request.payment.copy(id = document.id, customerId = request.customerId))
+
+                is FuturePayment -> {
+                    batch.set(
+                        document,
+                        request.payment.copy(id = document.id, customerId = request.customerId)
+                    )
                 }
-                is LossPayment->{
-                    batch.set(document, request.payment.copy(id = document.id, customerId = request.customerId))
+
+                is LossPayment -> {
+                    batch.set(
+                        document,
+                        request.payment.copy(id = document.id, customerId = request.customerId)
+                    )
                 }
-                is GoldPayment->{
-                    batch.set(document, request.payment.copy(id = document.id, customerId = request.customerId))
+
+                is GoldPayment -> {
+                    batch.set(
+                        document,
+                        request.payment.copy(id = document.id, customerId = request.customerId)
+                    )
                 }
-                is ManagerCheque->{
-                    batch.set(document, request.payment.copy(id = document.id, customerId = request.customerId))
+
+                is ManagerCheque -> {
+                    batch.set(
+                        document,
+                        request.payment.copy(id = document.id, customerId = request.customerId)
+                    )
                 }
             }
-            if(request.isSupplier){
+            if (request.isSupplier) {
                 val docRef = suppliersCollection.document(request.customerId)
-                batch.update(docRef, "debtAmount", FieldValue.increment(request.payment.signedAmount().unaryMinus()))
+                batch.update(
+                    docRef,
+                    "moneyDebtAmount",
+                    FieldValue.increment(request.payment.signedAmount().unaryMinus())
+                )
             } else {
                 val docRef = customersCollection.document(request.customerId)
-                batch.update(docRef, "debtAmount", FieldValue.increment(request.payment.signedAmount()))
+                batch.update(
+                    docRef,
+                    "moneyDebtAmount",
+                    FieldValue.increment(request.payment.signedAmount())
+                )
             }
             batch.commit().await()
             return Result.success(document.id)
@@ -87,7 +121,11 @@ class PaymentRemoteDataSourceImpl(
                 moneyPaymentsCollection.where(
                     Filter.and(
                         Filter.equalTo("deleted", false),
-                        Filter.equalTo("customerId", request.customerId)
+                        Filter.equalTo("customerId", request.customerId),
+                        Filter.or(
+                            Filter.equalTo("type", PaymentType.FUTURES),
+                            Filter.equalTo("type", PaymentType.REMAIN),
+                        )
                     )
                 ).addSnapshotListener { snapshot, error ->
                     if (error != null) {
@@ -100,11 +138,10 @@ class PaymentRemoteDataSourceImpl(
                                 PaymentType.CASH -> it.toObject(CashPayment::class.java)
                                 PaymentType.BANK_TRANSFER -> it.toObject(BankTransferPayment::class.java)
                                 PaymentType.CHEQUE -> it.toObject(ChequePayment::class.java)
-                                PaymentType.FUTURES -> it.toObject(FuturePayment::class.java)
+                                PaymentType.FUTURES, PaymentType.REMAIN -> it.toObject(FuturePayment::class.java)
                                 PaymentType.LOSS -> it.toObject(LossPayment::class.java)
                                 PaymentType.GOLD -> it.toObject(GoldPayment::class.java)
                                 PaymentType.MANAGER_CHEQUES -> it.toObject(ManagerCheque::class.java)
-                                PaymentType.REMAIN -> it.toObject(RemainPayment::class.java)
                             }
                         } ?: emptyList()
                         trySend(Result.success(payments))
@@ -132,11 +169,10 @@ class PaymentRemoteDataSourceImpl(
                     PaymentType.CASH -> it.toObject(CashPayment::class.java)
                     PaymentType.BANK_TRANSFER -> it.toObject(BankTransferPayment::class.java)
                     PaymentType.CHEQUE -> it.toObject(ChequePayment::class.java)
-                    PaymentType.FUTURES -> it.toObject(FuturePayment::class.java)
+                    PaymentType.FUTURES, PaymentType.REMAIN -> it.toObject(FuturePayment::class.java)
                     PaymentType.LOSS -> it.toObject(LossPayment::class.java)
                     PaymentType.GOLD -> it.toObject(GoldPayment::class.java)
                     PaymentType.MANAGER_CHEQUES -> it.toObject(ManagerCheque::class.java)
-                    PaymentType.REMAIN -> it.toObject(RemainPayment::class.java)
                 }
             }
             Result.success(payments)
@@ -156,50 +192,53 @@ class PaymentRemoteDataSourceImpl(
         }
     }
 
-    override fun fetchSupplierPayments(request: FetchSupplierPaymentsRequest): Flow<Result<List<Payment>>>
-    = callbackFlow {
-        try{
-            val filter = if(request.isManager) {
+    override fun fetchSupplierPayments(request: FetchSupplierPaymentsRequest): Flow<Result<List<Payment>>> =
+        callbackFlow {
+            try {
+                val filter = if (request.isManager) {
 //                Filter.equalTo("customerId", request.supplierId)
-                Filter.and(
-                    Filter.equalTo("customerId", request.supplierId),
-                    Filter.equalTo("deleted", false)
-                )
-            } else {
-                Filter.and(
-                    Filter.equalTo("customerId", request.supplierId),
-                    Filter.equalTo("deleted", false)
-                )
-            }
-            moneyPaymentsCollection.where(
-                filter
-            ).orderBy("createdAt", Query.Direction.DESCENDING).addSnapshotListener{ snapshot, error ->
-                if(error != null){
-                    crashlytics.recordException(error)
-                    trySend(Result.failure(error))
+                    Filter.and(
+                        Filter.equalTo("customerId", request.supplierId),
+                        Filter.equalTo("deleted", false)
+                    )
                 } else {
-                    val payments = snapshot?.mapNotNull {
-                        val type = it.toObject(CashPayment::class.java).type
-                        when (type) {
-                            PaymentType.CASH -> it.toObject(CashPayment::class.java)
-                            PaymentType.BANK_TRANSFER -> it.toObject(BankTransferPayment::class.java)
-                            PaymentType.CHEQUE -> it.toObject(ChequePayment::class.java)
-                            PaymentType.FUTURES -> it.toObject(FuturePayment::class.java)
-                            PaymentType.LOSS -> it.toObject(LossPayment::class.java)
-                            PaymentType.GOLD -> it.toObject(GoldPayment::class.java)
-                            PaymentType.MANAGER_CHEQUES -> it.toObject(ManagerCheque::class.java)
-                            PaymentType.REMAIN -> it.toObject(RemainPayment::class.java)
-                        }
-                    } ?: emptyList()
-                    trySend(Result.success(payments))
+                    Filter.and(
+                        Filter.equalTo("customerId", request.supplierId),
+                        Filter.equalTo("deleted", false)
+                    )
                 }
+                moneyPaymentsCollection.where(
+                    filter
+                ).orderBy("createdAt", Query.Direction.DESCENDING)
+                    .addSnapshotListener { snapshot, error ->
+                        if (error != null) {
+                            crashlytics.recordException(error)
+                            trySend(Result.failure(error))
+                        } else {
+                            val payments = snapshot?.mapNotNull {
+                                val type = it.toObject(CashPayment::class.java).type
+                                when (type) {
+                                    PaymentType.CASH -> it.toObject(CashPayment::class.java)
+                                    PaymentType.BANK_TRANSFER -> it.toObject(BankTransferPayment::class.java)
+                                    PaymentType.CHEQUE -> it.toObject(ChequePayment::class.java)
+                                    PaymentType.FUTURES, PaymentType.REMAIN -> it.toObject(
+                                        FuturePayment::class.java
+                                    )
+
+                                    PaymentType.LOSS -> it.toObject(LossPayment::class.java)
+                                    PaymentType.GOLD -> it.toObject(GoldPayment::class.java)
+                                    PaymentType.MANAGER_CHEQUES -> it.toObject(ManagerCheque::class.java)
+                                }
+                            } ?: emptyList()
+                            trySend(Result.success(payments))
+                        }
+                    }
+            } catch (e: Exception) {
+                crashlytics.recordException(e)
+                trySend(Result.failure(e))
             }
-        } catch (e: Exception){
-            crashlytics.recordException(e)
-            trySend(Result.failure(e))
+            awaitClose { }
         }
-        awaitClose {  }
-    }
 
     override suspend fun editPayment(request: EditPaymentRequest): Result<Unit> {
         try {
@@ -209,13 +248,13 @@ class PaymentRemoteDataSourceImpl(
                 request.newPayment
             )
             batch.update(
-                if(request.isSupplier){
+                if (request.isSupplier) {
                     suppliersCollection.document(request.customerId)
                 } else {
                     customersCollection.document(request.customerId)
                 },
                 mapOf(
-                    "debtAmount" to FieldValue.increment(request.diff.let { if (request.isSupplier) it.unaryMinus() else it})
+                    "moneyDebtAmount" to FieldValue.increment(request.diff.let { if (request.isSupplier) it.unaryMinus() else it })
                 )
             )
             batch.commit().await()
@@ -244,13 +283,15 @@ class PaymentRemoteDataSourceImpl(
                 ),
             )
             batch.update(
-                if(request.isSupplier){
+                if (request.isSupplier) {
                     suppliersCollection.document(request.payment.customerId)
                 } else {
                     customersCollection.document(request.payment.customerId)
                 },
                 mapOf(
-                    "debtAmount" to FieldValue.increment(request.payment.signedAmount().let { if (request.isSupplier) it else it.unaryMinus()})
+                    "moneyDebtAmount" to FieldValue.increment(
+                        request.payment.signedAmount()
+                            .let { if (request.isSupplier) it else it.unaryMinus() })
                 )
             )
             batch.commit().await()
