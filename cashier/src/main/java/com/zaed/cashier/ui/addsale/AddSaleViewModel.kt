@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
-import com.zaed.common.data.model.authentication.UserPermission
 import com.zaed.common.data.model.category.toCategory
 import com.zaed.common.data.model.inventory.request.FetchInventoriesRequest
 import com.zaed.common.data.model.sale.Product
@@ -45,13 +44,12 @@ class AddSaleViewModel(
 
     }
 
-    private fun fetchInventories(ownerId: String, permissions: List<UserPermission>) {
+    private fun fetchInventories(ownerId: String) {
         Log.d(TAG, "fetchInventories: $ownerId")
         viewModelScope.launch(Dispatchers.IO) {
             fetchInventoryUseCase(
                 FetchInventoriesRequest(
                     ownerId =ownerId,
-                    permissions = permissions
                 )
             ).collect { result ->
                 Log.d(TAG, "fetchInventories: $result")
@@ -90,7 +88,6 @@ class AddSaleViewModel(
                     }
                     fetchInventories(
                         ownerId = data.storeId,
-                        permissions = data.permissions
                     )
                 }.onFailure { e ->
                     Log.e(TAG, "fetchCurrentUser: ${e.message}", e)

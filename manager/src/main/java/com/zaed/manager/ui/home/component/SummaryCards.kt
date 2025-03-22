@@ -14,7 +14,6 @@ import com.zaed.manager.R
 fun SummaryCards(
     totalProfit: Double,
     totalLoss: Double,
-    changePercentage: Int
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -23,7 +22,6 @@ fun SummaryCards(
         SummaryCard(
             title = stringResource(R.string.gross_profit),
             value = totalProfit,
-            changePercentage = changePercentage,
             isTrending = true,
             backgroundColor = MaterialTheme.colorScheme.primary,
             modifier = Modifier.weight(1f)
@@ -31,7 +29,6 @@ fun SummaryCards(
         SummaryCard(
             title = stringResource(R.string.total_loss),
             value = totalLoss,
-            changePercentage = -changePercentage,
             isTrending = false,
             backgroundColor = MaterialTheme.colorScheme.error,
             modifier = Modifier.weight(1f)

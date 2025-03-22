@@ -12,9 +12,14 @@ import com.zaed.common.R
 @Composable
 fun ReportGrid(
     totalStoreSales: Double,
-    totalPurchases: Double,
-    totalLosses: Double,
+    totalStoreLoss: Double,
+    totalStoreProfit: Double,
     totalWholesaleSales: Double,
+    totalWholesaleLoss: Double,
+    totalWholesaleProfit: Double,
+    totalManagerSales: Double,
+    totalManagerLoss: Double,
+    totalManagerProfit: Double,
     onReportClick: (ReportType) -> Unit
 ) {
     LazyVerticalGrid(
@@ -32,34 +37,82 @@ fun ReportGrid(
                 onClick = { onReportClick(ReportType.STORE_SALES) }
             )
         }
-
         item {
             ReportCard(
-                title = "Purchases",
-                value = totalPurchases,
-                iconRes = com.zaed.manager.R.drawable.ic_add_cart,
+                title = "Store Profit",
+                value = totalStoreProfit,
+                iconRes = R.drawable.ic_store,
                 cardColor = MaterialTheme.colorScheme.secondaryContainer,
-                onClick = { onReportClick(ReportType.PURCHASES) }
+                onClick = { onReportClick(ReportType.STORE_PROFIT) }
             )
         }
 
+
+        item {
+            ReportCard(
+                title = "Store Loss",
+                value = totalStoreLoss,
+                iconRes = R.drawable.ic_money_minus,
+                cardColor = MaterialTheme.colorScheme.errorContainer,
+                onClick = { onReportClick(ReportType.STORE_LOSS) }
+            )
+        }
         item {
             ReportCard(
                 title = "Wholesale Sales",
                 value = totalWholesaleSales,
-                iconRes = R.drawable.ic_person,
-                cardColor = MaterialTheme.colorScheme.tertiaryContainer,
+                iconRes = R.drawable.ic_customers,
+                cardColor = MaterialTheme.colorScheme.primaryContainer,
                 onClick = { onReportClick(ReportType.WHOLESALE_SALES) }
             )
         }
+        item {
+            ReportCard(
+                title = "Wholesale Profit",
+                value = totalWholesaleProfit,
+                iconRes = R.drawable.ic_customers,
+                cardColor = MaterialTheme.colorScheme.secondaryContainer,
+                onClick = { onReportClick(ReportType.WHOLESALE_PROFIT) }
+            )
+        }
+
 
         item {
             ReportCard(
-                title = "Losses",
-                value = totalLosses,
+                title = "Wholesale Loss",
+                value = totalWholesaleLoss,
                 iconRes = R.drawable.ic_money_minus,
                 cardColor = MaterialTheme.colorScheme.errorContainer,
-                onClick = { onReportClick(ReportType.STORE_LOSS) }
+                onClick = { onReportClick(ReportType.WHOLESALE_LOSS) }
+            )
+        }
+        item {
+            ReportCard(
+                title = "Manager Sales",
+                value = totalManagerSales,
+                iconRes = R.drawable.ic_person,
+                cardColor = MaterialTheme.colorScheme.primaryContainer,
+                onClick = { onReportClick(ReportType.MANAGER_SALES) }
+            )
+        }
+        item {
+            ReportCard(
+                title = "Manager Profit",
+                value = totalManagerProfit,
+                iconRes = R.drawable.ic_person,
+                cardColor = MaterialTheme.colorScheme.secondaryContainer,
+                onClick = { onReportClick(ReportType.MANAGER_PROFIT) }
+            )
+        }
+
+
+        item {
+            ReportCard(
+                title = "Manager Loss",
+                value = totalManagerLoss,
+                iconRes = R.drawable.ic_money_minus,
+                cardColor = MaterialTheme.colorScheme.errorContainer,
+                onClick = { onReportClick(ReportType.MANAGER_LOSS) }
             )
         }
     }

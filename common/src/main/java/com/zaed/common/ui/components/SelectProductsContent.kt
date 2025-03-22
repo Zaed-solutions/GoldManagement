@@ -145,7 +145,8 @@ fun SelectProductsContent(
                                 transaction.products.firstOrNull { it.categoryId == category.id }
                                     ?: Product(
                                         categoryId = category.id,
-                                        name = if (isStoreSale) "" else category.name
+                                        name = if (isStoreSale) "" else category.name,
+                                        buyingPrice = category.buyingPrice
                                     )
                             enterProductSheetVisible = true
                         }
