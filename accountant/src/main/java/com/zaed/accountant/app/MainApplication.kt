@@ -1,6 +1,7 @@
 package com.zaed.accountant.app
 
 import android.app.Application
+import com.zaed.accountant.app.di.appModule
 import com.zaed.common.app.di.localSourceModule
 import com.zaed.common.app.di.remoteSourceModule
 import com.zaed.common.app.di.repositoryModule
@@ -22,7 +23,8 @@ class MainApplication : Application() {
                 localSourceModule,
                 remoteSourceModule,
                 repositoryModule,
-                viewModelModule
+                viewModelModule,
+                appModule
             )
         }
     }

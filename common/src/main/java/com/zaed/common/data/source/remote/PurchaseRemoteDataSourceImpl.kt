@@ -401,6 +401,7 @@ class PurchaseRemoteDataSourceImpl(
         try {
             purchaseCollection
                 .whereEqualTo("deleted", false)
+                .orderBy("createdAt", Query.Direction.DESCENDING)
                 .addSnapshotListener{ value, error ->
                     if (error != null){
                         trySend(Result.failure(error))

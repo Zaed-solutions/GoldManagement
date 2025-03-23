@@ -24,7 +24,6 @@ fun CustomerDetailsScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     CustomerDetailsScreenContent(
         uiState = uiState,
-        selectedCustomer = uiState.customer,
         onAddPayment = {
             viewModel.addPayment(it)
         },

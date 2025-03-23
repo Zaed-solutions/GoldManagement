@@ -140,7 +140,7 @@ private fun SuppliersScreenContent(
                 isLoading = state.isLoading,
                 suppliers = state.filteredSuppliers,
                 onSupplierClicked = {
-                    onAction(SuppliersUiAction.OnSupplierClicked(it))
+                    onAction(SuppliersUiAction.OnSupplierClicked(it.id))
                 },
                 isEditable = state.isAdmin,
                 onEditSupplier = {
@@ -198,7 +198,7 @@ fun SelectSupplierSheet(
     filteredSuppliers: List<Supplier>,
     isLoading: Boolean,
     onAddSupplier: (Supplier) -> Unit,
-    onSupplierClicked: (String) -> Unit
+    onSupplierClicked: (Supplier) -> Unit
 ) {
     var selectedSupplier by remember { mutableStateOf(Supplier()) }
     var isSaveSupplierSheetVisible by remember { mutableStateOf(false) }

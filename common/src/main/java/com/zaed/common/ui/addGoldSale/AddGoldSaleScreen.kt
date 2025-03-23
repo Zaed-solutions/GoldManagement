@@ -183,6 +183,7 @@ private fun AddGoldSaleScreenContent(
                             totalPaid = state.totalPaid,
                             payments = state.payments,
                             selectedAccount = state.selectedCustomer,
+                            currentUser = state.currentUser,
                             query = state.customerSearchQuery,
                             paymentsTypes = getGoldSalePayments(),
                             onQueryChanged = {

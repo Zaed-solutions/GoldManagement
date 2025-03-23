@@ -368,8 +368,8 @@ fun PreviewSaleContent(
                 onUpdateSearchQuery = { onUpdateSupplierSearchQuery(it) },
                 searchQuery = supplierSearchQuery,
                 filteredSuppliers = filteredSuppliers,
-                onSupplierClicked = { supplierId ->
-                    onSupplierClicked(supplierId)
+                onSupplierClicked = { supplier ->
+                    onSupplierClicked(supplier.id)
                     showSupplierSheet = false
                 },
                 onAddSupplier = {

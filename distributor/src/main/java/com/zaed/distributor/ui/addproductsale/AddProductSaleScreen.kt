@@ -187,6 +187,7 @@ private fun AddProductSaleScreenContent(
                             payments = state.payments,
                             totalPaid = state.totalPaid,
                             selectedAccount = state.selectedCustomer,
+                            currentUser = state.currentUser,
                             query = state.customerSearchQuery,
                             onQueryChanged = {
                                 onAction(AddProductSaleUiAction.OnCustomerSearchQueryChanged(it))

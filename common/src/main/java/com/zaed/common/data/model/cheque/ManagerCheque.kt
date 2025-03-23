@@ -12,6 +12,7 @@ data class ManagerCheque(
     val receiverName : String = "",
     val chequeStatus : ChequeStatus = ChequeStatus.RECEIVED,
     val notes : String = "",
+    val cashed: Boolean = false,
     override var given :Boolean = false,
     override var customerId: String = "",
     override val type: PaymentType = PaymentType.MANAGER_CHEQUES,
