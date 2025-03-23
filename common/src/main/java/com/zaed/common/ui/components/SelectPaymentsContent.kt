@@ -57,6 +57,7 @@ import com.zaed.common.data.model.payment.LossPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.getProductSalePayments
+import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.supplier.Supplier
 import com.zaed.common.ui.suppliers.SelectSupplierSheet
 import com.zaed.common.ui.util.DateFormat
@@ -71,6 +72,8 @@ fun SelectPaymentsContent(
     modifier: Modifier = Modifier,
     totalAmount: Double,
     payments: List<Payment>,
+    products : List<Product> = emptyList(),
+    payWithGold : Boolean = false,
     onAddPayment: (Payment) -> Unit = {},
     onRemovePayment: (Payment) -> Unit = {},
     onEditPayment: (Payment) -> Unit = {},
@@ -97,11 +100,16 @@ fun SelectPaymentsContent(
     var showSupplierSheet by remember { mutableStateOf(false) }
     var simplePaymentBottomSheet by remember { mutableStateOf(false) }
     var selectedPayment by remember { mutableStateOf<Payment?>(null) }
-    val simplePaymentBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var warningNotFullyPaidSheet by remember { mutableStateOf(false) }
     var selectCustomerSheet by remember { mutableStateOf(false) }
     var confirmTheRemainsSheetVisible by remember { mutableStateOf(false) }
-    val remainsAmount by rememberUpdatedState(totalAmount - totalPaid)
+    val remainsAmount by rememberUpdatedState(
+        if(!payWithGold) totalAmount - totalPaid
+        else products.sumOf { it.laborCost } - payments.sumOf { it.amount }
+    )
+    val remainsGold by rememberUpdatedState(
+        products.sumOf { it.grams } - (payments.filterIsInstance<GoldPayment>().sumOf { it.givenGoldAmount })
+    )
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -117,11 +125,14 @@ fun SelectPaymentsContent(
         )
 
         Text(
-            text = totalAmount.toMoneyFormat(2),
+            text = if(!payWithGold) {totalAmount.toMoneyFormat(2) } else {
+                stringResource(
+                    R.string.grams_placeholder,products.sumOf { it.grams })
+            },
             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
             color = MaterialTheme.colorScheme.primary
         )
-        if (totalPaid > 0) {
+        if (totalPaid > 0 || payments.filterIsInstance<GoldPayment>().any { it.givenGoldAmount>0 }) {
             Text(
                 text = stringResource(R.string.remaining_amount_from, totalAmount),
                 style = MaterialTheme.typography.titleMedium,
@@ -129,7 +140,7 @@ fun SelectPaymentsContent(
                 color = MaterialTheme.colorScheme.outline
             )
             Text(
-                text = remainsAmount.toMoneyFormat(2),
+                text = if(!payWithGold)remainsAmount.toMoneyFormat(2) else "$remainsGold g" ,
                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.primary
             )

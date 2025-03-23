@@ -1,5 +1,6 @@
 package com.zaed.common.data.model.sale.request
 
 data class FetchDistributorSalesRequest(
-    val distributorId: String = ""
+    val distributorId: String = "",
+    val withOutStandingBill: Boolean = false
 )

@@ -163,10 +163,20 @@ class PurchaseRemoteDataSourceImpl(
                 paymentsIds.add(ref.id)
 
                 if (it.type == PaymentType.FUTURES) {
-                    val customerRef = suppliersCollection.document(request.purchase.customerId)
+                    val customerRef =
+                        suppliersCollection.document(request.purchase.customerId)
+
                     batch.update(
                         customerRef,
                         mapOf("moneyDebtAmount" to FieldValue.increment(it.amount.unaryMinus()))
+                    )
+
+                } else if (it.type == PaymentType.REMAIN) {
+                    val customerRef =
+                        suppliersCollection.document(request.purchase.customerId)
+                    batch.update(
+                        customerRef,
+                        mapOf("moneyDebtAmount" to FieldValue.increment(it.amount))
                     )
                 }
                 when (it) {
@@ -272,6 +282,14 @@ class PurchaseRemoteDataSourceImpl(
                 } else {
                     val newPaymentRef = paymentCollection.document()
                     val amount = if (payment.type == PaymentType.FUTURES) {
+                        val supplierRef =
+                            suppliersCollection.document(request.purchase.customerId)
+                        batch.update(
+                            supplierRef,
+                            mapOf("moneyDebtAmount" to FieldValue.increment(payment.signedAmount()))
+                        )
+                        payment.amount
+                    }else if (payment.type == PaymentType.REMAIN) {
                         val supplierRef =
                             suppliersCollection.document(request.purchase.customerId)
                         batch.update(

@@ -17,6 +17,7 @@ import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
 import com.zaed.common.data.model.payment.FuturePayment
+import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.LossPayment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.signedAmount
@@ -260,7 +261,8 @@ class SaleRemoteSourceImpl(
                 sListener = wholesalesCollection.where(
                     Filter.and(
                         Filter.equalTo("distributorId", request.distributorId),
-                        Filter.equalTo("deleted", false)
+                        Filter.equalTo("deleted", false),
+                        Filter.equalTo("outStandingBill", request.withOutStandingBill)
                     )
                 ).addSnapshotListener { snapshot, error ->
                     if (error != null) {
@@ -290,7 +292,8 @@ class SaleRemoteSourceImpl(
                 sListener = wholesalesCollection.where(
                     Filter.and(
                         Filter.equalTo("customerId", request.customerId),
-                        Filter.equalTo("deleted", false)
+                        Filter.equalTo("deleted", false),
+                        Filter.equalTo("outStandingBill", request.withOutStandingBill)
                     )
                 ).addSnapshotListener { snapshot, error ->
                     if (error != null) {
@@ -438,7 +441,6 @@ class SaleRemoteSourceImpl(
         callbackFlow {
             var sListener: ListenerRegistration? = null
             try {
-
                 sListener =
                     wholesalesCollection.addSnapshotListener { snapshot, error ->
                         if (error != null) {
@@ -621,6 +623,10 @@ class SaleRemoteSourceImpl(
                         ref,
                         it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
                     )
+                    is GoldPayment -> batch.set(
+                        ref,
+                        it.copy(id = ref.id, receiptNumber = receiptNumber.toString())
+                    )
                 }
             }
             Log.d("add_sale", "invoke remote2: $request")
@@ -747,6 +753,10 @@ class SaleRemoteSourceImpl(
                         )
 
                         is LossPayment -> batch.set(
+                            newPaymentRef,
+                            payment.copy(id = newPaymentRef.id, amount = amount)
+                        )
+                        is GoldPayment -> batch.set(
                             newPaymentRef,
                             payment.copy(id = newPaymentRef.id, amount = amount)
                         )

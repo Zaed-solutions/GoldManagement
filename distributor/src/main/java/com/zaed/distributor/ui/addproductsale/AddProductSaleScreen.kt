@@ -220,7 +220,7 @@ private fun AddProductSaleScreenContent(
                         SaleSummaryContent(
                             account = state.selectedCustomer,
                             products = state.sale.products,
-                            totalPaid = state.totalPaid,
+                            totalMoneyPaid = state.totalPaid,
                             totalAmount = state.sale.totalAmount,
                             isLoading = state.isLoading,
                             onCreate = {

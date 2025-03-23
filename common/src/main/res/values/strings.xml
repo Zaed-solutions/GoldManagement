@@ -339,4 +339,9 @@
     <string name="do_you_want_to_make_is_balance_for_you">Do you want to make is balance for you</string>
     <string name="balance_for_customer">Balance For Customer</string>
     <string name="balance_for_you">Balance For You</string>
+    <string name="select_payment_type">Select Payment Type</string>
+    <string name="pay_with_money">Pay with Money</string>
+    <string name="pay_with_gold">Pay With Gold</string>
+    <string name="g_labor_cost">%1$sg + %2$s Labor Cost</string>
+    <string name="save_as_outstanding_bill">Save as OutStanding Bill</string>
 </resources>

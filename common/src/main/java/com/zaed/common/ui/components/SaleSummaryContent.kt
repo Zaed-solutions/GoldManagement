@@ -34,14 +34,16 @@ import java.util.Date
 fun SaleSummaryContent(
     modifier: Modifier = Modifier,
     account: Account,
-    products : List<Product>,
+    products: List<Product>,
     totalAmount: Double,
-    isKaratUnSpecified : Boolean = false,
-    totalPaid: Double,
+    payWithGold: Boolean = false,
+    isKaratUnSpecified: Boolean = false,
+    totalMoneyPaid: Double,
+    totalGoldPaid: Double = 0.0,
     onCreate: () -> Unit = {},
-    isPurchase : Boolean = false,
+    isPurchase: Boolean = false,
     isLoading: Boolean = false,
-    productType: ProductType
+    productType: ProductType,
 ) {
 
     Column(
@@ -52,7 +54,7 @@ fun SaleSummaryContent(
         horizontalAlignment = Alignment.Start
     ) {
         Text(
-            text = if(isPurchase) stringResource(R.string.purchase_summary) else stringResource(R.string.sale_summary),
+            text = if (isPurchase) stringResource(R.string.purchase_summary) else stringResource(R.string.sale_summary),
             style = MaterialTheme.typography.headlineMedium,
         )
         DetailRow(
@@ -72,28 +74,40 @@ fun SaleSummaryContent(
         ProductsTable(
             products = products,
             isModifyEnabled = false,
-            productType =productType
+            productType = productType
         )
         Spacer(modifier = Modifier.weight(1f))
         DashedDivider(
             thickness = 2.dp,
         )
-        PriceCalculationItem(
-            modifier = Modifier.padding(top = 8.dp),
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Normal,
-                fontSize = 18.sp
-            ),
-            title = stringResource(R.string.paid),
-            price = totalPaid
-        )
+        if (payWithGold) {
+            PriceCalculationItem(
+                modifier = Modifier.padding(top = 8.dp),
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 18.sp
+                ),
+                title = stringResource(R.string.gold_paid),
+                price = totalGoldPaid
+            )
+        } else {
+            PriceCalculationItem(
+                modifier = Modifier.padding(top = 8.dp),
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 18.sp
+                ),
+                title = stringResource(R.string.money_paid),
+                price = totalMoneyPaid
+            )
+        }
         PriceCalculationItem(
             style = MaterialTheme.typography.titleMedium.copy(
                 fontWeight = FontWeight.Normal,
                 fontSize = 18.sp
             ),
             title = stringResource(R.string.future),
-            price = if(isKaratUnSpecified) 0.0 else (totalAmount - totalPaid)
+            price = if (isKaratUnSpecified) 0.0 else (totalAmount - totalMoneyPaid)
         )
         PriceCalculationItem(
             modifier = Modifier.padding(vertical = 16.dp),
@@ -109,17 +123,25 @@ fun SaleSummaryContent(
             shape = RoundedCornerShape(4.dp),
             enabled = !isLoading
 
-            ) {
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    stringResource(R.string.process),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
+                if (payWithGold) {
+                    Text(
+                        text = stringResource(R.string.save_as_outstanding_bill),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                } else {
+                    Text(
+                        stringResource(R.string.process),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
                 if (isLoading) {
                     Spacer(modifier = Modifier.width(8.dp))
                     CircularProgressIndicator()
@@ -154,7 +176,7 @@ private fun Preview() {
             )
         ),
         totalAmount = 1253.0,
-        totalPaid = 1243.0,
+        totalMoneyPaid = 1243.0,
         productType = ProductType.GOLD
     )
 
