@@ -1,7 +1,6 @@
 package com.zaed.common.ui.supplierdetails
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,7 +43,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
-import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.data.model.cheque.ManagerCheque
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
@@ -52,7 +50,6 @@ import com.zaed.common.data.model.payment.ChequePayment
 import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
-import com.zaed.common.data.model.payment.getProductSalePayments
 import com.zaed.common.data.model.payment.getSupplierPaymentTypes
 import com.zaed.common.ui.components.BackIcon
 import com.zaed.common.ui.components.BalanceSection
@@ -71,7 +68,6 @@ import com.zaed.common.ui.components.SelectFromSalesChequesBottomSheetContent
 import com.zaed.common.ui.components.TransactionsList
 import com.zaed.common.ui.salescheques.SalesChequesUiAction
 import com.zaed.common.ui.suppliers.components.SaveSupplierBottomSheet
-import com.zaed.common.ui.util.toMoneyFormat
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -255,7 +251,7 @@ private fun SupplierDetailsScreenContent(
                             BalanceSection(
                                 modifier = Modifier.padding(horizontal = 16.dp),
                                 isSupplier = true,
-                                amount = state.supplier.debtAmount,
+                                amount = state.supplier.moneyDebtAmount,
                             )
                             PaymentsList(
                                 modifier = Modifier.weight(1f),

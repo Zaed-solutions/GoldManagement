@@ -22,7 +22,6 @@ import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.category.AddCategoryUseCase
 import com.zaed.common.domain.category.FetchAllCategoriesUseCase
 import com.zaed.common.domain.cheque.FetchAllUnCashedSalesChequeUseCase
-import com.zaed.common.domain.inventory.FetchInventoriesUseCase
 import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
 import com.zaed.common.domain.purchase.AddPurchaseUseCase
 import com.zaed.common.domain.purchase.FetchPurchaseUseCase
@@ -108,7 +107,6 @@ class AddPurchaseViewModel(
                 _uiState.update { oldState ->
                     oldState.copy(payments = data.filter { it.type != PaymentType.FUTURES })
                 }
-                updateTotalAmounts()
             }.onFailure { e ->
                 Log.e(TAG, "fetchPayments: ${e.message}", e)
             }
@@ -424,21 +422,10 @@ class AddPurchaseViewModel(
                     oldState.copy(purchase = oldState.purchase.copy(products = oldState.purchase.products + product))
                 }
             }
-            updateTotalAmounts()
         }
     }
 
-    private fun updateTotalAmounts() {
-        viewModelScope.launch(Dispatchers.Default) {
-            val totalAmount = uiState.value.purchase.products.sumOf { it.grams * it.gramPrice }
-            val totalPaid = uiState.value.payments.filter { it.type != PaymentType.FUTURES }
-                .sumOf { it.amount }
-            _uiState.update {
-                it.copy(totalPaid = totalPaid)
-            }
-            Log.d(TAG, "updateTotalAmounts: totalAmount: $totalAmount, totalPaid: $totalPaid")
-        }
-    }
+
 
     private fun addPayment(payment: Payment) {
         viewModelScope.launch {
@@ -448,7 +435,6 @@ class AddPurchaseViewModel(
             _uiState.update { oldState ->
                 oldState.copy(payments = oldState.payments + updatedPayment)
             }
-            updateTotalAmounts()
         }
     }
 
@@ -459,7 +445,6 @@ class AddPurchaseViewModel(
             _uiState.update { oldState ->
                 oldState.copy(payments = oldState.payments.filter { it.id != paymentId })
             }
-            updateTotalAmounts()
         }
     }
 
@@ -468,7 +453,6 @@ class AddPurchaseViewModel(
             _uiState.update { oldState ->
                 oldState.copy(purchase = oldState.purchase.copy(products = oldState.purchase.products.filter { it.id != productId }))
             }
-            updateTotalAmounts()
         }
     }
 
@@ -477,7 +461,6 @@ class AddPurchaseViewModel(
             _uiState.update { oldState ->
                 oldState.copy(purchase = oldState.purchase.copy(products = oldState.purchase.products.filter { it != product }))
             }
-            updateTotalAmounts()
         }
     }
 
@@ -492,7 +475,6 @@ class AddPurchaseViewModel(
                     }
                 })
             }
-            updateTotalAmounts()
         }
     }
 
@@ -508,7 +490,6 @@ class AddPurchaseViewModel(
                     }
                 }))
             }
-            updateTotalAmounts()
         }
     }
 }

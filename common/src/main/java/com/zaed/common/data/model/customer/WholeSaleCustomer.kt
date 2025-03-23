@@ -9,7 +9,8 @@ abstract class Account(
     open val phone: String = "",
     open val email: String = "",
     open val createdAt: Date = Date(),
-    open val debtAmount: Double = 0.0
+    open val moneyDebtAmount: Double = 0.0,
+    open val goldDebtAmount: Double = 0.0,
 )
 data class WholeSaleCustomer(
     override val id: String = "",
@@ -20,13 +21,14 @@ data class WholeSaleCustomer(
     val address: String = "",
     val city: String = "",
     override val createdAt: Date = Date(),
-    override val debtAmount: Double = 0.0,
+    override val moneyDebtAmount: Double = 0.0,
+    override val goldDebtAmount: Double = 0.0,
     val deleted: Boolean = false,
     val logs: List<ChangeLog> = emptyList()
-): Account( id, name, phone, email, createdAt, debtAmount) {
+): Account( id, name, phone, email, createdAt, moneyDebtAmount, goldDebtAmount) {
     @Transient
     val inDebt: Boolean
-        get() = debtAmount > 0
+        get() = moneyDebtAmount > 0
 }
 
 

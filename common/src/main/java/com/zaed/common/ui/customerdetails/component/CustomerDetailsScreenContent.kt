@@ -84,7 +84,7 @@ fun CustomerDetailsScreenContent(
     val pagerState = rememberPagerState { 2 }
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    Log.d("TAG", "CustomerDetailsScreenContent: ${uiState.customer.debtAmount}")
+    Log.d("TAG", "CustomerDetailsScreenContent: ${uiState.customer.moneyDebtAmount}")
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(title = {
@@ -152,7 +152,7 @@ fun CustomerDetailsScreenContent(
                         Column {
                             BalanceSection(
                                 modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
-                                amount = uiState.customer.debtAmount,
+                                amount = uiState.customer.moneyDebtAmount,
                             )
                             PaymentsList(
                                 modifier = Modifier.weight(1f),

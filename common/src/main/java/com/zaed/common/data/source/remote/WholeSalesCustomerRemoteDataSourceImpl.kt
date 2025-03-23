@@ -63,7 +63,7 @@ class WholeSalesCustomerRemoteDataSourceImpl(
     override suspend fun updateCustomerDebt(updateCustomerDebtRequest: UpdateCustomerDebtRequest): Result<Unit> {
         try {
             customersCollection.document(updateCustomerDebtRequest.customerId).update(
-                "debtAmount", FieldValue.increment(updateCustomerDebtRequest.difference)
+                "moneyDebtAmount", FieldValue.increment(updateCustomerDebtRequest.difference)
             ).await()
             return Result.success(Unit)
         } catch (e: Exception) {
@@ -76,7 +76,7 @@ class WholeSalesCustomerRemoteDataSourceImpl(
     override suspend fun addNewPayment(request: AddNewPaymentRequest): Result<Unit> {
         try {
             customersCollection.document(request.customerId).update(
-                "debtAmount",
+                "moneyDebtAmount",
                 FieldValue.increment(request.payment.amount),
             ).await()
             return Result.success(Unit)
@@ -152,7 +152,7 @@ class WholeSalesCustomerRemoteDataSourceImpl(
     override suspend fun deletePayment(request: DeletePaymentRequest): Result<Unit> {
         try {
             customersCollection.document(request.payment.id).update(
-                "debtAmount",
+                "moneyDebtAmount",
                 FieldValue.increment(request.payment.signedAmount()),
             ).await()
             return Result.success(Unit)

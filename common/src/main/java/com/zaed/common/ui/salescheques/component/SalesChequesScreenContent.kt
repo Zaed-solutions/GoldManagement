@@ -93,6 +93,7 @@ fun SalesChequesScreenContent(
     val pagerState = rememberPagerState { 2 }
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    Log.d("TAG", "CustomerDetailsScreenContent: ${uiState.selectedCustomer.moneyDebtAmount}")
     Scaffold(
         topBar = {
             TopAppBar(title = {

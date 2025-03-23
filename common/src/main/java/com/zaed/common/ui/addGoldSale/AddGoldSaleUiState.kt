@@ -3,6 +3,7 @@ package com.zaed.common.ui.addGoldSale
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.ui.addpurchase.ProductType
 
@@ -15,6 +16,9 @@ data class AddGoldSaleUiState(
     val customerSearchQuery: String = "",
     val suggestedCustomers: List<WholeSaleCustomer> = emptyList(),
     val currentUser: User = User(),
-    val totalPaid: Double = 0.0,
     val payments: List<Payment> = emptyList(),
-)
+) {
+    val totalPaid
+        get() = payments.filter { it.type != PaymentType.FUTURES }
+            .sumOf { if (it.type == PaymentType.REMAIN) it.amount.unaryMinus() else it.amount }
+}

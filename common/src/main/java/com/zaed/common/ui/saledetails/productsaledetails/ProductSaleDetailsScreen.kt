@@ -114,7 +114,7 @@ private fun ProductSaleDetailsContent(
                 // customer info
                 CustomerInfoSection(
                     customerName = state.sale.customerName,
-                    customerDebt = state.customer.debtAmount,
+                    customerDebt = state.customer.moneyDebtAmount,
                     onCustomerClicked = {
                         onAction(SaleDetailsUiAction.OnCustomerClicked)
                     }

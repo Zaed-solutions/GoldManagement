@@ -64,6 +64,7 @@ import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
 import com.zaed.common.ui.util.toMoneyFormat
 import java.util.UUID
+import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -91,6 +92,7 @@ fun SelectPaymentsContent(
     filteredSuppliers: List<Supplier> = emptyList(),
     onSupplierClicked: (String) -> Unit = {},
     onAddSupplier: (Supplier) -> Unit = {},
+    totalPaid: Double ,
     salesCheques: List<ChequePayment> = emptyList(),
 ) {
     var showSupplierSheet by remember { mutableStateOf(false) }
@@ -99,7 +101,7 @@ fun SelectPaymentsContent(
     val simplePaymentBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var warningNotFullyPaidSheet by remember { mutableStateOf(false) }
     var selectCustomerSheet by remember { mutableStateOf(false) }
-    val totalPaid by rememberUpdatedState(payments.sumOf { it.amount })
+    var confirmTheRemainsSheetVisible by remember { mutableStateOf(false) }
     val remainsAmount by rememberUpdatedState(totalAmount - totalPaid)
     Column(
         modifier = modifier
@@ -168,7 +170,8 @@ fun SelectPaymentsContent(
                         )
                         simplePaymentBottomSheet = true
                     }
-                    PaymentType.MANAGER_CHEQUES ->{
+
+                    PaymentType.MANAGER_CHEQUES -> {
                         selectedPayment = ManagerCheque(
                             type = type,
                             id = "Destributor-" + UUID.randomUUID().toString()
@@ -205,6 +208,11 @@ fun SelectPaymentsContent(
                         .none { it.pricePerGram == 0.0 }
                 ) {
                     warningNotFullyPaidSheet = true
+                } else if (remainsAmount < 0 && payments.filterIsInstance<GoldPayment>()
+                        .none { it.pricePerGram == 0.0 }
+                ) {
+                    confirmTheRemainsSheetVisible = true
+
                 } else {
                     onNext()
                 }
@@ -219,6 +227,72 @@ fun SelectPaymentsContent(
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
+        }
+        androidx.compose.animation.AnimatedVisibility(confirmTheRemainsSheetVisible) {
+            ModalBottomSheet(
+                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+                onDismissRequest = {
+                    confirmTheRemainsSheetVisible = false
+                }
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = stringResource(R.string.the_payment_amount_is_greater_than_the_total_amount),
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                    Spacer(modifier = Modifier.padding(8.dp))
+                    Text(
+                        text = if (selectedAccount is WholeSaleCustomer) stringResource(R.string.do_you_want_to_make_is_balance_for_the_customer) else stringResource(
+                            R.string.do_you_want_to_make_is_balance_for_you
+                        ),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Spacer(modifier = Modifier.padding(8.dp))
+                    Button(
+                        shape = RoundedCornerShape(4.dp),
+                        onClick = {
+                            if (selectedAccount.id.isNotBlank()) {
+                                if(selectedAccount is WholeSaleCustomer) {
+                                    onAddPayment(
+                                        FuturePayment(
+                                            customerId = selectedAccount.id,
+                                            amount = remainsAmount.absoluteValue,
+                                            given = false,
+                                            type = PaymentType.REMAIN
+                                        )
+                                    )
+                                }else{
+                                    onAddPayment(
+                                        FuturePayment(
+                                            customerId = selectedAccount.id,
+                                            amount = remainsAmount.absoluteValue,
+                                            given = true,
+                                            type = PaymentType.REMAIN
+                                        )
+                                    )
+                                }
+                            } else if (selectedAccount is WholeSaleCustomer) {
+                                selectCustomerSheet = true
+                            } else {
+                                showSupplierSheet = true
+                            }
+                            confirmTheRemainsSheetVisible = false
+                        },
+                    ) {
+                        Text(
+                            text = if (!isPurchase) stringResource(R.string.balance_for_customer) else stringResource(
+                                R.string.balance_for_you
+                            ),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
         }
         AnimatedVisibility(showSupplierSheet) {
             SelectSupplierSheet(
@@ -484,8 +558,8 @@ fun SelectFromSalesChequesBottomSheetContent(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    if(selectedChequesPayment.sumOf { it.amount } <= remainsAmount) {
-                        if(remainsAmount < Double.MAX_VALUE){
+                    if (selectedChequesPayment.sumOf { it.amount } <= remainsAmount) {
+                        if (remainsAmount < Double.MAX_VALUE) {
                             Text(
                                 selectedChequesPayment.sumOf { it.amount }.toMoneyFormat(2),
                                 style = MaterialTheme.typography.titleLarge
@@ -537,6 +611,7 @@ private fun SelectPaymentsContentPreview() {
         onAccountSelected = {},
         currentUser = User(),
         suggestedAccount = listOf(),
+        totalPaid = 20.0,
     )
 
 }

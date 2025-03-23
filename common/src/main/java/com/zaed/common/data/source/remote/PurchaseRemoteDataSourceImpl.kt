@@ -101,7 +101,7 @@ class PurchaseRemoteDataSourceImpl(
                     }
                     batch.update(
                         supplierRef,
-                        mapOf("debtAmount" to FieldValue.increment(totalPaymentDeleted))
+                        mapOf("moneyDebtAmount" to FieldValue.increment(totalPaymentDeleted))
                     )
                 }
             }
@@ -166,7 +166,7 @@ class PurchaseRemoteDataSourceImpl(
                     val customerRef = suppliersCollection.document(request.purchase.customerId)
                     batch.update(
                         customerRef,
-                        mapOf("debtAmount" to FieldValue.increment(it.amount.unaryMinus()))
+                        mapOf("moneyDebtAmount" to FieldValue.increment(it.amount.unaryMinus()))
                     )
                 }
                 when (it) {
@@ -257,7 +257,7 @@ class PurchaseRemoteDataSourceImpl(
                 batch.update(
                     supplierRef,
                     mapOf(
-                        "debtAmount" to FieldValue.increment(
+                        "moneyDebtAmount" to FieldValue.increment(
                             existingPayment.signedAmount().unaryMinus()
                         )
                     )
@@ -276,7 +276,7 @@ class PurchaseRemoteDataSourceImpl(
                             suppliersCollection.document(request.purchase.customerId)
                         batch.update(
                             supplierRef,
-                            mapOf("debtAmount" to FieldValue.increment(payment.signedAmount()))
+                            mapOf("moneyDebtAmount" to FieldValue.increment(payment.signedAmount()))
                         )
                         payment.amount
                     } else {
