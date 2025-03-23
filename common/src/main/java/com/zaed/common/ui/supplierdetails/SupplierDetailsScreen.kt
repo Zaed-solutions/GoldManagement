@@ -24,7 +24,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -47,7 +46,6 @@ import com.zaed.common.data.model.cheque.ManagerCheque
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
-import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.getSupplierPaymentTypes
@@ -57,16 +55,9 @@ import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
 import com.zaed.common.ui.components.DetailRow
 import com.zaed.common.ui.components.PaymentTypes
 import com.zaed.common.ui.components.PaymentsList
-import com.zaed.common.ui.components.SaveBankTransferPaymentBottomSheetContent
-import com.zaed.common.ui.components.SaveCashPaymentBottomSheetContent
-import com.zaed.common.ui.components.SaveChequePaymentBottomSheetContent
-import com.zaed.common.ui.components.SaveFuturePaymentBottomSheetContent
-import com.zaed.common.ui.components.SaveManagerChequePaymentBottomSheetContent
 import com.zaed.common.ui.components.SavePaymentBottomSheet
 import com.zaed.common.ui.components.SearchBar
-import com.zaed.common.ui.components.SelectFromSalesChequesBottomSheetContent
 import com.zaed.common.ui.components.TransactionsList
-import com.zaed.common.ui.salescheques.SalesChequesUiAction
 import com.zaed.common.ui.suppliers.components.SaveSupplierBottomSheet
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -323,7 +314,6 @@ private fun SupplierDetailsScreenContent(
                     selectedPayment = CashPayment()
                 },
                 initialPayment = selectedPayment?: ChequePayment(),
-                remainsAmount = Double.MAX_VALUE,
                 isTaken = isTaken,
                 selectedAccount = state.supplier,
                 currentUser = state.currentUser,

@@ -44,8 +44,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.cheque.ManagerCheque
 import com.zaed.common.data.model.authentication.User
+import com.zaed.common.data.model.cheque.ManagerCheque
 import com.zaed.common.data.model.customer.Account
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.BankTransferPayment
@@ -58,7 +58,6 @@ import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.getProductSalePayments
 import com.zaed.common.data.model.supplier.Supplier
-import com.zaed.common.ui.salescheques.SalesChequesUiAction
 import com.zaed.common.ui.suppliers.SelectSupplierSheet
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
@@ -92,7 +91,7 @@ fun SelectPaymentsContent(
     filteredSuppliers: List<Supplier> = emptyList(),
     onSupplierClicked: (String) -> Unit = {},
     onAddSupplier: (Supplier) -> Unit = {},
-    totalPaid: Double ,
+    totalPaid: Double,
     salesCheques: List<ChequePayment> = emptyList(),
 ) {
     var showSupplierSheet by remember { mutableStateOf(false) }
@@ -257,7 +256,7 @@ fun SelectPaymentsContent(
                         shape = RoundedCornerShape(4.dp),
                         onClick = {
                             if (selectedAccount.id.isNotBlank()) {
-                                if(selectedAccount is WholeSaleCustomer) {
+                                if (selectedAccount is WholeSaleCustomer) {
                                     onAddPayment(
                                         FuturePayment(
                                             customerId = selectedAccount.id,
@@ -266,7 +265,7 @@ fun SelectPaymentsContent(
                                             type = PaymentType.REMAIN
                                         )
                                     )
-                                }else{
+                                } else {
                                     onAddPayment(
                                         FuturePayment(
                                             customerId = selectedAccount.id,
@@ -314,27 +313,28 @@ fun SelectPaymentsContent(
             )
         }
         //add payment bottom sheet
-        SavePaymentBottomSheet(
-            isVisible = simplePaymentBottomSheet,
-            onDismiss = {
-                simplePaymentBottomSheet = false
-                selectedPayment = null
-            },
-            initialPayment = selectedPayment ?: ChequePayment(),
-            remainsAmount = remainsAmount,
-            isTaken = !isPurchase,
-            selectedAccount = selectedAccount,
-            currentUser = currentUser,
-            onSave = { updatedPayment ->
-                if (selectedPayment!!.id.isBlank()) {
-                    onAddPayment(updatedPayment)
-                } else {
-                    onEditPayment(updatedPayment)
+        selectedPayment?.let {
+            SavePaymentBottomSheet(
+                isVisible = simplePaymentBottomSheet,
+                onDismiss = {
+                    simplePaymentBottomSheet = false
+                    selectedPayment = null
+                },
+                initialPayment = it,
+                isTaken = !isPurchase,
+                selectedAccount = selectedAccount,
+                currentUser = currentUser,
+                onSave = { updatedPayment ->
+                    if (selectedPayment!!.id.isBlank()) {
+                        onAddPayment(updatedPayment)
+                    } else {
+                        onEditPayment(updatedPayment)
+                    }
+                    simplePaymentBottomSheet = false
+                    selectedPayment = null
                 }
-                simplePaymentBottomSheet = false
-                selectedPayment = null
-            }
-        )
+            )
+        }
         AnimatedVisibility(
             visible = warningNotFullyPaidSheet,
         ) {
