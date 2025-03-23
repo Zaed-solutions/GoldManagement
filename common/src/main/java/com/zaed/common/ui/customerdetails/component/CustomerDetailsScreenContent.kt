@@ -42,11 +42,9 @@ import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
-import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.getProductSalePayments
@@ -55,10 +53,6 @@ import com.zaed.common.ui.components.BalanceSection
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
 import com.zaed.common.ui.components.PaymentTypes
 import com.zaed.common.ui.components.PaymentsList
-import com.zaed.common.ui.components.SaveBankTransferPaymentBottomSheetContent
-import com.zaed.common.ui.components.SaveCashPaymentBottomSheetContent
-import com.zaed.common.ui.components.SaveChequePaymentBottomSheetContent
-import com.zaed.common.ui.components.SaveFuturePaymentBottomSheetContent
 import com.zaed.common.ui.components.SavePaymentBottomSheet
 import com.zaed.common.ui.components.TransactionsList
 import com.zaed.common.ui.customerdetails.CustomerDetailsUiAction
@@ -247,7 +241,6 @@ fun CustomerDetailsScreenContent(
                 selectedPayment = null
             },
             initialPayment = selectedPayment ?: ChequePayment(),
-            remainsAmount = Double.MAX_VALUE,
             isTaken = isTaken,
             currentUser = uiState.currentDistributor,
             selectedAccount = uiState.customer,

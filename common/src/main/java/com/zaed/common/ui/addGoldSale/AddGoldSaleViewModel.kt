@@ -134,9 +134,17 @@ class AddGoldSaleViewModel(
             is AddGoldSaleUiAction.OnRemovePayment -> removePayment(action.paymentId)
             is AddGoldSaleUiAction.OnUpdateProducts -> updateProductsSale(action.products)
             AddGoldSaleUiAction.OnDeleteAllProducts -> updateProductsSale(emptyList())
+            is AddGoldSaleUiAction.OnUpdatePaymentType -> updatePaymentType(action.isCash)
             else -> Unit
         }
     }
+
+    private fun updatePaymentType(cash: Boolean) {
+        _uiState.update { oldState ->
+            oldState.copy(payWithMoney = cash)
+        }
+    }
+
 
     private fun updateProductsSale(products: List<Product>) {
         _uiState.update { oldState ->
@@ -145,7 +153,6 @@ class AddGoldSaleViewModel(
     }
 
     private fun onSubmit() {
-        Log.d(TAG, "onSubmit: ${uiState.value.sale}")
         if (uiState.value.sale.id.isNotBlank()) {
             updateSale()
         } else {
@@ -171,7 +178,7 @@ class AddGoldSaleViewModel(
                             customerId = customer.id,
                             customerName = customer.name,
                             customerPhone = customer.phone,
-                            paymentStatus = if ((uiState.value.sale.totalAmount - uiState.value.totalPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID,
+                            paymentStatus = if ((uiState.value.sale.totalAmount - uiState.value.totalMoneyPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID,
                             logs = oldState.sale.logs + updateLog
                         ),
                     )
@@ -205,6 +212,7 @@ class AddGoldSaleViewModel(
         }
         val customer = uiState.value.selectedCustomer
         val distributor = uiState.value.currentUser
+        Log.d(TAG, "addSale: $uiState")
         viewModelScope.launch(Dispatchers.IO) {
 
             _uiState.update { oldState ->
@@ -213,10 +221,11 @@ class AddGoldSaleViewModel(
                         customerId = customer.id,
                         customerName = customer.name,
                         customerPhone = customer.phone,
+                        outStandingBill = !uiState.value.payWithMoney,
                         distributorId = distributor.id,
                         distributorName = distributor.fullName,
                         createdAt = Date(),
-                        paymentStatus = if ((uiState.value.sale.totalAmount - uiState.value.totalPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID
+                        paymentStatus =if(!uiState.value.payWithMoney) PaymentStatus.SPECIFYING_KARAT else if ((uiState.value.sale.totalAmount - uiState.value.totalMoneyPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID
                     )
                 )
             }
@@ -231,6 +240,7 @@ class AddGoldSaleViewModel(
                     ),
                 )
             }
+            Log.d(TAG, "testoto: ${uiState.value.payments.map { it.id to it.type }}")
             addProductSaleUseCase(
                 AddWholesaleRequest(
                     sale = uiState.value.sale,
