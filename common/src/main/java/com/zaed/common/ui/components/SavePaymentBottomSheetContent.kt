@@ -1,12 +1,16 @@
 package com.zaed.common.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,21 +21,120 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
+import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.cheque.ChequeType
 import com.zaed.common.data.model.cheque.ManagerCheque
+import com.zaed.common.data.model.customer.Account
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
 import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.GoldPayment
+import com.zaed.common.data.model.payment.Payment
+import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.ui.util.toMoneyFormat
+import java.util.UUID
 import kotlin.math.absoluteValue
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SavePaymentBottomSheet(
+    modifier: Modifier = Modifier,
+    isVisible: Boolean,
+    onDismiss: () -> Unit,
+    initialPayment: Payment,
+    selectedAccount: Account,
+    currentUser: User,
+    remainsAmount: Double,
+    isTaken: Boolean,
+    onSave: (Payment) -> Unit
+) {
+    AnimatedVisibility(
+        modifier = modifier,
+        visible = isVisible
+    ) {
+        ModalBottomSheet(
+            sheetState = rememberModalBottomSheetState(
+                skipPartiallyExpanded = true,
+            ),
+            onDismissRequest = onDismiss,
+        ) {
+            when (initialPayment.type) {
+                PaymentType.CHEQUE -> {
+                    SaveChequePaymentBottomSheetContent(
+                        initialPayment = initialPayment as ChequePayment,
+                        remainsAmount = Double.MAX_VALUE,
+                        isTaken = isTaken,
+                        selectedAccount = selectedAccount,
+                        currentUser = currentUser,
+                        onSave = onSave
+                    )
+                }
+
+                PaymentType.MANAGER_CHEQUES -> {
+                    SaveManagerChequePaymentBottomSheetContent(
+                        initialPayment = initialPayment as ManagerCheque,
+                        remainsAmount = Double.MAX_VALUE,
+                        isTaken = isTaken,
+                        selectedAccount = selectedAccount,
+                        onSave = onSave
+                    )
+                }
+
+                PaymentType.CASH -> {
+                    SaveCashPaymentBottomSheetContent(
+                        initialPayment = initialPayment as CashPayment,
+                        remainsAmount = remainsAmount,
+                        isTaken = isTaken,
+                        selectedAccount = selectedAccount,
+                        onSave = onSave
+                    )
+                }
+
+                PaymentType.BANK_TRANSFER -> {
+                    SaveBankTransferPaymentBottomSheetContent(
+                        initialPayment = initialPayment as BankTransferPayment,
+                        remainsAmount = remainsAmount,
+                        isTaken = isTaken,
+                        selectedAccount = selectedAccount,
+                        onSave = onSave
+                    )
+                }
+
+                PaymentType.FUTURES -> {
+                    SaveFuturePaymentBottomSheetContent(
+                        initialPayment = initialPayment as FuturePayment,
+                        remainsAmount = remainsAmount,
+                        isTaken = isTaken,
+                        selectedAccount = selectedAccount,
+                        onSave = onSave
+                    )
+                }
+
+                PaymentType.GOLD -> {
+                    SaveGoldPaymentBottomSheetContent(
+                        initialPayment = initialPayment as GoldPayment,
+                        remainsAmount = remainsAmount,
+                        isTaken = isTaken,
+                        selectedAccount = selectedAccount,
+                        onSave = onSave
+                    )
+                }
+
+                else -> {}
+            }
+
+        }
+    }
+}
 
 @Composable
 fun SaveCashPaymentBottomSheetContent(
     modifier: Modifier = Modifier,
     initialPayment: CashPayment,
     remainsAmount: Double = 0.0,
+    isTaken: Boolean,
+    selectedAccount: Account,
     onSave: (CashPayment) -> Unit = {}
 ) {
     var payment by remember { mutableStateOf(initialPayment) }
@@ -43,7 +146,7 @@ fun SaveCashPaymentBottomSheetContent(
     ) {
 
         Text(
-            text = stringResource(R.string.payment_method) +stringResource(initialPayment.type.titleRes),
+            text = stringResource(R.string.payment_method) + stringResource(initialPayment.type.titleRes),
             style = MaterialTheme.typography.titleLarge
         )
 
@@ -83,6 +186,13 @@ fun SaveCashPaymentBottomSheetContent(
                 } else if (initialPayment.amount != 0.0 && payment.amount > (remainsAmount + initialPayment.amount)) {
                     payment = payment.copy(
                         amount = remainsAmount + initialPayment.amount,
+                    )
+                }
+                if(payment.id.isBlank()){
+                    payment = payment.copy(
+                        given = !isTaken,
+                        customerId = selectedAccount.id,
+                        id = "Payment-"+UUID.randomUUID().toString()
                     )
                 }
                 onSave(payment)
@@ -102,6 +212,8 @@ fun SaveFuturePaymentBottomSheetContent(
     modifier: Modifier = Modifier,
     initialPayment: FuturePayment,
     remainsAmount: Double = 0.0,
+    isTaken: Boolean,
+    selectedAccount: Account,
     onSave: (FuturePayment) -> Unit = {}
 ) {
     var payment by remember { mutableStateOf(initialPayment) }
@@ -113,7 +225,7 @@ fun SaveFuturePaymentBottomSheetContent(
     ) {
 
         Text(
-            text = stringResource(R.string.payment_method) +stringResource(initialPayment.type.titleRes),
+            text = stringResource(R.string.payment_method) + stringResource(initialPayment.type.titleRes),
             style = MaterialTheme.typography.titleLarge
         )
 
@@ -155,6 +267,13 @@ fun SaveFuturePaymentBottomSheetContent(
                         amount = remainsAmount + initialPayment.amount,
                     )
                 }
+                if(payment.id.isBlank()){
+                    payment = payment.copy(
+                        given = !isTaken,
+                        customerId = selectedAccount.id,
+                        id = "Payment-"+UUID.randomUUID().toString()
+                    )
+                }
                 onSave(payment)
             },
             enabled = payment.amount != 0.0
@@ -172,6 +291,8 @@ fun SaveGoldPaymentBottomSheetContent(
     modifier: Modifier = Modifier,
     initialPayment: GoldPayment,
     remainsAmount: Double = 0.0,
+    isTaken: Boolean,
+    selectedAccount: Account,
     onSave: (GoldPayment) -> Unit = {}
 ) {
     var payment by remember { mutableStateOf(initialPayment) }
@@ -183,7 +304,7 @@ fun SaveGoldPaymentBottomSheetContent(
     ) {
 
         Text(
-            text = stringResource(R.string.payment_method) +stringResource(initialPayment.type.titleRes),
+            text = stringResource(R.string.payment_method) + stringResource(initialPayment.type.titleRes),
             style = MaterialTheme.typography.titleLarge
         )
 
@@ -197,9 +318,9 @@ fun SaveGoldPaymentBottomSheetContent(
                 payment = payment.copy(givenGoldAmount = it)
             },
             supportingText =
-            if(((payment.givenGoldAmount * payment.pricePerGram) > (remainsAmount+(initialPayment.amount)))){
+            if (((payment.givenGoldAmount * payment.pricePerGram) > (remainsAmount + (initialPayment.amount)))) {
                 stringResource(R.string.the_value_is_bigger_than_the_remains_amount)
-            }else{
+            } else {
                 ""
             }
         )
@@ -213,9 +334,9 @@ fun SaveGoldPaymentBottomSheetContent(
                 payment = payment.copy(pricePerGram = it)
             },
             supportingText =
-            if(((payment.givenGoldAmount * payment.pricePerGram) > (remainsAmount+(initialPayment.amount)))){
+            if (((payment.givenGoldAmount * payment.pricePerGram) > (remainsAmount + (initialPayment.amount)))) {
                 stringResource(R.string.the_value_is_bigger_than_the_remains_amount)
-            }else{
+            } else {
                 ""
             }
         )
@@ -236,9 +357,16 @@ fun SaveGoldPaymentBottomSheetContent(
                 .heightIn(min = 48.dp)
                 .padding(top = 24.dp),
             onClick = {
+                if(payment.id.isBlank()){
+                    payment = payment.copy(
+                        given = !isTaken,
+                        customerId = selectedAccount.id,
+                        id = "Payment-"+UUID.randomUUID().toString()
+                    )
+                }
                 onSave(payment.copy(amount = payment.givenGoldAmount * payment.pricePerGram))
             },
-            enabled = payment.givenGoldAmount != 0.0 &&((payment.givenGoldAmount * payment.pricePerGram) <= remainsAmount+(initialPayment.amount))
+            enabled = payment.givenGoldAmount != 0.0 && ((payment.givenGoldAmount * payment.pricePerGram) <= remainsAmount + (initialPayment.amount))
         ) {
             Text(
                 text = stringResource(R.string.save),
@@ -254,6 +382,9 @@ fun SaveChequePaymentBottomSheetContent(
     modifier: Modifier = Modifier,
     remainsAmount: Double = 0.0,
     initialPayment: ChequePayment,
+    isTaken: Boolean,
+    currentUser: User,
+    selectedAccount: Account,
     onSave: (ChequePayment) -> Unit = {}
 ) {
     var payment by remember { mutableStateOf(initialPayment) }
@@ -266,7 +397,7 @@ fun SaveChequePaymentBottomSheetContent(
     ) {
 
         Text(
-            text = stringResource(R.string.payment_method) +stringResource(initialPayment.type.titleRes),
+            text = stringResource(R.string.payment_method) + stringResource(initialPayment.type.titleRes),
             style = MaterialTheme.typography.titleLarge
         )
         //cheque for
@@ -274,10 +405,10 @@ fun SaveChequePaymentBottomSheetContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
-            label = stringResource(com.zaed.common.R.string.cheque_for),
-            value = payment.chequeFor,
+            label = stringResource(R.string.cheque_for),
+            value = payment.senderName,
             onValueChange = {
-                payment = payment.copy(chequeFor = it)
+                payment = payment.copy(senderName = it)
             },
         )
         //receiver Name
@@ -285,7 +416,7 @@ fun SaveChequePaymentBottomSheetContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
-            label = stringResource(com.zaed.common.R.string.receiver_name),
+            label = stringResource(R.string.receiver_name),
             value = payment.receiverName,
             onValueChange = {
                 payment = payment.copy(receiverName = it)
@@ -296,7 +427,7 @@ fun SaveChequePaymentBottomSheetContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
-            label = stringResource(com.zaed.common.R.string.city),
+            label = stringResource(R.string.city),
             value = payment.city,
             onValueChange = {
                 payment = payment.copy(city = it)
@@ -307,7 +438,7 @@ fun SaveChequePaymentBottomSheetContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
-            label = stringResource(com.zaed.common.R.string.sender_name),
+            label = stringResource(R.string.sender_name),
             value = payment.senderName,
             onValueChange = {
                 payment = payment.copy(senderName = it)
@@ -342,7 +473,7 @@ fun SaveChequePaymentBottomSheetContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
-            label = stringResource(com.zaed.common.R.string.note),
+            label = stringResource(R.string.note),
             value = payment.notes,
             onValueChange = {
                 payment = payment.copy(notes = it)
@@ -363,6 +494,16 @@ fun SaveChequePaymentBottomSheetContent(
                         amount = remainsAmount + initialPayment.amount,
                     )
                 }
+                if(payment.id.isBlank()){
+                    payment = payment.copy(
+                        given = !isTaken,
+                        receiverName = currentUser.fullName,
+                        receiverId = currentUser.id,
+                        senderName = selectedAccount.name,
+                        senderId = selectedAccount.id,
+                        id = "Payment-"+UUID.randomUUID().toString()
+                    )
+                }
                 onSave(payment)
             },
             enabled = payment.amount != 0.0
@@ -374,11 +515,14 @@ fun SaveChequePaymentBottomSheetContent(
         }
     }
 }
+
 @Composable
 fun SaveManagerChequePaymentBottomSheetContent(
     modifier: Modifier = Modifier,
     remainsAmount: Double = 0.0,
     initialPayment: ManagerCheque,
+    isTaken: Boolean,
+    selectedAccount: Account,
     onSave: (ManagerCheque) -> Unit = {}
 ) {
     var payment by remember { mutableStateOf(initialPayment) }
@@ -391,7 +535,7 @@ fun SaveManagerChequePaymentBottomSheetContent(
     ) {
 
         Text(
-            text = stringResource(R.string.payment_method) +stringResource(initialPayment.type.titleRes),
+            text = stringResource(R.string.payment_method) + stringResource(initialPayment.type.titleRes),
             style = MaterialTheme.typography.titleLarge
         )
         //cheque for
@@ -410,7 +554,7 @@ fun SaveManagerChequePaymentBottomSheetContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
-            label = stringResource(com.zaed.common.R.string.receiver_name),
+            label = stringResource(R.string.receiver_name),
             value = payment.receiverName,
             onValueChange = {
                 payment = payment.copy(receiverName = it)
@@ -459,7 +603,7 @@ fun SaveManagerChequePaymentBottomSheetContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
-            label = stringResource(com.zaed.common.R.string.note),
+            label = stringResource(R.string.note),
             value = payment.notes,
             onValueChange = {
                 payment = payment.copy(notes = it)
@@ -480,6 +624,13 @@ fun SaveManagerChequePaymentBottomSheetContent(
                         amount = remainsAmount + initialPayment.amount,
                     )
                 }
+                if(payment.id.isBlank()){
+                    payment = payment.copy(
+                        given = !isTaken,
+                        customerId = selectedAccount.id,
+                        id = "Payment-"+UUID.randomUUID().toString()
+                    )
+                }
                 onSave(payment)
             },
             enabled = payment.amount != 0.0
@@ -497,6 +648,8 @@ fun SaveBankTransferPaymentBottomSheetContent(
     modifier: Modifier = Modifier,
     remainsAmount: Double = 0.0,
     initialPayment: BankTransferPayment,
+    isTaken: Boolean,
+    selectedAccount: Account,
     onSave: (BankTransferPayment) -> Unit = {}
 ) {
     var payment by remember { mutableStateOf(initialPayment) }
@@ -509,7 +662,7 @@ fun SaveBankTransferPaymentBottomSheetContent(
     ) {
 
         Text(
-            text = stringResource(R.string.payment_method) +stringResource(initialPayment.type.titleRes),
+            text = stringResource(R.string.payment_method) + stringResource(initialPayment.type.titleRes),
             style = MaterialTheme.typography.titleLarge
         )
         //Account holder name
@@ -517,7 +670,7 @@ fun SaveBankTransferPaymentBottomSheetContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
-            label = stringResource(com.zaed.common.R.string.account_holder_name),
+            label = stringResource(R.string.account_holder_name),
             value = payment.accountHolderName,
             onValueChange = {
                 payment = payment.copy(accountHolderName = it)
@@ -528,7 +681,7 @@ fun SaveBankTransferPaymentBottomSheetContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
-            label = stringResource(com.zaed.common.R.string.account_number),
+            label = stringResource(R.string.account_number),
             value = payment.accountNumber,
             onValueChange = {
                 payment = payment.copy(accountNumber = it)
@@ -539,7 +692,7 @@ fun SaveBankTransferPaymentBottomSheetContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
-            label = stringResource(com.zaed.common.R.string.bank_Name),
+            label = stringResource(R.string.bank_Name),
             value = payment.bankName,
             onValueChange = {
                 payment = payment.copy(bankName = it)
@@ -582,6 +735,13 @@ fun SaveBankTransferPaymentBottomSheetContent(
                 } else if (initialPayment.amount != 0.0 && payment.amount > (remainsAmount + initialPayment.amount)) {
                     payment = payment.copy(
                         amount = remainsAmount + initialPayment.amount,
+                    )
+                }
+                if(payment.id.isBlank()){
+                    payment = payment.copy(
+                        given = !isTaken,
+                        customerId = selectedAccount.id,
+                        id = "Payment-"+UUID.randomUUID().toString()
                     )
                 }
                 onSave(payment)

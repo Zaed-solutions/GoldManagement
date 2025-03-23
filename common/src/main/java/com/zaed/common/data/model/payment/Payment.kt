@@ -3,7 +3,7 @@ package com.zaed.common.data.model.payment
 import com.zaed.common.data.model.authentication.ChangeLog
 import java.util.Date
 
-abstract class Payment(
+open class Payment(
     open var id: String = "",
     open var customerId: String = "",
     open val type: PaymentType,

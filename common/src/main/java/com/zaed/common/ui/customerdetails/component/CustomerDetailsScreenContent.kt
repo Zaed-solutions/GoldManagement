@@ -55,11 +55,12 @@ import com.zaed.common.ui.components.BalanceSection
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
 import com.zaed.common.ui.components.PaymentTypes
 import com.zaed.common.ui.components.PaymentsList
-import com.zaed.common.ui.components.TransactionsList
 import com.zaed.common.ui.components.SaveBankTransferPaymentBottomSheetContent
 import com.zaed.common.ui.components.SaveCashPaymentBottomSheetContent
 import com.zaed.common.ui.components.SaveChequePaymentBottomSheetContent
 import com.zaed.common.ui.components.SaveFuturePaymentBottomSheetContent
+import com.zaed.common.ui.components.SavePaymentBottomSheet
+import com.zaed.common.ui.components.TransactionsList
 import com.zaed.common.ui.customerdetails.CustomerDetailsUiAction
 import com.zaed.common.ui.customerdetails.CustomerDetailsUiState
 import com.zaed.common.ui.util.toMoneyFormat
@@ -70,7 +71,6 @@ import kotlinx.coroutines.launch
 fun CustomerDetailsScreenContent(
     modifier: Modifier = Modifier,
     uiState: CustomerDetailsUiState,
-    selectedCustomer: WholeSaleCustomer,
     onAddPayment: (Payment) -> Unit = {},
     onEditPayment: (Payment, Payment) -> Unit = { _, _ -> },
     onAction: (CustomerDetailsUiAction) -> Unit = {}
@@ -206,7 +206,7 @@ fun CustomerDetailsScreenContent(
                     }
 
                     1 -> {
-                        TransactionsList (listState = listState,
+                        TransactionsList(listState = listState,
                             isLoading = uiState.loading,
                             transactions = uiState.sales,
                             onDeleteTransaction = { sale, isProduct ->
@@ -240,125 +240,32 @@ fun CustomerDetailsScreenContent(
                 }
             }
         }
-        AnimatedVisibility(addPaymentBottomSheetVisible) {
-            Log.d("TAG", "CustomerDetailsScreenContent: $selectedPayment")
-            ModalBottomSheet(
-                onDismissRequest = {
-                    selectedPayment = null
-                    addPaymentBottomSheetVisible = false
-                },
-            ) {
-                when (selectedPayment?.type) {
-                    PaymentType.CASH -> {
-                        selectedPayment?.let {
-                            SaveCashPaymentBottomSheetContent(
-                                initialPayment = selectedPayment as CashPayment,
-                                remainsAmount = Double.MAX_VALUE,
-                                onSave = { updatedPayment ->
-                                    if (selectedPayment!!.id.isBlank()) {
-                                        onAddPayment(
-                                            updatedPayment.copy(
-                                                customerId = selectedCustomer.id,
-                                                amount = updatedPayment.amount,
-                                                given = !isTaken
-                                            )
-                                        )
-
-                                    } else {
-                                        onEditPayment(
-                                            selectedPayment as CashPayment,
-                                            updatedPayment
-                                        )
-                                    }
-                                    selectedPayment = null
-                                    addPaymentBottomSheetVisible = false
-                                })
-                        }
-                    }
-
-                    PaymentType.CHEQUE -> {
-                        selectedPayment?.let {
-                            SaveChequePaymentBottomSheetContent(initialPayment = selectedPayment as ChequePayment,
-                                remainsAmount = Double.MAX_VALUE,
-                                onSave = { updatedPayment ->
-                                    if (selectedPayment!!.id.isBlank()) {
-                                        onAddPayment(
-                                            updatedPayment.copy(
-                                                customerId = selectedCustomer.id,
-                                                amount = updatedPayment.amount,
-                                                given = !isTaken
-                                            )
-                                        )
-                                    } else {
-                                        onEditPayment(
-                                            selectedPayment as ChequePayment,
-                                            updatedPayment
-                                        )
-                                    }
-                                    selectedPayment = null
-                                    addPaymentBottomSheetVisible = false
-                                })
-                        }
-                    }
-
-                    PaymentType.BANK_TRANSFER -> {
-                        selectedPayment?.let {
-                            SaveBankTransferPaymentBottomSheetContent(initialPayment = selectedPayment as BankTransferPayment,
-                                remainsAmount = Double.MAX_VALUE,
-                                onSave = { updatedPayment ->
-                                    if (selectedPayment!!.id.isBlank()) {
-                                        onAddPayment(
-                                            updatedPayment.copy(
-                                                customerId = selectedCustomer.id,
-                                                amount = updatedPayment.amount,
-                                                given = !isTaken
-                                            )
-                                        )
-                                    } else {
-                                        onEditPayment(
-                                            selectedPayment as BankTransferPayment,
-                                            updatedPayment
-                                        )
-                                    }
-                                    selectedPayment = null
-                                    addPaymentBottomSheetVisible = false
-                                })
-                        }
-                    }
-
-                    PaymentType.FUTURES -> {
-                        selectedPayment?.let {
-                            SaveFuturePaymentBottomSheetContent(
-                                initialPayment = selectedPayment as FuturePayment,
-                                remainsAmount = Double.MAX_VALUE,
-                                onSave = { updatedPayment ->
-                                    if (selectedPayment!!.id.isBlank()) {
-                                        onAddPayment(
-                                            updatedPayment.copy(
-                                                customerId = selectedCustomer.id,
-                                                amount = updatedPayment.amount,
-                                                given = !isTaken
-                                            )
-                                        )
-                                    } else {
-                                        onEditPayment(
-                                            selectedPayment as FuturePayment,
-                                            updatedPayment
-                                        )
-                                    }
-                                    selectedPayment = null
-                                    addPaymentBottomSheetVisible = false
-                                })
-                        }
-                    }
-
-
-                    else -> {}
+        SavePaymentBottomSheet(
+            isVisible = addPaymentBottomSheetVisible,
+            onDismiss = {
+                addPaymentBottomSheetVisible = false
+                selectedPayment = null
+            },
+            initialPayment = selectedPayment ?: ChequePayment(),
+            remainsAmount = Double.MAX_VALUE,
+            isTaken = isTaken,
+            currentUser = uiState.currentDistributor,
+            selectedAccount = uiState.customer,
+            onSave = { updatedPayment ->
+                if (selectedPayment!!.id.isBlank()) {
+                    onAddPayment(
+                        updatedPayment
+                    )
+                } else {
+                    onEditPayment(
+                        selectedPayment ?: ChequePayment(),
+                        updatedPayment
+                    )
                 }
-
+                addPaymentBottomSheetVisible = false
+                selectedPayment = null
             }
-        }
-
+        )
         AnimatedVisibility(selectPaymentTypeSheet) {
             ModalBottomSheet(onDismissRequest = {
                 selectedPayment = null

@@ -326,4 +326,10 @@
     <string name="update_product">Update Product</string>
     <string name="personal">Personal Cheque</string>
     <string name="company">Company Cheque</string>
+    <string name="sales_cheques">Sales Cheques</string>
+    <string name="difference">Difference</string>
+    <string name="select_account_type">Select Account Type</string>
+    <string name="cashed">Cashed</string>
+    <string name="search_by_customer_supplier_name">Search by customer/supplier name</string>
+    <string name="transfered">Transefered</string>
 </resources>

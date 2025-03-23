@@ -15,7 +15,7 @@ fun SuppliersList(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
     suppliers: List<Supplier>,
-    onSupplierClicked: (String) -> Unit,
+    onSupplierClicked: (Supplier) -> Unit,
     isEditable: Boolean,
     onEditSupplier: (Supplier) -> Unit,
     isDeletable: Boolean,
@@ -36,7 +36,7 @@ fun SuppliersList(
                 SupplierItem(
                     modifier = Modifier.animateItem(),
                     supplier = supplier,
-                    onClick = { onSupplierClicked(supplier.id) },
+                    onClick = { onSupplierClicked(supplier) },
                     isEditable = isEditable,
                     onEdit = { onEditSupplier(supplier) },
                     isDeletable = isDeletable,

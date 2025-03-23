@@ -1,4 +1,4 @@
-package com.zaed.common.ui.customerdetails.component
+package com.zaed.common.ui.salescheques.component
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable

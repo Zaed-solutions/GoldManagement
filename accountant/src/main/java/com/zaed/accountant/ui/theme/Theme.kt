@@ -1,12 +1,17 @@
 package com.example.compose
+
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import com.zaed.accountant.ui.theme.AppTypography
+import com.zaed.common.ui.theme.GoldenCustomColors
+import com.zaed.common.ui.theme.darkGoldColors
+import com.zaed.common.ui.theme.lightGoldColors
 
 @Immutable
 data class ExtendedColorScheme(
@@ -242,57 +247,57 @@ private val highContrastDarkColorScheme = darkColorScheme(
 )
 
 val extendedLight = ExtendedColorScheme(
-  customColor1 = ColorFamily(
-  customColor1Light,
-  onCustomColor1Light,
-  customColor1ContainerLight,
-  onCustomColor1ContainerLight,
-  ),
+    customColor1 = ColorFamily(
+        customColor1Light,
+        onCustomColor1Light,
+        customColor1ContainerLight,
+        onCustomColor1ContainerLight,
+    ),
 )
 
 val extendedDark = ExtendedColorScheme(
-  customColor1 = ColorFamily(
-  customColor1Dark,
-  onCustomColor1Dark,
-  customColor1ContainerDark,
-  onCustomColor1ContainerDark,
-  ),
+    customColor1 = ColorFamily(
+        customColor1Dark,
+        onCustomColor1Dark,
+        customColor1ContainerDark,
+        onCustomColor1ContainerDark,
+    ),
 )
 
 val extendedLightMediumContrast = ExtendedColorScheme(
-  customColor1 = ColorFamily(
-  customColor1LightMediumContrast,
-  onCustomColor1LightMediumContrast,
-  customColor1ContainerLightMediumContrast,
-  onCustomColor1ContainerLightMediumContrast,
-  ),
+    customColor1 = ColorFamily(
+        customColor1LightMediumContrast,
+        onCustomColor1LightMediumContrast,
+        customColor1ContainerLightMediumContrast,
+        onCustomColor1ContainerLightMediumContrast,
+    ),
 )
 
 val extendedLightHighContrast = ExtendedColorScheme(
-  customColor1 = ColorFamily(
-  customColor1LightHighContrast,
-  onCustomColor1LightHighContrast,
-  customColor1ContainerLightHighContrast,
-  onCustomColor1ContainerLightHighContrast,
-  ),
+    customColor1 = ColorFamily(
+        customColor1LightHighContrast,
+        onCustomColor1LightHighContrast,
+        customColor1ContainerLightHighContrast,
+        onCustomColor1ContainerLightHighContrast,
+    ),
 )
 
 val extendedDarkMediumContrast = ExtendedColorScheme(
-  customColor1 = ColorFamily(
-  customColor1DarkMediumContrast,
-  onCustomColor1DarkMediumContrast,
-  customColor1ContainerDarkMediumContrast,
-  onCustomColor1ContainerDarkMediumContrast,
-  ),
+    customColor1 = ColorFamily(
+        customColor1DarkMediumContrast,
+        onCustomColor1DarkMediumContrast,
+        customColor1ContainerDarkMediumContrast,
+        onCustomColor1ContainerDarkMediumContrast,
+    ),
 )
 
 val extendedDarkHighContrast = ExtendedColorScheme(
-  customColor1 = ColorFamily(
-  customColor1DarkHighContrast,
-  onCustomColor1DarkHighContrast,
-  customColor1ContainerDarkHighContrast,
-  onCustomColor1ContainerDarkHighContrast,
-  ),
+    customColor1 = ColorFamily(
+        customColor1DarkHighContrast,
+        onCustomColor1DarkHighContrast,
+        customColor1ContainerDarkHighContrast,
+        onCustomColor1ContainerDarkHighContrast,
+    ),
 )
 
 @Immutable
@@ -310,24 +315,21 @@ val unspecified_scheme = ColorFamily(
 @Composable
 fun AccountantAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-//    dynamicColor: Boolean = true,
     content: @Composable() () -> Unit
 ) {
-  val colorScheme = when {
-//      dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-//          val context = LocalContext.current
-//          if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-//      }
-      
-      darkTheme -> darkScheme
-      else -> lightScheme
-  }
-
-  MaterialTheme(
-    colorScheme = colorScheme,
-    typography = AppTypography,
-    content = content
-  )
+    val colorScheme = when {
+        darkTheme -> darkScheme
+        else -> lightScheme
+    }
+    val goldenColors = if (darkTheme) darkGoldColors else lightGoldColors
+    CompositionLocalProvider(
+        GoldenCustomColors provides goldenColors
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = AppTypography,
+            content = content
+        )
+    }
 }
 

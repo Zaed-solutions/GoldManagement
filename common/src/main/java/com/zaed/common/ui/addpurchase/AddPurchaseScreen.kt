@@ -279,6 +279,7 @@ private fun AddPurchaseScreenContent(
                         SelectPaymentsContent(
                             totalAmount = state.purchase.totalAmount,
                             payments = state.payments,
+                            currentUser = state.currentUser,
                             salesCheques = state.salesCheques,
                             isPurchase = true,
                             selectedAccount = state.selectedSupplier,

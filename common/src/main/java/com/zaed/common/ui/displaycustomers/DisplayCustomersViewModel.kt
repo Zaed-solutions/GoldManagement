@@ -37,7 +37,7 @@ class DisplayCustomersViewModel(
                             currentDistributor = data
                         )
                     }
-                    if (data.role == UserRole.MANAGER) {
+                    if (data.role == UserRole.MANAGER || data.role == UserRole.ACCOUNTANT) {
                         getWholeSalesCustomers("")
                     } else {
                         getWholeSalesCustomers(data.id)
