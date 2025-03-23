@@ -5,11 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
+import com.zaed.common.data.model.category.toCategory
+import com.zaed.common.data.model.inventory.request.FetchInventoriesRequest
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.request.AddStoreSaleRequest
 import com.zaed.common.data.model.sale.request.UpdateStoreSaleRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.category.FetchAllCategoriesUseCase
+import com.zaed.common.domain.inventory.FetchInventoriesUseCase
 import com.zaed.common.domain.sale.AddStoreSaleUseCase
 import com.zaed.common.domain.sale.GetStoreSaleUseCase
 import com.zaed.common.domain.sale.UpdateStoreSaleUseCase
@@ -25,7 +28,8 @@ class AddSaleViewModel(
     private val addSaleUseCase: AddStoreSaleUseCase,
     private val getCurrentUserUseCase: GetCurrentUserLoggedInUseCase,
     private val updateSaleUseCase: UpdateStoreSaleUseCase,
-    private val getSaleUseCase: GetStoreSaleUseCase
+    private val getSaleUseCase: GetStoreSaleUseCase,
+    private val fetchInventoryUseCase: FetchInventoriesUseCase
 ) : ViewModel() {
     private val TAG: String = "AddSaleViewModel"
     private val _uiState = MutableStateFlow(AddSaleUiState())
@@ -35,8 +39,31 @@ class AddSaleViewModel(
         if (saleId.isNotBlank()) {
             fetchSale(saleId)
         }
-        fetchAllCategories()
+//        fetchAllCategories()
         fetchCurrentUser()
+
+    }
+
+    private fun fetchInventories(ownerId: String) {
+        Log.d(TAG, "fetchInventories: $ownerId")
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchInventoryUseCase(
+                FetchInventoriesRequest(
+                    ownerId =ownerId,
+                )
+            ).collect { result ->
+                Log.d(TAG, "fetchInventories: $result")
+                result.onSuccess { data ->
+                    _uiState.update { oldState ->
+                        oldState.copy(categories = data.map { it.toCategory() })
+                    }
+                    Log.d(TAG, "fetchInventories: ${uiState.value.categories}")
+                }.onFailure { e ->
+                    Log.e(TAG, "fetchInventories: ${e.message}", e)
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 
     private fun fetchSale(saleId: String) {
@@ -59,6 +86,9 @@ class AddSaleViewModel(
                     _uiState.update { oldState ->
                         oldState.copy(currentUser = data)
                     }
+                    fetchInventories(
+                        ownerId = data.storeId,
+                    )
                 }.onFailure { e ->
                     Log.e(TAG, "fetchCurrentUser: ${e.message}", e)
                     e.printStackTrace()
@@ -81,6 +111,7 @@ class AddSaleViewModel(
             }
         }
     }
+
     private fun updateProduct(product: Product) {
         viewModelScope.launch {
             _uiState.update { oldState ->
@@ -190,7 +221,8 @@ class AddSaleViewModel(
     private fun addProduct(product: Product) {
         Log.d(TAG, "addNewProduct: $product")
         viewModelScope.launch {
-            val filteredProducts = _uiState.value.sale.products.filter { it.categoryId != product.categoryId }
+            val filteredProducts =
+                _uiState.value.sale.products.filter { it.categoryId != product.categoryId }
             _uiState.update { oldState ->
                 oldState.copy(sale = oldState.sale.copy(products = filteredProducts + product))
             }

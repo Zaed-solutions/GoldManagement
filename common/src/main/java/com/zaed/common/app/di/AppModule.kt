@@ -13,6 +13,8 @@ import com.zaed.common.data.repository.CategoryRepository
 import com.zaed.common.data.repository.CategoryRepositoryImpl
 import com.zaed.common.data.repository.ChequeRepository
 import com.zaed.common.data.repository.ChequeRepositoryImpl
+import com.zaed.common.data.repository.DashboardRepository
+import com.zaed.common.data.repository.DashboardRepositoryImpl
 import com.zaed.common.data.repository.InventoryRepository
 import com.zaed.common.data.repository.InventoryRepositoryImpl
 import com.zaed.common.data.repository.LossRepository
@@ -39,6 +41,8 @@ import com.zaed.common.data.source.remote.CategoryRemoteSource
 import com.zaed.common.data.source.remote.CategoryRemoteSourceImpl
 import com.zaed.common.data.source.remote.ChequeRemoteSource
 import com.zaed.common.data.source.remote.ChequeRemoteSourceImpl
+import com.zaed.common.data.source.remote.DashboardRemoteSource
+import com.zaed.common.data.source.remote.DashboardRemoteSourceImpl
 import com.zaed.common.data.source.remote.InventoryRemoteSource
 import com.zaed.common.data.source.remote.InventoryRemoteSourceImpl
 import com.zaed.common.data.source.remote.LossRemoteDataSource
@@ -124,8 +128,8 @@ import com.zaed.common.domain.purchase.DeletePurchaseUseCase
 import com.zaed.common.domain.purchase.FetchPurchaseUseCase
 import com.zaed.common.domain.purchase.FetchPurchasesUseCase
 import com.zaed.common.domain.purchase.FetchSupplierPurchasesUseCase
+import com.zaed.common.domain.purchase.UpdatePurchaseUseCase
 import com.zaed.common.domain.sale.AddIngotTransactionUseCase
-
 import com.zaed.common.domain.sale.AddStoreSaleUseCase
 import com.zaed.common.domain.sale.AddWholesaleUseCase
 import com.zaed.common.domain.sale.ConvertIngotTransactionsToDatedUseCase
@@ -140,7 +144,6 @@ import com.zaed.common.domain.sale.FetchStoreSalesUseCase
 import com.zaed.common.domain.sale.FetchWholesaleUseCase
 import com.zaed.common.domain.sale.GetStoreSaleUseCase
 import com.zaed.common.domain.sale.UpdateIngotTransactionUseCase
-import com.zaed.common.domain.purchase.UpdatePurchaseUseCase
 import com.zaed.common.domain.sale.UpdateStoreSaleUseCase
 import com.zaed.common.domain.sale.UpdateWholesaleUseCase
 import com.zaed.common.domain.store.AddStoreUseCase
@@ -292,6 +295,7 @@ val repositoryModule = module {
     singleOf(::ManufacturerOrderRepositoryImpl) { bind<ManufacturerOrderRepository>() }
     singleOf(::SupplierRepositoryImpl) { bind<SupplierRepository>() }
     singleOf(::PurchaseRepositoryImpl) { bind<PurchaseRepository>() }
+    singleOf(::DashboardRepositoryImpl) { bind<DashboardRepository>() }
 }
 val viewModelModule = module {
     viewModelOf(::SignUpViewModel)
@@ -320,6 +324,7 @@ val remoteSourceModule = module {
     singleOf(::LossRemoteDataSourceImpl) { bind<LossRemoteDataSource>() }
     singleOf(::StoreRemoteDataSourceImpl) { bind<StoreRemoteDataSource>() }
     singleOf(::PaymentRemoteDataSourceImpl) { bind<PaymentRemoteDataSource>() }
+    singleOf(::DashboardRemoteSourceImpl) { bind<DashboardRemoteSource>() }
     singleOf(::WholeSalesCustomerRemoteDataSourceImpl) { bind<WholeSalesCustomerRemoteDataSource>() }
     singleOf(::ChequeRemoteSourceImpl) { bind<ChequeRemoteSource>() }
     singleOf(::InventoryRemoteSourceImpl) { bind<InventoryRemoteSource>() }

@@ -194,7 +194,6 @@ class PurchaseRemoteDataSourceImpl(
             }
             val categoryUpdates = request.purchase.products
                 .groupBy { it.categoryId }
-                .mapValues { (_, products) -> products.sumOf { it.grams } }
             val inventoryQuery = inventoryCollection
                 .where(
                     Filter.and(
@@ -207,10 +206,13 @@ class PurchaseRemoteDataSourceImpl(
             val inventoryByProductId = inventoryQuery.documents.associateBy {
                 it.getString("productId") ?: ""
             }
-            categoryUpdates.forEach { (categoryId, totalGrams) ->
+            categoryUpdates.forEach { (categoryId, products) ->
                 val inventoryDoc = inventoryByProductId[categoryId]
                 if (inventoryDoc != null) {
-                    val updates = mapOf("quantity" to FieldValue.increment(totalGrams))
+                    val updates = mapOf(
+                        "quantity" to FieldValue.increment(products.sumOf { it.grams }),
+                        "buyingPrice" to products.maxOf { it.gramPrice }
+                    )
                     batch.update(inventoryDoc.reference, updates)
                 }
             }

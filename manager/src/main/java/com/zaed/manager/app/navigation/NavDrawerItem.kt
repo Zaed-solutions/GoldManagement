@@ -9,6 +9,11 @@ enum class NavDrawerItem(
     @DrawableRes val icon: Int?,
     val route: Route
 ) {
+    DASHBOARD(
+        title = R.string.dashboard,
+        icon = R.drawable.ic_order,
+        route = Route.DashboardRoute
+    ),
     USER_MANAGEMENT(
         title = R.string.user_management,
         icon = R.drawable.ic_users,

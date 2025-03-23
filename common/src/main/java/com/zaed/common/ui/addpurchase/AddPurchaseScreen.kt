@@ -111,6 +111,13 @@ private fun AddPurchaseScreenContent(
     var selectedProductType by remember {
         mutableStateOf(ProductType.PRODUCT)
     }
+    LaunchedEffect (state.initialPurchase){
+        if (state.initialPurchase.id.isNotEmpty()) {
+            selectedProductType = state.initialPurchase.productType
+            pagerState.animateScrollToPage(pagerState.currentPage + 1)
+        }
+    }
+
 
     BackHandler {
         if (pagerState.currentPage > 0) {

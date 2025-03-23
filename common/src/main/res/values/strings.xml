@@ -332,4 +332,5 @@
     <string name="cashed">Cashed</string>
     <string name="search_by_customer_supplier_name">Search by customer/supplier name</string>
     <string name="transfered">Transefered</string>
+    <string name="dashboard">Dashboard</string>
 </resources>

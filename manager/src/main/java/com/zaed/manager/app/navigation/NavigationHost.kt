@@ -25,6 +25,7 @@ import com.zaed.manager.ui.categories.CategoriesScreen
 import com.zaed.manager.ui.distributordetails.DistributorDetailsScreen
 import com.zaed.manager.ui.distributors.DistributorsScreen
 import com.zaed.manager.ui.distributorssales.DistributorsSalesScreen
+import com.zaed.manager.ui.home.DashboardScreen
 import com.zaed.manager.ui.losses.LossesScreen
 import com.zaed.manager.ui.manufacturerorders.ManufacturerOrdersScreen
 import com.zaed.common.ui.salescheques.SalesChequesScreen
@@ -82,6 +83,11 @@ fun NavigationHost(
                 }
             )
         }
+        composable<Route.DashboardRoute> {
+            DashboardScreen(
+                onShowNavDrawer = onShowNavDrawer
+            )
+        }
         composable<Route.AddCustomers> {
             val customerId = it.toRoute<Route.AddCustomers>().customerId
             AddCustomersScreen(
@@ -112,7 +118,13 @@ fun NavigationHost(
             PurchaseDetailsScreen(
                 purchaseId = purchaseId,
                 onBackClicked = {
-                    navController.popBackStack()
+                    val previousDestination =
+                        navController.previousBackStackEntry?.destination?.route?.substringBefore("?")
+                    if (previousDestination == Route.AddPurchaseRoute::class.qualifiedName) {
+                        navController.navigate(Route.TransactionsRoute)
+                    } else {
+                        navController.popBackStack()
+                    }
                 },
                 onNavigateToEditPurchase = { editedPurchaseId ->
                     navController.navigate(Route.AddPurchaseRoute(editedPurchaseId))

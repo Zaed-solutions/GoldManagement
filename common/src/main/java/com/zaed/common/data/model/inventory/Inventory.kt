@@ -14,6 +14,7 @@ data class Inventory(
     val lastUpdated: Date = Date(),
     val type: InventoryType = InventoryType.PRODUCT,
     val karat: String = "",
+    val buyingPrice: Double = 0.0,
 )
 
 enum class QuantityUnit {

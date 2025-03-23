@@ -14,4 +14,7 @@ abstract class Transaction(
     open  val deleted: Boolean,
     open  val totalAmount: Double,
     open val products: List<Product>,
-)
+){
+    open val profit
+        get() = products.sumOf { it.totalPriceAfterDiscount } - products.sumOf { it.buyingPrice * it.quantity * it.grams }
+}

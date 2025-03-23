@@ -22,7 +22,7 @@ data class WholesaleTransaction(
     val paymentStatus: PaymentStatus = PaymentStatus.UNPAID,
     override val receiptNumber: String = "",
     val productType: ProductType = ProductType.PRODUCT,
-    val sale : Boolean = true
+    val sale: Boolean = true
 ) : Transaction(
     id = id,
     customerId = customerId,
@@ -34,7 +34,11 @@ data class WholesaleTransaction(
     deleted = deleted,
     totalAmount = products.sumOf { it.totalPriceAfterDiscount },
     products = products
-){
+) {
+    @Transient
+    override val profit
+        get() = products.sumOf { it.totalPriceAfterDiscount } - products.sumOf { it.buyingPrice * it.quantity * it.grams }
+
     @Transient
     val totalPriceBeforeDiscount
         get() = products.sumOf { it.totalPriceBeforeDiscount }
