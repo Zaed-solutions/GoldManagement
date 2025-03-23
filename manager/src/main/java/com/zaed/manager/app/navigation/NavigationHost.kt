@@ -28,7 +28,7 @@ import com.zaed.manager.ui.distributorssales.DistributorsSalesScreen
 import com.zaed.manager.ui.home.DashboardScreen
 import com.zaed.manager.ui.losses.LossesScreen
 import com.zaed.manager.ui.manufacturerorders.ManufacturerOrdersScreen
-import com.zaed.manager.ui.salescheques.SalesChequesScreen
+import com.zaed.common.ui.salescheques.SalesChequesScreen
 import com.zaed.manager.ui.storedetails.StoreDetailsScreen
 import com.zaed.manager.ui.stores.StoresScreen
 import com.zaed.manager.ui.storessales.StoresSalesScreen
@@ -126,12 +126,11 @@ fun NavigationHost(
                         navController.popBackStack()
                     }
                 },
-                onNavigateToEditPurchase = {
-                    navController.navigate(Route.AddPurchaseRoute(it))
+                onNavigateToEditPurchase = { editedPurchaseId ->
+                    navController.navigate(Route.AddPurchaseRoute(editedPurchaseId))
                 },
-                onNavigateToSupplierDetails = {
-//                    navController.navigate(Route.SupplierDetailsRoute(it))
-
+                onNavigateToSupplierDetails = { supplierId ->
+                    navController.navigate(Route.SupplierDetailsRoute(supplierId))
                 }
             )
         }

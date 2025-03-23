@@ -45,6 +45,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.cheque.ManagerCheque
+import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.customer.Account
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.BankTransferPayment
@@ -57,6 +58,7 @@ import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.getProductSalePayments
 import com.zaed.common.data.model.supplier.Supplier
+import com.zaed.common.ui.salescheques.SalesChequesUiAction
 import com.zaed.common.ui.suppliers.SelectSupplierSheet
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
@@ -73,6 +75,7 @@ fun SelectPaymentsContent(
     onRemovePayment: (Payment) -> Unit = {},
     onEditPayment: (Payment) -> Unit = {},
     onAddNewCustomer: () -> Unit = {},
+    currentUser: User,
     query: String,
     paymentsTypes: List<PaymentType> = remember { getProductSalePayments() },
     onQueryChanged: (String) -> Unit,
@@ -141,7 +144,6 @@ fun SelectPaymentsContent(
                     PaymentType.CASH -> {
                         selectedPayment = CashPayment(
                             type = type,
-                            id = "Destributor-" + UUID.randomUUID().toString()
                         )
                         simplePaymentBottomSheet = true
                     }
@@ -149,7 +151,6 @@ fun SelectPaymentsContent(
                     PaymentType.BANK_TRANSFER -> {
                         selectedPayment = BankTransferPayment(
                             type = type,
-                            id = "Destributor-" + UUID.randomUUID().toString()
                         )
                         simplePaymentBottomSheet = true
                     }
@@ -157,7 +158,6 @@ fun SelectPaymentsContent(
                     PaymentType.CHEQUE -> {
                         selectedPayment = ChequePayment(
                             type = type,
-                            id = "Destributor-" + UUID.randomUUID().toString()
                         )
                         simplePaymentBottomSheet = true
                     }
@@ -165,7 +165,6 @@ fun SelectPaymentsContent(
                     PaymentType.GOLD -> {
                         selectedPayment = GoldPayment(
                             type = type,
-                            id = "Destributor-" + UUID.randomUUID().toString()
                         )
                         simplePaymentBottomSheet = true
                     }
@@ -231,8 +230,8 @@ fun SelectPaymentsContent(
                 onUpdateSearchQuery = { onUpdateSupplierSearchQuery(it) },
                 searchQuery = supplierSearchQuery,
                 filteredSuppliers = filteredSuppliers,
-                onSupplierClicked = { supplierId ->
-                    onSupplierClicked(supplierId)
+                onSupplierClicked = { supplier ->
+                    onSupplierClicked(supplier.id)
                     showSupplierSheet = false
                 },
                 onAddSupplier = {
@@ -241,145 +240,27 @@ fun SelectPaymentsContent(
             )
         }
         //add payment bottom sheet
-        AnimatedVisibility(simplePaymentBottomSheet) {
-            ModalBottomSheet(
-                sheetState = simplePaymentBottomSheetState,
-                onDismissRequest = { simplePaymentBottomSheet = false },
-            ) {
-                when (selectedPayment?.type) {
-                    PaymentType.CASH -> {
-                        selectedPayment?.let {
-                            SaveCashPaymentBottomSheetContent(
-                                initialPayment = selectedPayment as CashPayment,
-                                remainsAmount = remainsAmount,
-                                onSave = { newPayment ->
-                                    val cashPayment = newPayment as CashPayment
-                                    if (selectedPayment!!.id.startsWith("Destributor")) {
-                                        onAddPayment(
-                                            cashPayment.copy(
-                                                id = "Payment-" + UUID.randomUUID().toString(),
-                                                customerId = selectedAccount.id,
-                                            )
-                                        )
-                                    } else {
-                                        onEditPayment(cashPayment)
-                                    }
-                                    simplePaymentBottomSheet = false
-                                }
-                            )
-                        }
-                    }
-
-                    PaymentType.GOLD -> {
-                        selectedPayment?.let {
-                            SaveGoldPaymentBottomSheetContent(
-                                initialPayment = selectedPayment as GoldPayment,
-                                remainsAmount = remainsAmount,
-                                onSave = { newPayment ->
-                                    if (selectedPayment!!.id.startsWith("Destributor")) {
-                                        onAddPayment(
-                                            newPayment.copy(
-                                                id = "Payment-" + UUID.randomUUID().toString(),
-                                                customerId = selectedAccount.id,
-                                            )
-                                        )
-                                    } else {
-                                        onEditPayment(newPayment)
-                                    }
-                                    simplePaymentBottomSheet = false
-                                }
-                            )
-                        }
-                    }
-
-                    PaymentType.CHEQUE -> {
-                        if (!isPurchase) {
-                            selectedPayment?.let {
-                                SaveChequePaymentBottomSheetContent(
-                                    initialPayment = selectedPayment as ChequePayment,
-                                    remainsAmount = remainsAmount,
-                                    onSave = { newPayment ->
-                                        if (selectedPayment!!.id.startsWith("Destributor")) {
-                                            onAddPayment(
-                                                newPayment.copy(
-                                                    id = "Payment-" + UUID.randomUUID().toString(),
-                                                    customerId = selectedAccount.id,
-                                                )
-                                            )
-                                        } else {
-                                            onEditPayment(newPayment)
-                                        }
-                                        simplePaymentBottomSheet = false
-                                    }
-                                )
-                            }
-                        } else {
-                            SelectFromSalesChequesBottomSheetContent(
-                                salesCheques = salesCheques,
-                                onSelect = { selectedPayment ->
-                                    onAddPayment(selectedPayment)
-                                },
-                                onDismiss = {
-                                    simplePaymentBottomSheet = false
-                                },
-                                selectedChequesPayment = payments.filterIsInstance<ChequePayment>(),
-                                onRemove = {
-                                    onRemovePayment(it)
-                                },
-                                remainsAmount = remainsAmount
-                            )
-                        }
-                    }
-
-                    PaymentType.BANK_TRANSFER -> {
-                        selectedPayment?.let {
-                            SaveBankTransferPaymentBottomSheetContent(
-                                initialPayment = selectedPayment as BankTransferPayment,
-                                remainsAmount = remainsAmount,
-                                onSave = { newPayment ->
-                                    if (selectedPayment!!.id.startsWith("Destributor")) {
-                                        onAddPayment(
-                                            newPayment.copy(
-                                                id = "Payment-" + UUID.randomUUID().toString(),
-                                                customerId = selectedAccount.id,
-                                            )
-                                        )
-                                    } else {
-                                        onEditPayment(newPayment)
-                                    }
-                                    simplePaymentBottomSheet = false
-                                }
-                            )
-                        }
-                    }
-
-                    PaymentType.MANAGER_CHEQUES -> {
-                        selectedPayment?.let {
-                            SaveManagerChequePaymentBottomSheetContent(
-                                initialPayment = selectedPayment as ManagerCheque,
-                                remainsAmount = remainsAmount,
-                                onSave = { newPayment ->
-                                    if (selectedPayment!!.id.startsWith("Destributor")) {
-                                        onAddPayment(
-                                            newPayment.copy(
-                                                id = "Payment-" + UUID.randomUUID().toString(),
-                                                customerId = selectedAccount.id,
-                                            )
-                                        )
-                                    } else {
-                                        onEditPayment(newPayment)
-                                    }
-                                    simplePaymentBottomSheet = false
-                                }
-                            )
-                        }
-                    }
-
-                    else -> {}
+        SavePaymentBottomSheet(
+            isVisible = simplePaymentBottomSheet,
+            onDismiss = {
+                simplePaymentBottomSheet = false
+                selectedPayment = null
+            },
+            initialPayment = selectedPayment ?: ChequePayment(),
+            remainsAmount = remainsAmount,
+            isTaken = !isPurchase,
+            selectedAccount = selectedAccount,
+            currentUser = currentUser,
+            onSave = { updatedPayment ->
+                if (selectedPayment!!.id.isBlank()) {
+                    onAddPayment(updatedPayment)
+                } else {
+                    onEditPayment(updatedPayment)
                 }
-
+                simplePaymentBottomSheet = false
+                selectedPayment = null
             }
-        }
+        )
         AnimatedVisibility(
             visible = warningNotFullyPaidSheet,
         ) {
@@ -554,7 +435,7 @@ fun SelectFromSalesChequesBottomSheetContent(
                                     )
                                 Spacer(modifier = Modifier.weight(1f))
                                 Text(
-                                    text = cheque.customerName,
+                                    text = cheque.senderName,
                                     style = MaterialTheme.typography.titleMedium
                                 )
                                 RadioButton(
@@ -654,6 +535,7 @@ private fun SelectPaymentsContentPreview() {
         query = "",
         onQueryChanged = {},
         onAccountSelected = {},
+        currentUser = User(),
         suggestedAccount = listOf(),
     )
 

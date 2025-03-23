@@ -1,10 +1,13 @@
-package com.zaed.manager.ui.salescheques
+package com.zaed.common.ui.salescheques
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zaed.common.data.model.authentication.UserRole
+import com.zaed.common.data.model.cheque.ChequeStatus
+import com.zaed.common.data.model.customer.Account
 import com.zaed.common.data.model.customer.FetchWholesaleCustomersByNameRequest
-import com.zaed.common.data.model.customer.WholeSaleCustomer
+import com.zaed.common.data.model.payment.ChequePayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.DeletePaymentRequest
@@ -59,7 +62,7 @@ class SalesChequesScreenViewModel(
             fetchCustomersByNameUseCase(
                 FetchWholesaleCustomersByNameRequest(
                     name = uiState.value.customerSearchQuery,
-                    distributorId = uiState.value.currentDistributor.id
+                    distributorId = uiState.value.currentUser.let{ if(it.role == UserRole.ACCOUNTANT) "" else it.id }
                 )
             ).onSuccess { data ->
                 launch(Dispatchers.Main) {
@@ -83,7 +86,7 @@ class SalesChequesScreenViewModel(
                             filteredSuppliers = data
                         )
                     }
-                    filterData()
+                    filterSuppliers()
                 }.onFailure { e ->
                     Log.e(TAG, "fetchSuppliers: ${e.message}", e)
                 }
@@ -91,7 +94,7 @@ class SalesChequesScreenViewModel(
         }
     }
 
-    private fun filterData() {
+    private fun filterSuppliers() {
         viewModelScope.launch(Dispatchers.Default) {
             val filteredSuppliers = uiState.value.allSuppliers.filter { supplier ->
                 listOf(supplier.name, supplier.phone).any {
@@ -106,16 +109,8 @@ class SalesChequesScreenViewModel(
             }
         }
     }
-    fun onSupplierClicked(supplier: String) {
-        viewModelScope.launch {
-            _uiState.update { oldState ->
-                oldState.copy(
-                    selectedSupplier = uiState.value.allSuppliers.first { it.id == supplier }
-                )
-            }
-        }
-    }
-    fun updateSupplierSearchQuery(query: String) {
+
+    private fun updateSupplierSearchQuery(query: String) {
         viewModelScope.launch {
             _uiState.update { oldState ->
                 oldState.copy(
@@ -123,7 +118,7 @@ class SalesChequesScreenViewModel(
                     searchQuery = query
                 )
             }
-            filterData()
+            filterSuppliers()
         }
     }
 
@@ -167,20 +162,13 @@ class SalesChequesScreenViewModel(
         }
     }
 
-    fun updateCustomer(customer: WholeSaleCustomer) {
-        viewModelScope.launch {
-            _uiState.update { oldState ->
-                oldState.copy(selectedCustomer = customer)
-            }
-        }
-    }
     private fun getCurrentUser() {
         viewModelScope.launch(Dispatchers.IO) {
             getCurrentUserLoggedInUseCase().collect { result ->
                 result.onSuccess { data ->
                     _uiState.update {
                         it.copy(
-                            currentDistributor = data
+                            currentUser = data
                         )
                     }
                 }
@@ -200,27 +188,123 @@ class SalesChequesScreenViewModel(
     }
     fun handleUiAction(action: SalesChequesUiAction) {
         when (action) {
-            is SalesChequesUiAction.OnAddPayment -> addPayment(action.payment)
-            is SalesChequesUiAction.OnEditPayment -> confirmEditPayment(action.oldPayment, action.newPayment)
-            is SalesChequesUiAction.OnCustomerSelected -> updateCustomer(action.customer)
-            is SalesChequesUiAction.OnQueryChanged -> updateSearchQuery(action.query)
+            is SalesChequesUiAction.OnAddPayment -> addPayment(action.payment, action.isSupplier)
+            is SalesChequesUiAction.OnEditPayment -> editPayment(action.oldPayment, action.newPayment, isSupplier = action.isSupplier)
+            is SalesChequesUiAction.OnCustomerSearchQueryChanged -> updateSearchQuery(action.query)
             is SalesChequesUiAction.DeletePayment -> deletePayment(action.cashPayment)
-            is SalesChequesUiAction.OnUpdateSearchQuery -> updateSupplierSearchQuery(action.query)
-            is SalesChequesUiAction.OnSupplierClicked -> onSupplierClicked(action.supplierId)
+            is SalesChequesUiAction.OnUpdateSupplierSearchQuery -> updateSupplierSearchQuery(action.query)
             is SalesChequesUiAction.OnAddSupplier -> addSupplier(action.supplier)
+            is SalesChequesUiAction.OnUpdateChequeSearchQuery -> updateChequeSearchQuery(action.query)
+            is SalesChequesUiAction.OnChequeFilterSelected -> updateChequeFilter(action.filter)
+            is SalesChequesUiAction.OnAccountSelected -> updateSelectedAccount(action.account)
+            is SalesChequesUiAction.OnTransferCheque -> transferCheque(action.cheque, action.isSupplier)
             else -> {}
         }
     }
 
+    private fun transferCheque(cheque: ChequePayment, isSupplier: Boolean) {
+        viewModelScope.launch {
+            val account = uiState.value.selectedAccount
+            val newCheque = cheque.copy(
+                receiverName = account.name,
+                receiverId = account.id,
+                chequeStatus = ChequeStatus.TRANSFERRED,
+            )
+            editPayment(
+                oldPayment = cheque,
+                newPayment = newCheque,
+                isSupplier = isSupplier
+            )
+        }
+    }
 
-     fun confirmEditPayment(oldPayment: Payment, newPayment: Payment) {
+    private fun updateSelectedAccount(account: Account) {
+        viewModelScope.launch {
+            _uiState.update { oldState ->
+                oldState.copy(
+                    selectedAccount = account
+                )
+            }
+        }
+    }
+
+    private fun updateChequeFilter(filter: ChequeStatus?) {
+        viewModelScope.launch {
+            _uiState.update { oldState ->
+                oldState.copy(
+                    selectedChequeFilter = filter
+                )
+            }
+            filterCheques()
+        }
+    }
+
+    private fun filterCheques() {
+        viewModelScope.launch (Dispatchers.Default){
+            val filter = uiState.value.selectedChequeFilter
+            val query = uiState.value.chequeSearchQuery
+            if(query.isBlank()){
+                _uiState.update { oldState ->
+                    oldState.copy(
+                        filteredSalesCheques = oldState.allSalesCheques,
+                        filteredManagerCheques = oldState.allManagerCheques,
+                        loading = false
+                    )
+                }
+            } else {
+                val filteredSalesCheques = uiState.value.allSalesCheques.filter { cheque ->
+                    listOf(cheque.senderName, cheque.receiverName).any{ it.contains(query, ignoreCase = true) }
+                }
+                val filteredManagerCheques = uiState.value.allManagerCheques.filter { cheque ->
+                    cheque.receiverName.contains(query, ignoreCase = true)
+                }
+                _uiState.update { oldState ->
+                    oldState.copy(
+                        filteredSalesCheques = filteredSalesCheques,
+                        filteredManagerCheques = filteredManagerCheques,
+                        loading = false
+                    )
+                }
+            }
+            if(filter != null){
+                val filteredSalesCheques = uiState.value.filteredSalesCheques.filter { cheque ->
+                    cheque.chequeStatus == filter
+                }
+                val filteredManagerCheques = uiState.value.filteredManagerCheques.filter { cheque ->
+                    cheque.chequeStatus == filter
+                }
+                _uiState.update { oldState ->
+                    oldState.copy(
+                        filteredSalesCheques = filteredSalesCheques,
+                        filteredManagerCheques = filteredManagerCheques,
+                        loading = false
+                    )
+                }
+            }
+        }
+    }
+
+    private fun updateChequeSearchQuery(query: String) {
+        viewModelScope.launch {
+            _uiState.update { oldState ->
+                oldState.copy(
+                    chequeSearchQuery = query
+                )
+            }
+            filterCheques()
+        }
+    }
+
+
+    private fun editPayment(oldPayment: Payment, newPayment: Payment, isSupplier: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update {
                 it.copy(loading = true)
             }
             editPaymentUseCase(
                 request = EditPaymentRequest(
-                    customerId = uiState.value.selectedCustomer.id,
+                    isSupplier = isSupplier,
+                    customerId = uiState.value.selectedAccount.id,
                     oldPayment = oldPayment,
                     newPayment = newPayment
                 )
@@ -248,8 +332,8 @@ class SalesChequesScreenViewModel(
             deletePaymentUseCase.invoke(
                 DeletePaymentRequest(
                     payment = cashPayment,
-                    employeeId = uiState.value.currentDistributor.id,
-                    employeeName = uiState.value.currentDistributor.fullName,
+                    employeeId = uiState.value.currentUser.id,
+                    employeeName = uiState.value.currentUser.fullName,
                 )
             ).onSuccess {
                 _uiState.update {
@@ -269,32 +353,32 @@ class SalesChequesScreenViewModel(
         }
     }
 
-    fun addPayment(payment: Payment) {
+    fun addPayment(payment: Payment, isSupplier: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update {
                 it.copy(loading = true)
             }
             addPaymentUseCase(
                 request = AddNewPaymentRequest(
-                    customerId = uiState.value.selectedCustomer.id,
+                    isSupplier = isSupplier,
+                    customerId = uiState.value.selectedAccount.id,
                     payment = payment
                 )
             ).onSuccess {
+                Log.d(TAG, "addPayment: success")
                 _uiState.update {
                     it.copy(
                         loading = false,
                     )
                 }
             }.onFailure {
-                it.printStackTrace()
+                Log.e(TAG, "addPayment: ${it.message}", it)
                 _uiState.update {
                     it.copy(
                         loading = false
                     )
                 }
             }
-
-
         }
     }
 
@@ -305,13 +389,15 @@ class SalesChequesScreenViewModel(
             }
             getSalesChequesUseCase().collect { result ->
                 result.onSuccess { data ->
+                    Log.d(TAG, "getCustomersPayments: ${data}")
                     _uiState.update {oldState->
                         oldState.copy(
                             loading = false,
-                            salesPayments = data
-                                .sortedByDescending { it.createdAt }
+                            allSalesCheques = data.sortedByDescending { it.createdAt },
+                            uncashedSalesCheques = data.filter { it.chequeStatus == ChequeStatus.RECEIVED }
                         )
                     }
+                    filterCheques()
                 }.onFailure {
                     _uiState.value = _uiState.value.copy(
                         loading = false,
@@ -330,10 +416,11 @@ class SalesChequesScreenViewModel(
                     _uiState.update {oldState->
                         oldState.copy(
                             loading = false,
-                            managerPayments = data
+                            allManagerCheques = data
                                 .sortedByDescending { it.createdAt }
                         )
                     }
+                    filterCheques()
                 }.onFailure {
                     _uiState.value = _uiState.value.copy(
                         loading = false,
@@ -343,4 +430,3 @@ class SalesChequesScreenViewModel(
         }
     }
 }
-

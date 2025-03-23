@@ -51,6 +51,7 @@ class PaymentRemoteDataSourceImpl(
                 }
                 is ChequePayment->{
                     batch.set(document, request.payment.copy(id = document.id, customerId = request.customerId))
+                    Log.d("PaymentRemoteDataSource", "addPayment: registered cheque")
                 }
                 is FuturePayment->{
                     batch.set(document, request.payment.copy(id = document.id, customerId = request.customerId))

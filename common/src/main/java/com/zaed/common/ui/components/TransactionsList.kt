@@ -20,8 +20,10 @@ fun TransactionsList(
     isLoading: Boolean,
     transactions: List<Transaction>,
     onTransactionClicked: (transaction: Transaction, isProduct: Boolean) -> Unit,
-    onDeleteTransaction: (transaction: Transaction, isProduct: Boolean) -> Unit,
-    onEditTransaction: (transaction: Transaction, isProduct: Boolean) -> Unit
+    isDeletable: Boolean = true,
+    onDeleteTransaction: (transaction: Transaction, isProduct: Boolean) -> Unit = {_, _ ->},
+    isEditable: Boolean = true,
+    onEditTransaction: (transaction: Transaction, isProduct: Boolean) -> Unit = {_, _ ->},
 ) {
     ListWithLoading(
         isLoading = isLoading
@@ -48,8 +50,8 @@ fun TransactionsList(
                     onEdit = {
                         onEditTransaction(transaction, transaction is WholesaleTransaction && transaction.productType == ProductType.PRODUCT)
                     },
-                    isDeletable = true,
-                    isEditable = true,
+                    isDeletable = isDeletable,
+                    isEditable = isEditable,
                     isDividerVisible = true
                 )
             }
