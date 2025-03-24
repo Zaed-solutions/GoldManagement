@@ -167,7 +167,7 @@
     <string name="gold_sales">Gold Sales</string>
     <string name="ingots_sales">Ingots Sales</string>
     <string name="karat">Karat</string>
-    <string name="labor_cost">Labor Cost</string>
+    <string name="labor_cost">Labor Cost Per Gram</string>
     <string name="money_paid">Money Paid</string>
     <string name="gold_paid">Gold Paid</string>
     <string name="specifying_karat">Specifying Karat</string>
