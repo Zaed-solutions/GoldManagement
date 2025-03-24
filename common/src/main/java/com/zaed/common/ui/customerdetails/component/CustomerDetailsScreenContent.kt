@@ -42,6 +42,7 @@ import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.zaed.common.R
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
@@ -111,7 +112,8 @@ fun CustomerDetailsScreenContent(
         ) {
             val tabs = remember {
                 listOf(
-                    context.getString(com.zaed.common.R.string.payments),
+                    context.getString(R.string.money_payment),
+                    context.getString(R.string.gold_payment),
                     context.getString(com.zaed.common.R.string.sales)
                 )
             }
@@ -198,8 +200,9 @@ fun CustomerDetailsScreenContent(
                             }
                         }
                     }
+                    1->{}
 
-                    1 -> {
+                    2 -> {
                         TransactionsList(listState = listState,
                             isLoading = uiState.loading,
                             transactions = uiState.sales,

@@ -344,4 +344,6 @@
     <string name="pay_with_gold">Pay With Gold</string>
     <string name="g_labor_cost">%1$sg + %2$s Labor Cost</string>
     <string name="save_as_outstanding_bill">Save as OutStanding Bill</string>
+    <string name="money_payment">Money Payment</string>
+    <string name="gold_payment">Gold Payment</string>
 </resources>
