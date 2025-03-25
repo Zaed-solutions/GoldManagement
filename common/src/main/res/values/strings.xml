@@ -333,4 +333,11 @@
     <string name="search_by_customer_supplier_name">Search by customer/supplier name</string>
     <string name="transfered">Transefered</string>
     <string name="dashboard">Dashboard</string>
+    <string name="bank_transfer_from_template">Bank transfer from %1$s</string>
+    <string name="today_at">"Today at %1$s"</string>
+    <string name="yesterday_at">"Yesterday at %1$s"</string>
+    <string name="last_day_at">"Last %1$s at %2$s"</string>
+    <string name="receipt_number_template">Payment for transaction #%1$s</string>
+    <string name="transfered_to_template">Transfered to %1$s</string>
+    <string name="manager_cheque">Manager Cheque</string>
 </resources>

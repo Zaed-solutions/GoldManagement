@@ -1,22 +1,25 @@
 package com.zaed.common.ui.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -24,10 +27,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
+import com.zaed.common.data.model.cheque.ChequeStatus
+import com.zaed.common.data.model.cheque.ManagerCheque
+import com.zaed.common.data.model.payment.BankTransferPayment
+import com.zaed.common.data.model.payment.CashPayment
+import com.zaed.common.data.model.payment.ChequePayment
+import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.GoldPayment
+import com.zaed.common.data.model.payment.LossPayment
 import com.zaed.common.data.model.payment.Payment
-import com.zaed.common.ui.util.DateFormat
-import com.zaed.common.ui.util.format
+import com.zaed.common.ui.util.getPaymentTitle
 import com.zaed.common.ui.util.toMoneyFormat
 
 @Composable
@@ -41,117 +50,181 @@ fun PaymentItem(
     isDeletable: Boolean = true,
 ) {
     val context = LocalContext.current
-    val primaryColor = MaterialTheme.colorScheme.primary
-    val errorColor = MaterialTheme.colorScheme.error
-    val tag1 = remember(payment) {
-        if (!payment.given) context.getString(R.string.taken) else context.getString(R.string.given)
-    }
-    val (color, title, price) =
+    val (type, subtitle) =
         when (payment) {
             is GoldPayment -> {
-                Triple(
-                    if (payment.given) errorColor else primaryColor,
-                    "$tag1 " + if (payment.pricePerGram == 0.0) context.getString(R.string.not_specified_yet) else "",
-                    context.getString(
-                        R.string.grams_placeholder,
-                        payment.givenGoldAmount.toString()
+                stringResource(R.string.gold) to if (payment.receiptNumber.isNotBlank()) stringResource(
+                    R.string.receipt_number_template,
+                    payment.receiptNumber
+                ) else ""
+            }
+
+            is BankTransferPayment -> {
+                stringResource(R.string.bank_transfer) to if (payment.receiptNumber.isNotBlank()) stringResource(
+                    R.string.receipt_number_template,
+                    payment.receiptNumber
+                ) else ""
+            }
+
+            is CashPayment -> {
+                stringResource(R.string.cash) to if (payment.receiptNumber.isNotBlank()) stringResource(
+                    R.string.receipt_number_template,
+                    payment.receiptNumber
+                ) else ""
+            }
+
+            is ChequePayment -> {
+                stringResource(R.string.cheque) to if (payment.chequeStatus == ChequeStatus.TRANSFERRED) {
+                    stringResource(
+                        R.string.transfered_to_template,
+                        payment.receiverName
                     )
-                )
+                } else if (payment.receiptNumber.isNotBlank()) {
+                    stringResource(
+                        R.string.receipt_number_template,
+                        payment.receiptNumber
+                    )
+                } else ""
+            }
+
+            is ManagerCheque -> {
+                stringResource(R.string.manager_cheque) to if (payment.receiptNumber.isNotBlank()) stringResource(
+                    R.string.receipt_number_template,
+                    payment.receiptNumber
+                ) else ""
+            }
+
+            is FuturePayment -> {
+                stringResource(R.string.future) to if (payment.receiptNumber.isNotBlank()) stringResource(
+                    R.string.receipt_number_template,
+                    payment.receiptNumber
+                ) else ""
+            }
+
+            is LossPayment -> {
+                stringResource(R.string.loss) to if (payment.receiptNumber.isNotBlank()) stringResource(
+                    R.string.receipt_number_template,
+                    payment.receiptNumber
+                ) else ""
             }
 
             else -> {
-                Triple(
-                    if (payment.given) errorColor else primaryColor,
-                    tag1,
-                    payment.amount.toMoneyFormat(2)
-                )
+                "" to ""
             }
         }
 
     val moreOptions =
-        if (isEditable && !isDeletable) {
-             listOf(
-                MoreDropdownItem(
-                    onClick = { onEdit() },
-                    icon = Icons.Default.Edit,
-                    title = context.getString(R.string.edit),
-                    tint = primaryColor,
-                )
-            )
-        }  else if(isDeletable && !isEditable) {
-            listOf(
-                MoreDropdownItem(
-                    onClick = { onDelete() },
-                    icon = Icons.Default.Delete,
-                    title = context.getString(R.string.delete),
-                    tint = errorColor,
-                )
-            )
-        }else if (isEditable && isDeletable) {
+        if (isEditable && isDeletable) {
             listOf(
                 MoreDropdownItem(
                     onClick = { onEdit() },
                     icon = Icons.Default.Edit,
                     title = context.getString(R.string.edit),
-                    tint = primaryColor,
+                    tint = MaterialTheme.colorScheme.primary,
                 ),
                 MoreDropdownItem(
                     onClick = { onDelete() },
                     icon = Icons.Default.Delete,
                     title = context.getString(R.string.delete),
-                    tint = errorColor,
+                    tint = MaterialTheme.colorScheme.error,
                 )
             )
-        }else{
+        } else if (isDeletable) {
+            listOf(
+                MoreDropdownItem(
+                    onClick = { onDelete() },
+                    icon = Icons.Default.Delete,
+                    title = context.getString(R.string.delete),
+                    tint = MaterialTheme.colorScheme.error,
+                )
+            )
+        } else if (isEditable) {
+            listOf(
+                MoreDropdownItem(
+                    onClick = { onEdit() },
+                    icon = Icons.Default.Edit,
+                    title = context.getString(R.string.edit),
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+            )
+        } else {
             emptyList()
         }
     Surface(
         modifier = modifier.fillMaxWidth(),
         onClick = onClick,
     ) {
-        Column(
-            modifier = Modifier.padding(horizontal = 12.dp)
-        ) {
+        Column {
             Row(
+                modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                FilterChip(
-                    modifier = Modifier.height(FilterChipDefaults.Height - 8.dp),
-                    selected = true,
-                    onClick = {},
-                    label = { Text(text = stringResource(payment.type.titleRes)) },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = color,
-                        selectedLabelColor = contentColorFor(color)
-                    )
+                Icon(
+                    imageVector = if (payment.given) Icons.Default.ArrowUpward else Icons.Default.ArrowDownward,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSecondary,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.secondary,
+                            shape = CircleShape
+                        )
+                        .padding(8.dp)
                 )
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = title, style = MaterialTheme.typography.titleMedium
-                )
-                if (moreOptions.isNotEmpty()) {
-                    MoreDropDownMenu(
-                        modifier = Modifier.padding(start = 8.dp), items = moreOptions
-                    )
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 16.dp),
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = payment.createdAt.getPaymentTitle(context),
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Text(
+                            text = if (payment is GoldPayment) stringResource(
+                                R.string.grams_placeholder,
+                                payment.givenGoldAmount.toString()
+                            ) else payment.amount.toMoneyFormat(),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = if (payment.given) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                            fontWeight = FontWeight.Bold
+                        )
+                        if (moreOptions.isNotEmpty()) {
+                            MoreDropDownMenu(
+                                items = moreOptions,
+                                isVertical = true
+                            )
+                        } else {
+                            Spacer(modifier = Modifier.size(16.dp))
+                        }
+                    }
+                    Row(
+                        modifier = Modifier.padding(end = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        if(subtitle.isNotBlank()) {
+                            Text(
+                                text = subtitle,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                        Text(
+                            text = type,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = payment.createdAt.format(DateFormat.DATE_TIME),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = price,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = color,
-                    fontWeight = FontWeight.Bold
-                )
-
-            }
+            HorizontalDivider()
         }
     }
 }
