@@ -9,12 +9,14 @@ data class Supplier(
     override val name: String = "",
     override val email: String = "",
     override val createdAt: Date = Date(),
-    override val debtAmount: Double = 0.0
-):Account(
+    override val moneyDebtAmount: Double = 0.0,
+    override val goldDebtAmount: Double = 0.0,
+) : Account(
     id = id,
     name = name,
     phone = phone,
     email = email,
     createdAt = createdAt,
-    debtAmount = debtAmount
+    moneyDebtAmount = moneyDebtAmount,
+    goldDebtAmount = goldDebtAmount
 )

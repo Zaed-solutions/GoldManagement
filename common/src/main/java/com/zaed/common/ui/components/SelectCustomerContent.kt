@@ -166,7 +166,7 @@ fun SelectCustomerContent(
                         if (selectedCustomer.inDebt) {
                             DetailRow(
                                 label = stringResource(R.string.debt_amount),
-                                value = selectedCustomer.debtAmount.formatMoney(),
+                                value = selectedCustomer.moneyDebtAmount.formatMoney(),
                                 isDividerVisible = false
                             )
                         }

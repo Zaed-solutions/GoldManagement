@@ -32,9 +32,7 @@ import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
-import com.zaed.common.ui.util.toMoneyFormat
 import java.util.UUID
-import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,7 +43,6 @@ fun SavePaymentBottomSheet(
     initialPayment: Payment,
     selectedAccount: Account,
     currentUser: User,
-    remainsAmount: Double,
     isTaken: Boolean,
     onSave: (Payment) -> Unit
 ) {
@@ -63,7 +60,6 @@ fun SavePaymentBottomSheet(
                 PaymentType.CHEQUE -> {
                     SaveChequePaymentBottomSheetContent(
                         initialPayment = initialPayment as ChequePayment,
-                        remainsAmount = Double.MAX_VALUE,
                         isTaken = isTaken,
                         selectedAccount = selectedAccount,
                         currentUser = currentUser,
@@ -74,7 +70,6 @@ fun SavePaymentBottomSheet(
                 PaymentType.MANAGER_CHEQUES -> {
                     SaveManagerChequePaymentBottomSheetContent(
                         initialPayment = initialPayment as ManagerCheque,
-                        remainsAmount = Double.MAX_VALUE,
                         isTaken = isTaken,
                         selectedAccount = selectedAccount,
                         onSave = onSave
@@ -84,7 +79,6 @@ fun SavePaymentBottomSheet(
                 PaymentType.CASH -> {
                     SaveCashPaymentBottomSheetContent(
                         initialPayment = initialPayment as CashPayment,
-                        remainsAmount = remainsAmount,
                         isTaken = isTaken,
                         selectedAccount = selectedAccount,
                         onSave = onSave
@@ -94,7 +88,6 @@ fun SavePaymentBottomSheet(
                 PaymentType.BANK_TRANSFER -> {
                     SaveBankTransferPaymentBottomSheetContent(
                         initialPayment = initialPayment as BankTransferPayment,
-                        remainsAmount = remainsAmount,
                         isTaken = isTaken,
                         selectedAccount = selectedAccount,
                         onSave = onSave
@@ -104,7 +97,6 @@ fun SavePaymentBottomSheet(
                 PaymentType.FUTURES -> {
                     SaveFuturePaymentBottomSheetContent(
                         initialPayment = initialPayment as FuturePayment,
-                        remainsAmount = remainsAmount,
                         isTaken = isTaken,
                         selectedAccount = selectedAccount,
                         onSave = onSave
@@ -114,7 +106,6 @@ fun SavePaymentBottomSheet(
                 PaymentType.GOLD -> {
                     SaveGoldPaymentBottomSheetContent(
                         initialPayment = initialPayment as GoldPayment,
-                        remainsAmount = remainsAmount,
                         isTaken = isTaken,
                         selectedAccount = selectedAccount,
                         onSave = onSave
@@ -132,7 +123,6 @@ fun SavePaymentBottomSheet(
 fun SaveCashPaymentBottomSheetContent(
     modifier: Modifier = Modifier,
     initialPayment: CashPayment,
-    remainsAmount: Double = 0.0,
     isTaken: Boolean,
     selectedAccount: Account,
     onSave: (CashPayment) -> Unit = {}
@@ -159,18 +149,6 @@ fun SaveCashPaymentBottomSheetContent(
             onValueChange = {
                 payment = payment.copy(amount = it)
             },
-            supportingText =
-            if (initialPayment.amount == 0.0 && payment.amount > remainsAmount) {
-                stringResource(R.string.remains_for_the_client) + payment.amount.minus(remainsAmount).absoluteValue.toMoneyFormat(
-                    2
-                )
-            } else if (initialPayment.amount != 0.0 && payment.amount > (remainsAmount + initialPayment.amount)) {
-                stringResource(R.string.remains_for_the_client) + payment.amount.minus(remainsAmount + initialPayment.amount).absoluteValue.toMoneyFormat(
-                    2
-                )
-            } else {
-                ""
-            }
         )
 
         Button(
@@ -179,15 +157,6 @@ fun SaveCashPaymentBottomSheetContent(
                 .heightIn(min = 48.dp)
                 .padding(top = 24.dp),
             onClick = {
-                if (initialPayment.amount == 0.0 && payment.amount > remainsAmount) {
-                    payment = payment.copy(
-                        amount = remainsAmount,
-                    )
-                } else if (initialPayment.amount != 0.0 && payment.amount > (remainsAmount + initialPayment.amount)) {
-                    payment = payment.copy(
-                        amount = remainsAmount + initialPayment.amount,
-                    )
-                }
                 if(payment.id.isBlank()){
                     payment = payment.copy(
                         given = !isTaken,
@@ -211,7 +180,6 @@ fun SaveCashPaymentBottomSheetContent(
 fun SaveFuturePaymentBottomSheetContent(
     modifier: Modifier = Modifier,
     initialPayment: FuturePayment,
-    remainsAmount: Double = 0.0,
     isTaken: Boolean,
     selectedAccount: Account,
     onSave: (FuturePayment) -> Unit = {}
@@ -238,18 +206,6 @@ fun SaveFuturePaymentBottomSheetContent(
             onValueChange = {
                 payment = payment.copy(amount = it)
             },
-            supportingText =
-            if (initialPayment.amount == 0.0 && payment.amount > remainsAmount) {
-                stringResource(R.string.remains_for_the_client) + payment.amount.minus(remainsAmount).absoluteValue.toMoneyFormat(
-                    2
-                )
-            } else if (initialPayment.amount != 0.0 && payment.amount > (remainsAmount + initialPayment.amount)) {
-                stringResource(R.string.remains_for_the_client) + payment.amount.minus(remainsAmount + initialPayment.amount).absoluteValue.toMoneyFormat(
-                    2
-                )
-            } else {
-                ""
-            }
         )
 
         Button(
@@ -258,15 +214,6 @@ fun SaveFuturePaymentBottomSheetContent(
                 .heightIn(min = 48.dp)
                 .padding(top = 24.dp),
             onClick = {
-                if (initialPayment.amount == 0.0 && payment.amount > remainsAmount) {
-                    payment = payment.copy(
-                        amount = remainsAmount,
-                    )
-                } else if (initialPayment.amount != 0.0 && payment.amount > (remainsAmount + initialPayment.amount)) {
-                    payment = payment.copy(
-                        amount = remainsAmount + initialPayment.amount,
-                    )
-                }
                 if(payment.id.isBlank()){
                     payment = payment.copy(
                         given = !isTaken,
@@ -290,7 +237,6 @@ fun SaveFuturePaymentBottomSheetContent(
 fun SaveGoldPaymentBottomSheetContent(
     modifier: Modifier = Modifier,
     initialPayment: GoldPayment,
-    remainsAmount: Double = 0.0,
     isTaken: Boolean,
     selectedAccount: Account,
     onSave: (GoldPayment) -> Unit = {}
@@ -317,12 +263,6 @@ fun SaveGoldPaymentBottomSheetContent(
             onValueChange = {
                 payment = payment.copy(givenGoldAmount = it)
             },
-            supportingText =
-            if (((payment.givenGoldAmount * payment.pricePerGram) > (remainsAmount + (initialPayment.amount)))) {
-                stringResource(R.string.the_value_is_bigger_than_the_remains_amount)
-            } else {
-                ""
-            }
         )
         NumberInputTextField(
             modifier = Modifier
@@ -333,12 +273,6 @@ fun SaveGoldPaymentBottomSheetContent(
             onValueChange = {
                 payment = payment.copy(pricePerGram = it)
             },
-            supportingText =
-            if (((payment.givenGoldAmount * payment.pricePerGram) > (remainsAmount + (initialPayment.amount)))) {
-                stringResource(R.string.the_value_is_bigger_than_the_remains_amount)
-            } else {
-                ""
-            }
         )
         NumberInputTextField(
             modifier = Modifier
@@ -366,7 +300,7 @@ fun SaveGoldPaymentBottomSheetContent(
                 }
                 onSave(payment.copy(amount = payment.givenGoldAmount * payment.pricePerGram))
             },
-            enabled = payment.givenGoldAmount != 0.0 && ((payment.givenGoldAmount * payment.pricePerGram) <= remainsAmount + (initialPayment.amount))
+            enabled = payment.givenGoldAmount != 0.0
         ) {
             Text(
                 text = stringResource(R.string.save),
@@ -380,7 +314,6 @@ fun SaveGoldPaymentBottomSheetContent(
 @Composable
 fun SaveChequePaymentBottomSheetContent(
     modifier: Modifier = Modifier,
-    remainsAmount: Double = 0.0,
     initialPayment: ChequePayment,
     isTaken: Boolean,
     currentUser: User,
@@ -454,18 +387,6 @@ fun SaveChequePaymentBottomSheetContent(
             onValueChange = {
                 payment = payment.copy(amount = it)
             },
-            supportingText =
-            if (initialPayment.amount == 0.0 && payment.amount > remainsAmount) {
-                stringResource(R.string.remains_for_the_client) + payment.amount.minus(remainsAmount).absoluteValue.toMoneyFormat(
-                    2
-                )
-            } else if (initialPayment.amount != 0.0 && payment.amount > (remainsAmount + initialPayment.amount)) {
-                stringResource(R.string.remains_for_the_client) + payment.amount.minus(remainsAmount + initialPayment.amount).absoluteValue.toMoneyFormat(
-                    2
-                )
-            } else {
-                ""
-            }
         )
 
         //Note
@@ -485,15 +406,6 @@ fun SaveChequePaymentBottomSheetContent(
                 .heightIn(min = 48.dp)
                 .padding(top = 24.dp),
             onClick = {
-                if (initialPayment.amount == 0.0 && payment.amount > remainsAmount) {
-                    payment = payment.copy(
-                        amount = remainsAmount,
-                    )
-                } else if (initialPayment.amount != 0.0 && payment.amount > (remainsAmount + initialPayment.amount)) {
-                    payment = payment.copy(
-                        amount = remainsAmount + initialPayment.amount,
-                    )
-                }
                 if(payment.id.isBlank()){
                     payment = payment.copy(
                         given = !isTaken,
@@ -519,7 +431,6 @@ fun SaveChequePaymentBottomSheetContent(
 @Composable
 fun SaveManagerChequePaymentBottomSheetContent(
     modifier: Modifier = Modifier,
-    remainsAmount: Double = 0.0,
     initialPayment: ManagerCheque,
     isTaken: Boolean,
     selectedAccount: Account,
@@ -584,18 +495,6 @@ fun SaveManagerChequePaymentBottomSheetContent(
             onValueChange = {
                 payment = payment.copy(amount = it)
             },
-            supportingText =
-            if (initialPayment.amount == 0.0 && payment.amount > remainsAmount) {
-                stringResource(R.string.remains_for_the_client) + payment.amount.minus(remainsAmount).absoluteValue.toMoneyFormat(
-                    2
-                )
-            } else if (initialPayment.amount != 0.0 && payment.amount > (remainsAmount + initialPayment.amount)) {
-                stringResource(R.string.remains_for_the_client) + payment.amount.minus(remainsAmount + initialPayment.amount).absoluteValue.toMoneyFormat(
-                    2
-                )
-            } else {
-                ""
-            }
         )
 
         //Note
@@ -615,15 +514,6 @@ fun SaveManagerChequePaymentBottomSheetContent(
                 .heightIn(min = 48.dp)
                 .padding(top = 24.dp),
             onClick = {
-                if (initialPayment.amount == 0.0 && payment.amount > remainsAmount) {
-                    payment = payment.copy(
-                        amount = remainsAmount,
-                    )
-                } else if (initialPayment.amount != 0.0 && payment.amount > (remainsAmount + initialPayment.amount)) {
-                    payment = payment.copy(
-                        amount = remainsAmount + initialPayment.amount,
-                    )
-                }
                 if(payment.id.isBlank()){
                     payment = payment.copy(
                         given = !isTaken,
@@ -646,7 +536,6 @@ fun SaveManagerChequePaymentBottomSheetContent(
 @Composable
 fun SaveBankTransferPaymentBottomSheetContent(
     modifier: Modifier = Modifier,
-    remainsAmount: Double = 0.0,
     initialPayment: BankTransferPayment,
     isTaken: Boolean,
     selectedAccount: Account,
@@ -708,18 +597,6 @@ fun SaveBankTransferPaymentBottomSheetContent(
             onValueChange = {
                 payment = payment.copy(amount = it)
             },
-            supportingText =
-            if (initialPayment.amount == 0.0 && payment.amount > remainsAmount) {
-                stringResource(R.string.remains_for_the_client) + payment.amount.minus(remainsAmount).absoluteValue.toMoneyFormat(
-                    2
-                )
-            } else if (initialPayment.amount != 0.0 && payment.amount > (remainsAmount + initialPayment.amount)) {
-                stringResource(R.string.remains_for_the_client) + payment.amount.minus(remainsAmount + initialPayment.amount).absoluteValue.toMoneyFormat(
-                    2
-                )
-            } else {
-                ""
-            }
         )
 
         Button(
@@ -728,15 +605,6 @@ fun SaveBankTransferPaymentBottomSheetContent(
                 .heightIn(min = 48.dp)
                 .padding(top = 24.dp),
             onClick = {
-                if (initialPayment.amount == 0.0 && payment.amount > remainsAmount) {
-                    payment = payment.copy(
-                        amount = remainsAmount,
-                    )
-                } else if (initialPayment.amount != 0.0 && payment.amount > (remainsAmount + initialPayment.amount)) {
-                    payment = payment.copy(
-                        amount = remainsAmount + initialPayment.amount,
-                    )
-                }
                 if(payment.id.isBlank()){
                     payment = payment.copy(
                         given = !isTaken,

@@ -185,6 +185,7 @@ private fun AddProductSaleScreenContent(
                         SelectPaymentsContent(
                             totalAmount = state.sale.totalAmount,
                             payments = state.payments,
+                            totalPaid = state.totalPaid,
                             selectedAccount = state.selectedCustomer,
                             currentUser = state.currentUser,
                             query = state.customerSearchQuery,
@@ -219,7 +220,7 @@ private fun AddProductSaleScreenContent(
                         SaleSummaryContent(
                             account = state.selectedCustomer,
                             products = state.sale.products,
-                            totalPaid = state.totalPaid,
+                            totalMoneyPaid = state.totalPaid,
                             totalAmount = state.sale.totalAmount,
                             isLoading = state.isLoading,
                             onCreate = {

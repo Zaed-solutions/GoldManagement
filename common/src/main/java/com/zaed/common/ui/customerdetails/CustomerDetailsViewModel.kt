@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
 import com.zaed.common.data.model.payment.Payment
-import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.DeletePaymentRequest
 import com.zaed.common.data.model.payment.request.EditPaymentRequest
@@ -258,7 +257,6 @@ class CustomerDetailsViewModel(
                         oldState.copy(
                             loading = false,
                             payments = data
-                                .filter { it.receiptNumber.isEmpty() || it.type == PaymentType.FUTURES }
                                 .sortedByDescending { it.createdAt }
                         )
                     }

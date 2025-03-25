@@ -8,9 +8,9 @@ import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.data.model.customer.FetchWholesaleCustomersByNameRequest
 import com.zaed.common.data.model.customer.WholeSaleCustomer
+import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentStatus
-import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.request.AddWholesaleRequest
@@ -78,9 +78,8 @@ class AddGoldSaleViewModel(
                 )
             ).onSuccess { data ->
                 _uiState.update { oldState ->
-                    oldState.copy(payments = data.filter { it.type != PaymentType.FUTURES })
+                    oldState.copy(payments = data.filter { it !is FuturePayment })
                 }
-                updateTotalAmounts()
             }.onFailure { e ->
                 Log.e(TAG, "fetchPayments: ${e.message}", e)
             }
@@ -135,9 +134,17 @@ class AddGoldSaleViewModel(
             is AddGoldSaleUiAction.OnRemovePayment -> removePayment(action.paymentId)
             is AddGoldSaleUiAction.OnUpdateProducts -> updateProductsSale(action.products)
             AddGoldSaleUiAction.OnDeleteAllProducts -> updateProductsSale(emptyList())
+            is AddGoldSaleUiAction.OnUpdatePaymentType -> updatePaymentType(action.isCash)
             else -> Unit
         }
     }
+
+    private fun updatePaymentType(cash: Boolean) {
+        _uiState.update { oldState ->
+            oldState.copy(payWithMoney = cash)
+        }
+    }
+
 
     private fun updateProductsSale(products: List<Product>) {
         _uiState.update { oldState ->
@@ -146,7 +153,6 @@ class AddGoldSaleViewModel(
     }
 
     private fun onSubmit() {
-        Log.d(TAG, "onSubmit: ${uiState.value.sale}")
         if (uiState.value.sale.id.isNotBlank()) {
             updateSale()
         } else {
@@ -172,7 +178,7 @@ class AddGoldSaleViewModel(
                             customerId = customer.id,
                             customerName = customer.name,
                             customerPhone = customer.phone,
-                            paymentStatus = if ((uiState.value.sale.totalAmount - uiState.value.totalPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID,
+                            paymentStatus = if ((uiState.value.sale.totalAmount - uiState.value.totalMoneyPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID,
                             logs = oldState.sale.logs + updateLog
                         ),
                     )
@@ -206,6 +212,7 @@ class AddGoldSaleViewModel(
         }
         val customer = uiState.value.selectedCustomer
         val distributor = uiState.value.currentUser
+        Log.d(TAG, "addSale: $uiState")
         viewModelScope.launch(Dispatchers.IO) {
 
             _uiState.update { oldState ->
@@ -214,10 +221,11 @@ class AddGoldSaleViewModel(
                         customerId = customer.id,
                         customerName = customer.name,
                         customerPhone = customer.phone,
+                        outStandingBill = !uiState.value.payWithMoney,
                         distributorId = distributor.id,
                         distributorName = distributor.fullName,
                         createdAt = Date(),
-                        paymentStatus = if ((uiState.value.sale.totalAmount - uiState.value.totalPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID
+                        paymentStatus =if(!uiState.value.payWithMoney) PaymentStatus.SPECIFYING_KARAT else if ((uiState.value.sale.totalAmount - uiState.value.totalMoneyPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID
                     )
                 )
             }
@@ -232,6 +240,7 @@ class AddGoldSaleViewModel(
                     ),
                 )
             }
+            Log.d(TAG, "testoto: ${uiState.value.payments.map { it.id to it.type }}")
             addProductSaleUseCase(
                 AddWholesaleRequest(
                     sale = uiState.value.sale,
@@ -309,28 +318,16 @@ class AddGoldSaleViewModel(
                     oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products + product))
                 }
             }
-            updateTotalAmounts()
         }
     }
 
-    private fun updateTotalAmounts() {
-        viewModelScope.launch(Dispatchers.Default) {
-            val totalAmount = uiState.value.sale.products.sumOf { it.grams * it.gramPrice }
-            val totalPaid =
-                uiState.value.payments.filter { it.type != PaymentType.FUTURES }.sumOf { it.amount }
-            _uiState.update {
-                it.copy(totalPaid = totalPaid)
-            }
-            Log.d(TAG, "updateTotalAmounts: totalAmount: $totalAmount, totalPaid: $totalPaid")
-        }
-    }
+
 
     private fun addPayment(payment: Payment) {
         viewModelScope.launch {
             _uiState.update { oldState ->
                 oldState.copy(payments = oldState.payments + payment)
             }
-            updateTotalAmounts()
         }
     }
 
@@ -341,7 +338,6 @@ class AddGoldSaleViewModel(
             _uiState.update { oldState ->
                 oldState.copy(payments = oldState.payments.filter { it.id != paymentId })
             }
-            updateTotalAmounts()
         }
     }
 
@@ -350,7 +346,6 @@ class AddGoldSaleViewModel(
             _uiState.update { oldState ->
                 oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products.filter { it.id != productId }))
             }
-            updateTotalAmounts()
         }
     }
 
@@ -359,7 +354,6 @@ class AddGoldSaleViewModel(
             _uiState.update { oldState ->
                 oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products.filter { it != product }))
             }
-            updateTotalAmounts()
         }
     }
 
@@ -374,7 +368,6 @@ class AddGoldSaleViewModel(
                     }
                 })
             }
-            updateTotalAmounts()
         }
     }
 
@@ -390,7 +383,6 @@ class AddGoldSaleViewModel(
                     }
                 }))
             }
-            updateTotalAmounts()
         }
     }
 }

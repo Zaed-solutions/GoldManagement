@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.zaed.common.R
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.getProductSalePayments
 import com.zaed.common.ui.addpurchase.ProductType
@@ -116,6 +117,88 @@ fun ProductTypes(
                         }
                         Text(
                             text = stringResource(productType.titleRes),
+                            style = MaterialTheme.typography.headlineMedium,
+                        )
+                    }
+                    HorizontalDivider()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun PaymentTypes(
+    onPaymentTypeSelected: (Boolean) -> Unit = {}
+) {
+    Surface (
+        modifier = Modifier.padding(8.dp),
+        border = BorderStroke(2.dp,MaterialTheme.colorScheme.primary),
+        shape = MaterialTheme.shapes.medium
+    ){
+        LazyColumn(
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            item{
+                Surface(
+                    onClick = { onPaymentTypeSelected(true) },
+                    modifier = Modifier.padding(vertical = 16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Box(
+                            Modifier
+                                .padding(16.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f))
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_coins),
+                                modifier = Modifier
+                                    .size(64.dp)
+                                    .padding(8.dp),
+                                tint = MaterialTheme.colorScheme.primary,
+                                contentDescription = null
+                            )
+                        }
+                        Text(
+                            text = stringResource(R.string.pay_with_money),
+                            style = MaterialTheme.typography.headlineMedium,
+                        )
+                    }
+                    HorizontalDivider()
+                }
+            }
+            item{
+                Surface(
+                    onClick = { onPaymentTypeSelected(false) },
+                    modifier = Modifier.padding(vertical = 16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Box(
+                            Modifier
+                                .padding(16.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f))
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_gold),
+                                modifier = Modifier
+                                    .size(64.dp)
+                                    .padding(8.dp),
+                                tint = MaterialTheme.colorScheme.primary,
+                                contentDescription = null
+                            )
+                        }
+                        Text(
+                            text = stringResource(R.string.pay_with_gold),
                             style = MaterialTheme.typography.headlineMedium,
                         )
                     }

@@ -286,6 +286,7 @@ private fun AddPurchaseScreenContent(
                         SelectPaymentsContent(
                             totalAmount = state.purchase.totalAmount,
                             payments = state.payments,
+                            totalPaid = state.totalPaid,
                             currentUser = state.currentUser,
                             salesCheques = state.salesCheques,
                             isPurchase = true,
@@ -347,7 +348,7 @@ private fun AddPurchaseScreenContent(
                         SaleSummaryContent(
                             account = state.selectedSupplier,
                             products = state.purchase.products,
-                            totalPaid = state.totalPaid,
+                            totalMoneyPaid = state.totalPaid,
                             totalAmount = state.purchase.totalAmount,
                             isLoading = state.isLoading,
                             isPurchase = true,

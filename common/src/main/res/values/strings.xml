@@ -167,7 +167,7 @@
     <string name="gold_sales">Gold Sales</string>
     <string name="ingots_sales">Ingots Sales</string>
     <string name="karat">Karat</string>
-    <string name="labor_cost">Labor Cost</string>
+    <string name="labor_cost">Labor Cost Per Gram</string>
     <string name="money_paid">Money Paid</string>
     <string name="gold_paid">Gold Paid</string>
     <string name="specifying_karat">Specifying Karat</string>
@@ -341,4 +341,15 @@
     <string name="transfered_to_template">Transfered to %1$s</string>
     <string name="manager_cheque">Manager Cheque</string>
     <string name="wholesale">Wholesale</string>
+    <string name="remains_for_client">Remains</string>
+    <string name="the_payment_amount_is_greater_than_the_total_amount">The Payment Amount is greater than the total amount</string>
+    <string name="do_you_want_to_make_is_balance_for_the_customer">Do you want to make is balance for the customer</string>
+    <string name="do_you_want_to_make_is_balance_for_you">Do you want to make is balance for you</string>
+    <string name="balance_for_customer">Balance For Customer</string>
+    <string name="balance_for_you">Balance For You</string>
+    <string name="select_payment_type">Select Payment Type</string>
+    <string name="pay_with_money">Pay with Money</string>
+    <string name="pay_with_gold">Pay With Gold</string>
+    <string name="g_labor_cost">%1$sg + %2$s Labor Cost</string>
+    <string name="save_as_outstanding_bill">Save as OutStanding Bill</string>
 </resources>

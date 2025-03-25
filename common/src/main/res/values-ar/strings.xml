@@ -167,7 +167,7 @@
     <string name="gold_sales">مبيعات الذهب</string>
     <string name="ingots_sales">مبيعات السبائك</string>
     <string name="karat">العيار</string>
-    <string name="labor_cost">تكلفة المصنعية</string>
+    <string name="labor_cost">تكلفة المصنعية لكل جرام</string>
     <string name="money_paid">المبلغ المدفوع</string>
     <string name="gold_paid">الذهب المدفوع</string>
     <string name="specifying_karat">تحديد العيار</string>
