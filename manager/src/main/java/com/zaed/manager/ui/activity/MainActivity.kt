@@ -5,9 +5,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +18,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
@@ -33,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -48,13 +51,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.zaed.common.R
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.authentication.UserApprovalStatus
 import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.ui.auth.MainViewModel
-import com.zaed.common.ui.util.AppLanguage
-import com.zaed.common.R
 import com.zaed.common.ui.components.SelectLanguageDialog
+import com.zaed.common.ui.util.AppLanguage
 import com.zaed.manager.app.navigation.NavDrawerItem
 import com.zaed.manager.app.navigation.NavigationHost
 import com.zaed.manager.app.navigation.Route
@@ -97,7 +100,7 @@ fun App(
     onLanguageSelected: (AppLanguage) -> Unit
 ) {
     val startDestination = when {
-        localUser?.isApprovedManager() == true -> Route.UserManagementRoute
+        localUser?.isApprovedManager() == true -> Route.DashboardRoute
         else -> Route.LoginRoute
     }
     val navController = rememberNavController()
@@ -105,7 +108,12 @@ fun App(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val mutex = remember { Mutex() }
-    val navDrawerRoutes = remember { NavDrawerItem.entries.map { it.route::class.qualifiedName } }
+    val navDrawerRoutes = remember {
+        NavDrawerItem.entries.flatMap { item ->
+            item.route?.let { listOf(it::class.qualifiedName!!) }
+                ?: item.subItems.map { it.route::class.qualifiedName!! }
+        }
+    }
     val currentRoute = (navBackStackEntry?.destination?.route
         ?: startDestination::class.qualifiedName.orEmpty()).substringBefore("?")
     LaunchedEffect(isSignedOut) {
@@ -144,7 +152,7 @@ fun App(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            painter = painterResource(com.zaed.common.R.drawable.app_icon),
+                            painter = painterResource(R.drawable.app_icon),
                             contentDescription = "App Logo",
                             tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(82.dp)
@@ -159,7 +167,7 @@ fun App(
                     }
                     Text(
                         stringResource(
-                            com.zaed.common.R.string.logged_in_as_placeholder,
+                            R.string.logged_in_as_placeholder,
                             localUser?.fullName ?: ""
                         ),
                         modifier = Modifier
@@ -175,36 +183,90 @@ fun App(
                             .padding(vertical = 8.dp)
                     ) {
                         Column(
-                            modifier = Modifier.weight(1f).verticalScroll(rememberScrollState())
+                            modifier = Modifier
+                                .weight(1f)
+                                .verticalScroll(rememberScrollState())
                         ) {
+                            var expandedIndex by remember{ mutableStateOf<Int?>(null) }
                             NavDrawerItem.entries.forEach { item ->
-                                NavigationDrawerItem(
-                                    shape = RoundedCornerShape(0.dp),
-                                    modifier = Modifier.padding(vertical = 8.dp),
-                                    label = { Text(text = stringResource(item.title)) },
-                                    selected = currentRoute == item.route::class.qualifiedName.orEmpty(),
-                                    icon = item.icon?.let {
-                                        {
-                                            Icon(
-                                                painter = painterResource(it),
-                                                contentDescription = null,
-                                                modifier = Modifier.size(24.dp),
-                                                tint = MaterialTheme.colorScheme.onSurface
-                                            )
-                                        }
-                                    },
-                                    onClick = {
-                                        scope.launch {
-                                            mutex.withLock {
-                                                navController.navigate(item.route) {
-                                                    launchSingleTop = true
-                                                    restoreState = true
+                                Column {
+                                    NavigationDrawerItem(
+                                        shape = RoundedCornerShape(0.dp),
+                                        modifier = Modifier.padding(vertical = 8.dp),
+                                        label = {
+                                            Row {
+                                                Text(
+                                                    text = stringResource(item.title),
+                                                    modifier = Modifier.weight(1f)
+                                                )
+                                                if (item.subItems.isNotEmpty()) {
+                                                    Icon(
+                                                        imageVector = if (expandedIndex == item.ordinal) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                                                        contentDescription = null,
+                                                    )
                                                 }
-                                                drawerState.close()
+                                            }
+                                        },
+                                        selected = expandedIndex == item.ordinal,
+                                        icon = item.icon?.let {
+                                            {
+                                                Icon(
+                                                    painter = painterResource(it),
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(24.dp),
+                                                    tint = MaterialTheme.colorScheme.onSurface
+                                                )
+                                            }
+                                        },
+                                        onClick = {
+                                            item.route?.let {
+                                                scope.launch {
+                                                    mutex.withLock {
+                                                        navController.navigate(item.route) {
+                                                            launchSingleTop = true
+                                                            restoreState = true
+                                                        }
+                                                        drawerState.close()
+                                                    }
+                                                }
+                                            } ?: run {
+                                                if(expandedIndex == item.ordinal){
+                                                    expandedIndex = null
+                                                } else {
+                                                    expandedIndex = item.ordinal
+                                                }
+                                            }
+                                        }
+                                    )
+                                    AnimatedVisibility(expandedIndex == item.ordinal) {
+                                        Column {
+                                            item.subItems.forEach { subItem ->
+                                                NavigationDrawerItem(
+                                                    shape = RoundedCornerShape(0.dp),
+                                                    modifier = Modifier.padding(vertical = 4.dp),
+                                                    label = {
+                                                        Text(
+                                                            text = stringResource(subItem.title),
+                                                            modifier = Modifier.padding(start = 32.dp)
+                                                        )
+                                                    },
+                                                    selected = currentRoute == (subItem.route::class.qualifiedName.orEmpty()),
+                                                    onClick = {
+                                                        scope.launch {
+                                                            mutex.withLock {
+                                                                navController.navigate(subItem.route) {
+                                                                    launchSingleTop = true
+                                                                    restoreState = true
+                                                                }
+                                                                drawerState.close()
+                                                            }
+                                                        }
+                                                    }
+                                                )
                                             }
                                         }
                                     }
-                                )
+                                }
                             }
                         }
                         HorizontalDivider(modifier = Modifier.padding(bottom = 8.dp))
@@ -238,7 +300,7 @@ fun App(
                         NavigationDrawerItem(
                             shape = RoundedCornerShape(0.dp),
                             modifier = Modifier.padding(vertical = 8.dp),
-                            label = { Text(text = stringResource(com.zaed.common.R.string.sign_out)) },
+                            label = { Text(text = stringResource(R.string.sign_out)) },
                             selected = false,
                             icon = {
                                 Icon(

@@ -340,4 +340,5 @@
     <string name="receipt_number_template">Payment for transaction #%1$s</string>
     <string name="transfered_to_template">Transfered to %1$s</string>
     <string name="manager_cheque">Manager Cheque</string>
+    <string name="wholesale">Wholesale</string>
 </resources>
