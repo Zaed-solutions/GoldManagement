@@ -371,5 +371,4 @@ fun NavigationHost(
             )
         }
     }
-
 }
