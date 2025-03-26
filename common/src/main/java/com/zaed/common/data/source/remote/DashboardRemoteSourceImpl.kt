@@ -6,6 +6,7 @@ import com.google.firebase.firestore.AggregateField
 import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
+import com.zaed.common.ui.addpurchase.ProductType
 import kotlinx.coroutines.tasks.await
 
 class DashboardRemoteSourceImpl(
@@ -14,8 +15,7 @@ class DashboardRemoteSourceImpl(
 ) : DashboardRemoteSource {
     private val storeSalesCollection = firestore.collection("store_sales")
     private val wholesalesCollection = firestore.collection("wholesale_sales")
-    private val ingotTransactionsCollection = firestore.collection("ingot_transaction")
-
+    private val ingotTransactionsCollection = firestore.collection("ingot_transactions")
     private val storeLossesCollection = firestore.collection("store-losses")
     private val distributorLossesCollection = firestore.collection("distributor-losses")
     private val managerLossesCollection = firestore.collection("manager-losses")
@@ -41,7 +41,8 @@ class DashboardRemoteSourceImpl(
             val distributorQuery = wholesalesCollection.where(
                 Filter.and(
                     Filter.notEqualTo("distributorId", managerId),
-                    Filter.equalTo("deleted", false)
+                    Filter.equalTo("deleted", false),
+                    Filter.equalTo("productType", ProductType.PRODUCT)
                 )
             )
             val distributorAggregateQuery = distributorQuery.aggregate(AggregateField.sum("profit"))
@@ -136,7 +137,8 @@ class DashboardRemoteSourceImpl(
             val distributorQuery = wholesalesCollection.where(
                 Filter.and(
                     Filter.notEqualTo("distributorId", managerId),
-                    Filter.equalTo("deleted", false)
+                    Filter.equalTo("deleted", false),
+                    Filter.equalTo("productType", ProductType.PRODUCT)
                 )
             )
             val distributorAggregateQuery = distributorQuery.aggregate(AggregateField.sum("totalAmount"))
