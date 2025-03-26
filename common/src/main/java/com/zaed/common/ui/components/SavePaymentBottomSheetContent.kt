@@ -160,7 +160,7 @@ fun SaveCashPaymentBottomSheetContent(
                 if(payment.id.isBlank()){
                     payment = payment.copy(
                         given = !isTaken,
-                        customerId = selectedAccount.id,
+                        accountId = selectedAccount.id,
                         id = "Payment-"+UUID.randomUUID().toString()
                     )
                 }
@@ -217,7 +217,7 @@ fun SaveFuturePaymentBottomSheetContent(
                 if(payment.id.isBlank()){
                     payment = payment.copy(
                         given = !isTaken,
-                        customerId = selectedAccount.id,
+                        accountId = selectedAccount.id,
                         id = "Payment-"+UUID.randomUUID().toString()
                     )
                 }
@@ -294,7 +294,7 @@ fun SaveGoldPaymentBottomSheetContent(
                 if(payment.id.isBlank()){
                     payment = payment.copy(
                         given = !isTaken,
-                        customerId = selectedAccount.id,
+                        accountId = selectedAccount.id,
                         id = "Payment-"+UUID.randomUUID().toString()
                     )
                 }
@@ -517,7 +517,7 @@ fun SaveManagerChequePaymentBottomSheetContent(
                 if(payment.id.isBlank()){
                     payment = payment.copy(
                         given = !isTaken,
-                        customerId = selectedAccount.id,
+                        accountId = selectedAccount.id,
                         id = "Payment-"+UUID.randomUUID().toString()
                     )
                 }
@@ -608,7 +608,7 @@ fun SaveBankTransferPaymentBottomSheetContent(
                 if(payment.id.isBlank()){
                     payment = payment.copy(
                         given = !isTaken,
-                        customerId = selectedAccount.id,
+                        accountId = selectedAccount.id,
                         id = "Payment-"+UUID.randomUUID().toString()
                     )
                 }

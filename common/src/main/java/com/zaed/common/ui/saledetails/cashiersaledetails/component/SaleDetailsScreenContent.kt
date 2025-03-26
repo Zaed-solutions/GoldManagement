@@ -108,7 +108,7 @@ fun SaleDetailsScreenContent(
                     onAction(SaleDetailsUiAction.OnRequestReceipt)
                 }
             )
-            if (state.storeSale.customerId.isNotBlank()) {
+            if (state.storeSale.accountId.isNotBlank()) {
                 // customer info
                 CustomerInfoSection(
                     customerName = state.storeSale.customerName,

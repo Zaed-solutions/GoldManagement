@@ -75,7 +75,7 @@ class WholeSalesCustomerRemoteDataSourceImpl(
 
     override suspend fun addNewPayment(request: AddNewPaymentRequest): Result<Unit> {
         try {
-            customersCollection.document(request.customerId).update(
+            customersCollection.document(request.accountId).update(
                 "moneyDebtAmount",
                 FieldValue.increment(request.payment.amount),
             ).await()

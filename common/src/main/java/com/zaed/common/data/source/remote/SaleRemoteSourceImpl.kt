@@ -291,7 +291,7 @@ class SaleRemoteSourceImpl(
             try {
                 sListener = wholesalesCollection.where(
                     Filter.and(
-                        Filter.equalTo("customerId", request.customerId),
+                        Filter.equalTo("accountId", request.customerId),
                         Filter.equalTo("deleted", false),
                         Filter.equalTo("outStandingBill", request.withOutStandingBill)
                     )
@@ -478,8 +478,8 @@ class SaleRemoteSourceImpl(
                 )
             )
             batch.set(saleRef, sale.copy(logs = logs, deleted = true))
-            if (sale.customerId.isNotEmpty()) {
-                val customerRef = wholesaleCustomersCollection.document(sale.customerId)
+            if (sale.accountId.isNotEmpty()) {
+                val customerRef = wholesaleCustomersCollection.document(sale.accountId)
                 var totalPaymentDeleted = 0.0
                 sale.paymentsIds.forEach {
                     val paymentRef = moneyPaymentCollection.document(it)
@@ -569,7 +569,7 @@ class SaleRemoteSourceImpl(
 
                 if (it.type == PaymentType.FUTURES) {
                     val customerRef =
-                        wholesaleCustomersCollection.document(request.sale.customerId)
+                        wholesaleCustomersCollection.document(request.sale.accountId)
 
                     batch.update(
                         customerRef,
@@ -578,7 +578,7 @@ class SaleRemoteSourceImpl(
 
                 } else if (it.type == PaymentType.REMAIN) {
                     val customerRef =
-                        wholesaleCustomersCollection.document(request.sale.customerId)
+                        wholesaleCustomersCollection.document(request.sale.accountId)
                     batch.update(
                         customerRef,
                         mapOf("moneyDebtAmount" to FieldValue.increment(it.amount))
@@ -691,8 +691,8 @@ class SaleRemoteSourceImpl(
             ).get().await().documents.firstOrNull()?.toObject(CashPayment::class.java)
                 ?: CashPayment()
             val updatedPaymentIds = mutableListOf<String>()
-            if (request.sale.customerId.isNotBlank()) {
-                val customerRef = wholesaleCustomersCollection.document(request.sale.customerId)
+            if (request.sale.accountId.isNotBlank()) {
+                val customerRef = wholesaleCustomersCollection.document(request.sale.accountId)
 
                 Log.d("finding_the_sex", "existingPayment: ${existingPayment.amount}")
                 batch.update(
@@ -714,7 +714,7 @@ class SaleRemoteSourceImpl(
                     val newPaymentRef = moneyPaymentCollection.document()
                     val amount = if (payment.type == PaymentType.FUTURES) {
                         val customerRef =
-                            wholesaleCustomersCollection.document(request.sale.customerId)
+                            wholesaleCustomersCollection.document(request.sale.accountId)
                         batch.update(
                             customerRef,
                             mapOf("moneyDebtAmount" to FieldValue.increment(payment.signedAmount()))
@@ -722,7 +722,7 @@ class SaleRemoteSourceImpl(
                         payment.amount
                     }else if (payment.type == PaymentType.REMAIN) {
                         val customerRef =
-                            wholesaleCustomersCollection.document(request.sale.customerId)
+                            wholesaleCustomersCollection.document(request.sale.accountId)
                         batch.update(
                             customerRef,
                             mapOf("moneyDebtAmount" to FieldValue.increment(payment.signedAmount()))

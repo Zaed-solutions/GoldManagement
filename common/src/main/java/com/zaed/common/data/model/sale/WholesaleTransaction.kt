@@ -8,7 +8,7 @@ import java.util.Date
 
 data class WholesaleTransaction(
     override val id: String = "",
-    override val customerId: String = "",
+    override val accountId: String = "",
     override val customerName: String = "",
     override val customerPhone: String = "",
     val distributorId: String = "",
@@ -26,7 +26,7 @@ data class WholesaleTransaction(
     override val outStandingBill : Boolean = false
 ) : Transaction(
     id = id,
-    customerId = customerId,
+    accountId = accountId,
     customerName = customerName,
     customerPhone = customerPhone,
     createdAt = createdAt,

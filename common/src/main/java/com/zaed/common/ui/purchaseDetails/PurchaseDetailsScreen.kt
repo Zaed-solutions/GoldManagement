@@ -53,7 +53,7 @@ fun PurchaseDetailsScreen(
     ) { action ->
         when (action) {
             SaleDetailsUiAction.OnBackClicked -> onBackClicked()
-            SaleDetailsUiAction.OnCustomerClicked -> onNavigateToSupplierDetails(state.purchase.customerId)
+            SaleDetailsUiAction.OnCustomerClicked -> onNavigateToSupplierDetails(state.purchase.accountId)
             SaleDetailsUiAction.OnEditClicked -> onNavigateToEditPurchase(purchaseId)
             else -> viewModel.handleAction(action)
         }

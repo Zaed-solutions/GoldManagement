@@ -304,7 +304,7 @@ class SalesChequesScreenViewModel(
             editPaymentUseCase(
                 request = EditPaymentRequest(
                     isSupplier = isSupplier,
-                    customerId = uiState.value.selectedAccount.id,
+                    accountId = uiState.value.selectedAccount.id,
                     oldPayment = oldPayment,
                     newPayment = newPayment
                 )
@@ -361,7 +361,7 @@ class SalesChequesScreenViewModel(
             addPaymentUseCase(
                 request = AddNewPaymentRequest(
                     isSupplier = isSupplier,
-                    customerId = uiState.value.selectedAccount.id,
+                    accountId = uiState.value.selectedAccount.id,
                     payment = payment
                 )
             ).onSuccess {

@@ -270,7 +270,7 @@ fun SelectPaymentsContent(
                                 if (selectedAccount is WholeSaleCustomer) {
                                     onAddPayment(
                                         FuturePayment(
-                                            customerId = selectedAccount.id,
+                                            accountId = selectedAccount.id,
                                             amount = remainsAmount.absoluteValue,
                                             given = false,
                                             type = PaymentType.REMAIN
@@ -279,7 +279,7 @@ fun SelectPaymentsContent(
                                 } else {
                                     onAddPayment(
                                         FuturePayment(
-                                            customerId = selectedAccount.id,
+                                            accountId = selectedAccount.id,
                                             amount = remainsAmount.absoluteValue,
                                             given = true,
                                             type = PaymentType.REMAIN
@@ -381,7 +381,7 @@ fun SelectPaymentsContent(
                                 onClick = {
                                     onAddPayment(
                                         LossPayment(
-                                            customerId = selectedAccount.id,
+                                            accountId = selectedAccount.id,
                                             amount = remainsAmount,
                                             given = true,
                                             type = PaymentType.LOSS
@@ -403,7 +403,7 @@ fun SelectPaymentsContent(
                                 if (selectedAccount.id.isNotBlank()) {
                                     onAddPayment(
                                         FuturePayment(
-                                            customerId = selectedAccount.id,
+                                            accountId = selectedAccount.id,
                                             amount = remainsAmount,
                                             given = true,
                                             type = PaymentType.FUTURES
