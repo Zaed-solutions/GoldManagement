@@ -27,8 +27,7 @@ class DashboardRemoteSourceImpl(
 
             val sum = result.get(AggregateField.sum("profit"))
             Log.d("DashboardRemoteSourceImpl", "getStoresProfits: $sum")
-
-            return Result.success((sum as Double).toDouble())
+            return Result.success((sum as? Double)?.toDouble()?:0.0)
 
         } catch (e: Exception) {
             crashlytics.recordException(e)
@@ -53,13 +52,16 @@ class DashboardRemoteSourceImpl(
                     Filter.equalTo("deleted", false)
                 )
             )
-            val ingotAggregateQuery = ingotQuery.aggregate(AggregateField.sum("profit"))
+            val ingotAggregateQuery = ingotQuery.aggregate(AggregateField.sum("totalEarning"))
             val ingotResult = ingotAggregateQuery.get(AggregateSource.SERVER).await()
 
             val distributorResultSum = distributorResult.get(AggregateField.sum("profit"))
-            val ingotResultSum = ingotResult.get(AggregateField.sum("profit"))
-            val sum = distributorResultSum as Double + ingotResultSum as Double
-            return Result.success((sum as Double).toDouble())
+            val ingotResultSum = ingotResult.get(AggregateField.sum("totalEarning"))
+            val sum = (distributorResultSum as? Double)?.toDouble()?:0.0
+            Log.d("DashboardRemoteSourceImpl", "getWholesaleProfits dist: $sum")
+            val sum2 =(ingotResultSum as? Double)?.toDouble()?:0.0
+            Log.d("DashboardRemoteSourceImpl", "getWholesaleProfits ing: $sum2")
+            return Result.success((sum.plus(sum2)))
         } catch (e: Exception) {
             crashlytics.recordException(e)
             e.printStackTrace()
@@ -79,7 +81,8 @@ class DashboardRemoteSourceImpl(
             val result = aggregateQuery.get(AggregateSource.SERVER).await()
 
             val sum = result.get(AggregateField.sum("profit"))
-            return Result.success((sum as Double).toDouble())
+            Log.d("DashboardRemoteSourceImpl", "getManagerProfits: $sum")
+            return Result.success((sum as? Double)?.toDouble()?:0.0)
 
         } catch (e: Exception) {
             crashlytics.recordException(e)
@@ -90,15 +93,13 @@ class DashboardRemoteSourceImpl(
 
     override suspend fun getStoreSales(): Result<Double> {
         try {
-            Log.d("DashboardRemoteSourceImpl", "getStoreSales: start")
-
             val query = storeSalesCollection.whereEqualTo("deleted", false)
             val aggregateQuery = query.aggregate(AggregateField.sum("totalAmount"))
             val result = aggregateQuery.get(AggregateSource.SERVER).await()
 
             val sum = result.get(AggregateField.sum("totalAmount"))
             Log.d("DashboardRemoteSourceImpl", "getStoreSales: $sum")
-            return Result.success((sum as Double).toDouble())
+            return Result.success((sum as? Double)?.toDouble()?:0.0)
 
         } catch (e: Exception) {
             crashlytics.recordException(e)
@@ -120,7 +121,8 @@ class DashboardRemoteSourceImpl(
             val result = aggregateQuery.get(AggregateSource.SERVER).await()
 
             val sum = result.get(AggregateField.sum("totalAmount"))
-            return Result.success((sum as Double).toDouble())
+            Log.d("DashboardRemoteSourceImpl", "getManagerSales: $sum")
+            return Result.success((sum as? Double)?.toDouble()?:0.0)
 
         } catch (e: Exception) {
             crashlytics.recordException(e)
@@ -150,8 +152,11 @@ class DashboardRemoteSourceImpl(
 
             val distributorResultSum = distributorResult.get(AggregateField.sum("totalAmount"))
             val ingotResultSum = ingotResult.get(AggregateField.sum("totalAmount"))
-            val sum = distributorResultSum as Double + ingotResultSum as Double
-            return Result.success((sum as Double).toDouble())
+            val sum = (distributorResultSum as? Double)?.toDouble()?:0.0
+            Log.d("DashboardRemoteSourceImpl", "getWholesaleSales dist: $sum")
+            val sum2 =(ingotResultSum as? Double)?.toDouble()?:0.0
+            Log.d("DashboardRemoteSourceImpl", "getWholesaleSales ing: $sum2")
+            return Result.success((sum.plus(sum2)))
         } catch (e: Exception) {
             crashlytics.recordException(e)
             e.printStackTrace()
@@ -166,9 +171,8 @@ class DashboardRemoteSourceImpl(
             val result = aggregateQuery.get(AggregateSource.SERVER).await()
 
             val sum = result.get(AggregateField.sum("value"))
-            Log.d("DashboardRemoteSourceImpl", "getStoresProfits: $sum")
-
-            return Result.success((sum as Double).toDouble())
+            Log.d("DashboardRemoteSourceImpl", "getStoreLoss: $sum")
+            return Result.success((sum as? Double)?.toDouble()?:0.0)
 
         } catch (e: Exception) {
             crashlytics.recordException(e)
@@ -186,7 +190,7 @@ class DashboardRemoteSourceImpl(
             val sum = result.get(AggregateField.sum("value"))
             Log.d("DashboardRemoteSourceImpl", "getStoresProfits: $sum")
 
-            return Result.success((sum as Double).toDouble())
+            return Result.success((sum as? Double)?.toDouble()?:0.0)
 
         } catch (e: Exception) {
             crashlytics.recordException(e)
@@ -203,7 +207,7 @@ class DashboardRemoteSourceImpl(
             val sum = result.get(AggregateField.sum("value"))
             Log.d("DashboardRemoteSourceImpl", "getStoresProfits: $sum")
 
-            return Result.success((sum as Double).toDouble())
+            return Result.success((sum as? Double)?.toDouble()?:0.0)
 
         } catch (e: Exception) {
             crashlytics.recordException(e)

@@ -19,8 +19,6 @@ data class IngotTransaction(
     val karat: Karat = Karat.K18,
     val type: TransactionType = TransactionType.SALE,
 ) {
-    val profit
-        get() = (sellingGramPrice - buyingGramPrice) * grams
     @Transient
     val totalEarning
         get() = (sellingGramPrice - buyingGramPrice) * grams
