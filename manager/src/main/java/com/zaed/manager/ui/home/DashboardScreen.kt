@@ -1,6 +1,5 @@
 package com.zaed.manager.ui.home
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +9,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Replay
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -135,27 +132,27 @@ fun DashboardScreenContent(
 
             ReportGrid(
                 totalStoreSales = uiState.storesSales,
+                totalStoreSalesLoading = uiState.storesSalesLoading,
                 totalStoreProfit = uiState.storesProfit,
+                totalStoreProfitLoading = uiState.storesProfitLoading,
                 totalStoreLoss =  uiState.storesLoss,
+                totalStoreLossLoading =  uiState.storesLossLoading,
                 totalWholesaleSales =  uiState.wholesaleSales,
+                totalWholesaleSalesLoading =  uiState.wholesaleSalesLoading,
                 totalWholesaleProfit =  uiState.wholesaleProfit,
+                totalWholesaleProfitLoading =  uiState.wholesaleProfitLoading,
                 totalWholesaleLoss =  uiState.wholesaleLoss,
+                totalWholesaleLossLoading =  uiState.wholesaleLossLoading,
                 totalManagerSales =  uiState.managerSales,
+                totalManagerSalesLoading =  uiState.managerSalesLoading,
                 totalManagerProfit =  uiState.managerProfit,
+                totalManagerProfitLoading =  uiState.managerProfitLoading,
                 totalManagerLoss =  uiState.managerLoss,
+                totalManagerLossLoading =  uiState.managerLossLoading,
                 onReportClick = { reportType ->
                     onAction(DashboardUiAction.NavigateToDetail(reportType))
                 }
             )
-
-            if (uiState.isLoading) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
 
             uiState.error?.let { error ->
                 Text(

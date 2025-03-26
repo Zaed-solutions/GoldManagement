@@ -1,6 +1,7 @@
 package com.zaed.manager.ui.home.component
 
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,6 +30,7 @@ import com.zaed.common.ui.util.toMoneyFormat
 fun ReportCard(
     title: String,
     value: Double,
+    loading: Boolean,
     @DrawableRes iconRes: Int,
     cardColor: Color,
     onClick: () -> Unit
@@ -60,13 +63,19 @@ fun ReportCard(
             )
 
             Spacer(modifier = Modifier.height(4.dp))
+            AnimatedContent(loading) {
+                if (it) {
+                    CircularProgressIndicator()
+                } else {
+                    Text(
+                        text = value.toMoneyFormat(2),
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
 
-            Text(
-                text = value.toMoneyFormat(2),
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
         }
     }
 }

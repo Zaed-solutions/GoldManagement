@@ -1,24 +1,25 @@
 package com.zaed.common.data.repository
 
+import com.zaed.common.data.model.dashboard.DateFilter
 import com.zaed.common.data.source.remote.DashboardRemoteSource
 
 class DashboardRepositoryImpl(
     private val dashboardRemoteSource: DashboardRemoteSource
 ) : DashboardRepository {
-    override suspend fun getStoresProfits(): Result<Double> = dashboardRemoteSource.getStoresProfits()
-    override suspend fun getWholesaleProfits(managerId: String): Result<Double>  = dashboardRemoteSource.getWholesaleProfits(managerId)
+    override suspend fun getStoresProfits(dateFilter: DateFilter): Result<Double> = dashboardRemoteSource.getStoresProfits(dateFilter)
+    override suspend fun getWholesaleProfits(managerId: String,dateFilter: DateFilter): Result<Double>  = dashboardRemoteSource.getWholesaleProfits(managerId,dateFilter)
 
-    override suspend fun getManagerProfits(managerId: String): Result<Double>  = dashboardRemoteSource.getManagerProfits(managerId)
+    override suspend fun getManagerProfits(managerId: String,dateFilter: DateFilter): Result<Double>  = dashboardRemoteSource.getManagerProfits(managerId,dateFilter)
 
-    override suspend fun getStoreSales(): Result<Double>  = dashboardRemoteSource.getStoreSales()
+    override suspend fun getStoreSales(dateFilter: DateFilter): Result<Double>  = dashboardRemoteSource.getStoreSales(dateFilter)
 
-    override suspend fun getWholesaleSales(managerId: String): Result<Double>  = dashboardRemoteSource.getWholesaleSales(managerId)
+    override suspend fun getWholesaleSales(managerId: String,dateFilter: DateFilter): Result<Double>  = dashboardRemoteSource.getWholesaleSales(managerId,dateFilter)
 
-    override suspend fun getManagerSales(managerId: String): Result<Double>  = dashboardRemoteSource.getManagerSales(managerId)
+    override suspend fun getManagerSales(managerId: String,dateFilter: DateFilter): Result<Double>  = dashboardRemoteSource.getManagerSales(managerId,dateFilter)
 
-    override suspend fun getStoreLoss(): Result<Double>  = dashboardRemoteSource.getStoreLoss()
+    override suspend fun getStoreLoss(dateFilter: DateFilter): Result<Double>  = dashboardRemoteSource.getStoreLoss(dateFilter)
 
-    override suspend fun getWholesaleLoss(): Result<Double>  = dashboardRemoteSource.getWholesaleLoss()
+    override suspend fun getWholesaleLoss(dateFilter: DateFilter): Result<Double>  = dashboardRemoteSource.getWholesaleLoss(dateFilter)
 
-    override suspend fun getManagerLoss(): Result<Double>  = dashboardRemoteSource.getManagerLoss()
+    override suspend fun getManagerLoss(dateFilter: DateFilter): Result<Double>  = dashboardRemoteSource.getManagerLoss(dateFilter)
 }

@@ -1,7 +1,7 @@
 package com.zaed.manager.ui.home
 
-import com.zaed.manager.ui.home.component.DateFilter
-import com.zaed.manager.ui.home.component.DateFilterType
+import com.zaed.common.data.model.dashboard.DateFilter
+import com.zaed.common.data.model.dashboard.DateFilterType
 import com.zaed.manager.ui.home.component.ReportType
 import kotlinx.datetime.Month
 import java.util.Date

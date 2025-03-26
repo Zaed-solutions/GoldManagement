@@ -17,4 +17,13 @@
     <string name="month">Month</string>
     <string name="year">Year</string>
     <string name="range">Range</string>
+    <string name="store_sales">Store Sales</string>
+    <string name="store_profit">Store Profit</string>
+    <string name="store_loss">Store Loss</string>
+    <string name="wholesale_sales">Wholesale Sales</string>
+    <string name="wholesale_profit">Wholesale Profit</string>
+    <string name="wholesale_loss">Wholesale Loss</string>
+    <string name="manager_sales">Manager Sales</string>
+    <string name="manager_profit">Manager Profit</string>
+    <string name="manager_loss">Manager Loss</string>
 </resources>

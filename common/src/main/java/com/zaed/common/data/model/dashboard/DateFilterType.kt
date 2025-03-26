@@ -1,4 +1,4 @@
-package com.zaed.manager.ui.home.component
+package com.zaed.common.data.model.dashboard
 
 enum class DateFilterType {
     DAY, MONTH, YEAR, RANGE
