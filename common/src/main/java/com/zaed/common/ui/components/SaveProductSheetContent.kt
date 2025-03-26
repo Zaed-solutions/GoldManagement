@@ -56,7 +56,7 @@ fun SaveProductSheetContent(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            text = stringResource(R.string.add_product)+ " ${product.name}",
+            text = stringResource(R.string.add_product) + " ${product.name}",
             style = MaterialTheme.typography.headlineMedium
         )
 
@@ -120,7 +120,7 @@ fun ProductFieldsContent(
     ) {
         val focusRequester = remember { FocusRequester() }
         //grams
-        if(isStoreSale){
+        if (isStoreSale) {
             TextInputTextField(
                 value = product1.name,
                 onValueChange = { value ->
@@ -155,6 +155,178 @@ fun ProductFieldsContent(
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
             shape = RoundedCornerShape(4.dp),
             withBorder = true,
+        )
+
+        //discount
+        NumberInputTextField(
+            value = product1.discount.value,
+            onValueChange = { value ->
+                onValueChange(product1.copy(discount = product1.discount.copy(value = value)))
+            },
+            enabled = product1.discount.type != DiscountType.NONE,
+            focusRequester = focusRequester,
+            trailingIcon = {
+                Row(
+                    modifier = Modifier
+                        .padding(vertical = 4.dp, horizontal = 4.dp)
+                        .border(
+                            1.dp,
+                            MaterialTheme.colorScheme.primary,
+                            RoundedCornerShape(4.dp)
+                        ),
+                ) {
+                    //  percentage
+                    Surface(
+                        onClick = {
+                            onValueChange(product1.copy(discount = product1.discount.copy(type = DiscountType.PERCENTAGE)))
+                            focusRequester.requestFocus()
+                        },
+                        color = if (product1.discount.type == DiscountType.PERCENTAGE) MaterialTheme.colorScheme.primaryContainer.copy(
+                            alpha = 0.3f
+                        ) else MaterialTheme.colorScheme.surfaceContainer,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Percent,
+                            contentDescription = "Sale icon",
+                            tint = if (product1.discount.type == DiscountType.PERCENTAGE) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+                    //value
+                    Surface(
+                        onClick = {
+                            onValueChange(product1.copy(discount = product1.discount.copy(type = DiscountType.AMOUNT)))
+                            focusRequester.requestFocus()
+                        },
+                        color = if (product1.discount.type == DiscountType.AMOUNT) MaterialTheme.colorScheme.primaryContainer.copy(
+                            alpha = 0.3f
+                        ) else MaterialTheme.colorScheme.surfaceContainer,
+                        modifier = Modifier
+                            .padding(end = 4.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AttachMoney,
+                            contentDescription = "Sale icon",
+                            tint = if (product1.discount.type == DiscountType.AMOUNT) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+                }
+            },
+            label = stringResource(R.string.discount),
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(4.dp),
+            withBorder = true,
+        )
+        //quqntity
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.quantity),
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            // -
+            Surface(
+                onClick = {
+                    if (product1.quantity == 1) return@Surface
+                    onValueChange(product1.copy(quantity = product1.quantity - 1))
+                },
+                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                modifier = Modifier
+                    .padding(end = 4.dp)
+                    .clip(RoundedCornerShape(4.dp))
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Remove,
+                    contentDescription = "Sale icon",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+            //quantity text
+            Surface(
+                Modifier
+                    .padding(end = 4.dp)
+                    .width(48.dp)
+                    .border(
+                        1.dp,
+                        MaterialTheme.colorScheme.primary,
+                        RoundedCornerShape(4.dp)
+                    )
+            ) {
+                Text(
+                    text = product1.quantity.toString(),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(8.dp),
+                    textAlign = TextAlign.Center
+                )
+            }
+            // +
+            Surface(
+                onClick = {
+                    onValueChange(product1.copy(quantity = product1.quantity + 1))
+                },
+                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                modifier = Modifier
+
+                    .clip(RoundedCornerShape(4.dp))
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Sale icon",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun GoldFieldsContent(
+    product1: Product,
+    onValueChange: (Product) -> Unit,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        val focusRequester = remember { FocusRequester() }
+
+        NumberInputTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = product1.grams,
+            onValueChange = { value ->
+                onValueChange(product1.copy(grams = value))
+            },
+            label = stringResource(R.string.grams),
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        )
+        NumberInputTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = product1.gramPrice,
+            onValueChange = { value ->
+                onValueChange(product1.copy(gramPrice = value))
+            },
+            label = stringResource(R.string.gram_price),
+
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        )
+        NumberInputTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = product1.laborCost,
+            onValueChange = { value ->
+                onValueChange(product1.copy(laborCost = value))
+            },
+            label = stringResource(R.string.labor_cost),
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
         )
 
         //discount

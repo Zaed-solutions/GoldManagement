@@ -155,6 +155,7 @@ private fun AddGoldSaleScreenContent(
                     1 -> {
                         PreviewSaleContent(
                             transaction = state.sale,
+                            isGoldSale = true,
                             onUpdateProduct = {
                                 onAction(AddGoldSaleUiAction.OnAddProduct(it))
                             },
