@@ -180,8 +180,17 @@ class AddProductSaleViewModel(
             is AddProductSaleUiAction.OnEditPayment -> updatePayment(action.cashPayment)
             is AddProductSaleUiAction.OnRemovePayment -> removePayment(action.paymentId)
             is AddProductSaleUiAction.OnUpdateProducts -> updateProductsSale(action.products)
+            is AddProductSaleUiAction.OnUpdateDiscount -> updateDiscount(action.discount)
             AddProductSaleUiAction.OnDeleteAllProducts -> updateProductsSale(emptyList())
             else -> Unit
+        }
+    }
+
+    private fun updateDiscount(discount: Double) {
+        viewModelScope.launch {
+            _uiState.update { oldState ->
+                oldState.copy(sale = oldState.sale.copy(discount = discount))
+            }
         }
     }
 

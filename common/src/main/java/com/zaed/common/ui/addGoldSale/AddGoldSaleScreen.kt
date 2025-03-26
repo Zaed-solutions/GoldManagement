@@ -206,6 +206,10 @@ private fun AddGoldSaleScreenContent(
                             totalAmount = state.sale.totalAmount,
                             totalPaid = state.totalMoneyPaid,
                             payments = state.payments,
+                            discount = state.sale.discount,
+                            onUpdateDiscount = {
+                                onAction(AddGoldSaleUiAction.OnUpdateDiscount(it))
+                            },
                             selectedAccount = state.selectedCustomer,
                             currentUser = state.currentUser,
                             products = state.sale.products,

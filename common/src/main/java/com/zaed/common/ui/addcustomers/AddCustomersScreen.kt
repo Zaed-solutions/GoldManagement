@@ -227,7 +227,8 @@ fun AddCustomersScreenContent(
                 ){
                     Text(
                         text = stringResource(R.string.pay_with_cheques),
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.weight(1f)
                     )
                     Switch(
                         checked = uiState.request.payWithCheques,

@@ -1,12 +1,18 @@
 package com.zaed.common.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -19,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
@@ -135,18 +142,44 @@ fun SaveCashPaymentBottomSheetContent(
         modifier = modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
 
         Text(
             text = stringResource(R.string.payment_method) + stringResource(initialPayment.type.titleRes),
             style = MaterialTheme.typography.titleLarge
         )
-
-        NumberInputTextField(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp),
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                Modifier
+                    .padding(end = 4.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f))
+
+            ) {
+                Text(
+                    text = selectedAccount.name.first().toString(),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            Text(
+                text = selectedAccount.name,
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
+        HorizontalDivider()
+        NumberInputTextField(
+            modifier = Modifier
+                .fillMaxWidth(),
             label = stringResource(R.string.amount),
             value = payment.amount,
             onValueChange = {

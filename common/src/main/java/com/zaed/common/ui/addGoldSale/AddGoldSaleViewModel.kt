@@ -160,7 +160,16 @@ class AddGoldSaleViewModel(
             is AddGoldSaleUiAction.OnUpdateProducts -> updateProductsSale(action.products)
             AddGoldSaleUiAction.OnDeleteAllProducts -> updateProductsSale(emptyList())
             is AddGoldSaleUiAction.OnUpdatePaymentType -> updatePaymentType(action.isCash)
+            is AddGoldSaleUiAction.OnUpdateDiscount -> updateDiscount(action.discount)
             else -> Unit
+        }
+    }
+
+    private fun updateDiscount(discount: Double) {
+        viewModelScope.launch {
+            _uiState.update { oldState ->
+                oldState.copy(sale = oldState.sale.copy(discount = discount))
+            }
         }
     }
 

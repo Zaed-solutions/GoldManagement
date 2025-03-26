@@ -13,6 +13,7 @@ data class WholesaleTransaction(
     override val customerPhone: String = "",
     val distributorId: String = "",
     val distributorName: String = "",
+    val discount: Double = 0.0,
     override val createdAt: Date = Date(),
     override val logs: List<ChangeLog> = emptyList(),
     override val deleted: Boolean = false,
@@ -45,7 +46,7 @@ data class WholesaleTransaction(
     val totalPriceBeforeDiscount
         get() = products.sumOf { it.totalPriceBeforeDiscount }
     override val totalAmount
-        get() = products.sumOf { it.totalPriceAfterDiscount }
+        get() = totalPriceBeforeDiscount - discount
 }
 
 

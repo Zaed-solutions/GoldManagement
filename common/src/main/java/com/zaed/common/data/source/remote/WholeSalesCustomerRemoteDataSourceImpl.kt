@@ -119,6 +119,8 @@ class WholeSalesCustomerRemoteDataSourceImpl(
                     "phone" to request.updatedData.phone,
                     "address" to request.updatedData.address,
                     "city" to request.updatedData.city,
+                    "note" to request.updatedData.note,
+                    "payWithCheques" to request.updatedData.payWithCheques
                 )
             ).await()
             return Result.success(Unit)
@@ -219,6 +221,8 @@ class WholeSalesCustomerRemoteDataSourceImpl(
                     email = request.email,
                     address = request.address,
                     city = request.city,
+                    note = request.note,
+                    payWithCheques = request.payWithCheques
                 )
             ).await()
             return Result.success(Unit)

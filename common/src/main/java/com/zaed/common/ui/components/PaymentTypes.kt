@@ -1,10 +1,12 @@
 package com.zaed.common.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -38,13 +40,18 @@ import com.zaed.common.ui.addpurchase.ProductType
 
 @Composable
 fun PaymentTypes(
+    modifier: Modifier  = Modifier,
     selectedAccount: Account,
     types: List<PaymentType> = getProductSalePayments(),
     onPaymentTypeSelected: (PaymentType) -> Unit = {}
 ) {
-    LazyColumn {
+    LazyColumn (
+        modifier =  modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(vertical = 16.dp)
+    ){
         items(types) { paymentType ->
             val enabled = if(paymentType == PaymentType.CHEQUE){
+                Log.d("Edzaa", "PaymentTypes: ${selectedAccount is Supplier},,,${(selectedAccount as? WholeSaleCustomer)?.payWithCheques}")
                 selectedAccount.id.isNotBlank() && (selectedAccount is Supplier || (selectedAccount as? WholeSaleCustomer)?.payWithCheques?:false)
             } else{
                 paymentType in listOf(PaymentType.CASH) || selectedAccount.id.isNotBlank()
@@ -69,18 +76,20 @@ fun PaymentTypes(
                             modifier = Modifier
                                 .size(36.dp)
                                 .padding(8.dp),
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = if(enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
                             contentDescription = null
                         )
                     }
                     Text(
                         text = stringResource(paymentType.titleRes),
                         style = MaterialTheme.typography.titleMedium,
+                        color = if(enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                        modifier = Modifier.weight(1f),
                     )
                     Icon(
                         imageVector = Icons.AutoMirrored.Default.ArrowForwardIos,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = if(enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
                     )
                 }
             }

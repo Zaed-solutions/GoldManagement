@@ -55,6 +55,7 @@ fun CustomerItem(
                     .fillMaxWidth()
                     .padding(start = 16.dp, top = 8.dp, bottom = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
                     Modifier

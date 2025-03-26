@@ -186,11 +186,15 @@ private fun AddProductSaleScreenContent(
                             totalAmount = state.sale.totalAmount,
                             payments = state.payments,
                             totalPaid = state.totalPaid,
+                            discount = state.sale.discount,
                             selectedAccount = state.selectedCustomer,
                             currentUser = state.currentUser,
                             query = state.customerSearchQuery,
                             onQueryChanged = {
                                 onAction(AddProductSaleUiAction.OnCustomerSearchQueryChanged(it))
+                            },
+                            onUpdateDiscount = {
+                                onAction(AddProductSaleUiAction.OnUpdateDiscount(it))
                             },
                             suggestedAccount = state.suggestedCustomers,
                             onAddNewCustomer = {
