@@ -73,7 +73,7 @@ class DashboardRemoteSourceImpl(
         try {
             val query = wholesalesCollection.where(
                 Filter.and(
-                    Filter.notEqualTo("distributorId", managerId),
+                    Filter.equalTo("distributorId", managerId),
                     Filter.equalTo("deleted", false)
                 )
             )
@@ -113,7 +113,7 @@ class DashboardRemoteSourceImpl(
         try {
             val query = wholesalesCollection.where(
                 Filter.and(
-                    Filter.notEqualTo("distributorId", managerId),
+                    Filter.equalTo("distributorId", managerId),
                     Filter.equalTo("deleted", false)
                 )
             )
