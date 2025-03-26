@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
+import com.zaed.common.data.model.category.toCategory
 import com.zaed.common.data.model.customer.FetchWholesaleCustomersByNameRequest
 import com.zaed.common.data.model.customer.WholeSaleCustomer
+import com.zaed.common.data.model.inventory.request.FetchInventoriesRequest
 import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentStatus
@@ -19,6 +21,7 @@ import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.category.FetchAllCategoriesUseCase
 import com.zaed.common.domain.customer.FetchWholesaleCustomersByNameUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
+import com.zaed.common.domain.inventory.FetchInventoriesUseCase
 import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
 import com.zaed.common.domain.sale.AddWholesaleUseCase
 import com.zaed.common.domain.sale.FetchWholesaleUseCase
@@ -38,6 +41,7 @@ class AddProductSaleViewModel(
     private val fetchCustomersByNameUseCase: FetchWholesaleCustomersByNameUseCase,
     private val fetchMoneyPaymentsByIdsUseCase: FetchMoneyPaymentsByIdsUseCase,
     private val addProductSaleUseCase: AddWholesaleUseCase,
+    private val fetchInventoryUseCase: FetchInventoriesUseCase,
     private val updateProductSaleUseCase: UpdateWholesaleUseCase
 ) : ViewModel() {
     private val TAG: String = "AddProductSaleVM"
@@ -47,7 +51,7 @@ class AddProductSaleViewModel(
         if (saleId.isNotBlank()) {
             fetchSale(saleId)
         }
-        fetchAllCategories()
+//        fetchAllCategories()
         fetchCurrentUser()
     }
 
@@ -68,6 +72,28 @@ class AddProductSaleViewModel(
             }.onFailure { e ->
                 Log.e(TAG, "fetchSale: ${e.message}", e)
                 e.printStackTrace()
+            }
+        }
+    }
+
+    private fun fetchInventories(ownerId: String) {
+        Log.d(TAG, "fetchInventories: $ownerId")
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchInventoryUseCase(
+                FetchInventoriesRequest(
+                    ownerId = ownerId,
+                )
+            ).collect { result ->
+                Log.d(TAG, "fetchInventories: $result")
+                result.onSuccess { data ->
+                    _uiState.update { oldState ->
+                        oldState.copy(categories = data.map { it.toCategory() })
+                    }
+                    Log.d(TAG, "fetchInventories: ${uiState.value.categories}")
+                }.onFailure { e ->
+                    Log.e(TAG, "fetchInventories: ${e.message}", e)
+                    e.printStackTrace()
+                }
             }
         }
     }
@@ -129,6 +155,7 @@ class AddProductSaleViewModel(
                     _uiState.update { oldState ->
                         oldState.copy(currentUser = data)
                     }
+                    fetchInventories(data.id)
                 }.onFailure { e ->
                     Log.e(TAG, "fetchCurrentUser: ${e.message}", e)
                     e.printStackTrace()
@@ -328,6 +355,7 @@ class AddProductSaleViewModel(
 
         }
     }
+
     private fun addPayment(payment: Payment) {
         viewModelScope.launch {
             _uiState.update { oldState ->
