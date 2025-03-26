@@ -11,6 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LocationCity
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Mail
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zaed.common.R
 import com.zaed.common.ui.auth.FieldsError
 import com.zaed.common.ui.components.BackIcon
 import com.zaed.common.ui.components.CustomSnackbar
@@ -153,6 +160,7 @@ fun AddCustomersScreenContent(
                     .fillMaxWidth(),
                 label = stringResource(com.zaed.common.R.string.full_name),
                 value = uiState.request.name,
+                imageVector = Icons.Default.Person,
                 onValueChange = { name ->
                     onAction(AddCustomersUiAction.UpdateName(name))
                 },
@@ -166,6 +174,7 @@ fun AddCustomersScreenContent(
                     .fillMaxWidth(),
                 label = stringResource(com.zaed.common.R.string.email),
                 value = uiState.request.email,
+                imageVector = Icons.Default.Mail,
                 onValueChange = { email ->
                     onAction(AddCustomersUiAction.UpdateEmail(email))
                 }
@@ -183,6 +192,7 @@ fun AddCustomersScreenContent(
                     .fillMaxWidth(),
                 label = stringResource(com.zaed.common.R.string.address),
                 value = uiState.request.address,
+                imageVector = Icons.Default.LocationOn,
                 onValueChange = { address ->
                     onAction(AddCustomersUiAction.UpdateAddress(address))
                 }
@@ -192,8 +202,19 @@ fun AddCustomersScreenContent(
                     .fillMaxWidth(),
                 label = stringResource(com.zaed.common.R.string.city),
                 value = uiState.request.city,
+                imageVector = Icons.Default.LocationCity,
                 onValueChange = { city ->
                     onAction(AddCustomersUiAction.UpdateCity(city))
+                }
+            )
+            TextInputTextField(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                label = stringResource(R.string.note),
+                value = uiState.request.note,
+                imageVector = Icons.Default.Info,
+                onValueChange = { city ->
+                    onAction(AddCustomersUiAction.UpdateNote(city))
                 }
             )
         }

@@ -7,4 +7,5 @@ data class AddWholeSaleCustomerRequest(
     val email: String = "",
     val address: String = "",
     val city: String = "",
+    val note: String = "",
 )

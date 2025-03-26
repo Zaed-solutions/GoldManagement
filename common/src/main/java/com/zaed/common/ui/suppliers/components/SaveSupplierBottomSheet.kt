@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
@@ -99,6 +100,16 @@ fun SaveSupplierBottomSheet(
                     },
                     label = stringResource(R.string.email),
                     imageVector = Icons.Default.Mail,
+                    withBorder = true
+                )
+                TextInputTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = supplier.note,
+                    onValueChange = {
+                        supplier = supplier.copy(note = it)
+                    },
+                    label = stringResource(R.string.note),
+                    imageVector = Icons.Default.Info,
                     withBorder = true
                 )
                 Button(

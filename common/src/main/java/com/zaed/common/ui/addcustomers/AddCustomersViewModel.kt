@@ -81,6 +81,14 @@ class AddCustomersViewModel(
                     )
                 }
 
+                is AddCustomersUiAction.UpdateNote -> _state.update {
+                    it.copy(
+                        request = it.request.copy(
+                            note = action.note
+                        )
+                    )
+                }
+
                 is AddCustomersUiAction.UpdateName -> _state.update {
                     it.copy(
                         fieldsError = FieldsError.NONE,
