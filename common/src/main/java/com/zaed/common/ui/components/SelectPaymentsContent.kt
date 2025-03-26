@@ -150,6 +150,7 @@ fun SelectPaymentsContent(
             style = MaterialTheme.typography.headlineSmall
         )
         PaymentTypes(
+            isAccountSelected = selectedAccount.id.isNotBlank(),
             types = paymentsTypes,
             onPaymentTypeSelected = { type ->
                 when (type) {

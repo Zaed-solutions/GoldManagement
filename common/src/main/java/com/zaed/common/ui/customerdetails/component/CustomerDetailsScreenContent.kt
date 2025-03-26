@@ -267,7 +267,9 @@ fun CustomerDetailsScreenContent(
                 selectedPayment = null
                 selectPaymentTypeSheet = false
             }) {
-                PaymentTypes(types = getProductSalePayments(), onPaymentTypeSelected = { type ->
+                PaymentTypes(
+                    isAccountSelected = true,
+                    types = getProductSalePayments(), onPaymentTypeSelected = { type ->
                     when (type) {
                         PaymentType.CASH -> {
                             selectedPayment = CashPayment(type = type)

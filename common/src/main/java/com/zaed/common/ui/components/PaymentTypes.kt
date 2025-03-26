@@ -34,6 +34,7 @@ import com.zaed.common.ui.addpurchase.ProductType
 
 @Composable
 fun PaymentTypes(
+    isAccountSelected: Boolean,
     types: List<PaymentType> = getProductSalePayments(),
     onPaymentTypeSelected: (PaymentType) -> Unit = {}
 ) {
@@ -41,6 +42,7 @@ fun PaymentTypes(
         items(types) { paymentType ->
             Surface(
                 onClick = { onPaymentTypeSelected(paymentType) },
+                enabled = paymentType in listOf(PaymentType.CASH) || isAccountSelected,
                 color = Color.Transparent
             ) {
                 Row(

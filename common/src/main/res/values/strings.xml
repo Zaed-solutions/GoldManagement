@@ -354,4 +354,5 @@
     <string name="save_as_outstanding_bill">Save as OutStanding Bill</string>
     <string name="money_payment">Money Payment</string>
     <string name="gold_payment">Gold Payment</string>
+    <string name="note_template">Note: %1$s</string>
 </resources>
