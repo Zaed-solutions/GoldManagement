@@ -20,4 +20,5 @@ sealed interface AddGoldSaleUiAction {
     data class OnUpdateProducts(val products: List<Product>): AddGoldSaleUiAction
     data object OnDeleteAllProducts: AddGoldSaleUiAction
     data class OnUpdatePaymentType (val isCash: Boolean): AddGoldSaleUiAction
+    data class OnUpdateDiscount (val discount: Double): AddGoldSaleUiAction
 }

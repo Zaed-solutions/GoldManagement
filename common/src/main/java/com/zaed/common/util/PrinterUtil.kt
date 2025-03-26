@@ -63,7 +63,7 @@ fun getAsyncEscPosPrinter(
             [L]
             [C]================================
             ${
-            if (sale.customerId.isNotBlank()) {
+            if (sale.accountId.isNotBlank()) {
                 """
                     [L]
                     [L]<font size='tall'>Customer :</font>

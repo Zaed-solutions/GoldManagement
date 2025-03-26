@@ -5,7 +5,7 @@ import java.util.Date
 
 abstract class Transaction(
     open val id: String,
-    open val customerId: String,
+    open val accountId: String,
     open val customerName: String,
     open val customerPhone: String,
     open val createdAt: Date,

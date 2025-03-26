@@ -7,7 +7,7 @@ data class EditPaymentRequest(
     val isSupplier: Boolean = false,
     val newPayment: Payment,
     val oldPayment: Payment,
-    val customerId: String,
+    val accountId: String,
 ) {
     val diff: Double
         get() = newPayment.signedAmount() - oldPayment.signedAmount()

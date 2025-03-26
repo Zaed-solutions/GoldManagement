@@ -225,7 +225,7 @@ class SupplierDetailsViewModel(
             editPaymentUseCase(
                 request = EditPaymentRequest(
                     isSupplier = false,
-                    customerId = uiState.value.supplier.id,
+                    accountId = uiState.value.supplier.id,
                     oldPayment = oldPayment,
                     newPayment = newPayment
                 )
@@ -262,8 +262,8 @@ class SupplierDetailsViewModel(
             addPaymentUseCase(
                 request = AddNewPaymentRequest(
                     isSupplier = true,
-                    customerId = uiState.value.supplier.id,
-                    payment = payment.apply { this.customerId = uiState.value.supplier.id }
+                    accountId = uiState.value.supplier.id,
+                    payment = payment.apply { this.accountId = uiState.value.supplier.id }
                 )
             ).onSuccess {
                 Log.d(TAG, "addPayment: success")

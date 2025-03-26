@@ -142,7 +142,7 @@ class CustomerDetailsViewModel(
             }
             editPaymentUseCase(
                 request = EditPaymentRequest(
-                    customerId = uiState.value.customer.id,
+                    accountId = uiState.value.customer.id,
                     oldPayment = oldPayment,
                     newPayment = newPayment
                 )
@@ -200,7 +200,7 @@ class CustomerDetailsViewModel(
             }
             addPaymentUseCase(
                 request = AddNewPaymentRequest(
-                    customerId = uiState.value.customer.id,
+                    accountId = uiState.value.customer.id,
                     payment = payment
                 )
             ).onSuccess {

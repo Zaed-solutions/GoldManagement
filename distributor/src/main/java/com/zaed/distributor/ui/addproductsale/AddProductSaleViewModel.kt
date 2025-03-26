@@ -67,7 +67,7 @@ class AddProductSaleViewModel(
                         initialSale = data, sale = data
                     )
                 }
-                fetchCustomer(data.customerId)
+                fetchCustomer(data.accountId)
                 fetchPayments(data.paymentsIds)
             }.onFailure { e ->
                 Log.e(TAG, "fetchSale: ${e.message}", e)
@@ -180,8 +180,17 @@ class AddProductSaleViewModel(
             is AddProductSaleUiAction.OnEditPayment -> updatePayment(action.cashPayment)
             is AddProductSaleUiAction.OnRemovePayment -> removePayment(action.paymentId)
             is AddProductSaleUiAction.OnUpdateProducts -> updateProductsSale(action.products)
+            is AddProductSaleUiAction.OnUpdateDiscount -> updateDiscount(action.discount)
             AddProductSaleUiAction.OnDeleteAllProducts -> updateProductsSale(emptyList())
             else -> Unit
+        }
+    }
+
+    private fun updateDiscount(discount: Double) {
+        viewModelScope.launch {
+            _uiState.update { oldState ->
+                oldState.copy(sale = oldState.sale.copy(discount = discount))
+            }
         }
     }
 
@@ -215,7 +224,7 @@ class AddProductSaleViewModel(
                 _uiState.update { oldState ->
                     oldState.copy(
                         sale = uiState.value.sale.copy(
-                            customerId = customer.id,
+                            accountId = customer.id,
                             customerName = customer.name,
                             customerPhone = customer.phone,
                             paymentStatus = if ((uiState.value.sale.totalAmount - uiState.value.totalPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID,
@@ -256,7 +265,7 @@ class AddProductSaleViewModel(
             _uiState.update { oldState ->
                 oldState.copy(
                     sale = oldState.sale.copy(
-                        customerId = customer.id,
+                        accountId = customer.id,
                         customerName = customer.name,
                         customerPhone = customer.phone,
                         distributorId = distributor.id,

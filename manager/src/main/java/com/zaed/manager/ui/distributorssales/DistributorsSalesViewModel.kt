@@ -179,7 +179,7 @@ class DistributorsSalesViewModel(
                             filter.employees.any { it.id == sale.distributorId }
 
                 val customerMatch = !filter.isFiltered || filter.customers.isEmpty() ||
-                        filter.customers.any { sale.customerId == it.id }
+                        filter.customers.any { sale.accountId == it.id }
 
                 val categoryMatch = !filter.isFiltered || filter.categories.isEmpty() ||
                         sale.products.any { product ->

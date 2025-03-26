@@ -76,7 +76,7 @@ fun CustomerDetailsScreenContent(
     var confirmDeletePaymentSheet by remember { mutableStateOf(false) }
     var selectPaymentTypeSheet by remember { mutableStateOf(false) }
     var isTaken by remember { mutableStateOf(false) }
-    val pagerState = rememberPagerState { 2 }
+    val pagerState = rememberPagerState { 3 }
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     Log.d("TAG", "CustomerDetailsScreenContent: ${uiState.customer.moneyDebtAmount}")
@@ -267,7 +267,9 @@ fun CustomerDetailsScreenContent(
                 selectedPayment = null
                 selectPaymentTypeSheet = false
             }) {
-                PaymentTypes(types = getProductSalePayments(), onPaymentTypeSelected = { type ->
+                PaymentTypes(
+                    selectedAccount = uiState.customer,
+                    types = getProductSalePayments(), onPaymentTypeSelected = { type ->
                     when (type) {
                         PaymentType.CASH -> {
                             selectedPayment = CashPayment(type = type)

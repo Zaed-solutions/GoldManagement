@@ -5,7 +5,7 @@ import java.util.Date
 
 open class Payment(
     open var id: String = "",
-    open var customerId: String = "",
+    open var accountId: String = "",
     open val type: PaymentType,
     open var amount: Double = 0.0,
     open var given: Boolean = false,

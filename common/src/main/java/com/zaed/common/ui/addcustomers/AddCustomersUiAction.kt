@@ -9,4 +9,6 @@ sealed interface AddCustomersUiAction {
     data class UpdatePhone(val phone: String) : AddCustomersUiAction
     data class UpdateAddress(val address: String) : AddCustomersUiAction
     data class UpdateCity(val city: String) : AddCustomersUiAction
+    data class UpdateNote(val note: String) : AddCustomersUiAction
+    data class UpdatePayWithCheques(val payWithCheques: Boolean) : AddCustomersUiAction
 }

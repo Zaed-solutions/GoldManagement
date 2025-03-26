@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -29,7 +28,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
@@ -48,7 +46,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
@@ -59,15 +56,12 @@ import com.zaed.common.data.model.cheque.ManagerCheque
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.ChequePayment
 import com.zaed.common.data.model.payment.Payment
-import com.zaed.common.data.model.payment.signedAmount
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
 import com.zaed.common.ui.components.PaymentsList
 import com.zaed.common.ui.components.SavePaymentBottomSheet
 import com.zaed.common.ui.components.SearchBar
 import com.zaed.common.ui.components.SelectCustomerContent
 import com.zaed.common.ui.components.SelectFromSalesChequesBottomSheetContent
-import com.zaed.common.ui.components.getContainerColor
-import com.zaed.common.ui.components.getContentColor
 import com.zaed.common.ui.salescheques.SalesChequesUiAction
 import com.zaed.common.ui.salescheques.SalesChequesUiState
 import com.zaed.common.ui.suppliers.SelectSupplierSheet
@@ -399,7 +393,7 @@ fun SalesChequesScreenContent(
                         onAction(SalesChequesUiAction.OnAccountSelected(selected))
                         selectCustomerSheet = false
                         selectedPayment = ChequePayment(
-                            customerId = selected.id,
+                            accountId = selected.id,
                             given = !isTaken,
                         )
                         if (isTaken) {
@@ -431,7 +425,7 @@ fun SalesChequesScreenContent(
                     selectSupplierSheet = false
                     if (pagerState.currentPage == 0) {
                         selectedPayment = ChequePayment(
-                            customerId = supplier.id,
+                            accountId = supplier.id,
                             given = !isTaken,
                         )
                         if (isTaken) {
@@ -441,7 +435,7 @@ fun SalesChequesScreenContent(
                         }
                     } else {
                         selectedPayment = ManagerCheque(
-                            customerId = supplier.id,
+                            accountId = supplier.id,
                             given = !isTaken,
                         )
                         addPaymentBottomSheetVisible = true

@@ -46,61 +46,61 @@ class PaymentRemoteDataSourceImpl(
                 is CashPayment -> {
                     batch.set(
                         document,
-                        request.payment.copy(id = document.id, customerId = request.customerId)
+                        request.payment.copy(id = document.id, accountId = request.accountId)
                     )
                 }
 
                 is BankTransferPayment -> {
                     batch.set(
                         document,
-                        request.payment.copy(id = document.id, customerId = request.customerId)
+                        request.payment.copy(id = document.id, accountId = request.accountId)
                     )
                 }
 
                 is ChequePayment -> {
                     batch.set(
                         document,
-                        request.payment.copy(id = document.id, customerId = request.customerId)
+                        request.payment.copy(id = document.id, accountId = request.accountId)
                     )
                 }
 
                 is FuturePayment -> {
                     batch.set(
                         document,
-                        request.payment.copy(id = document.id, customerId = request.customerId)
+                        request.payment.copy(id = document.id, accountId = request.accountId)
                     )
                 }
 
                 is LossPayment -> {
                     batch.set(
                         document,
-                        request.payment.copy(id = document.id, customerId = request.customerId)
+                        request.payment.copy(id = document.id, accountId = request.accountId)
                     )
                 }
 
                 is GoldPayment -> {
                     batch.set(
                         document,
-                        request.payment.copy(id = document.id, customerId = request.customerId)
+                        request.payment.copy(id = document.id, accountId = request.accountId)
                     )
                 }
 
                 is ManagerCheque -> {
                     batch.set(
                         document,
-                        request.payment.copy(id = document.id, customerId = request.customerId)
+                        request.payment.copy(id = document.id, accountId = request.accountId)
                     )
                 }
             }
             if (request.isSupplier) {
-                val docRef = suppliersCollection.document(request.customerId)
+                val docRef = suppliersCollection.document(request.accountId)
                 batch.update(
                     docRef,
                     "moneyDebtAmount",
                     FieldValue.increment(request.payment.signedAmount().unaryMinus())
                 )
             } else {
-                val docRef = customersCollection.document(request.customerId)
+                val docRef = customersCollection.document(request.accountId)
                 batch.update(
                     docRef,
                     "moneyDebtAmount",
@@ -121,7 +121,7 @@ class PaymentRemoteDataSourceImpl(
                 moneyPaymentsCollection.where(
                     Filter.and(
                         Filter.equalTo("deleted", false),
-                        Filter.equalTo("customerId", request.customerId),
+                        Filter.equalTo("accountId", request.customerId),
                         Filter.or(
                             Filter.equalTo("type", PaymentType.FUTURES),
                             Filter.equalTo("type", PaymentType.REMAIN),
@@ -198,12 +198,12 @@ class PaymentRemoteDataSourceImpl(
                 val filter = if (request.isManager) {
 //                Filter.equalTo("customerId", request.supplierId)
                     Filter.and(
-                        Filter.equalTo("customerId", request.supplierId),
+                        Filter.equalTo("accountId", request.supplierId),
                         Filter.equalTo("deleted", false)
                     )
                 } else {
                     Filter.and(
-                        Filter.equalTo("customerId", request.supplierId),
+                        Filter.equalTo("accountId", request.supplierId),
                         Filter.equalTo("deleted", false)
                     )
                 }
@@ -249,9 +249,9 @@ class PaymentRemoteDataSourceImpl(
             )
             batch.update(
                 if (request.isSupplier) {
-                    suppliersCollection.document(request.customerId)
+                    suppliersCollection.document(request.accountId)
                 } else {
-                    customersCollection.document(request.customerId)
+                    customersCollection.document(request.accountId)
                 },
                 mapOf(
                     "moneyDebtAmount" to FieldValue.increment(request.diff.let { if (request.isSupplier) it.unaryMinus() else it })
@@ -284,9 +284,9 @@ class PaymentRemoteDataSourceImpl(
             )
             batch.update(
                 if (request.isSupplier) {
-                    suppliersCollection.document(request.payment.customerId)
+                    suppliersCollection.document(request.payment.accountId)
                 } else {
-                    customersCollection.document(request.payment.customerId)
+                    customersCollection.document(request.payment.accountId)
                 },
                 mapOf(
                     "moneyDebtAmount" to FieldValue.increment(
