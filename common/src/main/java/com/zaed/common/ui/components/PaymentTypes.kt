@@ -28,21 +28,30 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
+import com.zaed.common.data.model.customer.Account
+import com.zaed.common.data.model.customer.WholeSaleCustomer
+import com.zaed.common.data.model.payment.ChequePayment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.getProductSalePayments
+import com.zaed.common.data.model.supplier.Supplier
 import com.zaed.common.ui.addpurchase.ProductType
 
 @Composable
 fun PaymentTypes(
-    isAccountSelected: Boolean,
+    selectedAccount: Account,
     types: List<PaymentType> = getProductSalePayments(),
     onPaymentTypeSelected: (PaymentType) -> Unit = {}
 ) {
     LazyColumn {
         items(types) { paymentType ->
+            val enabled = if(paymentType == PaymentType.CHEQUE){
+                selectedAccount.id.isNotBlank() && (selectedAccount is Supplier || (selectedAccount as? WholeSaleCustomer)?.payWithCheques?:false)
+            } else{
+                paymentType in listOf(PaymentType.CASH) || selectedAccount.id.isNotBlank()
+            }
             Surface(
                 onClick = { onPaymentTypeSelected(paymentType) },
-                enabled = paymentType in listOf(PaymentType.CASH) || isAccountSelected,
+                enabled = enabled,
                 color = Color.Transparent
             ) {
                 Row(

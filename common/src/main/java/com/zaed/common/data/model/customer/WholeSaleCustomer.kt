@@ -21,6 +21,7 @@ data class WholeSaleCustomer(
     override val email: String = "",
     val address: String = "",
     val city: String = "",
+    val payWithCheques: Boolean = true,
     override val createdAt: Date = Date(),
     override val moneyDebtAmount: Double = 0.0,
     override val goldDebtAmount: Double = 0.0,

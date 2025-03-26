@@ -342,7 +342,7 @@ private fun SupplierDetailsScreenContent(
                     }
                 ) {
                     PaymentTypes(
-                        isAccountSelected = true,
+                        selectedAccount = state.supplier,
                         types = getSupplierPaymentTypes(given = !isTaken),
                         onPaymentTypeSelected = { type ->
                             when (type) {

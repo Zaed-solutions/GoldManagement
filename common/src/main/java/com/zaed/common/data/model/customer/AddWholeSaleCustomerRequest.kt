@@ -8,4 +8,5 @@ data class AddWholeSaleCustomerRequest(
     val address: String = "",
     val city: String = "",
     val note: String = "",
+    val payWithCheques: Boolean = true,
 )

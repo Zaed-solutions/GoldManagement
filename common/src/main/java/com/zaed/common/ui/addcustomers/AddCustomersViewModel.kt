@@ -88,6 +88,13 @@ class AddCustomersViewModel(
                         )
                     )
                 }
+                is AddCustomersUiAction.UpdatePayWithCheques -> _state.update {
+                    it.copy(
+                        request = it.request.copy(
+                            payWithCheques = action.payWithCheques
+                        )
+                    )
+                }
 
                 is AddCustomersUiAction.UpdateName -> _state.update {
                     it.copy(

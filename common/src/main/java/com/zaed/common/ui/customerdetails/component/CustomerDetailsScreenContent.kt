@@ -268,7 +268,7 @@ fun CustomerDetailsScreenContent(
                 selectPaymentTypeSheet = false
             }) {
                 PaymentTypes(
-                    isAccountSelected = true,
+                    selectedAccount = uiState.customer,
                     types = getProductSalePayments(), onPaymentTypeSelected = { type ->
                     when (type) {
                         PaymentType.CASH -> {

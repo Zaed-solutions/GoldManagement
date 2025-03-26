@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,6 +26,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -41,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
+import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.ui.auth.FieldsError
 import com.zaed.common.ui.components.BackIcon
 import com.zaed.common.ui.components.CustomSnackbar
@@ -217,6 +220,23 @@ fun AddCustomersScreenContent(
                     onAction(AddCustomersUiAction.UpdateNote(city))
                 }
             )
+            if(uiState.distributor.role != UserRole.DISTRIBUTOR){
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Text(
+                        text = stringResource(R.string.pay_with_cheques),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Switch(
+                        checked = uiState.request.payWithCheques,
+                        onCheckedChange = {
+                            onAction(AddCustomersUiAction.UpdatePayWithCheques(it))
+                        }
+                    )
+                }
+            }
         }
     }
 
