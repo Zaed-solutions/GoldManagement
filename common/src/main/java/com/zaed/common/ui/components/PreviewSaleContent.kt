@@ -73,14 +73,15 @@ fun PreviewSaleContent(
     onAccountSelected: (Account) -> Unit = {},
     suggestedAccounts: List<Account> = emptyList(),
     onNext: () -> Unit = {},
-    isAdmin: Boolean =false,
-    isLoading: Boolean  =false,
-    supplierSearchQuery: String ="" ,
-    onUpdateSupplierSearchQuery: (String) -> Unit ={},
+    isAdmin: Boolean = false,
+    isLoading: Boolean = false,
+    supplierSearchQuery: String = "",
+    onUpdateSupplierSearchQuery: (String) -> Unit = {},
     filteredSuppliers: List<Supplier> = emptyList(),
-    onSupplierClicked: (String) -> Unit ={},
+    onSupplierClicked: (String) -> Unit = {},
     onAddSupplier: (Supplier) -> Unit = {},
     isStoreSale: Boolean = false,
+    isGoldSale: Boolean = false
 ) {
     Column(
         modifier = modifier
@@ -155,11 +156,12 @@ fun PreviewSaleContent(
                     if (isSelectCustomerEnabled) {
                         OutlinedButton(
                             onClick = {
-                                when(selectedAccount){
-                                    is WholeSaleCustomer ->{
+                                when (selectedAccount) {
+                                    is WholeSaleCustomer -> {
                                         showCustomerSheet = true
                                     }
-                                    is Supplier ->{
+
+                                    is Supplier -> {
                                         showSupplierSheet = true
                                     }
                                 }
@@ -177,13 +179,13 @@ fun PreviewSaleContent(
                                     imageVector = Icons.Outlined.PersonAdd,
                                     contentDescription = null
                                 )
-                                if(selectedAccount is WholeSaleCustomer) {
+                                if (selectedAccount is WholeSaleCustomer) {
                                     Text(
                                         text = if (selectedAccount.id.isNotBlank()) stringResource(R.string.edit_customer) else stringResource(
                                             R.string.add_customer
                                         )
                                     )
-                                }else{
+                                } else {
                                     Text(
                                         text = if (selectedAccount.id.isNotBlank()) stringResource(R.string.edit_supplier) else stringResource(
                                             R.string.add_supplier
@@ -250,87 +252,97 @@ fun PreviewSaleContent(
                 },
                 dragHandle = {}
             ) {
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                ) {
-                    CenterAlignedTopAppBar(
-                        title = {
-                            Text(
-                                text = selectedProduct?.name ?: ""
-                            )
-                        },
-                        navigationIcon = {
-                            IconButton(
-                                onClick = {
-                                    editProductSheet = false
-                                    selectedProduct = null
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                    ) {
+                        CenterAlignedTopAppBar(
+                            title = {
+                                Text(
+                                    text = selectedProduct?.name ?: ""
+                                )
+                            },
+                            navigationIcon = {
+                                IconButton(
+                                    onClick = {
+                                        editProductSheet = false
+                                        selectedProduct = null
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = null
+                                    )
                                 }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = null
+                            },
+                            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                                containerColor = Color.Transparent
+                            )
+                        )
+                        selectedProduct?.let {
+                            if(!isGoldSale) {
+                                ProductFieldsContent(
+                                    isStoreSale = isStoreSale,
+                                    product1 = it,
+                                    onValueChange = { updatedProduct ->
+                                        selectedProduct = updatedProduct
+                                    }
+                                )
+                            }else{
+                                GoldFieldsContent(
+                                    product1 = it,
+                                    onValueChange = { updatedProduct ->
+                                        selectedProduct = updatedProduct
+                                    }
                                 )
                             }
-                        },
-                        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                            containerColor = Color.Transparent
-                        )
-                    )
-                    selectedProduct?.let {
-                        ProductFieldsContent(
-                            isStoreSale= isStoreSale,
-                            product1 = it,
-                            onValueChange = { updatedProduct ->
-                                selectedProduct = updatedProduct
+
+                        Spacer(Modifier.weight(1f))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Button(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(end = 8.dp),
+                                onClick = {
+                                    selectedProduct?.let {
+                                        onUpdateProduct(it)
+                                    }
+                                    editProductSheet = false
+                                    selectedProduct = null
+                                },
+                                shape = RoundedCornerShape(4.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.confirm)
+                                )
                             }
-                        )
-                    }
-                    Spacer(Modifier.weight(1f))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Button(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(end = 8.dp),
-                            onClick = {
-                                selectedProduct?.let {
-                                    onUpdateProduct(it)
-                                }
-                                editProductSheet = false
-                                selectedProduct = null
-                            },
-                            shape = RoundedCornerShape(4.dp)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.confirm)
-                            )
-                        }
-                        FilledTonalButton(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(start = 8.dp),
-                            onClick = {
-                                selectedProduct?.let {
-                                    onDeleteProduct(it)
-                                }
-                                editProductSheet = false
-                                selectedProduct = null
-                            },
-                            shape = RoundedCornerShape(4.dp)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.delete)
-                            )
+                            FilledTonalButton(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(start = 8.dp),
+                                onClick = {
+                                    selectedProduct?.let {
+                                        onDeleteProduct(it)
+                                    }
+                                    editProductSheet = false
+                                    selectedProduct = null
+                                },
+                                shape = RoundedCornerShape(4.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.delete)
+                                )
+                            }
                         }
                     }
                 }
 
             }
+
         }
         AnimatedVisibility(showCustomerSheet) {
             ModalBottomSheet(
@@ -407,7 +419,7 @@ private fun PreviewSaleContentPreview() {
         selectedAccount = WholeSaleCustomer(),
         onAccountSelected = {},
         suggestedAccounts = listOf(),
-        isAdmin =  false,
+        isAdmin = false,
         isLoading = false,
         supplierSearchQuery = "",
         onUpdateSupplierSearchQuery = {},
