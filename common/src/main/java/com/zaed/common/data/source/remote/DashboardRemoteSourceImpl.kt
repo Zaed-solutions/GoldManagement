@@ -15,6 +15,10 @@ class DashboardRemoteSourceImpl(
     private val storeSalesCollection = firestore.collection("store_sales")
     private val wholesalesCollection = firestore.collection("wholesale_sales")
     private val ingotTransactionsCollection = firestore.collection("ingot_transaction")
+
+    private val storeLossesCollection = firestore.collection("store-losses")
+    private val distributorLossesCollection = firestore.collection("distributor-losses")
+    private val managerLossesCollection = firestore.collection("manager-losses")
     override suspend fun getStoresProfits(): Result<Double> {
         try {
             val query = storeSalesCollection.whereEqualTo("deleted", false)
@@ -35,18 +39,27 @@ class DashboardRemoteSourceImpl(
 
     override suspend fun getWholesaleProfits(managerId: String): Result<Double> {
         try {
-            val query = wholesalesCollection.where(
+            val distributorQuery = wholesalesCollection.where(
                 Filter.and(
                     Filter.notEqualTo("distributorId", managerId),
                     Filter.equalTo("deleted", false)
                 )
             )
-            val aggregateQuery = query.aggregate(AggregateField.sum("profit"))
-            val result = aggregateQuery.get(AggregateSource.SERVER).await()
+            val distributorAggregateQuery = distributorQuery.aggregate(AggregateField.sum("profit"))
+            val distributorResult = distributorAggregateQuery.get(AggregateSource.SERVER).await()
+            val ingotQuery = ingotTransactionsCollection.where(
+                Filter.and(
+                    Filter.notEqualTo("distributorId", managerId),
+                    Filter.equalTo("deleted", false)
+                )
+            )
+            val ingotAggregateQuery = ingotQuery.aggregate(AggregateField.sum("profit"))
+            val ingotResult = ingotAggregateQuery.get(AggregateSource.SERVER).await()
 
-            val sum = result.get(AggregateField.sum("profit"))
+            val distributorResultSum = distributorResult.get(AggregateField.sum("profit"))
+            val ingotResultSum = ingotResult.get(AggregateField.sum("profit"))
+            val sum = distributorResultSum as Double + ingotResultSum as Double
             return Result.success((sum as Double).toDouble())
-
         } catch (e: Exception) {
             crashlytics.recordException(e)
             e.printStackTrace()
@@ -118,16 +131,43 @@ class DashboardRemoteSourceImpl(
 
     override suspend fun getWholesaleSales(managerId: String): Result<Double> {
         try {
-            val query = wholesalesCollection.where(
+            val distributorQuery = wholesalesCollection.where(
                 Filter.and(
                     Filter.notEqualTo("distributorId", managerId),
                     Filter.equalTo("deleted", false)
                 )
             )
-            val aggregateQuery = query.aggregate(AggregateField.sum("totalAmount"))
+            val distributorAggregateQuery = distributorQuery.aggregate(AggregateField.sum("totalAmount"))
+            val distributorResult = distributorAggregateQuery.get(AggregateSource.SERVER).await()
+            val ingotQuery = ingotTransactionsCollection.where(
+                Filter.and(
+                    Filter.notEqualTo("distributorId", managerId),
+                    Filter.equalTo("deleted", false)
+                )
+            )
+            val ingotAggregateQuery = ingotQuery.aggregate(AggregateField.sum("totalAmount"))
+            val ingotResult = ingotAggregateQuery.get(AggregateSource.SERVER).await()
+
+            val distributorResultSum = distributorResult.get(AggregateField.sum("totalAmount"))
+            val ingotResultSum = ingotResult.get(AggregateField.sum("totalAmount"))
+            val sum = distributorResultSum as Double + ingotResultSum as Double
+            return Result.success((sum as Double).toDouble())
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            e.printStackTrace()
+            return Result.failure(e)
+        }
+    }
+
+    override suspend fun getStoreLoss(): Result<Double> {
+        try {
+            val query = storeLossesCollection.whereEqualTo("deleted", false)
+            val aggregateQuery = query.aggregate(AggregateField.sum("value"))
             val result = aggregateQuery.get(AggregateSource.SERVER).await()
 
-            val sum = result.get(AggregateField.sum("totalAmount"))
+            val sum = result.get(AggregateField.sum("value"))
+            Log.d("DashboardRemoteSourceImpl", "getStoresProfits: $sum")
+
             return Result.success((sum as Double).toDouble())
 
         } catch (e: Exception) {
@@ -137,15 +177,38 @@ class DashboardRemoteSourceImpl(
         }
     }
 
-    override suspend fun getStoreLoss(): Result<Double> {
-        return Result.success(0.0)
-    }
-
     override suspend fun getManagerLoss(): Result<Double> {
-        return Result.success(0.0)
+        try {
+            val query = managerLossesCollection.whereEqualTo("deleted", false)
+            val aggregateQuery = query.aggregate(AggregateField.sum("value"))
+            val result = aggregateQuery.get(AggregateSource.SERVER).await()
+
+            val sum = result.get(AggregateField.sum("value"))
+            Log.d("DashboardRemoteSourceImpl", "getStoresProfits: $sum")
+
+            return Result.success((sum as Double).toDouble())
+
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            e.printStackTrace()
+            return Result.failure(e)
+        }
     }
 
     override suspend fun getWholesaleLoss(): Result<Double> {
-        return Result.success(0.0)
+        try {
+            val query = distributorLossesCollection.whereEqualTo("deleted", false)
+            val aggregateQuery = query.aggregate(AggregateField.sum("value"))
+            val result = aggregateQuery.get(AggregateSource.SERVER).await()
+            val sum = result.get(AggregateField.sum("value"))
+            Log.d("DashboardRemoteSourceImpl", "getStoresProfits: $sum")
+
+            return Result.success((sum as Double).toDouble())
+
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            e.printStackTrace()
+            return Result.failure(e)
+        }
     }
 }

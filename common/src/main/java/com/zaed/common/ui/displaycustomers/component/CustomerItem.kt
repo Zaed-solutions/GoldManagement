@@ -104,10 +104,10 @@ fun CustomerItem(
                     }
                     Row {
                         Text(
-                            text = customer.debtAmount.absoluteValue.toMoneyFormat(2),
+                            text = customer.moneyDebtAmount.absoluteValue.toMoneyFormat(2),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
-                            color = customer.debtAmount.getContainerColor()
+                            color = customer.moneyDebtAmount.getContainerColor()
                         )
                         Spacer(modifier = Modifier.weight(1f))
                         FilterChip(
@@ -116,12 +116,12 @@ fun CustomerItem(
                             selected = true,
                             onClick = {},
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = customer.debtAmount.getContainerColor(),
-                                selectedLabelColor = customer.debtAmount.getContentColor()
+                                selectedContainerColor = customer.moneyDebtAmount.getContainerColor(),
+                                selectedLabelColor = customer.moneyDebtAmount.getContentColor()
                             ),
                             label = {
                                 Text(
-                                    text = customer.debtAmount.getDebtTitle()
+                                    text = customer.moneyDebtAmount.getDebtTitle()
                                 )
                             }
                         )
