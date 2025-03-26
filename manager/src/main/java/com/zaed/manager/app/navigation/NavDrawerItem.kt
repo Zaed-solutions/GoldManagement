@@ -7,88 +7,103 @@ import com.zaed.common.R
 enum class NavDrawerItem(
     @StringRes val title: Int,
     @DrawableRes val icon: Int?,
-    val route: Route
+    val route: Route? = null,
+    val subItems: List<SubNavDrawerItem> = emptyList()
 ) {
     DASHBOARD(
         title = R.string.dashboard,
         icon = R.drawable.ic_order,
         route = Route.DashboardRoute
     ),
-    USER_MANAGEMENT(
-        title = R.string.user_management,
-        icon = R.drawable.ic_users,
-        route = Route.UserManagementRoute
-    ),
-    MANUFACTURER_ORDERS(
-        title = R.string.manufacturer_orders,
-        icon = R.drawable.ic_order,
-        route = Route.ManufacturerOrdersRoute
-    ),
-    STORES(
-        title = com.zaed.common.R.string.stores,
+    STORES_MAIN(
+        title = R.string.stores,
         icon = R.drawable.ic_store,
-        route = Route.StoresRoute
+        subItems = listOf(
+            SubNavDrawerItem(
+                title = R.string.stores,
+                route = Route.StoresRoute
+            ),
+            SubNavDrawerItem(
+                title = R.string.stores_sales,
+                route = Route.StoresSalesRoute
+            )
+        )
     ),
-    STORES_SALES(
-        title = R.string.stores_sales,
-        icon = R.drawable.ic_money_plus,
-        route = Route.StoresSalesRoute
-    ),
-    CUSTOMERS(
-        title = R.string.customers,
-        icon = R.drawable.ic_customers,
-        route = Route.WholeSaleCustomers
-    ),
-    DISTRIBUTORS(
-        title = R.string.distributors,
+    WHOLESALE_MAIN(
+        title = R.string.wholesale,
         icon = R.drawable.ic_users,
-        route = Route.DistributorsRoute
+        subItems = listOf(
+            SubNavDrawerItem(
+                title = R.string.customers,
+                route = Route.WholeSaleCustomers
+            ),
+            SubNavDrawerItem(
+                title = R.string.distributors,
+                route = Route.DistributorsRoute
+            ),
+            SubNavDrawerItem(
+                title = R.string.distributors_sales,
+                route = Route.DistributorsSalesRoute
+            )
+        )
     ),
-    DISTRIBUTORS_SALES(
-        title = R.string.distributors_sales,
-        icon = R.drawable.ic_money_plus,
-        route = Route.DistributorsSalesRoute
-    ),
-    LOSSES(
-        title = R.string.losses,
-        icon = R.drawable.ic_money_minus,
-        route = Route.LossesRoute
-    ),
-    INGOTS_SALES(
-        title = R.string.ingots_transactions,
-        icon = R.drawable.ic_ingot,
-        route = Route.IngotTransactionsRoute
-    ),
-    GOLD_SALES(
-        title = R.string.gold_sales,
-        icon = R.drawable.ic_coins,
-        route = Route.AddGoldSaleRoute()
-    ),
-    Cheques(
-        title = R.string.cheques,
-        icon = R.drawable.ic_cheque,
-        route = Route.ChequesRoute
-    ),
-
-    SUPPLIERS(
-        title = R.string.suppliers,
-        icon = R.drawable.ic_users,
-        route = Route.SuppliersRoute
-    ),
-    ADD_PURCHASE(
-        title = R.string.add_purchase,
-        icon = com.zaed.manager.R.drawable.ic_add_cart,
-        route = Route.AddPurchaseRoute()
-    ),
-
-    TRANSACTIONS(
-        title = R.string.transactions,
-        icon = R.drawable.ic_store,
-        route = Route.TransactionsRoute
-    ),
-    CATEGORIES(
-        title = R.string.categories,
+    PURCHASES_MAIN(
+        title = R.string.purchases,
         icon = R.drawable.ic_shopping,
-        route = Route.CategoriesRoute
-    )
+        subItems = listOf(
+            SubNavDrawerItem(
+                title = R.string.suppliers,
+                route = Route.SuppliersRoute
+            ),
+            SubNavDrawerItem(
+                title = R.string.add_purchase,
+                route = Route.AddPurchaseRoute()
+            )
+        )
+    ),
+    MANAGER_MAIN(
+        title = R.string.manager,
+        icon = R.drawable.ic_person,
+        subItems = listOf(
+            SubNavDrawerItem(
+                title = R.string.user_management,
+                route = Route.UserManagementRoute
+            ),
+            SubNavDrawerItem(
+                title = R.string.manufacturer_orders,
+                route = Route.ManufacturerOrdersRoute
+
+            ),
+            SubNavDrawerItem(
+                title = R.string.categories,
+                route = Route.CategoriesRoute
+            ),
+            SubNavDrawerItem(
+                title = R.string.transactions,
+                route = Route.TransactionsRoute
+            ),
+            SubNavDrawerItem(
+                title = R.string.ingots_transactions,
+                route = Route.IngotTransactionsRoute
+            ),
+            SubNavDrawerItem(
+                title = R.string.gold_sales,
+                route = Route.AddGoldSaleRoute()
+            ),
+            SubNavDrawerItem(
+                title = R.string.cheques,
+                route = Route.ChequesRoute
+            ),
+            SubNavDrawerItem(
+                title = R.string.losses,
+                route = Route.LossesRoute
+            ),
+
+            )
+    ),
 }
+
+data class SubNavDrawerItem(
+    @StringRes val title: Int,
+    val route: Route
+)

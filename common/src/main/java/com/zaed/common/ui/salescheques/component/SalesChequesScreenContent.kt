@@ -220,37 +220,6 @@ fun SalesChequesScreenContent(
                 when (value) {
                     0 -> {
                         Column {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.difference),
-                                    style = MaterialTheme.typography.titleLarge,
-
-                                    fontWeight = FontWeight.Bold,
-                                )
-                                Spacer(modifier = Modifier.weight(1f))
-                                val differenceAmount = remember(uiState.filteredSalesCheques) {
-                                    uiState.filteredSalesCheques.sumOf { it.signedAmount() }
-                                }
-                                Surface(
-                                    color = differenceAmount.getContainerColor(),
-                                    shape = RoundedCornerShape(8f.dp)
-                                ) {
-                                    Text(
-                                        modifier = Modifier.padding(
-                                            horizontal = 12.dp,
-                                            vertical = 4.dp
-                                        ),
-                                        text = differenceAmount.toMoneyFormat(2),
-                                        style = MaterialTheme.typography.titleLarge,
-                                        color = differenceAmount.getContentColor(),
-                                    )
-                                }
-                            }
                             PaymentsList(
                                 modifier = Modifier.weight(1f),
                                 payments = uiState.filteredSalesCheques,
@@ -304,37 +273,6 @@ fun SalesChequesScreenContent(
 
                     1 -> {
                         Column {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.difference),
-                                    style = MaterialTheme.typography.titleLarge,
-
-                                    fontWeight = FontWeight.Bold,
-                                )
-                                Spacer(modifier = Modifier.weight(1f))
-                                val differenceAmount = remember(uiState.allManagerCheques) {
-                                    uiState.allManagerCheques.sumOf { it.signedAmount() }
-                                }
-                                Surface(
-                                    color = differenceAmount.getContainerColor(),
-                                    shape = RoundedCornerShape(8f.dp)
-                                ) {
-                                    Text(
-                                        modifier = Modifier.padding(
-                                            horizontal = 12.dp,
-                                            vertical = 4.dp
-                                        ),
-                                        text = differenceAmount.toMoneyFormat(2),
-                                        style = MaterialTheme.typography.titleLarge,
-                                        color = differenceAmount.getContentColor(),
-                                    )
-                                }
-                            }
                             PaymentsList(
                                 modifier = Modifier.weight(1f),
                                 payments = uiState.filteredManagerCheques,
