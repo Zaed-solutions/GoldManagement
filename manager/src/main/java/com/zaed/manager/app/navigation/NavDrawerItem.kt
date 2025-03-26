@@ -25,7 +25,7 @@ enum class NavDrawerItem(
             ),
             SubNavDrawerItem(
                 title = R.string.stores_sales,
-                route = Route.StoresSalesRoute
+                route = Route.StoresSalesRoute()
             )
         )
     ),
@@ -43,7 +43,7 @@ enum class NavDrawerItem(
             ),
             SubNavDrawerItem(
                 title = R.string.distributors_sales,
-                route = Route.DistributorsSalesRoute
+                route = Route.DistributorsSalesRoute()
             )
         )
     ),

@@ -14,7 +14,15 @@ fun Date.format(dateFormat: DateFormat): String {
     val formatter = SimpleDateFormat(dateFormat.pattern, Locale.getDefault())
     return formatter.format(this)
 }
+fun Date.toDateString(): String {
+    val dateFormat = SimpleDateFormat("EEE MMM dd HH:mm:ss zzz Z yyyy", Locale.getDefault())
+    return dateFormat.format(this)
+}
 
+fun String.toDate(): Date {
+    val dateFormat = SimpleDateFormat("EEE MMM dd HH:mm:ss zzz Z yyyy", Locale.getDefault())
+    return dateFormat.parse(this) ?: Date()
+}
 fun Date.getPaymentTitle(context: Context): String {
     val currentDate = Calendar.getInstance()
     val targetDate = Calendar.getInstance().apply { time = this@getPaymentTitle }

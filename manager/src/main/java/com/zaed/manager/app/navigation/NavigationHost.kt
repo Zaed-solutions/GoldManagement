@@ -19,6 +19,7 @@ import com.zaed.common.ui.purchaseDetails.PurchaseDetailsScreen
 import com.zaed.common.ui.saledetails.cashiersaledetails.SaleDetailsScreen
 import com.zaed.common.ui.saledetails.goldsaledetails.GoldSaleDetailsScreen
 import com.zaed.common.ui.saledetails.productsaledetails.ProductSaleDetailsScreen
+import com.zaed.common.ui.salescheques.SalesChequesScreen
 import com.zaed.common.ui.supplierdetails.SupplierDetailsScreen
 import com.zaed.common.ui.suppliers.SuppliersScreen
 import com.zaed.manager.ui.categories.CategoriesScreen
@@ -28,7 +29,6 @@ import com.zaed.manager.ui.distributorssales.DistributorsSalesScreen
 import com.zaed.manager.ui.home.DashboardScreen
 import com.zaed.manager.ui.losses.LossesScreen
 import com.zaed.manager.ui.manufacturerorders.ManufacturerOrdersScreen
-import com.zaed.common.ui.salescheques.SalesChequesScreen
 import com.zaed.manager.ui.storedetails.StoreDetailsScreen
 import com.zaed.manager.ui.stores.StoresScreen
 import com.zaed.manager.ui.storessales.StoresSalesScreen
@@ -85,7 +85,13 @@ fun NavigationHost(
         }
         composable<Route.DashboardRoute> {
             DashboardScreen(
-                onShowNavDrawer = onShowNavDrawer
+                onShowNavDrawer = onShowNavDrawer,
+                navigateToStoresSales = { startDate, endDate ->
+                    navController.navigate(Route.StoresSalesRoute(startDate, endDate))
+                },
+                navigateToDistributorsSales = {startDate, endDate ->
+                    navController.navigate(Route.DistributorsSalesRoute(startDate, endDate))
+                }
             )
         }
         composable<Route.AddCustomers> {
@@ -223,16 +229,22 @@ fun NavigationHost(
             )
         }
         composable<Route.StoresSalesRoute> {
+            val data = it.toRoute<Route.StoresSalesRoute>()
             StoresSalesScreen(
                 onShowNavDrawer = onShowNavDrawer,
+                startDate = data.startDate,
+                endDate = data.endDate,
                 onNavigateToSaleDetails = {
                     navController.navigate(Route.StoreSaleDetailsRoute(it))
                 }
             )
         }
         composable<Route.DistributorsSalesRoute> {
+            val data = it.toRoute<Route.DistributorsSalesRoute>()
             DistributorsSalesScreen(
                 onShowNavDrawer = onShowNavDrawer,
+                startDate = data.startDate,
+                endDate = data.endDate,
                 onNavigateToProductSaleDetails = {
                     navController.navigate(Route.ProductSaleDetailsRoute(it))
                 },
