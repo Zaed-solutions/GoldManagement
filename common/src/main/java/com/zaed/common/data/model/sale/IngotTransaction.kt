@@ -37,4 +37,5 @@ enum class TransactionType(@StringRes val stringRes: Int) {
 enum class Karat (val value: Int) {
     K24(24),
     K18(18),
+    NOT_SPECIFIED(0)
 }

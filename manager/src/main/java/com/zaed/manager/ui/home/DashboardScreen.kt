@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -74,6 +75,14 @@ fun DashboardScreenContent(
                     }
                 },
                 actions = {
+                    IconButton(
+                        onClick = { onAction(DashboardUiAction.ReloadAllData) }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Replay,
+                            contentDescription = "Filter"
+                        )
+                    }
                     IconButton(
                         onClick = { onAction(DashboardUiAction.ToggleDateFilterVisibility) }
                     ) {

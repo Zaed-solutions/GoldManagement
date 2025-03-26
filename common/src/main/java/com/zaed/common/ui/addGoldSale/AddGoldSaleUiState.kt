@@ -1,6 +1,7 @@
 package com.zaed.common.ui.addGoldSale
 
 import com.zaed.common.data.model.authentication.User
+import com.zaed.common.data.model.category.Category
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.Payment
@@ -18,7 +19,8 @@ data class AddGoldSaleUiState(
     val suggestedCustomers: List<WholeSaleCustomer> = emptyList(),
     val currentUser: User = User(),
     val payments: List<Payment> = emptyList(),
-    val payWithMoney:Boolean = true
+    val payWithMoney:Boolean = true,
+    val categories: List<Category> = emptyList(),
 ) {
     val totalMoneyPaid
         get() = payments.filter { it.type != PaymentType.FUTURES}.filter { it.type != PaymentType.GOLD }

@@ -63,6 +63,23 @@ class DashboardViewModel(
     }
 
     private fun loadManagerLoss() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { it.copy(isLoading = true) }
+
+            repository.getManagerLoss().onSuccess { data ->
+                _uiState.update {
+                    it.copy(
+                        managerLoss = data, isLoading = false, error = null
+                    )
+                }
+            }.onFailure { error ->
+                _uiState.update {
+                    it.copy(
+                        isLoading = false, error = error.message ?: "Unknown error occurred"
+                    )
+                }
+            }
+        }
 
     }
 
@@ -184,6 +201,7 @@ class DashboardViewModel(
 
     fun handleAction(action: DashboardUiAction) {
         when (action) {
+            DashboardUiAction.ReloadAllData -> loadAllData()
             is DashboardUiAction.UpdateDateFilter -> updateDateFilter(action.dateFilter)
             is DashboardUiAction.ToggleDateFilterVisibility -> toggleDateFilterVisibility()
             is DashboardUiAction.SelectDateFilterType -> selectDateFilterType(action.filterType)
