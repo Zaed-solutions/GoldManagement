@@ -9,6 +9,7 @@ import com.zaed.common.domain.authentication.FetchUsersByRoleUseCase
 import com.zaed.common.domain.category.FetchAllCategoriesUseCase
 import com.zaed.common.domain.customer.FetchAllWholeCustomersUseCase
 import com.zaed.common.domain.sale.FetchAllDistributorsSalesUseCase
+import com.zaed.common.ui.util.toDate
 import com.zaed.manager.ui.distributorssales.components.DistributorsSalesFilter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +27,17 @@ class DistributorsSalesViewModel(
     private val _uiState = MutableStateFlow(DistributorsSalesUiState())
     val uiState = _uiState.asStateFlow()
 
-    init {
+    fun init(startDate: String?, endDate: String?) {
+        if (startDate != null && endDate !=null) {
+            _uiState.update {
+                it.copy(
+                    filter = uiState.value.filter.copy(
+                        startDate = startDate.toDate(),
+                        endDate = endDate.toDate()
+                    )
+                )
+            }
+        }
         fetchSales()
         fetchCategories()
         fetchDistributors()

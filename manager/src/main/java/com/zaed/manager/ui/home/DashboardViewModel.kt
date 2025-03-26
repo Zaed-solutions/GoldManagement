@@ -2,10 +2,10 @@ package com.zaed.manager.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zaed.common.data.model.dashboard.DateFilter
+import com.zaed.common.data.model.dashboard.DateFilterType
 import com.zaed.common.data.repository.DashboardRepository
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
-import com.zaed.manager.ui.home.component.DateFilter
-import com.zaed.manager.ui.home.component.DateFilterType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +26,6 @@ class DashboardViewModel(
 
     init {
         getCurrentUser()
-
     }
 
     private fun getCurrentUser() {
@@ -64,18 +63,19 @@ class DashboardViewModel(
 
     private fun loadManagerLoss() {
         viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.update { it.copy(managerLossLoading = true) }
 
-            repository.getManagerLoss().onSuccess { data ->
+            repository.getManagerLoss(dateFilter = uiState.value.dateFilter).onSuccess { data ->
                 _uiState.update {
                     it.copy(
-                        managerLoss = data, isLoading = false, error = null
+                        managerLoss = data, managerLossLoading = false, error = null
                     )
                 }
             }.onFailure { error ->
                 _uiState.update {
                     it.copy(
-                        isLoading = false, error = error.message ?: "Unknown error occurred"
+                        managerLossLoading = false,
+                        error = error.message ?: "Unknown error occurred"
                     )
                 }
             }
@@ -85,18 +85,19 @@ class DashboardViewModel(
 
     private fun loadWholesaleLoss() {
         viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.update { it.copy(wholesaleLossLoading = true) }
 
-            repository.getWholesaleLoss().onSuccess { data ->
+            repository.getWholesaleLoss(dateFilter = uiState.value.dateFilter).onSuccess { data ->
                 _uiState.update {
                     it.copy(
-                        wholesaleLoss = data, isLoading = false, error = null
+                        wholesaleLoss = data, wholesaleLossLoading = false, error = null
                     )
                 }
             }.onFailure { error ->
                 _uiState.update {
                     it.copy(
-                        isLoading = false, error = error.message ?: "Unknown error occurred"
+                        wholesaleLossLoading = false,
+                        error = error.message ?: "Unknown error occurred"
                     )
                 }
             }
@@ -105,94 +106,99 @@ class DashboardViewModel(
 
     private fun loadStoreLoss() {
         viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.update { it.copy(storesLossLoading = true) }
 
-            repository.getStoreLoss().onSuccess { data ->
+            repository.getStoreLoss(dateFilter = uiState.value.dateFilter).onSuccess { data ->
                 _uiState.update {
                     it.copy(
-                        storesLoss = data, isLoading = false, error = null
+                        storesLoss = data, storesLossLoading = false, error = null
                     )
                 }
             }.onFailure { error ->
                 _uiState.update {
                     it.copy(
-                        isLoading = false, error = error.message ?: "Unknown error occurred"
+                        storesLossLoading = false, error = error.message ?: "Unknown error occurred"
                     )
                 }
             }
-        }    }
+        }
+    }
 
     private fun loadWholesaleSales() {
         viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.update { it.copy(wholesaleSalesLoading = true) }
 
-            repository.getWholesaleSales(uiState.value.currentUser.id).onSuccess { data ->
+            repository.getWholesaleSales(uiState.value.currentUser.id,dateFilter = uiState.value.dateFilter).onSuccess { data ->
                 _uiState.update {
                     it.copy(
-                        wholesaleSales = data, isLoading = false, error = null
+                        wholesaleSales = data, wholesaleSalesLoading = false, error = null
                     )
                 }
             }.onFailure { error ->
                 _uiState.update {
                     it.copy(
-                        isLoading = false, error = error.message ?: "Unknown error occurred"
+                        wholesaleSalesLoading = false,
+                        error = error.message ?: "Unknown error occurred"
                     )
                 }
             }
-        }    }
+        }
+    }
 
     private fun loadManagerSales() {
         viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.update { it.copy(managerSalesLoading = true) }
 
-            repository.getManagerSales(uiState.value.currentUser.id).onSuccess { data ->
+            repository.getManagerSales(uiState.value.currentUser.id,dateFilter = uiState.value.dateFilter).onSuccess { data ->
                 _uiState.update {
                     it.copy(
-                        managerSales = data, isLoading = false, error = null
+                        managerSales = data, managerSalesLoading = false, error = null
                     )
                 }
             }.onFailure { error ->
                 _uiState.update {
                     it.copy(
-                        isLoading = false, error = error.message ?: "Unknown error occurred"
+                        managerSalesLoading = false, error = error.message ?: "Unknown error occurred"
                     )
                 }
             }
-        }    }
+        }
+    }
 
     private fun loadManagerProfits() {
         viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.update { it.copy(managerProfitLoading = true) }
 
-            repository.getManagerProfits(uiState.value.currentUser.id).onSuccess { data ->
+            repository.getManagerProfits(uiState.value.currentUser.id,dateFilter = uiState.value.dateFilter).onSuccess { data ->
                 _uiState.update {
                     it.copy(
-                        managerProfit = data, isLoading = false, error = null
+                        managerProfit = data, managerProfitLoading = false, error = null
                     )
                 }
             }.onFailure { error ->
                 _uiState.update {
                     it.copy(
-                        isLoading = false, error = error.message ?: "Unknown error occurred"
+                        managerProfitLoading = false, error = error.message ?: "Unknown error occurred"
                     )
                 }
             }
-        }    }
+        }
+    }
 
     private fun loadStoreSales() {
         viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.update { it.copy(storesSalesLoading = true) }
 
-            repository.getStoreSales().onSuccess { data ->
+            repository.getStoreSales(dateFilter = uiState.value.dateFilter).onSuccess { data ->
                 _uiState.update {
                     it.copy(
-                        storesSales = data, isLoading = false, error = null
+                        storesSales = data, storesSalesLoading = false, error = null
                     )
                 }
             }.onFailure { error ->
                 _uiState.update {
                     it.copy(
-                        isLoading = false, error = error.message ?: "Unknown error occurred"
+                        storesSalesLoading = false, error = error.message ?: "Unknown error occurred"
                     )
                 }
             }
@@ -220,18 +226,18 @@ class DashboardViewModel(
 
     private fun loadStoresProfits() {
         viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.update { it.copy(storesProfitLoading = true) }
 
-            repository.getStoresProfits().onSuccess { data ->
+            repository.getStoresProfits(dateFilter = uiState.value.dateFilter).onSuccess { data ->
                 _uiState.update {
                     it.copy(
-                        storesProfit = data, isLoading = false, error = null
+                        storesProfit = data, storesProfitLoading = false, error = null
                     )
                 }
             }.onFailure { error ->
                 _uiState.update {
                     it.copy(
-                        isLoading = false, error = error.message ?: "Unknown error occurred"
+                        storesProfitLoading = false, error = error.message ?: "Unknown error occurred"
                     )
                 }
             }
@@ -240,18 +246,18 @@ class DashboardViewModel(
 
     private fun loadWholeSalesProfits() {
         viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.update { it.copy(wholesaleProfitLoading = true) }
 
-            repository.getWholesaleProfits(uiState.value.currentUser.id).onSuccess { data ->
+            repository.getWholesaleProfits(uiState.value.currentUser.id,dateFilter = uiState.value.dateFilter).onSuccess { data ->
                 _uiState.update {
                     it.copy(
-                        wholesaleProfit = data, isLoading = false, error = null
+                        wholesaleProfit = data, wholesaleProfitLoading = false, error = null
                     )
                 }
             }.onFailure { error ->
                 _uiState.update {
                     it.copy(
-                        isLoading = false, error = error.message ?: "Unknown error occurred"
+                        wholesaleProfitLoading = false, error = error.message ?: "Unknown error occurred"
                     )
                 }
             }
@@ -333,12 +339,20 @@ class DashboardViewModel(
                     currentFilter.selectedMonth.value - 1,
                     currentFilter.selectedDay
                 )
+
                 calendar.set(Calendar.HOUR_OF_DAY, 0)
                 calendar.set(Calendar.MINUTE, 0)
                 calendar.set(Calendar.SECOND, 0)
                 calendar.set(Calendar.MILLISECOND, 0)
-                val date = calendar.time
-                Pair(date, date)
+                val startOfDay = calendar.time
+
+                calendar.set(Calendar.HOUR_OF_DAY, 23)
+                calendar.set(Calendar.MINUTE, 59)
+                calendar.set(Calendar.SECOND, 59)
+                calendar.set(Calendar.MILLISECOND, 999)
+                val endOfDay = calendar.time
+
+                Pair(startOfDay, endOfDay)
             }
 
             DateFilterType.MONTH -> {
@@ -390,10 +404,23 @@ class DashboardViewModel(
             }
 
             DateFilterType.RANGE -> {
-                Pair(
-                    currentFilter.startDate ?: Calendar.getInstance().time,
-                    currentFilter.endDate ?: Calendar.getInstance().time
-                )
+                val calendar = Calendar.getInstance()
+
+                calendar.time = currentFilter.startDate ?: Calendar.getInstance().time
+                calendar.set(Calendar.HOUR_OF_DAY, 0)
+                calendar.set(Calendar.MINUTE, 0)
+                calendar.set(Calendar.SECOND, 0)
+                calendar.set(Calendar.MILLISECOND, 0)
+                val startOfFirstDate = calendar.time
+
+                calendar.time = currentFilter.endDate ?: Calendar.getInstance().time
+                calendar.set(Calendar.HOUR_OF_DAY, 23)
+                calendar.set(Calendar.MINUTE, 59)
+                calendar.set(Calendar.SECOND, 59)
+                calendar.set(Calendar.MILLISECOND, 999)
+                val endOfSecondDate = calendar.time
+
+                Pair(startOfFirstDate, endOfSecondDate)
             }
         }
 
@@ -407,7 +434,7 @@ class DashboardViewModel(
             )
         }
 
-        loadStoresProfits()
+        loadAllData()
     }
 
 

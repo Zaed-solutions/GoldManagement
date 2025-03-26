@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,10 +34,15 @@ import org.koin.androidx.compose.koinViewModel
 fun DistributorsSalesScreen(
     modifier: Modifier = Modifier,
     onShowNavDrawer: () -> Unit,
+    startDate: String? = null,
+    endDate: String? = null ,
     onNavigateToProductSaleDetails: (String) -> Unit,
     onNavigateToGoldSaleDetails: (String) -> Unit,
     viewModel: DistributorsSalesViewModel = koinViewModel()
 ){
+    LaunchedEffect(Unit) {
+        viewModel.init(startDate,endDate)
+    }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     DistributorsSalesScreenContent(
         state = state,

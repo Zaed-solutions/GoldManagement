@@ -2,6 +2,8 @@ package com.zaed.manager.ui.home.component
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import com.zaed.common.data.model.dashboard.DateFilter
+import com.zaed.common.data.model.dashboard.DateFilterType
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
 import java.util.Calendar
@@ -32,8 +34,8 @@ fun getDateFilterDisplayText(dateFilter: DateFilter): String {
 
         DateFilterType.RANGE -> {
             if (dateFilter.startDate != null && dateFilter.endDate != null) {
-                "${dateFilter.startDate.format(DateFormat.DATE)} - ${
-                    dateFilter.endDate.format(
+                "${dateFilter.startDate!!.format(DateFormat.DATE)} - ${
+                    dateFilter.endDate!!.format(
                         DateFormat.DATE
                     )
                 }"

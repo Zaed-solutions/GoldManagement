@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Date
 
 class StoresSalesViewModel(
     private val fetchSalesUseCase: FetchAllStoreSalesUseCase,
@@ -26,7 +27,18 @@ class StoresSalesViewModel(
     private val _uiState = MutableStateFlow(StoresSalesUiState())
     val uiState = _uiState.asStateFlow()
 
-    init {
+    fun init(startDate: Date?, endDate: Date?) {
+        if (startDate != null && endDate !=null) {
+            Log.d(TAG, "init: $startDate $endDate")
+            _uiState.update {
+                it.copy(
+                    filter = uiState.value.filter.copy(
+                        startDate = startDate,
+                        endDate = endDate
+                    )
+                )
+            }
+        }
         fetchStoresSales()
         fetchCategories()
         fetchCashiers()
@@ -169,16 +181,16 @@ class StoresSalesViewModel(
 
                 val locationMatch =
                     !filter.isFiltered || filter.locations.isEmpty() ||
-                        filter.locations.contains(sale.storeLocation)
+                            filter.locations.contains(sale.storeLocation)
 
                 val employeeMatch =
                     !filter.isFiltered || filter.employees.isEmpty() ||
-                        filter.employees.any { it.id == sale.employeeId }
+                            filter.employees.any { it.id == sale.employeeId }
 
                 val customerMatch = !filter.isFiltered || filter.customers.isEmpty() ||
                         filter.customers.contains(sale.customerName)
 
-                val categoryMatch = !filter.isFiltered ||filter.categories.isEmpty() ||
+                val categoryMatch = !filter.isFiltered || filter.categories.isEmpty() ||
                         sale.products.any { product ->
                             filter.categories.any { category ->
                                 product.categoryId == category.id

@@ -6,20 +6,30 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 
 @Composable
 fun ReportGrid(
     totalStoreSales: Double,
+    totalStoreSalesLoading: Boolean,
     totalStoreLoss: Double,
+    totalStoreLossLoading: Boolean,
     totalStoreProfit: Double,
+    totalStoreProfitLoading: Boolean,
     totalWholesaleSales: Double,
+    totalWholesaleSalesLoading: Boolean,
     totalWholesaleLoss: Double,
+    totalWholesaleLossLoading: Boolean,
     totalWholesaleProfit: Double,
+    totalWholesaleProfitLoading: Boolean,
     totalManagerSales: Double,
+    totalManagerSalesLoading: Boolean,
     totalManagerLoss: Double,
+    totalManagerLossLoading: Boolean,
     totalManagerProfit: Double,
+    totalManagerProfitLoading: Boolean,
     onReportClick: (ReportType) -> Unit
 ) {
     LazyVerticalGrid(
@@ -30,8 +40,9 @@ fun ReportGrid(
     ) {
         item {
             ReportCard(
-                title = "Store Sales",
+                title = stringResource(com.zaed.manager.R.string.store_sales),
                 value = totalStoreSales,
+                loading = totalStoreSalesLoading,
                 iconRes = R.drawable.ic_store,
                 cardColor = MaterialTheme.colorScheme.primaryContainer,
                 onClick = { onReportClick(ReportType.STORE_SALES) }
@@ -39,8 +50,9 @@ fun ReportGrid(
         }
         item {
             ReportCard(
-                title = "Store Profit",
+                title = stringResource(com.zaed.manager.R.string.store_profit),
                 value = totalStoreProfit,
+                loading = totalStoreProfitLoading,
                 iconRes = R.drawable.ic_store,
                 cardColor = MaterialTheme.colorScheme.secondaryContainer,
                 onClick = { onReportClick(ReportType.STORE_PROFIT) }
@@ -50,8 +62,9 @@ fun ReportGrid(
 
         item {
             ReportCard(
-                title = "Store Loss",
+                title = stringResource(com.zaed.manager.R.string.store_loss),
                 value = totalStoreLoss,
+                loading = totalStoreLossLoading,
                 iconRes = R.drawable.ic_money_minus,
                 cardColor = MaterialTheme.colorScheme.errorContainer,
                 onClick = { onReportClick(ReportType.STORE_LOSS) }
@@ -59,8 +72,9 @@ fun ReportGrid(
         }
         item {
             ReportCard(
-                title = "Wholesale Sales",
+                title = stringResource(com.zaed.manager.R.string.wholesale_sales),
                 value = totalWholesaleSales,
+                loading = totalWholesaleSalesLoading,
                 iconRes = R.drawable.ic_customers,
                 cardColor = MaterialTheme.colorScheme.primaryContainer,
                 onClick = { onReportClick(ReportType.WHOLESALE_SALES) }
@@ -68,8 +82,9 @@ fun ReportGrid(
         }
         item {
             ReportCard(
-                title = "Wholesale Profit",
+                title = stringResource(com.zaed.manager.R.string.wholesale_profit),
                 value = totalWholesaleProfit,
+                loading = totalWholesaleProfitLoading,
                 iconRes = R.drawable.ic_customers,
                 cardColor = MaterialTheme.colorScheme.secondaryContainer,
                 onClick = { onReportClick(ReportType.WHOLESALE_PROFIT) }
@@ -79,8 +94,9 @@ fun ReportGrid(
 
         item {
             ReportCard(
-                title = "Wholesale Loss",
+                title = stringResource(com.zaed.manager.R.string.wholesale_loss),
                 value = totalWholesaleLoss,
+                loading = totalWholesaleLossLoading,
                 iconRes = R.drawable.ic_money_minus,
                 cardColor = MaterialTheme.colorScheme.errorContainer,
                 onClick = { onReportClick(ReportType.WHOLESALE_LOSS) }
@@ -88,18 +104,20 @@ fun ReportGrid(
         }
         item {
             ReportCard(
-                title = "Manager Sales",
+                title = stringResource(com.zaed.manager.R.string.manager_sales),
                 value = totalManagerSales,
                 iconRes = R.drawable.ic_person,
+                loading = totalManagerSalesLoading,
                 cardColor = MaterialTheme.colorScheme.primaryContainer,
                 onClick = { onReportClick(ReportType.MANAGER_SALES) }
             )
         }
         item {
             ReportCard(
-                title = "Manager Profit",
+                title = stringResource(com.zaed.manager.R.string.manager_profit),
                 value = totalManagerProfit,
                 iconRes = R.drawable.ic_person,
+                loading = totalManagerProfitLoading,
                 cardColor = MaterialTheme.colorScheme.secondaryContainer,
                 onClick = { onReportClick(ReportType.MANAGER_PROFIT) }
             )
@@ -108,8 +126,9 @@ fun ReportGrid(
 
         item {
             ReportCard(
-                title = "Manager Loss",
+                title = stringResource(com.zaed.manager.R.string.manager_loss),
                 value = totalManagerLoss,
+                loading = totalManagerLossLoading,
                 iconRes = R.drawable.ic_money_minus,
                 cardColor = MaterialTheme.colorScheme.errorContainer,
                 onClick = { onReportClick(ReportType.MANAGER_LOSS) }
