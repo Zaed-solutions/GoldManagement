@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -96,6 +97,8 @@ fun SelectPaymentsContent(
     onAddSupplier: (Supplier) -> Unit = {},
     totalPaid: Double,
     salesCheques: List<ChequePayment> = emptyList(),
+    discount: Double = 0.0,
+    onUpdateDiscount: (Double) -> Unit = {},
 ) {
     var showSupplierSheet by remember { mutableStateOf(false) }
     var simplePaymentBottomSheet by remember { mutableStateOf(false) }
@@ -105,7 +108,7 @@ fun SelectPaymentsContent(
     var confirmTheRemainsSheetVisible by remember { mutableStateOf(false) }
     val remainsAmount by rememberUpdatedState(
         if(!payWithGold) totalAmount - totalPaid
-        else products.sumOf { it.laborCost } - payments.sumOf { it.amount }
+        else products.sumOf { it.laborCost } - payments.sumOf { it.amount } - discount
     )
     val remainsGold by rememberUpdatedState(
         products.sumOf { it.grams } - (payments.filterIsInstance<GoldPayment>().sumOf { it.givenGoldAmount })
@@ -125,7 +128,7 @@ fun SelectPaymentsContent(
         )
 
         Text(
-            text = if(!payWithGold) {totalAmount.toMoneyFormat(2) } else {
+            text = if(!payWithGold) {(totalAmount - discount).toMoneyFormat(2) } else {
                 stringResource(
                     R.string.grams_placeholder,products.sumOf { it.grams })
             },
@@ -145,11 +148,23 @@ fun SelectPaymentsContent(
                 color = MaterialTheme.colorScheme.primary
             )
         }
+        if(!isPurchase && !payWithGold){
+            NumberInputTextField(
+                modifier = Modifier.fillMaxWidth(),
+                label = stringResource(R.string.discount),
+                value = discount,
+                onValueChange = onUpdateDiscount,
+                imageVector = Icons.Default.AttachMoney,
+                withBorder = true,
+                shape = MaterialTheme.shapes.medium,
+            )
+        }
         Text(
             text = stringResource(R.string.select_payment_method),
             style = MaterialTheme.typography.headlineSmall
         )
         PaymentTypes(
+            selectedAccount = selectedAccount,
             types = paymentsTypes,
             onPaymentTypeSelected = { type ->
                 when (type) {
@@ -270,7 +285,7 @@ fun SelectPaymentsContent(
                                 if (selectedAccount is WholeSaleCustomer) {
                                     onAddPayment(
                                         FuturePayment(
-                                            customerId = selectedAccount.id,
+                                            accountId = selectedAccount.id,
                                             amount = remainsAmount.absoluteValue,
                                             given = false,
                                             type = PaymentType.REMAIN
@@ -279,7 +294,7 @@ fun SelectPaymentsContent(
                                 } else {
                                     onAddPayment(
                                         FuturePayment(
-                                            customerId = selectedAccount.id,
+                                            accountId = selectedAccount.id,
                                             amount = remainsAmount.absoluteValue,
                                             given = true,
                                             type = PaymentType.REMAIN
@@ -381,7 +396,7 @@ fun SelectPaymentsContent(
                                 onClick = {
                                     onAddPayment(
                                         LossPayment(
-                                            customerId = selectedAccount.id,
+                                            accountId = selectedAccount.id,
                                             amount = remainsAmount,
                                             given = true,
                                             type = PaymentType.LOSS
@@ -403,7 +418,7 @@ fun SelectPaymentsContent(
                                 if (selectedAccount.id.isNotBlank()) {
                                     onAddPayment(
                                         FuturePayment(
-                                            customerId = selectedAccount.id,
+                                            accountId = selectedAccount.id,
                                             amount = remainsAmount,
                                             given = true,
                                             type = PaymentType.FUTURES

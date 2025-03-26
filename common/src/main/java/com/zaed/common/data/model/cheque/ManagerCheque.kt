@@ -10,18 +10,21 @@ data class ManagerCheque(
     val chequeType : ChequeType = ChequeType.PERSONAL,
     val chequeNumber : String = "",
     val receiverName : String = "",
+    val receiverId: String = "",
+    val senderName: String = "",
+    val senderId: String = "",
     val chequeStatus : ChequeStatus = ChequeStatus.RECEIVED,
     val notes : String = "",
     val cashed: Boolean = false,
     override var given :Boolean = false,
-    override var customerId: String = "",
+    override var accountId: String = "",
     override val type: PaymentType = PaymentType.MANAGER_CHEQUES,
     override var amount: Double = 0.0,
     override val deleted: Boolean = false,
     override var receiptNumber: String = "",
     override val createdAt: Date = Date(),
     override val logs: List<ChangeLog> = emptyList()
-):Payment( id, customerId, type,amount, deleted,given, receiptNumber, createdAt, logs)
+):Payment( id, accountId, type,amount, deleted,given, receiptNumber, createdAt, logs)
 
 fun ManagerCheque.toMap(): Map<String, Any> =
     mapOf(

@@ -9,6 +9,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
+import com.zaed.common.data.model.cheque.ChequeStatus
 import com.zaed.common.data.model.cheque.ManagerCheque
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
@@ -80,8 +81,8 @@ class PurchaseRemoteDataSourceImpl(
                 )
             )
             batch.set(purchaseRef, purchase.copy(logs = logs, deleted = true))
-            if (purchase.customerId.isNotEmpty()) {
-                val supplierRef = suppliersCollection.document(purchase.customerId)
+            if (purchase.accountId.isNotEmpty()) {
+                val supplierRef = suppliersCollection.document(purchase.accountId)
                 var totalPaymentDeleted = 0.0
                 purchase.paymentsIds.forEach {
                     val paymentRef = paymentCollection.document(it)
@@ -158,7 +159,7 @@ class PurchaseRemoteDataSourceImpl(
                 paymentsIds.add(it.id)
                 batch.update(
                     paymentRef,
-                    mapOf("cashed" to true)
+                    mapOf("chequeStatus" to ChequeStatus.CASHED)
                 )
             }
             request.payments.filter { it.type!=PaymentType.CHEQUE }.forEach {
@@ -167,7 +168,7 @@ class PurchaseRemoteDataSourceImpl(
 
                 if (it.type == PaymentType.FUTURES) {
                     val customerRef =
-                        suppliersCollection.document(request.purchase.customerId)
+                        suppliersCollection.document(request.purchase.accountId)
 
                     batch.update(
                         customerRef,
@@ -176,7 +177,7 @@ class PurchaseRemoteDataSourceImpl(
 
                 } else if (it.type == PaymentType.REMAIN) {
                     val customerRef =
-                        suppliersCollection.document(request.purchase.customerId)
+                        suppliersCollection.document(request.purchase.accountId)
                     batch.update(
                         customerRef,
                         mapOf("moneyDebtAmount" to FieldValue.increment(it.amount))
@@ -266,8 +267,8 @@ class PurchaseRemoteDataSourceImpl(
             ).get().await().documents.firstOrNull()?.toObject(CashPayment::class.java)
                 ?: CashPayment()
             val updatedPaymentIds = mutableListOf<String>()
-            if (request.purchase.customerId.isNotBlank()) {
-                val supplierRef = suppliersCollection.document(request.purchase.customerId)
+            if (request.purchase.accountId.isNotBlank()) {
+                val supplierRef = suppliersCollection.document(request.purchase.accountId)
 
                 batch.update(
                     supplierRef,
@@ -288,7 +289,7 @@ class PurchaseRemoteDataSourceImpl(
                     val newPaymentRef = paymentCollection.document()
                     val amount = if (payment.type == PaymentType.FUTURES) {
                         val supplierRef =
-                            suppliersCollection.document(request.purchase.customerId)
+                            suppliersCollection.document(request.purchase.accountId)
                         batch.update(
                             supplierRef,
                             mapOf("moneyDebtAmount" to FieldValue.increment(payment.signedAmount()))
@@ -296,7 +297,7 @@ class PurchaseRemoteDataSourceImpl(
                         payment.amount
                     }else if (payment.type == PaymentType.REMAIN) {
                         val supplierRef =
-                            suppliersCollection.document(request.purchase.customerId)
+                            suppliersCollection.document(request.purchase.accountId)
                         batch.update(
                             supplierRef,
                             mapOf("moneyDebtAmount" to FieldValue.increment(payment.signedAmount()))
@@ -396,10 +397,10 @@ class PurchaseRemoteDataSourceImpl(
     = callbackFlow {
         try {
             val filter = if(request.isManager){
-                    Filter.equalTo("customerId", request.supplierId)
+                    Filter.equalTo("accountId", request.supplierId)
             } else {
                 Filter.and(
-                    Filter.equalTo("customerId", request.supplierId),
+                    Filter.equalTo("accountId", request.supplierId),
                     Filter.equalTo("deleted", false)
                 )
             }

@@ -85,7 +85,7 @@ class AddGoldSaleViewModel(
                         initialSale = data, sale = data
                     )
                 }
-                fetchCustomer(data.customerId)
+                fetchCustomer(data.accountId)
                 fetchPayments(data.paymentsIds)
             }.onFailure { e ->
                 Log.e(TAG, "fetchSale: ${e.message}", e)
@@ -160,7 +160,16 @@ class AddGoldSaleViewModel(
             is AddGoldSaleUiAction.OnUpdateProducts -> updateProductsSale(action.products)
             AddGoldSaleUiAction.OnDeleteAllProducts -> updateProductsSale(emptyList())
             is AddGoldSaleUiAction.OnUpdatePaymentType -> updatePaymentType(action.isCash)
+            is AddGoldSaleUiAction.OnUpdateDiscount -> updateDiscount(action.discount)
             else -> Unit
+        }
+    }
+
+    private fun updateDiscount(discount: Double) {
+        viewModelScope.launch {
+            _uiState.update { oldState ->
+                oldState.copy(sale = oldState.sale.copy(discount = discount))
+            }
         }
     }
 
@@ -200,7 +209,7 @@ class AddGoldSaleViewModel(
                 _uiState.update { oldState ->
                     oldState.copy(
                         sale = uiState.value.sale.copy(
-                            customerId = customer.id,
+                            accountId = customer.id,
                             customerName = customer.name,
                             customerPhone = customer.phone,
                             paymentStatus = if ((uiState.value.sale.totalAmount - uiState.value.totalMoneyPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID,
@@ -243,7 +252,7 @@ class AddGoldSaleViewModel(
             _uiState.update { oldState ->
                 oldState.copy(
                     sale = oldState.sale.copy(
-                        customerId = customer.id,
+                        accountId = customer.id,
                         customerName = customer.name,
                         customerPhone = customer.phone,
                         outStandingBill = !uiState.value.payWithMoney,

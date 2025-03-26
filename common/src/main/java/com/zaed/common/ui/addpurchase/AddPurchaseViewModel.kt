@@ -88,7 +88,7 @@ class AddPurchaseViewModel(
                         selectedProductType = data.productType
                     )
                 }
-                fetchSupplier(data.customerId)
+                fetchSupplier(data.accountId)
                 fetchPayments(data.paymentsIds)
             }.onFailure { e ->
                 Log.e(TAG, "fetchSale: ${e.message}", e)
@@ -293,7 +293,7 @@ class AddPurchaseViewModel(
                 _uiState.update { oldState ->
                     oldState.copy(
                         purchase = uiState.value.purchase.copy(
-                            customerId = customer.id,
+                            accountId = customer.id,
                             customerName = customer.name,
                             customerPhone = customer.phone,
                             paymentStatus =
@@ -334,7 +334,7 @@ class AddPurchaseViewModel(
             _uiState.update { oldState ->
                 oldState.copy(
                     purchase = oldState.purchase.copy(
-                        customerId = customer.id,
+                        accountId = customer.id,
                         customerName = customer.name,
                         customerPhone = customer.phone,
                         distributorId = distributor.id,

@@ -4,6 +4,6 @@ import com.zaed.common.data.model.payment.Payment
 
 data class AddNewPaymentRequest(
     val isSupplier: Boolean = false,
-    val customerId: String,
+    val accountId: String,
     val payment: Payment
 )

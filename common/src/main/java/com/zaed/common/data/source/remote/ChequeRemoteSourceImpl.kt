@@ -3,6 +3,7 @@ package com.zaed.common.data.source.remote
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
+import com.zaed.common.data.model.cheque.ChequeStatus
 import com.zaed.common.data.model.cheque.ManagerCheque
 import com.zaed.common.data.model.cheque.request.AddNewManagerChequeRequest
 import com.zaed.common.data.model.cheque.request.AddNewSalesChequeRequest
@@ -38,7 +39,7 @@ class ChequeRemoteSourceImpl(
             val result = salesChequeCollection.where(
                 Filter.and(
                     Filter.equalTo("deleted", false),
-                    Filter.equalTo("cashed", false),
+                    Filter.equalTo("chequeStatus", ChequeStatus.RECEIVED),
                     Filter.equalTo("type", PaymentType.CHEQUE)
                 )
             ).get().await()

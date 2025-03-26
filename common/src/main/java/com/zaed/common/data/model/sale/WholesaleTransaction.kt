@@ -8,11 +8,12 @@ import java.util.Date
 
 data class WholesaleTransaction(
     override val id: String = "",
-    override val customerId: String = "",
+    override val accountId: String = "",
     override val customerName: String = "",
     override val customerPhone: String = "",
     val distributorId: String = "",
     val distributorName: String = "",
+    val discount: Double = 0.0,
     override val createdAt: Date = Date(),
     override val logs: List<ChangeLog> = emptyList(),
     override val deleted: Boolean = false,
@@ -26,7 +27,7 @@ data class WholesaleTransaction(
     override val outStandingBill : Boolean = false
 ) : Transaction(
     id = id,
-    customerId = customerId,
+    accountId = accountId,
     customerName = customerName,
     customerPhone = customerPhone,
     createdAt = createdAt,
@@ -45,7 +46,7 @@ data class WholesaleTransaction(
     val totalPriceBeforeDiscount
         get() = products.sumOf { it.totalPriceBeforeDiscount }
     override val totalAmount
-        get() = products.sumOf { it.totalPriceAfterDiscount }
+        get() = totalPriceBeforeDiscount - discount
 }
 
 

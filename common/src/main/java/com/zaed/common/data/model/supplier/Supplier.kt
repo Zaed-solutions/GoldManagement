@@ -11,11 +11,13 @@ data class Supplier(
     override val createdAt: Date = Date(),
     override val moneyDebtAmount: Double = 0.0,
     override val goldDebtAmount: Double = 0.0,
+    override val note: String = "",
 ) : Account(
     id = id,
     name = name,
     phone = phone,
     email = email,
+    note = note,
     createdAt = createdAt,
     moneyDebtAmount = moneyDebtAmount,
     goldDebtAmount = goldDebtAmount

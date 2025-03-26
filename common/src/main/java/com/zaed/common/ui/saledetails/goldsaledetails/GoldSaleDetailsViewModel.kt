@@ -64,7 +64,7 @@ class GoldSaleDetailsViewModel(
                     oldState.copy(sale = data)
                 }
                 fetchPayments(data.paymentsIds)
-                fetchCustomer(data.customerId)
+                fetchCustomer(data.accountId)
             }.onFailure {
                 Log.e(TAG, "fetchSale: ${it.message}", it)
             }

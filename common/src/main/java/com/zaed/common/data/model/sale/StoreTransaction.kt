@@ -19,11 +19,11 @@ data class StoreTransaction(
     val discount: Discount = Discount(),
     override val deleted: Boolean = false,
     override val logs: List<ChangeLog> = emptyList(),
-    override val customerId: String="",
+    override val accountId: String="",
     override val customerPhone: String=""
 ): Transaction(
     id = id,
-    customerId = customerId,
+    accountId = accountId,
     customerName = customerName,
     customerPhone = customerPhone,
     createdAt = createdAt,

@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -11,6 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LocationCity
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Mail
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,6 +26,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -34,6 +42,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zaed.common.R
+import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.ui.auth.FieldsError
 import com.zaed.common.ui.components.BackIcon
 import com.zaed.common.ui.components.CustomSnackbar
@@ -153,6 +163,7 @@ fun AddCustomersScreenContent(
                     .fillMaxWidth(),
                 label = stringResource(com.zaed.common.R.string.full_name),
                 value = uiState.request.name,
+                imageVector = Icons.Default.Person,
                 onValueChange = { name ->
                     onAction(AddCustomersUiAction.UpdateName(name))
                 },
@@ -166,6 +177,7 @@ fun AddCustomersScreenContent(
                     .fillMaxWidth(),
                 label = stringResource(com.zaed.common.R.string.email),
                 value = uiState.request.email,
+                imageVector = Icons.Default.Mail,
                 onValueChange = { email ->
                     onAction(AddCustomersUiAction.UpdateEmail(email))
                 }
@@ -183,6 +195,7 @@ fun AddCustomersScreenContent(
                     .fillMaxWidth(),
                 label = stringResource(com.zaed.common.R.string.address),
                 value = uiState.request.address,
+                imageVector = Icons.Default.LocationOn,
                 onValueChange = { address ->
                     onAction(AddCustomersUiAction.UpdateAddress(address))
                 }
@@ -192,10 +205,39 @@ fun AddCustomersScreenContent(
                     .fillMaxWidth(),
                 label = stringResource(com.zaed.common.R.string.city),
                 value = uiState.request.city,
+                imageVector = Icons.Default.LocationCity,
                 onValueChange = { city ->
                     onAction(AddCustomersUiAction.UpdateCity(city))
                 }
             )
+            TextInputTextField(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                label = stringResource(R.string.note),
+                value = uiState.request.note,
+                imageVector = Icons.Default.Info,
+                onValueChange = { city ->
+                    onAction(AddCustomersUiAction.UpdateNote(city))
+                }
+            )
+            if(uiState.distributor.role != UserRole.DISTRIBUTOR){
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Text(
+                        text = stringResource(R.string.pay_with_cheques),
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Switch(
+                        checked = uiState.request.payWithCheques,
+                        onCheckedChange = {
+                            onAction(AddCustomersUiAction.UpdatePayWithCheques(it))
+                        }
+                    )
+                }
+            }
         }
     }
 
