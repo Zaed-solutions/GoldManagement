@@ -128,7 +128,7 @@ fun SelectPaymentsContent(
         )
 
         Text(
-            text = if(!payWithGold) {(totalAmount - discount).toMoneyFormat(2) } else {
+            text = if(!payWithGold) {(totalAmount).toMoneyFormat(2) } else {
                 stringResource(
                     R.string.grams_placeholder,products.sumOf { it.grams })
             },
@@ -215,6 +215,7 @@ fun SelectPaymentsContent(
                 selectedPayment = it
                 simplePaymentBottomSheet = true
             },
+            canCashed = false,
             onRemovePayment = onRemovePayment
         )
 
@@ -285,6 +286,7 @@ fun SelectPaymentsContent(
                                 if (selectedAccount is WholeSaleCustomer) {
                                     onAddPayment(
                                         FuturePayment(
+                                            id = "Payment-" + UUID.randomUUID().toString(),
                                             accountId = selectedAccount.id,
                                             amount = remainsAmount.absoluteValue,
                                             given = false,
@@ -294,6 +296,7 @@ fun SelectPaymentsContent(
                                 } else {
                                     onAddPayment(
                                         FuturePayment(
+                                            id = "Payment-" + UUID.randomUUID().toString(),
                                             accountId = selectedAccount.id,
                                             amount = remainsAmount.absoluteValue,
                                             given = true,
@@ -418,6 +421,7 @@ fun SelectPaymentsContent(
                                 if (selectedAccount.id.isNotBlank()) {
                                     onAddPayment(
                                         FuturePayment(
+                                            id = "Payment-" + UUID.randomUUID().toString(),
                                             accountId = selectedAccount.id,
                                             amount = remainsAmount,
                                             given = true,

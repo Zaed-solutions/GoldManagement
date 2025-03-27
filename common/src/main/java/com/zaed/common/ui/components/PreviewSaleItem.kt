@@ -56,7 +56,7 @@ fun PreviewSaleItem(
                         R.string.x,
                         product.quantity,
                         product.priceForItem
-                    ) + if (product.laborCost > 0) " + ${product.laborCost.toMoneyFormat(2)}" else "",
+                    ) + if (product.laborCost > 0) " + ${product.totalLaborCost.toMoneyFormat(2)}" else "",
                     color = MaterialTheme.colorScheme.outline
                 )
             }

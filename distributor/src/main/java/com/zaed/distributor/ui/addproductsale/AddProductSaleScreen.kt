@@ -185,7 +185,7 @@ private fun AddProductSaleScreenContent(
                         SelectPaymentsContent(
                             totalAmount = state.sale.totalAmount,
                             payments = state.payments,
-                            totalPaid = state.totalPaid,
+                            totalPaid = state.totalPaid + state.futurePaid,
                             discount = state.sale.discount,
                             selectedAccount = state.selectedCustomer,
                             currentUser = state.currentUser,

@@ -138,7 +138,7 @@ fun GoldItemHeader() {
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.weight(5f),
-                textAlign = TextAlign.End
+                textAlign = TextAlign.Center
             )
             Text(
                 text = stringResource(R.string.labor_cost),

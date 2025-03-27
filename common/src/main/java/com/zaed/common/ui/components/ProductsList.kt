@@ -127,7 +127,7 @@ fun GoldItem(
             Text(
                 text = product.totalPriceAfterDiscount.formatMoney(),
                 style = MaterialTheme.typography.titleMedium,
-                textAlign = TextAlign.End,
+                textAlign = TextAlign.Center,
                 maxLines = 1,
                 modifier = Modifier.weight(5f)
             )

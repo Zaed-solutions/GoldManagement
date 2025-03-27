@@ -198,7 +198,22 @@ class SalesChequesScreenViewModel(
             is SalesChequesUiAction.OnChequeFilterSelected -> updateChequeFilter(action.filter)
             is SalesChequesUiAction.OnAccountSelected -> updateSelectedAccount(action.account)
             is SalesChequesUiAction.OnTransferCheque -> transferCheque(action.cheque, action.isSupplier)
+            is SalesChequesUiAction.CashedCheque -> cashedCheque(action.payment)
             else -> {}
+        }
+    }
+
+    private fun cashedCheque(payment: ChequePayment) {
+        viewModelScope.launch {
+            val account = uiState.value.selectedAccount
+            val newCheque = payment.copy(
+                chequeStatus = ChequeStatus.CASHED,
+            )
+            editPayment(
+                oldPayment = payment,
+                newPayment = newCheque,
+                isSupplier = account is Supplier
+            )
         }
     }
 

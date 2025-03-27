@@ -14,7 +14,8 @@ data class Product(
     val buyingPrice: Double = 0.0,
 ){
     val priceForItem get() = grams*gramPrice
-    val totalPriceBeforeDiscount get() = (quantity)*(priceForItem+ laborCost)
+    val totalLaborCost get() = grams*laborCost
+    val totalPriceBeforeDiscount get() = (quantity)*(priceForItem+ totalLaborCost)
     val discountAmount get() = discount.calculateDiscount(totalPriceBeforeDiscount)
     val discountAsStr get() = discount.toStr()
     val totalPriceAfterDiscount get() = totalPriceBeforeDiscount - discount.calculateDiscount(totalPriceBeforeDiscount)

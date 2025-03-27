@@ -229,7 +229,7 @@ fun App(
                                                 painter = painterResource(it),
                                                 contentDescription = null,
                                                 modifier = Modifier.size(24.dp),
-                                                tint = MaterialTheme.colorScheme.onSurface
+//                                                tint = MaterialTheme.colorScheme.onSurfaceurface
                                             )
                                         }
                                     },

@@ -25,7 +25,7 @@ data class AddGoldSaleUiState(
     val totalMoneyPaid
         get() = payments.filter { it.type != PaymentType.FUTURES}.filter { it.type != PaymentType.GOLD }
             .sumOf { if (it.type == PaymentType.REMAIN) it.amount.unaryMinus() else it.amount }
-
+    val totalFuturePaid get() = payments.filter { it.type == PaymentType.FUTURES }.sumOf { it.amount }
     val totalGoldPaid
         get() = payments.filterIsInstance<GoldPayment>().sumOf { it.givenGoldAmount }
 }

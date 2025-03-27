@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.HorizontalDivider
@@ -46,8 +47,10 @@ fun PaymentItem(
     onClick: () -> Unit = {},
     onDelete: () -> Unit = {},
     onEdit: () -> Unit = {},
+    onCashed: () -> Unit = {},
     isEditable: Boolean = true,
     isDeletable: Boolean = true,
+    canCashed: Boolean = false
 ) {
     val context = LocalContext.current
     val (type, subtitle) =
@@ -113,43 +116,39 @@ fun PaymentItem(
             }
         }
 
-    val moreOptions =
-        if (isEditable && isDeletable) {
-            listOf(
-                MoreDropdownItem(
-                    onClick = { onEdit() },
-                    icon = Icons.Default.Edit,
-                    title = context.getString(R.string.edit),
-                    tint = MaterialTheme.colorScheme.primary,
-                ),
-                MoreDropdownItem(
-                    onClick = { onDelete() },
-                    icon = Icons.Default.Delete,
-                    title = context.getString(R.string.delete),
-                    tint = MaterialTheme.colorScheme.error,
-                )
+    val moreOptions = mutableListOf<MoreDropdownItem>()
+    if (isEditable) {
+        moreOptions.add(
+            MoreDropdownItem(
+                onClick = { onEdit() },
+                icon = Icons.Default.Edit,
+                title = context.getString(R.string.edit),
+                tint = MaterialTheme.colorScheme.primary,
+            ),
+        )
+    }
+    if (canCashed && (payment is ChequePayment) && payment.chequeStatus == ChequeStatus.RECEIVED ) {
+        moreOptions.add(
+            MoreDropdownItem(
+                onClick = { onCashed() },
+                icon = Icons.Default.AttachMoney,
+                title = context.getString(R.string.cashed),
+                tint = MaterialTheme.colorScheme.primary,
+            ),
+        )
+    }
+    if (isDeletable) {
+        moreOptions.add(
+            MoreDropdownItem(
+                onClick = { onDelete() },
+                icon = Icons.Default.Delete,
+                title = context.getString(R.string.delete),
+                tint = MaterialTheme.colorScheme.error,
             )
-        } else if (isDeletable) {
-            listOf(
-                MoreDropdownItem(
-                    onClick = { onDelete() },
-                    icon = Icons.Default.Delete,
-                    title = context.getString(R.string.delete),
-                    tint = MaterialTheme.colorScheme.error,
-                )
-            )
-        } else if (isEditable) {
-            listOf(
-                MoreDropdownItem(
-                    onClick = { onEdit() },
-                    icon = Icons.Default.Edit,
-                    title = context.getString(R.string.edit),
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-            )
-        } else {
-            emptyList()
-        }
+        )
+    }
+
+
     Surface(
         modifier = modifier.fillMaxWidth(),
         onClick = onClick,
@@ -208,7 +207,7 @@ fun PaymentItem(
                         modifier = Modifier.padding(end = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if(subtitle.isNotBlank()) {
+                        if (subtitle.isNotBlank()) {
                             Text(
                                 text = subtitle,
                                 style = MaterialTheme.typography.bodyMedium,
