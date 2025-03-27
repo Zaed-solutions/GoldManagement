@@ -81,7 +81,7 @@ fun AddCustomersScreenContent(
 ) {
     val context = LocalContext.current
     val snackBarHostState = remember { SnackbarHostState() }
-    var snackBarError by remember { mutableStateOf(false)}
+    var snackBarError by remember { mutableStateOf(false) }
     LaunchedEffect(uiState.error, uiState.successStatus) {
         if (uiState.error != null) {
             snackBarError = true
@@ -93,7 +93,9 @@ fun AddCustomersScreenContent(
         if (uiState.successStatus) {
             snackBarError = false
             snackBarHostState.showSnackbar(
-                message =if(uiState.isEditMode) context.getString(com.zaed.common.R.string.customer_edited) else context.getString(com.zaed.common.R.string.customer_added),
+                message = if (uiState.isEditMode) context.getString(com.zaed.common.R.string.customer_edited) else context.getString(
+                    com.zaed.common.R.string.customer_added
+                ),
                 duration = SnackbarDuration.Short,
                 withDismissAction = true
             )
@@ -210,21 +212,22 @@ fun AddCustomersScreenContent(
                     onAction(AddCustomersUiAction.UpdateCity(city))
                 }
             )
-            TextInputTextField(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                label = stringResource(R.string.note),
-                value = uiState.request.note,
-                imageVector = Icons.Default.Info,
-                onValueChange = { city ->
-                    onAction(AddCustomersUiAction.UpdateNote(city))
-                }
-            )
-            if(uiState.distributor.role != UserRole.DISTRIBUTOR){
+            if (uiState.distributor.role != UserRole.DISTRIBUTOR) {
+                TextInputTextField(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    label = stringResource(R.string.note),
+                    value = uiState.request.note,
+                    imageVector = Icons.Default.Info,
+                    onValueChange = { city ->
+                        onAction(AddCustomersUiAction.UpdateNote(city))
+                    }
+                )
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
-                ){
+                ) {
                     Text(
                         text = stringResource(R.string.pay_with_cheques),
                         style = MaterialTheme.typography.titleLarge,
@@ -245,12 +248,12 @@ fun AddCustomersScreenContent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddCustomersTopBar(onBack: () -> Unit,isEditMode: Boolean = false) {
+fun AddCustomersTopBar(onBack: () -> Unit, isEditMode: Boolean = false) {
     TopAppBar(
         title = {
             Text(
                 if (isEditMode) stringResource(com.zaed.common.R.string.edit_customer) else
-                stringResource(com.zaed.common.R.string.add_customer)
+                    stringResource(com.zaed.common.R.string.add_customer)
             )
         },
         navigationIcon = {
@@ -265,5 +268,5 @@ fun AddCustomersTopBar(onBack: () -> Unit,isEditMode: Boolean = false) {
 @Preview
 @Composable
 private fun AddCustomersScreenPreview() {
-        AddCustomersScreenContent()
+    AddCustomersScreenContent()
 }

@@ -42,6 +42,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
+import com.zaed.common.data.model.authentication.UserRole
+import com.zaed.common.data.model.cheque.ChequeStatus
 import com.zaed.common.data.model.cheque.ManagerCheque
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
@@ -58,6 +60,7 @@ import com.zaed.common.ui.components.PaymentsList
 import com.zaed.common.ui.components.SavePaymentBottomSheet
 import com.zaed.common.ui.components.SearchBar
 import com.zaed.common.ui.components.TransactionsList
+import com.zaed.common.ui.customerdetails.CustomerDetailsUiAction
 import com.zaed.common.ui.suppliers.components.SaveSupplierBottomSheet
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -251,6 +254,10 @@ private fun SupplierDetailsScreenContent(
                                     selectedPayment = payment
                                     isPurchase = false
                                     isConfirmDeletePaymentSheetVisible = true
+                                },
+                                canCashed = state.currentUser.role != UserRole.DISTRIBUTOR,
+                                onChequeCashed = {payment->
+                                    onAction(SupplierDetailsUiAction.UpdatePayment(payment,(payment as ChequePayment).copy(chequeStatus = ChequeStatus.CASHED)))
                                 },
                                 onEditPayment = { payment ->
                                     selectedPayment = payment

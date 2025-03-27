@@ -221,6 +221,10 @@ fun SalesChequesScreenContent(
                                     selectedPayment = payment
                                     confirmDeletePaymentSheet = true
                                 },
+                                canCashed = true,
+                                onChequeCashed = {
+                                    onAction(SalesChequesUiAction.CashedCheque(it as ChequePayment))
+                                },
                                 onEditPayment = { payment ->
                                     selectedPayment = payment
                                     Log.d("TAG", "CustomerDetailsScreenContent2: $selectedPayment")
@@ -274,6 +278,10 @@ fun SalesChequesScreenContent(
                                     selectedPayment = payment
                                     confirmDeletePaymentSheet = true
                                 },
+                                onChequeCashed = {
+                                    onAction(SalesChequesUiAction.CashedCheque(it as ChequePayment))
+                                },
+                                canCashed = false,
                                 onEditPayment = { payment ->
                                     selectedPayment = payment
                                     Log.d("TAG", "CustomerDetailsScreenContent2: $selectedPayment")

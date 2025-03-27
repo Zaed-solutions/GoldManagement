@@ -215,6 +215,7 @@ fun SelectPaymentsContent(
                 selectedPayment = it
                 simplePaymentBottomSheet = true
             },
+            canCashed = false,
             onRemovePayment = onRemovePayment
         )
 

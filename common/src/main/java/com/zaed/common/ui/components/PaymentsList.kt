@@ -17,7 +17,9 @@ fun PaymentsList(
     modifier: Modifier = Modifier,
     payments: List<Payment>,
     onEditPayment: (Payment) -> Unit,
-    onRemovePayment: (Payment) -> Unit
+    onRemovePayment: (Payment) -> Unit,
+    onChequeCashed: (Payment) -> Unit={},
+    canCashed: Boolean = false
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -35,8 +37,10 @@ fun PaymentsList(
                 PaymentItem(
                     modifier = Modifier.animateItem(),
                     payment = payment,
+                    canCashed = canCashed,
                     onEdit = { onEditPayment(payment) },
-                    onDelete = { onRemovePayment(payment) }
+                    onDelete = { onRemovePayment(payment) },
+                    onCashed = { onChequeCashed(payment) }
                 )
             }
         }

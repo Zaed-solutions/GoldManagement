@@ -43,6 +43,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
+import com.zaed.common.data.model.authentication.UserRole
+import com.zaed.common.data.model.cheque.ChequeStatus
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
@@ -156,6 +158,10 @@ fun CustomerDetailsScreenContent(
                                 onRemovePayment = { payment ->
                                     selectedPayment = payment
                                     confirmDeletePaymentSheet = true
+                                },
+                                canCashed = uiState.currentDistributor.role !=UserRole.DISTRIBUTOR,
+                                onChequeCashed = {payment->
+                                    onAction(CustomerDetailsUiAction.EditPayment((payment as ChequePayment).copy(chequeStatus = ChequeStatus.CASHED)))
                                 },
                                 onEditPayment = { payment ->
                                     selectedPayment = payment
