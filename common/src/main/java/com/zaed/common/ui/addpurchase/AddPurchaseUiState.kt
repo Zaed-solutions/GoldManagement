@@ -27,4 +27,5 @@ data class AddPurchaseUiState(
     val totalPaid
         get() = payments.filter { it.type != PaymentType.FUTURES }
             .sumOf { if (it.type == PaymentType.REMAIN) it.amount.unaryMinus() else it.amount }
+    val totalFuturePaid get() = payments.filter { it.type == PaymentType.FUTURES }.sumOf { it.amount }
 }

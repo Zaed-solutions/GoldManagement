@@ -8,7 +8,7 @@ import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.category.toCategory
 import com.zaed.common.data.model.customer.FetchWholesaleCustomersByNameRequest
 import com.zaed.common.data.model.customer.WholeSaleCustomer
-import com.zaed.common.data.model.inventory.request.FetchInventoriesRequest
+import com.zaed.common.data.model.inventory.request.FetchInventoriesByTypeRequest
 import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentStatus
@@ -21,7 +21,7 @@ import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.category.FetchAllCategoriesUseCase
 import com.zaed.common.domain.customer.FetchWholesaleCustomersByNameUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
-import com.zaed.common.domain.inventory.FetchInventoriesUseCase
+import com.zaed.common.domain.inventory.FetchInventoriesByTypeUseCase
 import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
 import com.zaed.common.domain.sale.AddWholesaleUseCase
 import com.zaed.common.domain.sale.FetchWholesaleUseCase
@@ -41,7 +41,7 @@ class AddProductSaleViewModel(
     private val fetchCustomersByNameUseCase: FetchWholesaleCustomersByNameUseCase,
     private val fetchMoneyPaymentsByIdsUseCase: FetchMoneyPaymentsByIdsUseCase,
     private val addProductSaleUseCase: AddWholesaleUseCase,
-    private val fetchInventoryUseCase: FetchInventoriesUseCase,
+    private val fetchInventoryUseCase: FetchInventoriesByTypeUseCase,
     private val updateProductSaleUseCase: UpdateWholesaleUseCase
 ) : ViewModel() {
     private val TAG: String = "AddProductSaleVM"
@@ -80,7 +80,7 @@ class AddProductSaleViewModel(
         Log.d(TAG, "fetchInventories: $ownerId")
         viewModelScope.launch(Dispatchers.IO) {
             fetchInventoryUseCase(
-                FetchInventoriesRequest(
+                FetchInventoriesByTypeRequest(
                     ownerId = ownerId,
                 )
             ).collect { result ->

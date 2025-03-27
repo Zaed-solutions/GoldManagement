@@ -19,18 +19,19 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.ui.util.toDateString
 import com.zaed.manager.ui.home.component.DateFilterDialog
-import com.zaed.manager.ui.home.component.ReportGrid
 import com.zaed.manager.ui.home.component.ReportType
 import com.zaed.manager.ui.home.component.SummaryCards
 import com.zaed.manager.ui.home.component.getDateFilterDisplayText
 import com.zaed.manager.ui.theme.ManagerTheme
 import org.koin.androidx.compose.koinViewModel
+import ui.home.component.ReportGrid
 
 
 // Screens
@@ -139,7 +140,7 @@ fun DashboardScreenContent(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Other Report",
+                text = stringResource(com.zaed.common.R.string.other_report),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )

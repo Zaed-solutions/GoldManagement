@@ -1,29 +1,4 @@
 <resources>
     <string name="app_name" translatable="false">Evara-Manager</string>
-    <string name="sales_cheques">Sales Cheques</string>
-    <string name="manager_cheques">Manager Cheques</string>
-    <string name="difference">Difference</string>
-    <string name="transactions">Transactions</string>
-    <string name="gross_profit">Gross Profit</string>
-    <string name="total_loss">Total Loss</string>
-    <string name="select_date">Select Date</string>
-    <string name="select_month">Select Month</string>
-    <string name="select_day">Select Day</string>
-    <string name="start_date">Start Date</string>
-    <string name="end_date">End Date</string>
-    <string name="cancel">Cancel</string>
-    <string name="apply">Apply</string>
-    <string name="day">Day</string>
-    <string name="month">Month</string>
-    <string name="year">Year</string>
-    <string name="range">Range</string>
-    <string name="store_sales">Store Sales</string>
-    <string name="store_profit">Store Profit</string>
-    <string name="store_loss">Store Loss</string>
-    <string name="wholesale_sales">Wholesale Sales</string>
-    <string name="wholesale_profit">Wholesale Profit</string>
-    <string name="wholesale_loss">Wholesale Loss</string>
-    <string name="manager_sales">Manager Sales</string>
-    <string name="manager_profit">Manager Profit</string>
-    <string name="manager_loss">Manager Loss</string>
+
 </resources>

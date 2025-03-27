@@ -97,6 +97,7 @@ import com.zaed.common.domain.customer.FetchWholesaleCustomersByNameUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomersUseCase
 import com.zaed.common.domain.inventory.AddInventoryUseCase
+import com.zaed.common.domain.inventory.FetchInventoriesByTypeUseCase
 import com.zaed.common.domain.inventory.FetchInventoriesUseCase
 import com.zaed.common.domain.inventory.UpdateInventoryUseCase
 import com.zaed.common.domain.loss.AddDistributorLossUseCase
@@ -190,6 +191,7 @@ val useCaseModule = module {
     singleOf(::FetchUsersUseCase)
     singleOf(::UpdateUserUseCase)
     singleOf(::DeleteUserUseCase)
+    singleOf(::FetchInventoriesByTypeUseCase)
     singleOf(::FetchStoreSalesUseCase)
     singleOf(::AddStoreSaleUseCase)
     singleOf(::FetchAllCategoriesUseCase)

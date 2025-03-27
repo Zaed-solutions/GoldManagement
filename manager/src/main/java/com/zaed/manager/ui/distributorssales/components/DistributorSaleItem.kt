@@ -34,7 +34,7 @@ fun DistributorSaleItem(
     onClick: () -> Unit
 ) {
     val (icon, iconBackgroundColor, iconColor) = when{
-        sale.productType == ProductType.GOLD -> Triple(R.drawable.ic_ingot, GoldenCustomColors.current.color, GoldenCustomColors.current.onColor)
+        sale.productType == ProductType.GOLD -> Triple(R.drawable.ic_gold, GoldenCustomColors.current.onColor,GoldenCustomColors.current.color )
         else -> Triple(R.drawable.ic_shopping, MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.onSecondary)
     }
     Surface(
@@ -57,7 +57,7 @@ fun DistributorSaleItem(
                             color = iconBackgroundColor,
                             shape = CircleShape
                         )
-                        .padding(8.dp)
+                        .padding(if(sale.productType == ProductType.GOLD) 0.dp else 8.dp)
                 )
                 Column(
                     modifier = Modifier

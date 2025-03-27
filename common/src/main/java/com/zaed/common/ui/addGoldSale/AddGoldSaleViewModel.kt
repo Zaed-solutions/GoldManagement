@@ -9,6 +9,8 @@ import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.data.model.category.toCategory
 import com.zaed.common.data.model.customer.FetchWholesaleCustomersByNameRequest
 import com.zaed.common.data.model.customer.WholeSaleCustomer
+import com.zaed.common.data.model.inventory.InventoryType
+import com.zaed.common.data.model.inventory.request.FetchInventoriesByTypeRequest
 import com.zaed.common.data.model.inventory.request.FetchInventoriesRequest
 import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.Payment
@@ -21,11 +23,13 @@ import com.zaed.common.data.model.sale.request.UpdateWholesaleRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.customer.FetchWholesaleCustomersByNameUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
+import com.zaed.common.domain.inventory.FetchInventoriesByTypeUseCase
 import com.zaed.common.domain.inventory.FetchInventoriesUseCase
 import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
 import com.zaed.common.domain.sale.AddWholesaleUseCase
 import com.zaed.common.domain.sale.FetchWholesaleUseCase
 import com.zaed.common.domain.sale.UpdateWholesaleUseCase
+import com.zaed.common.ui.addpurchase.ProductType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -41,7 +45,7 @@ class AddGoldSaleViewModel(
     private val fetchProductSaleUseCase: FetchWholesaleUseCase,
     private val addProductSaleUseCase: AddWholesaleUseCase,
     private val updateProductSaleUseCase: UpdateWholesaleUseCase,
-    private val fetchInventoryUseCase: FetchInventoriesUseCase,
+    private val fetchInventoryUseCase: FetchInventoriesByTypeUseCase
     ) : ViewModel() {
     private val TAG: String = "AddProductSaleVM"
     private val _uiState = MutableStateFlow(AddGoldSaleUiState())
@@ -56,8 +60,9 @@ class AddGoldSaleViewModel(
         Log.d(TAG, "fetchInventories: $ownerId")
         viewModelScope.launch(Dispatchers.IO) {
             fetchInventoryUseCase(
-                FetchInventoriesRequest(
+                FetchInventoriesByTypeRequest(
                     ownerId = ownerId,
+                    inventoryType = InventoryType.GOLD
                 )
             ).collect { result ->
                 Log.d(TAG, "fetchInventories: $result")
@@ -133,7 +138,7 @@ class AddGoldSaleViewModel(
                     _uiState.update { oldState ->
                         oldState.copy(currentUser = data)
                     }
-//                    fetchInventories(data.id)
+                    fetchInventories(data.id)
                 }.onFailure { e ->
                     Log.e(TAG, "fetchCurrentUser: ${e.message}", e)
                     e.printStackTrace()
@@ -274,10 +279,13 @@ class AddGoldSaleViewModel(
                     ),
                 )
             }
+            val updatedProducts = uiState.value.sale.products.map {
+                it.copy(buyingPrice = uiState.value.categories.firstOrNull()?.buyingPrice?:0.0)
+            }
             Log.d(TAG, "testoto: ${uiState.value.payments.map { it.id to it.type }}")
             addProductSaleUseCase(
                 AddWholesaleRequest(
-                    sale = uiState.value.sale,
+                    sale = uiState.value.sale.copy(products = updatedProducts),
                     payments = uiState.value.payments,
                     isAdmin = uiState.value.currentUser.role == UserRole.MANAGER
                 )
