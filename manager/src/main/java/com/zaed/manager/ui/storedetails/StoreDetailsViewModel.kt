@@ -243,7 +243,8 @@ class StoreDetailsViewModel(
             val request = UpdateInventoryRequest(
                 mainInventoryId = mainInventory.id,
                 inventoryId = oldInventory.id,
-                quantity = inventory.quantity
+                quantity = inventory.quantity,
+                buyingPrice = mainInventory.buyingPrice
             )
             updateInventoryUseCase(request).onSuccess {
                 Log.d(TAG, "updateInventory: success")

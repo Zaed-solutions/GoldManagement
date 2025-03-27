@@ -162,6 +162,7 @@ fun App(
         val resources = context.resources
         val configuration = Configuration(resources.configuration)
         configuration.setLocale(Locale(selectedLanguage.code))
+        Locale.setDefault(Locale(selectedLanguage.code))
         resources.updateConfiguration(configuration, resources.displayMetrics)
     }
     LaunchedEffect(isSignedOut) {
@@ -323,6 +324,7 @@ fun App(
                     val configuration = Configuration(resources.configuration)
                     configuration.setLocale(newLocale)
                     resources.updateConfiguration(configuration, resources.displayMetrics)
+                    Locale.setDefault(newLocale)
                     onLanguageSelected(it)
                     isSelectLanguageDialogVisible = false
                 },

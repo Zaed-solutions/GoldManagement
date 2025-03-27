@@ -11,6 +11,8 @@ import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.cheque.ChequeStatus
 import com.zaed.common.data.model.cheque.ManagerCheque
+import com.zaed.common.data.model.inventory.Inventory
+import com.zaed.common.data.model.inventory.InventoryType
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
@@ -206,29 +208,98 @@ class PurchaseRemoteDataSourceImpl(
                     )
                 }
             }
-            if(request.purchase.productType != ProductType.GOLD) {
-                val categoryUpdates = request.purchase.products
-                    .groupBy { it.categoryId }
-                val inventoryQuery = inventoryCollection
-                    .where(
-                        Filter.and(
-                            Filter.inArray("productId", categoryUpdates.keys.toList()),
-                            Filter.equalTo("ownerId", "")
-                        )
-                    )
-                    .get().await()
+            when(request.purchase.productType) {
+                ProductType.GOLD -> {
 
-                val inventoryByProductId = inventoryQuery.documents.associateBy {
-                    it.getString("productId") ?: ""
-                }
-                categoryUpdates.forEach { (categoryId, products) ->
-                    val inventoryDoc = inventoryByProductId[categoryId]
-                    if (inventoryDoc != null) {
-                        val updates = mapOf(
-                            "quantity" to FieldValue.increment(products.sumOf { it.grams }),
-                            "buyingPrice" to products.maxOf { it.gramPrice }
+                    val inventoryQuery = inventoryCollection
+                        .where(
+                            Filter.and(
+                                Filter.equalTo("type", InventoryType.GOLD),
+                                Filter.equalTo("ownerId", "")
+                            )
                         )
-                        batch.update(inventoryDoc.reference, updates)
+                        .get().await()
+                    if(inventoryQuery.documents.isNotEmpty()){
+                        val updates = mapOf(
+                            "quantity" to FieldValue.increment(request.purchase.products.sumOf { it.grams }),
+                            "buyingPrice" to request.purchase.products.maxOf { it.gramPrice }
+                        )
+                        batch.update(inventoryQuery.documents.first().reference, updates)
+                    }else{
+                        val ref = inventoryCollection.document()
+                        val inventory = Inventory(
+                            id = ref.id,
+                            type = InventoryType.GOLD,
+                            quantity = request.purchase.products.sumOf { it.grams },
+                            buyingPrice = request.purchase.products.maxOf { it.gramPrice },
+                            ownerId = ""
+                        )
+                        batch.set(ref, inventory)
+                    }
+
+                }
+                ProductType.INGOT->{
+                    val karatUpdates = request.purchase.products
+                        .groupBy { it.karat }
+                    val inventoryQuery = inventoryCollection
+                        .where(
+                            Filter.and(
+                                Filter.inArray("karat", karatUpdates.keys.toList()),
+                                Filter.equalTo("type", InventoryType.INGOT),
+                                Filter.equalTo("ownerId", "")
+                            )
+                        )
+                        .get().await()
+
+                    val inventoryByKarat = inventoryQuery.documents.associateBy {
+                        it.getString("karat") ?: ""
+                    }
+                    karatUpdates.forEach { (karat, products) ->
+                        val inventoryDoc = inventoryByKarat[karat.name]
+                        if (inventoryDoc != null) {
+                            val updates = mapOf(
+                                "quantity" to FieldValue.increment(products.sumOf { it.grams }),
+                                "buyingPrice" to products.maxOf { it.gramPrice }
+                            )
+                            batch.update(inventoryDoc.reference, updates)
+                        }else{
+                            val ref = inventoryCollection.document()
+                            val inventory = Inventory(
+                                id = ref.id,
+                                type = InventoryType.INGOT,
+                                karat = karat.name,
+                                quantity = request.purchase.products.sumOf { it.grams },
+                                buyingPrice = request.purchase.products.maxOf { it.gramPrice },
+                                ownerId = ""
+                            )
+                            batch.set(ref, inventory)
+                        }
+                    }
+                }
+                ProductType.PRODUCT -> {
+                    val categoryUpdates = request.purchase.products
+                        .groupBy { it.categoryId }
+                    val inventoryQuery = inventoryCollection
+                        .where(
+                            Filter.and(
+                                Filter.inArray("productId", categoryUpdates.keys.toList()),
+                                Filter.equalTo("ownerId", "")
+                            )
+                        )
+                        .get().await()
+
+                    val inventoryByProductId = inventoryQuery.documents.associateBy {
+                        it.getString("productId") ?: ""
+                    }
+                    categoryUpdates.forEach { (categoryId, products) ->
+                        val inventoryDoc = inventoryByProductId[categoryId]
+                        if (inventoryDoc != null) {
+                            val updates = mapOf(
+                                "quantity" to FieldValue.increment(products.sumOf { it.grams }),
+                                "buyingPrice" to products.maxOf { it.gramPrice }
+                            )
+                            batch.update(inventoryDoc.reference, updates)
+                        }
                     }
                 }
             }

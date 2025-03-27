@@ -9,6 +9,8 @@ import com.zaed.common.domain.authentication.FetchUsersByRoleUseCase
 import com.zaed.common.domain.category.FetchAllCategoriesUseCase
 import com.zaed.common.domain.sale.FetchAllStoreSalesUseCase
 import com.zaed.common.domain.store.GetStoresUseCase
+import com.zaed.common.ui.util.isAfter
+import com.zaed.common.ui.util.isBefore
 import com.zaed.manager.ui.storessales.components.StoreSalesFilter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +30,7 @@ class StoresSalesViewModel(
     val uiState = _uiState.asStateFlow()
 
     fun init(startDate: Date?, endDate: Date?) {
-        if (startDate != null && endDate !=null) {
+        if (startDate != null && endDate != null) {
             Log.d(TAG, "init: $startDate $endDate")
             _uiState.update {
                 it.copy(
@@ -165,19 +167,14 @@ class StoresSalesViewModel(
             }
 
             val filteredSales = uiState.value.allSales.filter { sale ->
-                val dateInRange = when {
-                    !filter.isFiltered -> true
-                    filter.startDate != null && filter.endDate != null ->
-                        sale.createdAt in filter.startDate..filter.endDate
-
-                    filter.startDate != null ->
-                        sale.createdAt >= filter.startDate
-
-                    filter.endDate != null ->
-                        sale.createdAt <= filter.endDate
-
-                    else -> true
-                }
+                val afterFlag =
+                    !filter.isFiltered||filter.startDate?.let {
+                        sale.createdAt.isAfter(it)
+                    }
+                        ?: true
+                val beforeFlag = !filter.isFiltered||filter.endDate?.let {
+                    sale.createdAt.isBefore(it)
+                } ?: true
 
                 val locationMatch =
                     !filter.isFiltered || filter.locations.isEmpty() ||
@@ -197,7 +194,8 @@ class StoresSalesViewModel(
                             }
                         }
                 val queryMatch = sale.receiptNumber.contains(uiState.value.searchQuery)
-                dateInRange && locationMatch && employeeMatch && customerMatch && categoryMatch && queryMatch
+                locationMatch && employeeMatch && customerMatch && categoryMatch && queryMatch && beforeFlag && afterFlag
+
             }
             _uiState.update { oldState ->
                 oldState.copy(
@@ -205,6 +203,7 @@ class StoresSalesViewModel(
                     filteredSales = filteredSales
                 )
             }
+
         }
     }
 }

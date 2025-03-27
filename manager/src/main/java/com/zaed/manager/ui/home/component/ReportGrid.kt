@@ -1,4 +1,4 @@
-package com.zaed.manager.ui.home.component
+package ui.home.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -9,6 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
+import com.zaed.manager.ui.home.component.ReportCard
+import com.zaed.manager.ui.home.component.ReportType
 
 @Composable
 fun ReportGrid(
@@ -40,7 +42,7 @@ fun ReportGrid(
     ) {
         item {
             ReportCard(
-                title = stringResource(com.zaed.manager.R.string.store_sales),
+                title = stringResource(R.string.store_sales),
                 value = totalStoreSales,
                 loading = totalStoreSalesLoading,
                 iconRes = R.drawable.ic_store,
@@ -50,7 +52,7 @@ fun ReportGrid(
         }
         item {
             ReportCard(
-                title = stringResource(com.zaed.manager.R.string.store_profit),
+                title = stringResource(R.string.store_profit),
                 value = totalStoreProfit,
                 loading = totalStoreProfitLoading,
                 iconRes = R.drawable.ic_store,
@@ -62,7 +64,7 @@ fun ReportGrid(
 
         item {
             ReportCard(
-                title = stringResource(com.zaed.manager.R.string.store_loss),
+                title = stringResource(R.string.store_loss),
                 value = totalStoreLoss,
                 loading = totalStoreLossLoading,
                 iconRes = R.drawable.ic_money_minus,
@@ -72,7 +74,7 @@ fun ReportGrid(
         }
         item {
             ReportCard(
-                title = stringResource(com.zaed.manager.R.string.wholesale_sales),
+                title = stringResource(R.string.wholesale_sales),
                 value = totalWholesaleSales,
                 loading = totalWholesaleSalesLoading,
                 iconRes = R.drawable.ic_customers,
@@ -82,7 +84,7 @@ fun ReportGrid(
         }
         item {
             ReportCard(
-                title = stringResource(com.zaed.manager.R.string.wholesale_profit),
+                title = stringResource(R.string.wholesale_profit),
                 value = totalWholesaleProfit,
                 loading = totalWholesaleProfitLoading,
                 iconRes = R.drawable.ic_customers,
@@ -94,7 +96,7 @@ fun ReportGrid(
 
         item {
             ReportCard(
-                title = stringResource(com.zaed.manager.R.string.wholesale_loss),
+                title = stringResource(R.string.wholesale_loss),
                 value = totalWholesaleLoss,
                 loading = totalWholesaleLossLoading,
                 iconRes = R.drawable.ic_money_minus,
@@ -104,7 +106,7 @@ fun ReportGrid(
         }
         item {
             ReportCard(
-                title = stringResource(com.zaed.manager.R.string.manager_sales),
+                title = stringResource(R.string.manager_sales),
                 value = totalManagerSales,
                 iconRes = R.drawable.ic_person,
                 loading = totalManagerSalesLoading,
@@ -114,7 +116,7 @@ fun ReportGrid(
         }
         item {
             ReportCard(
-                title = stringResource(com.zaed.manager.R.string.manager_profit),
+                title = stringResource(R.string.manager_profit),
                 value = totalManagerProfit,
                 iconRes = R.drawable.ic_person,
                 loading = totalManagerProfitLoading,
@@ -126,7 +128,7 @@ fun ReportGrid(
 
         item {
             ReportCard(
-                title = stringResource(com.zaed.manager.R.string.manager_loss),
+                title = stringResource(R.string.manager_loss),
                 value = totalManagerLoss,
                 loading = totalManagerLossLoading,
                 iconRes = R.drawable.ic_money_minus,

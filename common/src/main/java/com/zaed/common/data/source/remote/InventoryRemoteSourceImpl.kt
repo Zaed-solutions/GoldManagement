@@ -7,6 +7,7 @@ import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.common.data.model.inventory.Inventory
 import com.zaed.common.data.model.inventory.request.AddInventoryRequest
+import com.zaed.common.data.model.inventory.request.FetchInventoriesByTypeRequest
 import com.zaed.common.data.model.inventory.request.FetchInventoriesRequest
 import com.zaed.common.data.model.inventory.request.UpdateInventoryRequest
 import com.zaed.common.data.model.inventory.toInventoryType
@@ -46,6 +47,28 @@ class InventoryRemoteSourceImpl(
             }
             awaitClose {}
         }
+    override fun fetchInventoriesByType(request: FetchInventoriesByTypeRequest): Flow<Result<List<Inventory>>> =
+        callbackFlow {
+            try {
+                inventoryCollection.where(
+                    Filter.and(
+                        Filter.equalTo("ownerId", request.ownerId),
+                        Filter.equalTo("type", request.inventoryType.name)
+                    )
+                ).orderBy("productName").addSnapshotListener { snapshot, e ->
+                    if (e != null) {
+                        crashlytics.recordException(e)
+                        trySend(Result.failure(e))
+                    }
+                    val inventory = snapshot?.toObjects(Inventory::class.java) ?: emptyList()
+                    trySend(Result.success(inventory))
+                }
+            } catch (e: Exception) {
+                crashlytics.recordException(e)
+                trySend(Result.failure(e))
+            }
+            awaitClose {}
+        }
 
     override suspend fun addInventory(request: AddInventoryRequest): Result<Unit> {
         return try{
@@ -70,19 +93,23 @@ class InventoryRemoteSourceImpl(
 
     override suspend fun updateInventory(request: UpdateInventoryRequest): Result<Unit> {
         return try{
+            Log.d("FixBug", "updateInventory: ${request}")
             val batch = firestore.batch()
             val mainInventoryRef = inventoryCollection.document(request.mainInventoryId)
             batch.update(
                 mainInventoryRef,
                 mapOf(
-                    "quantity" to FieldValue.increment(request.quantity.unaryMinus())
+                    "quantity" to FieldValue.increment(request.quantity.unaryMinus()),
+                    "lastUpdated" to Date()
                 )
             )
             val inventoryRef = inventoryCollection.document(request.inventoryId)
             batch.update(
                 inventoryRef,
                 mapOf(
-                    "quantity" to FieldValue.increment(request.quantity)
+                    "quantity" to FieldValue.increment(request.quantity),
+                    "buyingPrice" to request.buyingPrice,
+                    "lastUpdated" to Date()
                 )
             )
             batch.commit().await()

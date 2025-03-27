@@ -129,6 +129,7 @@ fun App(
         val resources = context.resources
         val configuration = Configuration(resources.configuration)
         configuration.setLocale(Locale(selectedLanguage.code))
+        Locale.setDefault(Locale(selectedLanguage.code))
         resources.updateConfiguration(configuration, resources.displayMetrics)
     }
     CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
@@ -281,6 +282,7 @@ fun App(
                     val resources = context.resources
                     val configuration = Configuration(resources.configuration)
                     configuration.setLocale(newLocale)
+                    Locale.setDefault(newLocale)
                     resources.updateConfiguration(configuration, resources.displayMetrics)
                     onLanguageSelected(it)
                     isSelectLanguageDialogVisible = false
