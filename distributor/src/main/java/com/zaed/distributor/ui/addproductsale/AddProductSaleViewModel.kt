@@ -213,6 +213,7 @@ class AddProductSaleViewModel(
         _uiState.update { oldState ->
             oldState.copy(isLoading = true)
         }
+
         viewModelScope.launch(Dispatchers.IO) {
             with(uiState.value) {
                 val customer = selectedCustomer
@@ -261,7 +262,6 @@ class AddProductSaleViewModel(
         val customer = uiState.value.selectedCustomer
         val distributor = uiState.value.currentUser
         viewModelScope.launch(Dispatchers.IO) {
-
             _uiState.update { oldState ->
                 oldState.copy(
                     sale = oldState.sale.copy(

@@ -18,7 +18,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,7 +39,6 @@ import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
-import com.zaed.common.data.model.supplier.Supplier
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -150,33 +148,35 @@ fun SaveCashPaymentBottomSheetContent(
             text = stringResource(R.string.payment_method) + stringResource(initialPayment.type.titleRes),
             style = MaterialTheme.typography.titleLarge
         )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                Modifier
-                    .padding(end = 4.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f))
-
+        if(selectedAccount.id.isNotBlank()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                Box(
+                    Modifier
+                        .padding(end = 4.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f))
+
+                ) {
+                    Text(
+                        text = selectedAccount.name.first().toString(),
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
                 Text(
-                    text = selectedAccount.name.first().toString(),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
-                    color = MaterialTheme.colorScheme.primary
+                    text = selectedAccount.name,
+                    style = MaterialTheme.typography.titleMedium
                 )
             }
-            Text(
-                text = selectedAccount.name,
-                style = MaterialTheme.typography.titleMedium
-            )
+            HorizontalDivider()
         }
-        HorizontalDivider()
         NumberInputTextField(
             modifier = Modifier
                 .fillMaxWidth(),

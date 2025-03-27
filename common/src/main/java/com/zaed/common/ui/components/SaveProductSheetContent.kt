@@ -156,72 +156,73 @@ fun ProductFieldsContent(
             shape = RoundedCornerShape(4.dp),
             withBorder = true,
         )
-
-        //discount
-        NumberInputTextField(
-            value = product1.discount.value,
-            onValueChange = { value ->
-                onValueChange(product1.copy(discount = product1.discount.copy(value = value)))
-            },
-            enabled = product1.discount.type != DiscountType.NONE,
-            focusRequester = focusRequester,
-            trailingIcon = {
-                Row(
-                    modifier = Modifier
-                        .padding(vertical = 4.dp, horizontal = 4.dp)
-                        .border(
-                            1.dp,
-                            MaterialTheme.colorScheme.primary,
-                            RoundedCornerShape(4.dp)
-                        ),
-                ) {
-                    //  percentage
-                    Surface(
-                        onClick = {
-                            onValueChange(product1.copy(discount = product1.discount.copy(type = DiscountType.PERCENTAGE)))
-                            focusRequester.requestFocus()
-                        },
-                        color = if (product1.discount.type == DiscountType.PERCENTAGE) MaterialTheme.colorScheme.primaryContainer.copy(
-                            alpha = 0.3f
-                        ) else MaterialTheme.colorScheme.surfaceContainer,
+        if(isStoreSale) {
+            //discount
+            NumberInputTextField(
+                value = product1.discount.value,
+                onValueChange = { value ->
+                    onValueChange(product1.copy(discount = product1.discount.copy(value = value)))
+                },
+                enabled = product1.discount.type != DiscountType.NONE,
+                focusRequester = focusRequester,
+                trailingIcon = {
+                    Row(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(4.dp))
+                            .padding(vertical = 4.dp, horizontal = 4.dp)
+                            .border(
+                                1.dp,
+                                MaterialTheme.colorScheme.primary,
+                                RoundedCornerShape(4.dp)
+                            ),
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Percent,
-                            contentDescription = "Sale icon",
-                            tint = if (product1.discount.type == DiscountType.PERCENTAGE) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
-                            modifier = Modifier.padding(8.dp)
-                        )
+                        //  percentage
+                        Surface(
+                            onClick = {
+                                onValueChange(product1.copy(discount = product1.discount.copy(type = DiscountType.PERCENTAGE)))
+                                focusRequester.requestFocus()
+                            },
+                            color = if (product1.discount.type == DiscountType.PERCENTAGE) MaterialTheme.colorScheme.primaryContainer.copy(
+                                alpha = 0.3f
+                            ) else MaterialTheme.colorScheme.surfaceContainer,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Percent,
+                                contentDescription = "Sale icon",
+                                tint = if (product1.discount.type == DiscountType.PERCENTAGE) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+                                modifier = Modifier.padding(8.dp)
+                            )
+                        }
+                        //value
+                        Surface(
+                            onClick = {
+                                onValueChange(product1.copy(discount = product1.discount.copy(type = DiscountType.AMOUNT)))
+                                focusRequester.requestFocus()
+                            },
+                            color = if (product1.discount.type == DiscountType.AMOUNT) MaterialTheme.colorScheme.primaryContainer.copy(
+                                alpha = 0.3f
+                            ) else MaterialTheme.colorScheme.surfaceContainer,
+                            modifier = Modifier
+                                .padding(end = 4.dp)
+                                .clip(RoundedCornerShape(4.dp))
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.AttachMoney,
+                                contentDescription = "Sale icon",
+                                tint = if (product1.discount.type == DiscountType.AMOUNT) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+                                modifier = Modifier.padding(8.dp)
+                            )
+                        }
                     }
-                    //value
-                    Surface(
-                        onClick = {
-                            onValueChange(product1.copy(discount = product1.discount.copy(type = DiscountType.AMOUNT)))
-                            focusRequester.requestFocus()
-                        },
-                        color = if (product1.discount.type == DiscountType.AMOUNT) MaterialTheme.colorScheme.primaryContainer.copy(
-                            alpha = 0.3f
-                        ) else MaterialTheme.colorScheme.surfaceContainer,
-                        modifier = Modifier
-                            .padding(end = 4.dp)
-                            .clip(RoundedCornerShape(4.dp))
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.AttachMoney,
-                            contentDescription = "Sale icon",
-                            tint = if (product1.discount.type == DiscountType.AMOUNT) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
-                            modifier = Modifier.padding(8.dp)
-                        )
-                    }
-                }
-            },
-            label = stringResource(R.string.discount),
-            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(4.dp),
-            withBorder = true,
-        )
+                },
+                label = stringResource(R.string.discount),
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(4.dp),
+                withBorder = true,
+            )
+        }
         //quqntity
         Row(
             modifier = Modifier.fillMaxWidth(),

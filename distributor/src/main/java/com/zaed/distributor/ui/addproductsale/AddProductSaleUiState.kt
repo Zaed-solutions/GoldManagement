@@ -18,8 +18,11 @@ data class AddProductSaleUiState(
     val currentUser: User = User(),
     val payments: List<Payment> = emptyList(),
     val categories: List<Category> = emptyList()
-){
+) {
     val totalPaid
         get() = payments.filter { it.type != PaymentType.FUTURES }
             .sumOf { if (it.type == PaymentType.REMAIN) it.amount.unaryMinus() else it.amount }
+    val futurePaid
+        get() = payments.filter { it.type == PaymentType.FUTURES }.sumOf { it.amount }
+
 }

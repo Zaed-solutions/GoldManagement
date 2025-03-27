@@ -66,14 +66,13 @@ fun CustomerItem(
                 ) {
                     Text(
                         text = customer.name.first().toString(),
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
                 Column(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically
@@ -106,7 +105,7 @@ fun CustomerItem(
                     Row {
                         Text(
                             text = customer.moneyDebtAmount.absoluteValue.toMoneyFormat(2),
-                            style = MaterialTheme.typography.titleLarge,
+                            style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = customer.moneyDebtAmount.getContainerColor()
                         )

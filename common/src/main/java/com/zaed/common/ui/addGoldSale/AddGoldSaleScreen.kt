@@ -205,7 +205,7 @@ private fun AddGoldSaleScreenContent(
                     3 -> {
                         SelectPaymentsContent(
                             totalAmount = state.sale.totalAmount,
-                            totalPaid = state.totalMoneyPaid,
+                            totalPaid = state.totalMoneyPaid + state.totalFuturePaid,
                             payments = state.payments,
                             discount = state.sale.discount,
                             onUpdateDiscount = {
