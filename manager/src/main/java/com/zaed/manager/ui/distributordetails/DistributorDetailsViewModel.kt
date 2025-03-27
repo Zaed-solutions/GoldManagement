@@ -31,7 +31,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.Calendar
 import java.util.Date
 
 class DistributorDetailsViewModel(
@@ -360,15 +359,16 @@ class DistributorDetailsViewModel(
     private fun updateInventory(inventory: Inventory) {
         viewModelScope.launch(Dispatchers.IO) {
             val mainInventory =
-                _uiState.value.mainInventories.first { it.productId == inventory.productId }
+                _uiState.value.mainInventories.first { it.productId == inventory.productId && it.type == inventory.type&& it.karat == inventory.karat }
             Log.d(TAG, "updateInventory: main: $mainInventory")
             val oldInventory =
-                _uiState.value.allInventories.first { it.productId == inventory.productId }
+                _uiState.value.allInventories.first { it.id == inventory.id }
             Log.d(TAG, "updateInventory: old: $oldInventory")
             val request = UpdateInventoryRequest(
                 mainInventoryId = mainInventory.id,
                 inventoryId = oldInventory.id,
-                quantity = inventory.quantity
+                quantity = inventory.quantity,
+                buyingPrice = mainInventory.buyingPrice
             )
             updateInventoryUseCase(request).onSuccess {
                 Log.d(TAG, "updateInventory: success")

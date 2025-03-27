@@ -9,6 +9,8 @@ import com.zaed.common.domain.authentication.FetchUsersByRoleUseCase
 import com.zaed.common.domain.category.FetchAllCategoriesUseCase
 import com.zaed.common.domain.customer.FetchAllWholeCustomersUseCase
 import com.zaed.common.domain.sale.FetchAllDistributorsSalesUseCase
+import com.zaed.common.ui.util.isAfter
+import com.zaed.common.ui.util.isBefore
 import com.zaed.common.ui.util.toDate
 import com.zaed.manager.ui.distributorssales.components.DistributorsSalesFilter
 import kotlinx.coroutines.Dispatchers
@@ -160,19 +162,15 @@ class DistributorsSalesViewModel(
             }
 
             val filteredSales = uiState.value.allSales.filter { sale ->
-                val dateInRange = when {
-                    !filter.isFiltered -> true
-                    filter.startDate != null && filter.endDate != null ->
-                        sale.createdAt in filter.startDate..filter.endDate
+                val afterFlag =
+                    !filter.isFiltered||filter.startDate?.let {
+                        sale.createdAt.isAfter(it)
+                    }
+                            ?: true
+                val beforeFlag = !filter.isFiltered||filter.endDate?.let {
+                    sale.createdAt.isBefore(it)
+                } ?: true
 
-                    filter.startDate != null ->
-                        sale.createdAt >= filter.startDate
-
-                    filter.endDate != null ->
-                        sale.createdAt <= filter.endDate
-
-                    else -> true
-                }
 
                 val employeeMatch =
                     !filter.isFiltered || filter.employees.isEmpty() ||
@@ -188,7 +186,7 @@ class DistributorsSalesViewModel(
                             }
                         }
                 val queryMatch = sale.receiptNumber.contains(uiState.value.searchQuery)
-                dateInRange && employeeMatch && customerMatch && categoryMatch && queryMatch
+                afterFlag&&beforeFlag && employeeMatch && customerMatch && categoryMatch && queryMatch
             }
             _uiState.update { oldState ->
                 oldState.copy(
