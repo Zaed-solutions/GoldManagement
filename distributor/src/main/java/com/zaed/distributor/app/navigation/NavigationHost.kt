@@ -8,8 +8,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.zaed.common.data.model.authentication.UserRole
+import com.zaed.common.data.model.customer.CustomerType
 import com.zaed.common.ui.addGoldSale.AddGoldSaleScreen
 import com.zaed.common.ui.addcustomers.AddCustomersScreen
+import com.zaed.common.ui.addsilversale.AddSilverSaleScreen
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
 import com.zaed.common.ui.customerdetails.CustomerDetailsScreen
@@ -130,8 +132,10 @@ fun NavigationHost(
         }
         composable<Route.AddCustomers> {
             val customerId = it.toRoute<Route.AddCustomers>().customerId
+            val type = it.toRoute<Route.AddCustomers>().type
             AddCustomersScreen(
                 customerId = customerId,
+                type = type,
                 onBack = {
                     navController.popBackStack()
                 }
@@ -202,6 +206,26 @@ fun NavigationHost(
                 onOpenDrawer = onShowNavDrawer
             )
         }
+        composable<Route.AddSilverSaleRoute> { backstackEntry ->
+            val saleId = backstackEntry.toRoute<Route.AddSilverSaleRoute>().saleId
+            AddSilverSaleScreen(
+                saleId = saleId,
+                onBackClicked = {
+                    navController.popBackStack()
+                },
+                onNavigateToSilverSaleDetails = {
+                    navController.navigate(Route.SilverSaleDetailsRoute(it)) {
+                        popUpTo<Route.SalesRoute> {
+                            inclusive = false
+                        }
+                    }
+                },
+                onNavigateToAddCustomer = {
+                    navController.navigate(Route.AddCustomers(type = CustomerType.SILVER))
+                },
+                onOpenDrawer = onShowNavDrawer
+            )
+        }
         composable<Route.GoldSaleDetailsRoute> { backstackEntry ->
             val saleId = backstackEntry.toRoute<Route.GoldSaleDetailsRoute>().saleId
             GoldSaleDetailsScreen(
@@ -219,6 +243,27 @@ fun NavigationHost(
                     navController.navigate(Route.AddGoldSaleRoute(it))
                 },
                 navigateToCustomerDetails = {
+                    navController.navigate(Route.CustomerDetails(it))
+                }
+            )
+        }
+        composable<Route.SilverSaleDetailsRoute> { backstackEntry ->
+            val saleId = backstackEntry.toRoute<Route.SilverSaleDetailsRoute>().saleId
+            ProductSaleDetailsScreen(
+                saleId = saleId,
+                onBackClicked = {
+                    val previousDestination =
+                        navController.previousBackStackEntry?.destination?.route?.substringBefore("?")
+                    if (previousDestination == Route.AddSilverSaleRoute::class.qualifiedName) {
+                        navController.navigate(Route.AddSilverSaleRoute())
+                    } else {
+                        navController.popBackStack()
+                    }
+                },
+                onNavigateToEditSale = {
+                    navController.navigate(Route.AddSilverSaleRoute(it))
+                },
+                onNavigateToCustomerDetails = {
                     navController.navigate(Route.CustomerDetails(it))
                 }
             )
@@ -254,19 +299,25 @@ sealed interface Route {
     data class AddGoldSaleRoute(val saleId: String = "") : Route
 
     @Serializable
+    data class AddSilverSaleRoute(val saleId: String = "") : Route
+
+    @Serializable
     data class ProductSaleDetailsRoute(val saleId: String = "") : Route
 
     @Serializable
     data object WholeSaleCustomers : Route
 
     @Serializable
-    data class AddCustomers(val customerId: String = "") : Route
+    data class AddCustomers(val customerId: String = "", val type: CustomerType = CustomerType.GOLD) : Route
 
     @Serializable
     data class CustomerDetails(val customerId: String) : Route
 
     @Serializable
     data class GoldSaleDetailsRoute(val saleId: String = "") : Route
+
+    @Serializable
+    data class SilverSaleDetailsRoute(val saleId: String = "") : Route
 
     @Serializable
     data object LossesRoute : Route

@@ -31,7 +31,8 @@ fun ProductsTable(
     modifier: Modifier = Modifier,
     products: List<Product>,
     isModifyEnabled: Boolean = true,
-    productType: ProductType
+    productType: ProductType,
+    isPurchase: Boolean = false
 ) {
     Surface(
         border = BorderStroke(
@@ -45,7 +46,6 @@ fun ProductsTable(
             modifier = modifier
                 .fillMaxWidth()
                 .heightIn(max = 400.dp),
-//            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // Header
             stickyHeader {
@@ -53,6 +53,7 @@ fun ProductsTable(
                     ProductType.GOLD -> GoldItemHeader()
                     ProductType.INGOT -> IngotItemHeader()
                     ProductType.PRODUCT -> ProductItemHeader()
+                    ProductType.SILVER -> SilverItemHeader(isPurchase)
                 }
             }
             items(products) {
@@ -62,7 +63,12 @@ fun ProductsTable(
                             .animateItem(),
                         product = it,
                     )
-
+                    ProductType.SILVER -> SilverItem(
+                        modifier = Modifier
+                            .animateItem(),
+                        product = it,
+                        isPurchase = isPurchase
+                    )
                     ProductType.INGOT -> IngotItem(
                         modifier = Modifier
                             .animateItem(),
@@ -103,6 +109,43 @@ fun ProductItemHeader() {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.weight(3f),
                 textAlign = TextAlign.Center
+            )
+            Text(
+                text = stringResource(R.string.price),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(3f),
+                textAlign = TextAlign.End
+            )
+        }
+        HorizontalDivider()
+    }
+}
+
+@Composable
+fun SilverItemHeader(isPurchase: Boolean) {
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if(!isPurchase){
+                Text(
+                    text = stringResource(R.string.name),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(5f)
+                )
+            }
+            Text(
+                text = stringResource(R.string.grams),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                textAlign = if(isPurchase) TextAlign.Start else TextAlign.Center,
+                modifier = Modifier.weight(3f)
             )
             Text(
                 text = stringResource(R.string.price),

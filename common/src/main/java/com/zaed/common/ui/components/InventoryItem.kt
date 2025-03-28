@@ -48,6 +48,10 @@ fun InventoryItem(
                 context.getString(R.string.gold)
             }
 
+            InventoryType.SILVER -> {
+                context.getString(R.string.silver)
+            }
+
             else -> {
                 context.getString(
                     R.string.ingot_of_karat,

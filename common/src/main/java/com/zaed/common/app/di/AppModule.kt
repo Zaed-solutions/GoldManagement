@@ -160,6 +160,7 @@ import com.zaed.common.domain.supplier.UpdateSupplierUseCase
 import com.zaed.common.ui.addGoldSale.AddGoldSaleViewModel
 import com.zaed.common.ui.addcustomers.AddCustomersViewModel
 import com.zaed.common.ui.addpurchase.AddPurchaseViewModel
+import com.zaed.common.ui.addsilversale.AddSilverSaleViewModel
 import com.zaed.common.ui.auth.MainViewModel
 import com.zaed.common.ui.auth.login.LoginViewModel
 import com.zaed.common.ui.auth.signup.SignUpViewModel
@@ -318,6 +319,7 @@ val viewModelModule = module {
     viewModelOf(::PurchaseDetailsViewModel)
     viewModelOf(::SupplierDetailsViewModel)
     viewModelOf(::SalesChequesScreenViewModel)
+    viewModelOf(::AddSilverSaleViewModel)
 }
 val remoteSourceModule = module {
     singleOf(::AuthenticationRemoteSourceImpl) { bind<AuthenticationRemoteSource>() }

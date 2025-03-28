@@ -26,6 +26,7 @@ import com.zaed.common.R
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.ui.addGoldSale.components.SelectGoldContent
 import com.zaed.common.ui.addGoldSale.components.SelectIngotsContent
+import com.zaed.common.ui.addGoldSale.components.SelectSilverContent
 import com.zaed.common.ui.addpurchase.components.SelectProductType
 import com.zaed.common.ui.components.PreviewSaleContent
 import com.zaed.common.ui.components.ProgressIndicatorTopAppBar
@@ -74,6 +75,10 @@ enum class ProductType(
     GOLD(
         R.string.gold,
         R.drawable.ic_gold
+    ),
+    SILVER(
+        R.string.silver,
+        R.drawable.ic_ingot
     ),
     INGOT(
         R.string.ingots,
@@ -161,11 +166,7 @@ private fun AddPurchaseScreenContent(
                     0 -> {
                         SelectProductType { type ->
                             onAction(AddPurchaseUiAction.OnProductTypeSelected(type))
-                            selectedProductType = when (type) {
-                                ProductType.GOLD -> ProductType.GOLD
-                                ProductType.INGOT -> ProductType.INGOT
-                                ProductType.PRODUCT -> ProductType.PRODUCT
-                            }
+                            selectedProductType = type
                             scope.launch {
                                 pagerState.animateScrollToPage(pagerState.currentPage + 1)
                             }
@@ -173,6 +174,27 @@ private fun AddPurchaseScreenContent(
                     }
                     1 -> {
                         when (selectedProductType) {
+
+                            ProductType.SILVER -> {
+                                SelectSilverContent(
+                                    sale = state.purchase,
+                                    isPurchase = true,
+                                    onAddSilver = {
+                                        onAction(AddPurchaseUiAction.OnAddProduct(it))
+                                    },
+                                    onRemoveSilver = {productId->
+                                        state.purchase.products.firstOrNull { productId == it.id }?.let {
+                                            onAction(AddPurchaseUiAction.OnDeleteProduct(it))
+                                        }
+                                    },
+                                    onNext = {
+                                        scope.launch {
+                                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                        }
+                                    },
+                                )
+                            }
+
                             ProductType.GOLD -> {
                                 SelectGoldContent(
                                     sale = state.purchase,
@@ -293,14 +315,8 @@ private fun AddPurchaseScreenContent(
                             selectedAccount = state.selectedSupplier,
                             paymentsTypes =
                             when(selectedProductType){
-                                ProductType.GOLD -> listOf(
-                                    PaymentType.CHEQUE,
-                                    PaymentType.BANK_TRANSFER,
-                                    PaymentType.CASH,
-                                    PaymentType.MANAGER_CHEQUES,
-                                )
                                 ProductType.INGOT -> listOf(PaymentType.CASH)
-                                ProductType.PRODUCT -> listOf(
+                                else -> listOf(
                                     PaymentType.CHEQUE,
                                     PaymentType.BANK_TRANSFER,
                                     PaymentType.CASH,

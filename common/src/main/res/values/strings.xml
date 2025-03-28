@@ -380,4 +380,15 @@
     <string name="manager_profit">Manager Profit</string>
     <string name="manager_loss">Manager Loss</string>
     <string name="select_year">Select Year</string>
+    <string name="silver">Silver</string>
+    <string name="add_silver_amounts">Add Silver Amounts</string>
+    <string name="add_silver">Add Silver</string>
+    <string name="sell_silver">Sell Silver</string>
+    <string name="add_silver_sale">Add Silver Sale</string>
+    <string name="add_gold_sale">Add Gold Sale</string>
+    <string name="edit_gold_customer">Edit Gold Customer</string>
+    <string name="add_gold_customer">Add Gold Customer</string>
+    <string name="edit_silver_customer">Edit Silver Customer</string>
+    <string name="add_silver_customer">Add Silver Customer</string>
+    <string name="add_product_sale">Add Product Sale</string>
 </resources>

@@ -39,13 +39,14 @@ import kotlin.math.absoluteValue
 
 @Composable
 fun CustomerItem(
+    modifier: Modifier = Modifier,
     customer: WholeSaleCustomer,
     onClick: () -> Unit = {},
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
     Surface(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         onClick = onClick,
     ) {

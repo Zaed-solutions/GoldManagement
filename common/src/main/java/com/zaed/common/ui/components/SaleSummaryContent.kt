@@ -73,6 +73,7 @@ fun SaleSummaryContent(
         )
         ProductsTable(
             products = products,
+            isPurchase = isPurchase,
             isModifyEnabled = false,
             productType = productType
         )

@@ -3,6 +3,7 @@ package com.zaed.common.ui.addcustomers
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.customer.AddWholeSaleCustomerRequest
+import com.zaed.common.data.model.customer.CustomerType
 import com.zaed.common.data.model.customer.request.EditWholeSalesCustomerRequest
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.customer.AddWholeSaleCustomerUseCase
@@ -24,8 +25,25 @@ class AddCustomersViewModel(
     private val _state = MutableStateFlow(AddCustomersState())
     val state = _state.asStateFlow()
 
-    init {
+    fun init(customerId: String, customerType: CustomerType) {
         getCurrentUser()
+        if(customerId.isBlank()) {
+            setType(customerType)
+        } else {
+            getCustomer(customerId)
+        }
+    }
+
+    private fun setType(customerType: CustomerType) {
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    request = it.request.copy(
+                        type = customerType
+                    )
+                )
+            }
+        }
     }
 
     private fun getCurrentUser() {
@@ -51,146 +69,150 @@ class AddCustomersViewModel(
         }
     }
 
-        fun handleAction(action: AddCustomersUiAction) {
-            when (action) {
-                AddCustomersUiAction.OnSave -> {
-                    saveCustomer()
-                }
+    fun handleAction(action: AddCustomersUiAction) {
+        when (action) {
+            AddCustomersUiAction.OnSave -> {
+                saveCustomer()
+            }
 
-                is AddCustomersUiAction.UpdateAddress -> _state.update {
+            is AddCustomersUiAction.UpdateAddress -> _state.update {
+                it.copy(
+                    request = it.request.copy(
+                        address = action.address
+                    )
+                )
+            }
+
+            is AddCustomersUiAction.UpdateCity -> _state.update {
+                it.copy(
+                    request = it.request.copy(
+                        city = action.city
+                    )
+                )
+            }
+
+            is AddCustomersUiAction.UpdateEmail -> _state.update {
+                it.copy(
+                    request = it.request.copy(
+                        email = action.email
+                    )
+                )
+            }
+
+            is AddCustomersUiAction.UpdateNote -> _state.update {
+                it.copy(
+                    request = it.request.copy(
+                        note = action.note
+                    )
+                )
+            }
+
+            is AddCustomersUiAction.UpdatePayWithCheques -> _state.update {
+                it.copy(
+                    request = it.request.copy(
+                        payWithCheques = action.payWithCheques
+                    )
+                )
+            }
+
+            is AddCustomersUiAction.UpdateName -> _state.update {
+                it.copy(
+                    fieldsError = FieldsError.NONE,
+                    request = it.request.copy(name = action.name)
+                )
+            }
+
+            is AddCustomersUiAction.UpdatePhone -> _state.update {
+                it.copy(
+                    request = it.request.copy(
+                        phone = action.phone
+                    )
+                )
+            }
+
+            is AddCustomersUiAction.OnEdit -> {
+                editCustomer()
+            }
+
+            else -> {}
+        }
+    }
+
+    private fun editCustomer() {
+        viewModelScope.launch(Dispatchers.IO) {
+            editWholeSaleCustomerUseCase(
+                EditWholeSalesCustomerRequest(
+                    id = state.value.customerId,
+                    updatedData = state.value.request
+                )
+            ).onSuccess {
+                _state.update {
                     it.copy(
-                        request = it.request.copy(
-                            address = action.address
-                        )
+                        successStatus = true
                     )
                 }
-
-                is AddCustomersUiAction.UpdateCity -> _state.update {
-                    it.copy(
-                        request = it.request.copy(
-                            city = action.city
-                        )
-                    )
-                }
-
-                is AddCustomersUiAction.UpdateEmail -> _state.update {
-                    it.copy(
-                        request = it.request.copy(
-                            email = action.email
-                        )
-                    )
-                }
-
-                is AddCustomersUiAction.UpdateNote -> _state.update {
-                    it.copy(
-                        request = it.request.copy(
-                            note = action.note
-                        )
-                    )
-                }
-                is AddCustomersUiAction.UpdatePayWithCheques -> _state.update {
-                    it.copy(
-                        request = it.request.copy(
-                            payWithCheques = action.payWithCheques
-                        )
-                    )
-                }
-
-                is AddCustomersUiAction.UpdateName -> _state.update {
-                    it.copy(
-                        fieldsError = FieldsError.NONE,
-                        request = it.request.copy(name = action.name)
-                    )
-                }
-
-                is AddCustomersUiAction.UpdatePhone -> _state.update {
-                    it.copy(
-                        request = it.request.copy(
-                            phone = action.phone
-                        )
-                    )
-                }
-
-                is AddCustomersUiAction.OnEdit -> {
-                    editCustomer()
-                }
-
-                else -> {}
             }
         }
+    }
 
-        private fun editCustomer() {
+    private fun saveCustomer() {
+        if (validRequest()) {
             viewModelScope.launch(Dispatchers.IO) {
-                editWholeSaleCustomerUseCase(
-                    EditWholeSalesCustomerRequest(
-                        id = state.value.customerId,
-                        updatedData = state.value.request
-                    )
-                ).onSuccess {
+                addWholeSaleCustomerUseCase(state.value.request).onSuccess {
                     _state.update {
                         it.copy(
                             successStatus = true
                         )
                     }
-                }
-            }
-        }
-
-        private fun saveCustomer() {
-            if (validRequest()) {
-                viewModelScope.launch(Dispatchers.IO) {
-                    addWholeSaleCustomerUseCase(state.value.request).onSuccess {
-                        _state.update {
-                            it.copy(
-                                successStatus = true
-                            )
-                        }
-                    }.onFailure {
-                        _state.update {
-                            it.copy(
-                                error = AddCustomersScreenError.UNKNOWN
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-        private fun validRequest(): Boolean {
-            when {
-                state.value.request.name.isEmpty() -> {
+                }.onFailure {
                     _state.update {
                         it.copy(
-                            fieldsError = FieldsError.EMPTY_FULL_NAME
-                        )
-                    }
-                    return false
-                }
-
-                else -> {
-                    return true
-                }
-            }
-        }
-
-        fun getCustomer(customerId: String) {
-            viewModelScope.launch(Dispatchers.IO) {
-                getWholeSaleCustomerUseCase(customerId).onSuccess { data ->
-                    _state.update {
-                        it.copy(
-                            isEditMode = true,
-                            customerId = data.id,
-                            request = AddWholeSaleCustomerRequest(
-                                name = data.name,
-                                email = data.email,
-                                phone = data.phone,
-                                address = data.address,
-                                city = data.city,
-                            )
+                            error = AddCustomersScreenError.UNKNOWN
                         )
                     }
                 }
             }
         }
     }
+
+    private fun validRequest(): Boolean {
+        when {
+            state.value.request.name.isEmpty() -> {
+                _state.update {
+                    it.copy(
+                        fieldsError = FieldsError.EMPTY_FULL_NAME
+                    )
+                }
+                return false
+            }
+
+            else -> {
+                return true
+            }
+        }
+    }
+
+    private fun getCustomer(customerId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getWholeSaleCustomerUseCase(customerId).onSuccess { data ->
+                _state.update {
+                    it.copy(
+                        isEditMode = true,
+                        customerId = data.id,
+                        request = AddWholeSaleCustomerRequest(
+                            name = data.name,
+                            email = data.email,
+                            phone = data.phone,
+                            address = data.address,
+                            city = data.city,
+                            note = data.note,
+                            payWithCheques = data.payWithCheques,
+                            type = data.type
+                        )
+                    )
+                }
+            }
+        }
+    }
+}
 

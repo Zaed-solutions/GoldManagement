@@ -10,8 +10,11 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import com.zaed.accountant.ui.theme.AppTypography
 import com.zaed.common.ui.theme.GoldenCustomColors
+import com.zaed.common.ui.theme.SilverCustomColors
 import com.zaed.common.ui.theme.darkGoldColors
+import com.zaed.common.ui.theme.darkSilverColors
 import com.zaed.common.ui.theme.lightGoldColors
+import com.zaed.common.ui.theme.lightSilverColors
 
 @Immutable
 data class ExtendedColorScheme(
@@ -322,8 +325,10 @@ fun AccountantAppTheme(
         else -> lightScheme
     }
     val goldenColors = if (darkTheme) darkGoldColors else lightGoldColors
+    val silverColors = if (darkTheme) darkSilverColors else lightSilverColors
     CompositionLocalProvider(
-        GoldenCustomColors provides goldenColors
+        GoldenCustomColors provides goldenColors,
+        SilverCustomColors provides silverColors
     ) {
         MaterialTheme(
             colorScheme = colorScheme,

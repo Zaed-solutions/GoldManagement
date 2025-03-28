@@ -261,6 +261,21 @@ val darkGoldColors = ColorFamily(
 
 val GoldenCustomColors = staticCompositionLocalOf { ColorFamily() }
 
+val lightSilverColors = ColorFamily(
+    color = Color(0xFF6C6C6C),
+    onColor = Color(0xFFFFFFFF),
+    colorContainer = Color(0xFFE0E0E0),
+    onColorContainer = Color(0xFF1A1A1A)
+)
+val darkSilverColors = ColorFamily(
+    color = Color(0xFFA0A0A0),
+    onColor = Color(0xFF000000),
+    colorContainer = Color(0xFF707070),
+    onColorContainer = Color(0xFFE0E0E0)
+)
+
+val SilverCustomColors = staticCompositionLocalOf { ColorFamily() }
+
 @Composable
 fun GoldManagementTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -273,8 +288,10 @@ fun GoldManagementTheme(
         else -> lightScheme
     }
     val goldenColors = if (darkTheme) darkGoldColors else lightGoldColors
+    val silverColors = if (darkTheme) darkSilverColors else lightSilverColors
     CompositionLocalProvider(
-        GoldenCustomColors provides goldenColors
+        GoldenCustomColors provides goldenColors,
+        SilverCustomColors provides silverColors
     ) {
         MaterialTheme(
             colorScheme = colorScheme,

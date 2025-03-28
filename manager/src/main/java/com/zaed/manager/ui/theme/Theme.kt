@@ -15,6 +15,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.zaed.common.ui.theme.ColorFamily
 import com.zaed.common.ui.theme.GoldenCustomColors
+import com.zaed.common.ui.theme.SilverCustomColors
+import com.zaed.common.ui.theme.darkSilverColors
+import com.zaed.common.ui.theme.lightSilverColors
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -276,9 +279,11 @@ fun ManagerTheme(
         darkTheme -> darkScheme
         else -> lightScheme
     }
-    val goldenColors = if (darkTheme) darkGoldColors else lightGoldColors
+    val goldenColors = if (darkTheme) com.zaed.common.ui.theme.darkGoldColors else com.zaed.common.ui.theme.lightGoldColors
+    val silverColors = if (darkTheme) darkSilverColors else lightSilverColors
     CompositionLocalProvider(
-        GoldenCustomColors provides goldenColors
+        GoldenCustomColors provides goldenColors,
+        SilverCustomColors provides silverColors
     ) {
         MaterialTheme(
             colorScheme = colorScheme,
