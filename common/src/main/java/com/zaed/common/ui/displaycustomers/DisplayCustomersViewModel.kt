@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.authentication.UserRole
+import com.zaed.common.data.model.customer.CustomerType
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.customer.DeleteWholeSaleCustomerUseCase
@@ -92,10 +93,24 @@ class DisplayCustomersViewModel(
         _state.update {
             it.copy(
                 searchQuery = query,
-                displayedCustomers = if (query.isNotEmpty()) it.customers.filter { customer ->
-                    customer.name.contains(query, ignoreCase = true)
-                } else it.customers
+                isLoading = true
             )
+        }
+        filterData()
+    }
+
+    private fun filterData(){
+        viewModelScope.launch (Dispatchers.Default){
+            val query = state.value.searchQuery
+            val filteredGoldCustomers = state.value.allGoldCustomers.filter { it.name.contains(query, ignoreCase = true) }
+            val filteredSilverCustomers = state.value.allSilverCustomers.filter { it.name.contains(query, ignoreCase = true) }
+            _state.update {
+                it.copy(
+                    isLoading = false,
+                    filteredGoldCustomers = filteredGoldCustomers,
+                    filteredSilverCustomers = filteredSilverCustomers
+                )
+            }
         }
     }
 
@@ -103,14 +118,15 @@ class DisplayCustomersViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             getWholeSalesCustomersUseCase(distributorId).collect { result ->
                 result.onSuccess { customers ->
+                    val grouperCustomers = customers.sortedBy { it.name }.groupBy { it.type }
                     _state.update {
                         it.copy(
-                            customers = customers,
-                            displayedCustomers = customers.sortedByDescending { it.moneyDebtAmount },
-                            isLoading = false,
+                            allGoldCustomers = grouperCustomers[CustomerType.GOLD]?: emptyList(),
+                            allSilverCustomers = grouperCustomers[CustomerType.SILVER]?: emptyList(),
                             error = null,
                         )
                     }
+                    filterData()
                 }.onFailure { error ->
                     _state.update {
                         it.copy(
@@ -125,9 +141,11 @@ class DisplayCustomersViewModel(
 }
 
 data class DisplayCustomersState(
-    val customers: List<WholeSaleCustomer> = emptyList(),
+    val allGoldCustomers: List<WholeSaleCustomer> = emptyList(),
+    val allSilverCustomers: List<WholeSaleCustomer> = emptyList(),
     val searchQuery: String = "",
-    val displayedCustomers: List<WholeSaleCustomer> = emptyList(),
+    val filteredGoldCustomers: List<WholeSaleCustomer> = emptyList(),
+    val filteredSilverCustomers: List<WholeSaleCustomer> = emptyList(),
     val isLoading: Boolean = false,
     val error: DisplayCustomersScreenError? = null,
     val currentDistributor: User = User()
