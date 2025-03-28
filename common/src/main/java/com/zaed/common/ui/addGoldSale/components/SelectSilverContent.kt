@@ -69,12 +69,12 @@ fun SelectSilverContent(
                 )
             },
             onRemoveProduct = onRemoveSilver,
-            label = stringResource(com.zaed.common.R.string.gold),
+            label = stringResource(com.zaed.common.R.string.silver),
             onEditProduct = {
                 selectedProduct = it
                 isAddProductSheetVisible = true
             },
-            isPurchase = true,
+            isPurchase = isPurchase,
             productType = ProductType.SILVER
         )
         Spacer(modifier = Modifier.weight(1f))

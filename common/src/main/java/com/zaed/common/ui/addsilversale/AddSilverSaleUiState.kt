@@ -6,12 +6,13 @@ import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.sale.WholesaleTransaction
+import com.zaed.common.ui.addpurchase.ProductType
 
 data class AddSilverSaleUiState(
     val isFinished: Boolean = false,
     val isLoading: Boolean = false,
-    val initialSale: WholesaleTransaction = WholesaleTransaction(),
-    val sale: WholesaleTransaction = WholesaleTransaction(),
+    val initialSale: WholesaleTransaction = WholesaleTransaction(productType = ProductType.SILVER),
+    val sale: WholesaleTransaction = WholesaleTransaction(productType = ProductType.SILVER),
     val selectedCustomer: WholeSaleCustomer = WholeSaleCustomer(),
     val customerSearchQuery: String = "",
     val suggestedCustomers: List<WholeSaleCustomer> = emptyList(),

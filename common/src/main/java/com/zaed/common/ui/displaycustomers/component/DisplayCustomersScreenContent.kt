@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
@@ -38,8 +37,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
+import com.zaed.common.data.model.authentication.UserPermission
+import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
+import com.zaed.common.ui.components.ListWithLoading
 import com.zaed.common.ui.components.SearchBar
 import com.zaed.common.ui.displaycustomers.DisplayCustomersState
 import com.zaed.common.ui.displaycustomers.DisplayWholeSalesCustomerUiAction
@@ -96,130 +98,130 @@ fun DisplayCustomersScreenContent(
                     .fillMaxWidth()
                     .padding(16.dp),
                 query = uiState.searchQuery,
-                onQueryChanged = {
-                    onAction(DisplayWholeSalesCustomerUiAction.OnSearchQueryChanged(it))
+                onQueryChanged = { query ->
+                    onAction(DisplayWholeSalesCustomerUiAction.OnSearchQueryChanged(query))
                 }
-
             )
-            PrimaryTabRow(
-                modifier = Modifier.padding(top = 16.dp),
-                selectedTabIndex = pagerState.currentPage, indicator = {
-                    TabRowDefaults.PrimaryIndicator(
-                        modifier = Modifier
-                            .run {
-                                if (LocalLayoutDirection.current == LayoutDirection.Rtl) scale(
-                                    -1f, 1f
-                                )
-                                else this
+            if (
+                uiState.currentDistributor.role == UserRole.ACCOUNTANT ||
+                uiState.currentDistributor.permissions.containsAll(
+                    listOf(UserPermission.SELL_SILVER, UserPermission.SELL_PRODUCTS)
+                )
+            ) {
+                PrimaryTabRow(
+                    modifier = Modifier.padding(top = 16.dp),
+                    selectedTabIndex = pagerState.currentPage, indicator = {
+                        TabRowDefaults.PrimaryIndicator(
+                            modifier = Modifier
+                                .run {
+                                    if (LocalLayoutDirection.current == LayoutDirection.Rtl) scale(
+                                        -1f, 1f
+                                    )
+                                    else this
+                                }
+                                .tabIndicatorOffset(pagerState.currentPage, true),
+                            width = Dp.Unspecified,
+                        )
+                    }
+                ) {
+                    Tab(
+                        selected = pagerState.currentPage == 0,
+                        onClick = {
+                            scope.launch {
+                                pagerState.animateScrollToPage(0)
                             }
-                            .tabIndicatorOffset(pagerState.currentPage, true),
-                        width = Dp.Unspecified,
+                        },
+                        text = {
+                            Text(
+                                text = stringResource(R.string.gold)
+                            )
+                        }
+                    )
+                    Tab(
+                        selected = pagerState.currentPage == 1,
+                        onClick = {
+                            scope.launch {
+                                pagerState.animateScrollToPage(1)
+                            }
+                        },
+                        text = {
+                            Text(
+                                text = stringResource(R.string.silver)
+                            )
+                        }
                     )
                 }
-            ) {
-                Tab(
-                    selected = pagerState.currentPage == 0,
-                    onClick = {
-                        scope.launch {
-                            pagerState.animateScrollToPage(0)
+                HorizontalPager(
+                    modifier = Modifier.padding(top = 16.dp),
+                    state = pagerState,
+                    userScrollEnabled = false,
+                ) { value ->
+                    when (value) {
+                        0 -> {
+                            CustomersList(
+                                customers = uiState.filteredGoldCustomers,
+                                isLoading = uiState.isLoading,
+                                onCustomerClicked = { customer ->
+                                    onAction(DisplayWholeSalesCustomerUiAction.OnCustomerClicked(customer))
+                                },
+                                onDeleteCustomer = { customer ->
+                                    selectedCustomer = customer
+                                    confirmDeleteSheet = true
+                                },
+                                onEditCustomer = { customer ->
+                                    onAction(DisplayWholeSalesCustomerUiAction.OnEditCustomerClicked(customer))
+                                }
+                            )
                         }
-                    },
-                    text = {
-                        Text(
-                            text = stringResource(R.string.gold)
-                        )
-                    }
-                )
-                Tab(
-                    selected = pagerState.currentPage == 1,
-                    onClick = {
-                        scope.launch {
-                            pagerState.animateScrollToPage(1)
-                        }
-                    },
-                    text = {
-                        Text(
-                            text = stringResource(R.string.silver)
-                        )
-                    }
-                )
-            }
-            HorizontalPager(
-                modifier = Modifier.padding(top = 16.dp),
-                state = pagerState,
-                userScrollEnabled = false,
-            ) { value ->
-                when (value) {
-                    0 -> {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(vertical = 16.dp)
-                        ) {
-                            items(
-                                items = uiState.filteredGoldCustomers,
-                                key = { customer -> customer.id }
-                            ) { customer ->
-                                CustomerItem(
-                                    modifier = Modifier.animateItem(),
-                                    customer = customer,
-                                    onClick = {
-                                        onAction(
-                                            DisplayWholeSalesCustomerUiAction.OnCustomerClicked(
-                                                customer
-                                            )
-                                        )
-                                    },
-                                    onEdit = {
-                                        onAction(
-                                            DisplayWholeSalesCustomerUiAction.OnEditCustomerClicked(
-                                                customer
-                                            )
-                                        )
-                                    },
-                                    onDelete = {
-                                        selectedCustomer = customer
-                                        confirmDeleteSheet = true
-                                    }
-                                )
-                            }
-                        }
-                    }
 
-                    1 -> {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(vertical = 16.dp)
-                        ) {
-                            items(
-                                items = uiState.filteredSilverCustomers,
-                                key = { customer -> customer.id }
-                            ) { customer ->
-                                CustomerItem(
-                                    modifier = Modifier.animateItem(),
-                                    customer = customer,
-                                    onClick = {
-                                        onAction(
-                                            DisplayWholeSalesCustomerUiAction.OnCustomerClicked(
-                                                customer
-                                            )
-                                        )
-                                    },
-                                    onEdit = {
-                                        onAction(
-                                            DisplayWholeSalesCustomerUiAction.OnEditCustomerClicked(
-                                                customer
-                                            )
-                                        )
-                                    },
-                                    onDelete = {
-                                        selectedCustomer = customer
-                                        confirmDeleteSheet = true
-                                    }
-                                )
-                            }
+                        1 -> {
+                            CustomersList(
+                                customers = uiState.filteredSilverCustomers,
+                                isLoading = uiState.isLoading,
+                                onCustomerClicked = { customer ->
+                                    onAction(DisplayWholeSalesCustomerUiAction.OnCustomerClicked(customer))
+                                },
+                                onDeleteCustomer = { customer ->
+                                    selectedCustomer = customer
+                                    confirmDeleteSheet = true
+                                },
+                                onEditCustomer = { customer ->
+                                    onAction(DisplayWholeSalesCustomerUiAction.OnEditCustomerClicked(customer))
+                                }
+                            )
                         }
                     }
                 }
+            } else if (uiState.currentDistributor.permissions.contains(UserPermission.SELL_SILVER)) {
+                CustomersList(
+                    customers = uiState.filteredSilverCustomers,
+                    isLoading = uiState.isLoading,
+                    onCustomerClicked = { customer ->
+                        onAction(DisplayWholeSalesCustomerUiAction.OnCustomerClicked(customer))
+                    },
+                    onDeleteCustomer = { customer ->
+                        selectedCustomer = customer
+                        confirmDeleteSheet = true
+                    },
+                    onEditCustomer = { customer ->
+                        onAction(DisplayWholeSalesCustomerUiAction.OnEditCustomerClicked(customer))
+                    }
+                )
+            } else {
+                CustomersList(
+                    customers = uiState.filteredGoldCustomers,
+                    isLoading = uiState.isLoading,
+                    onCustomerClicked = { customer ->
+                        onAction(DisplayWholeSalesCustomerUiAction.OnCustomerClicked(customer))
+                    },
+                    onDeleteCustomer = { customer ->
+                        selectedCustomer = customer
+                        confirmDeleteSheet = true
+                    },
+                    onEditCustomer = { customer ->
+                        onAction(DisplayWholeSalesCustomerUiAction.OnEditCustomerClicked(customer))
+                    }
+                )
             }
         }
         ConfirmDeleteBottomSheet(
@@ -236,6 +238,45 @@ fun DisplayCustomersScreenContent(
                 confirmDeleteSheet = false
             }
         )
+    }
+}
+
+@Composable
+fun CustomersList(
+    modifier: Modifier = Modifier,
+    customers: List<WholeSaleCustomer>,
+    isLoading: Boolean,
+    onCustomerClicked: (WholeSaleCustomer) -> Unit,
+    onEditCustomer: (WholeSaleCustomer) -> Unit,
+    onDeleteCustomer: (WholeSaleCustomer) -> Unit,
+) {
+    ListWithLoading(
+        modifier = modifier,
+        isLoading = isLoading
+    ) {
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(vertical = 16.dp)
+        ) {
+            items(
+                items = customers,
+                key = { customer -> customer.id }
+            ) { customer ->
+                CustomerItem(
+                    modifier = Modifier.animateItem(),
+                    customer = customer,
+                    onClick = {
+                        onCustomerClicked(customer)
+                    },
+                    onEdit = {
+                        onEditCustomer(customer)
+                    },
+                    onDelete = {
+                        onDeleteCustomer(customer)
+                    }
+                )
+            }
+        }
     }
 }
 

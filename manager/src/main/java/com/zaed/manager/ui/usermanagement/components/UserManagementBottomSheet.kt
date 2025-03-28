@@ -23,7 +23,9 @@ fun UserManagementBottomSheet(
     onEditUser: (User) -> Unit,
     onDeleteUser: (String) -> Unit
 ) {
-    val bottomSheetState = rememberModalBottomSheetState()
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
     AnimatedVisibility(isEditBottomSheetVisible || isDeleteBottomSheetVisible) {
         ModalBottomSheet(
             modifier = modifier,

@@ -11,7 +11,7 @@ enum class NavDrawerItem(
     val route: Route
 ) {
     ADD_SALE(
-        title = R.string.add_sale,
+        title = R.string.add_product_sale,
         icon = R.drawable.ic_add,
         route = Route.AddProductSaleRoute()
     ),
@@ -32,13 +32,13 @@ enum class NavDrawerItem(
     ),
     GOLD_SALES(
         title = R.string.add_gold_sale,
-        icon = R.drawable.ic_coins,
+        icon = R.drawable.ic_add,
         route = Route.AddGoldSaleRoute()
     ),
     ADD_SILVER_SALE(
         title = R.string.add_silver_sale,
-        icon = R.drawable.ic_coins,
-        route = Route.AddGoldSaleRoute()
+        icon = R.drawable.ic_add,
+        route = Route.AddSilverSaleRoute()
     ),
     INGOTS_SALES(
         title = R.string.ingots_transactions,
