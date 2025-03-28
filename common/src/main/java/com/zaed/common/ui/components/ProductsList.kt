@@ -32,7 +32,8 @@ fun ProductsList(
     onEditProduct: (Product) -> Unit,
     label: String = stringResource(R.string.products),
     onRemoveProduct: (id: String) -> Unit,
-    productType: ProductType
+    productType: ProductType,
+    isPurchase: Boolean = false
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -59,6 +60,7 @@ fun ProductsList(
         ProductsTable(
             products = products,
             productType = productType,
+            isPurchase = isPurchase
         )
 
     }
@@ -101,6 +103,48 @@ fun ProductItem(
         }
     }
 }
+
+@Composable
+fun SilverItem(
+    modifier: Modifier = Modifier,
+    product: Product,
+    isPurchase: Boolean
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        tonalElevation = 2.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if(!isPurchase) {
+                Text(
+                    text = product.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.weight(5f)
+                )
+            }
+
+            Text(
+                text = product.grams.toString(),
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = if(isPurchase) TextAlign.Start else TextAlign.Center,
+                modifier = Modifier.weight(3f)
+            )
+            Text(
+                text = product.totalPriceAfterDiscount.formatMoney(),
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.End,
+                maxLines = 1,
+                modifier = Modifier.weight(3f)
+            )
+        }
+    }
+}
+
 
 @Composable
 fun GoldItem(

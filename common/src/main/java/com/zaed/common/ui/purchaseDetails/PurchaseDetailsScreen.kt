@@ -125,6 +125,7 @@ private fun ProductSaleDetailsContent(
                 ProductsTable(
                     products = state.purchase.products,
                     isModifyEnabled = false,
+                    isPurchase = true,
                     productType = state.purchase.productType
                 )
             }

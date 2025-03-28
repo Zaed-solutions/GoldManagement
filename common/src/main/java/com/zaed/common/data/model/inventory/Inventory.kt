@@ -1,5 +1,8 @@
 package com.zaed.common.data.model.inventory
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import com.zaed.common.R
 import com.zaed.common.data.model.authentication.UserPermission
 import java.util.Date
 
@@ -22,10 +25,26 @@ enum class QuantityUnit {
     UNITS
 }
 
-enum class InventoryType {
-    PRODUCT,
-    GOLD,
-    INGOT
+enum class InventoryType(
+    @StringRes val titleRes: Int,
+    @DrawableRes val iconRes: Int
+) {
+    PRODUCT(
+        R.string.products,
+        R.drawable.ic_cart
+    ),
+    GOLD(
+        R.string.gold,
+        R.drawable.ic_gold
+    ),
+    SILVER(
+        R.string.silver,
+        R.drawable.ic_ingot
+    ),
+    INGOT(
+        R.string.ingots,
+        R.drawable.ic_ingot
+    )
 }
 
 fun UserPermission.toInventoryType(): InventoryType {
