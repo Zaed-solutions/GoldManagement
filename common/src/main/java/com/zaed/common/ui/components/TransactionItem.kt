@@ -32,6 +32,7 @@ import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.ui.addpurchase.ProductType
 import com.zaed.common.ui.theme.GoldManagementTheme
 import com.zaed.common.ui.theme.GoldenCustomColors
+import com.zaed.common.ui.theme.SilverCustomColors
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.common.ui.util.format
 import com.zaed.common.ui.util.formatMoney
@@ -51,6 +52,7 @@ fun TransactionItem(
     val (icon, iconBackgroundColor, iconColor) = when{
         transaction is WholesaleTransaction && transaction.productType == ProductType.GOLD  -> Triple(R.drawable.ic_gold, GoldenCustomColors.current.color, GoldenCustomColors.current.onColor)
         transaction is WholesaleTransaction && transaction.productType == ProductType.INGOT  -> Triple(R.drawable.ic_ingot, GoldenCustomColors.current.color, GoldenCustomColors.current.onColor)
+        transaction is WholesaleTransaction && transaction.productType == ProductType.SILVER  -> Triple(R.drawable.ic_ingot, SilverCustomColors.current.color, SilverCustomColors.current.onColor)
         else -> Triple(R.drawable.ic_shopping, MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.onSecondary)
     }
     val title = when{
@@ -165,6 +167,7 @@ private fun Preview() {
             transaction = WholesaleTransaction(
                 receiptNumber = "123456",
                 createdAt = Date(),
+                productType = ProductType.GOLD,
                 products = listOf(
                     Product(
                         name = "Product 1",
