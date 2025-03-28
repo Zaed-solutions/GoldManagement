@@ -31,7 +31,12 @@ enum class NavDrawerItem(
         route = Route.LossesRoute
     ),
     GOLD_SALES(
-        title = R.string.gold_sales,
+        title = R.string.add_gold_sale,
+        icon = R.drawable.ic_coins,
+        route = Route.AddGoldSaleRoute()
+    ),
+    ADD_SILVER_SALE(
+        title = R.string.add_silver_sale,
         icon = R.drawable.ic_coins,
         route = Route.AddGoldSaleRoute()
     ),
@@ -54,6 +59,11 @@ fun List<UserPermission>.mapToNavDrawerItems(): List<NavDrawerItem> {
             UserPermission.SELL_GOLD -> {
                 routes.add(NavDrawerItem.GOLD_SALES)
             }
+
+            UserPermission.SELL_SILVER -> {
+                routes.add(NavDrawerItem.ADD_SILVER_SALE)
+            }
+
             UserPermission.SELL_INGOTS -> {
                 routes.add(NavDrawerItem.INGOTS_SALES)
             }

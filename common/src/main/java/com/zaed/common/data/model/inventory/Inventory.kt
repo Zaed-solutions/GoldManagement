@@ -52,6 +52,7 @@ fun UserPermission.toInventoryType(): InventoryType {
         UserPermission.SELL_PRODUCTS -> InventoryType.PRODUCT
         UserPermission.SELL_GOLD -> InventoryType.GOLD
         UserPermission.SELL_INGOTS -> InventoryType.INGOT
+        UserPermission.SELL_SILVER -> InventoryType.SILVER
         else -> InventoryType.PRODUCT
     }
 }
