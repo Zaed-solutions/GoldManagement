@@ -11,7 +11,6 @@ import com.zaed.common.data.model.customer.FetchWholesaleCustomersByNameRequest
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.inventory.InventoryType
 import com.zaed.common.data.model.inventory.request.FetchInventoriesByTypeRequest
-import com.zaed.common.data.model.inventory.request.FetchInventoriesRequest
 import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentStatus
@@ -24,18 +23,17 @@ import com.zaed.common.domain.authentication.GetCurrentUserLoggedInUseCase
 import com.zaed.common.domain.customer.FetchWholesaleCustomersByNameUseCase
 import com.zaed.common.domain.customer.GetWholeSalesCustomerUseCase
 import com.zaed.common.domain.inventory.FetchInventoriesByTypeUseCase
-import com.zaed.common.domain.inventory.FetchInventoriesUseCase
 import com.zaed.common.domain.payment.FetchMoneyPaymentsByIdsUseCase
 import com.zaed.common.domain.sale.AddWholesaleUseCase
 import com.zaed.common.domain.sale.FetchWholesaleUseCase
 import com.zaed.common.domain.sale.UpdateWholesaleUseCase
-import com.zaed.common.ui.addpurchase.ProductType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Date
+import java.util.UUID
 
 class AddGoldSaleViewModel(
     private val getCurrentUserUseCase: GetCurrentUserLoggedInUseCase,
@@ -46,7 +44,7 @@ class AddGoldSaleViewModel(
     private val addProductSaleUseCase: AddWholesaleUseCase,
     private val updateProductSaleUseCase: UpdateWholesaleUseCase,
     private val fetchInventoryUseCase: FetchInventoriesByTypeUseCase
-    ) : ViewModel() {
+) : ViewModel() {
     private val TAG: String = "AddProductSaleVM"
     private val _uiState = MutableStateFlow(AddGoldSaleUiState())
     val uiState = _uiState.asStateFlow()
@@ -56,6 +54,7 @@ class AddGoldSaleViewModel(
         }
         fetchCurrentUser()
     }
+
     private fun fetchInventories(ownerId: String) {
         Log.d(TAG, "fetchInventories: $ownerId")
         viewModelScope.launch(Dispatchers.IO) {
@@ -78,6 +77,7 @@ class AddGoldSaleViewModel(
             }
         }
     }
+
     private fun fetchSale(saleId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             fetchProductSaleUseCase(
@@ -264,7 +264,7 @@ class AddGoldSaleViewModel(
                         distributorId = distributor.id,
                         distributorName = distributor.fullName,
                         createdAt = Date(),
-                        paymentStatus =if(!uiState.value.payWithMoney) PaymentStatus.SPECIFYING_KARAT else if ((uiState.value.sale.totalAmount - uiState.value.totalMoneyPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID
+                        paymentStatus = if (!uiState.value.payWithMoney) PaymentStatus.SPECIFYING_KARAT else if ((uiState.value.sale.totalAmount - uiState.value.totalMoneyPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID
                     )
                 )
             }
@@ -280,7 +280,7 @@ class AddGoldSaleViewModel(
                 )
             }
             val updatedProducts = uiState.value.sale.products.map {
-                it.copy(buyingPrice = uiState.value.categories.firstOrNull()?.buyingPrice?:0.0)
+                it.copy(buyingPrice = uiState.value.categories.firstOrNull()?.buyingPrice ?: 0.0)
             }
             Log.d(TAG, "testoto: ${uiState.value.payments.map { it.id to it.type }}")
             addProductSaleUseCase(
@@ -348,21 +348,11 @@ class AddGoldSaleViewModel(
     private fun addProduct(product: Product) {
         viewModelScope.launch {
             _uiState.update { oldState ->
-                if (oldState.sale.products.any { it.categoryId == product.categoryId }) {
-                    oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products.map {
-                        if (it.categoryId == product.categoryId) {
-                            product
-                        } else {
-                            it
-                        }
-                    }))
-                } else {
-                    oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products + product))
-                }
+                val id = UUID.randomUUID().toString()
+                oldState.copy(sale = oldState.sale.copy(products = oldState.sale.products + product.copy(id = id)))
             }
         }
     }
-
 
 
     private fun addPayment(payment: Payment) {

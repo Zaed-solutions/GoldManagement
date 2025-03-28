@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
 import com.zaed.common.data.model.authentication.UserRole
+import com.zaed.common.data.model.customer.CustomerType
 import com.zaed.common.ui.auth.FieldsError
 import com.zaed.common.ui.components.BackIcon
 import com.zaed.common.ui.components.CustomSnackbar
@@ -54,12 +55,13 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun AddCustomersScreen(
     viewModel: AddCustomersViewModel = koinViewModel(),
+    type: CustomerType = CustomerType.GOLD,
     customerId: String,
     onBack: () -> Unit
 ) {
     if (customerId.isNotEmpty()) {
         LaunchedEffect(Unit) {
-            viewModel.getCustomer(customerId)
+            viewModel.init(customerId, type)
         }
     }
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -112,6 +114,7 @@ fun AddCustomersScreenContent(
         topBar = {
             AddCustomersTopBar(
                 isEditMode = uiState.isEditMode,
+                type = uiState.request.type,
                 onBack = {
                     onAction(AddCustomersUiAction.OnBack)
                 }
@@ -248,12 +251,21 @@ fun AddCustomersScreenContent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddCustomersTopBar(onBack: () -> Unit, isEditMode: Boolean = false) {
+fun AddCustomersTopBar(
+    modifier: Modifier = Modifier,
+    onBack: () -> Unit,
+    type: CustomerType,
+    isEditMode: Boolean = false
+) {
     TopAppBar(
         title = {
             Text(
-                if (isEditMode) stringResource(com.zaed.common.R.string.edit_customer) else
-                    stringResource(com.zaed.common.R.string.add_customer)
+                text = when{
+                    isEditMode && type == CustomerType.GOLD -> stringResource(R.string.edit_gold_customer)
+                    type == CustomerType.GOLD -> stringResource(R.string.add_gold_customer)
+                    isEditMode -> stringResource(com.zaed.common.R.string.edit_silver_customer)
+                    else -> stringResource(com.zaed.common.R.string.add_silver_customer)
+                }
             )
         },
         navigationIcon = {

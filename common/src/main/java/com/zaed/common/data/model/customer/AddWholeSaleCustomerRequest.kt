@@ -9,4 +9,5 @@ data class AddWholeSaleCustomerRequest(
     val city: String = "",
     val note: String = "",
     val payWithCheques: Boolean = true,
+    val type: CustomerType = CustomerType.GOLD
 )
