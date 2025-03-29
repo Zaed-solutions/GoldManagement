@@ -356,6 +356,7 @@ class AddGoldSaleViewModel(
 
 
     private fun addPayment(payment: Payment) {
+        Log.d("payment550","in the vm"+payment)
         viewModelScope.launch {
             _uiState.update { oldState ->
                 oldState.copy(payments = oldState.payments + payment)

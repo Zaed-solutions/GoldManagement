@@ -12,5 +12,6 @@ data class FuturePayment(
     override var given :Boolean = false,
     override var receiptNumber: String = "",
     override val createdAt: Date = Date(),
+    override val goldPayment: Boolean = false,
     override val logs: List<ChangeLog> = emptyList()
 ) : Payment(id, accountId, type,amount, deleted,given, receiptNumber, createdAt, logs)
