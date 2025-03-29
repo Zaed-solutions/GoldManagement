@@ -1,5 +1,6 @@
 package com.zaed.common.ui.components
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +40,7 @@ import com.zaed.common.data.model.payment.FuturePayment
 import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
+import com.zaed.common.data.model.sale.Karat
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -89,7 +91,10 @@ fun SavePaymentBottomSheet(
                         initialPayment = initialPayment as CashPayment,
                         isTaken = isTaken,
                         selectedAccount = selectedAccount,
-                        onSave = onSave
+                        onSave = {
+                            Log.d("payment550","in the sheet2"+it.toString())
+                            onSave(it)
+                        }
                     )
                 }
 
@@ -200,6 +205,7 @@ fun SaveCashPaymentBottomSheetContent(
                         id = "Payment-"+UUID.randomUUID().toString()
                     )
                 }
+                Log.d("payment550","in the sheet"+payment.toString())
                 onSave(payment)
             },
             enabled = payment.amount != 0.0
@@ -310,17 +316,17 @@ fun SaveGoldPaymentBottomSheetContent(
                 payment = payment.copy(pricePerGram = it)
             },
         )
-        NumberInputTextField(
+        TitledDropDownTextField2(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
             label = stringResource(R.string.karat),
-            value = payment.givenGoldKarat.toDouble(),
-            onValueChange = {
-                payment = payment.copy(givenGoldKarat = it.toInt())
+            selectedValue = payment.givenGoldKarat,
+            onValueChanged = {
+                payment = payment.copy(givenGoldKarat = it)
             },
+            options = Karat.entries
         )
-
         Button(
             modifier = Modifier
                 .fillMaxWidth()

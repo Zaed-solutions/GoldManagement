@@ -18,14 +18,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
-import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.CashPayment
+import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.getPaymentTypeDropDownItems
+import com.zaed.common.data.model.sale.Karat
 import com.zaed.common.ui.components.MultiOptionSwitch
 import com.zaed.common.ui.components.NumberInputTextField
 import com.zaed.common.ui.components.TitledDropDownTextField
+import com.zaed.common.ui.components.TitledDropDownTextField2
 
 @Composable
 fun SaveGoldPaymentBottomSheetContent(
@@ -134,15 +136,16 @@ fun SaveGoldPaymentBottomSheetContent(
                                 payment = payment.copy(pricePerGram = it)
                             },
                         )
-                        NumberInputTextField(
+                        TitledDropDownTextField2(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 16.dp),
                             label = stringResource(R.string.karat),
-                            value = payment.givenGoldKarat.toDouble(),
-                            onValueChange = {
-                                payment = payment.copy(givenGoldKarat = it.toInt())
+                            selectedValue = payment.givenGoldKarat,
+                            onValueChanged = {
+                                payment = payment.copy(givenGoldKarat = it)
                             },
+                            options = Karat.entries
                         )
 
                         Button(

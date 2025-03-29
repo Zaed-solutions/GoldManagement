@@ -58,6 +58,7 @@ import com.zaed.common.data.model.payment.LossPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.getProductSalePayments
+import com.zaed.common.data.model.sale.Karat
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.supplier.Supplier
 import com.zaed.common.ui.suppliers.SelectSupplierSheet
@@ -71,10 +72,11 @@ import kotlin.math.absoluteValue
 @Composable
 fun SelectPaymentsContent(
     modifier: Modifier = Modifier,
-    totalAmount: Double,
+    totalMoneyAmount: Double,
+    totalGoldAmount: Double = 0.0,
     payments: List<Payment>,
-    products : List<Product> = emptyList(),
-    payWithGold : Boolean = false,
+    products: List<Product> = emptyList(),
+    payWithGold: Boolean = false,
     onAddPayment: (Payment) -> Unit = {},
     onRemovePayment: (Payment) -> Unit = {},
     onEditPayment: (Payment) -> Unit = {},
@@ -95,7 +97,8 @@ fun SelectPaymentsContent(
     filteredSuppliers: List<Supplier> = emptyList(),
     onSupplierClicked: (String) -> Unit = {},
     onAddSupplier: (Supplier) -> Unit = {},
-    totalPaid: Double,
+    totalMoneyPaid: Double,
+    totalGoldPaid: Double = 0.0,
     salesCheques: List<ChequePayment> = emptyList(),
     discount: Double = 0.0,
     onUpdateDiscount: (Double) -> Unit = {},
@@ -106,12 +109,11 @@ fun SelectPaymentsContent(
     var warningNotFullyPaidSheet by remember { mutableStateOf(false) }
     var selectCustomerSheet by remember { mutableStateOf(false) }
     var confirmTheRemainsSheetVisible by remember { mutableStateOf(false) }
-    val remainsAmount by rememberUpdatedState(
-        if(!payWithGold) totalAmount - totalPaid
-        else products.sumOf { it.laborCost } - payments.sumOf { it.amount } - discount
+    val remainsMoneyAmount by rememberUpdatedState(
+        totalMoneyAmount - totalMoneyPaid
     )
-    val remainsGold by rememberUpdatedState(
-        products.sumOf { it.grams } - (payments.filterIsInstance<GoldPayment>().sumOf { it.givenGoldAmount })
+    val remainsGoldAmount by rememberUpdatedState(
+        totalGoldAmount - totalGoldPaid
     )
     Column(
         modifier = modifier
@@ -128,27 +130,33 @@ fun SelectPaymentsContent(
         )
 
         Text(
-            text = if(!payWithGold) {(totalAmount).toMoneyFormat(2) } else {
+            text = if (!payWithGold) {
+                (totalMoneyAmount).toMoneyFormat(2)
+            } else {
                 stringResource(
-                    R.string.grams_placeholder,products.sumOf { it.grams })
+                    R.string.grams_placeholder, totalGoldAmount
+                ) +if (totalMoneyPaid > 0) "+ ${remainsMoneyAmount.toMoneyFormat(2)}" else ""
             },
             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
             color = MaterialTheme.colorScheme.primary
         )
-        if (totalPaid > 0 || payments.filterIsInstance<GoldPayment>().any { it.givenGoldAmount>0 }) {
+        if (totalMoneyPaid > 0 || totalGoldPaid > 0) {
             Text(
-                text = stringResource(R.string.remaining_amount_from, totalAmount),
+                text = stringResource(
+                    R.string.remaining_amount_from,
+                    if (payWithGold) (totalGoldAmount) else totalMoneyAmount
+                ),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.outline
             )
             Text(
-                text = if(!payWithGold)remainsAmount.toMoneyFormat(2) else "$remainsGold g" ,
+                text = if (!payWithGold) remainsMoneyAmount.toMoneyFormat(2) else "$remainsMoneyAmount g",
                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.primary
             )
         }
-        if(!isPurchase && !payWithGold){
+        if (!isPurchase && !payWithGold) {
             NumberInputTextField(
                 modifier = Modifier.fillMaxWidth(),
                 label = stringResource(R.string.discount),
@@ -171,6 +179,7 @@ fun SelectPaymentsContent(
                     PaymentType.CASH -> {
                         selectedPayment = CashPayment(
                             type = type,
+                            id = "Destributor-" + UUID.randomUUID().toString()
                         )
                         simplePaymentBottomSheet = true
                     }
@@ -178,6 +187,7 @@ fun SelectPaymentsContent(
                     PaymentType.BANK_TRANSFER -> {
                         selectedPayment = BankTransferPayment(
                             type = type,
+                            id = "Destributor-" + UUID.randomUUID().toString()
                         )
                         simplePaymentBottomSheet = true
                     }
@@ -185,6 +195,7 @@ fun SelectPaymentsContent(
                     PaymentType.CHEQUE -> {
                         selectedPayment = ChequePayment(
                             type = type,
+                            id = "Destributor-" + UUID.randomUUID().toString()
                         )
                         simplePaymentBottomSheet = true
                     }
@@ -192,6 +203,7 @@ fun SelectPaymentsContent(
                     PaymentType.GOLD -> {
                         selectedPayment = GoldPayment(
                             type = type,
+                            id = "Destributor-" + UUID.randomUUID().toString()
                         )
                         simplePaymentBottomSheet = true
                     }
@@ -223,22 +235,21 @@ fun SelectPaymentsContent(
         Button(
             onClick = {
                 if (payments.filterIsInstance<GoldPayment>()
-                        .any { it.pricePerGram == 0.0 } && selectedAccount.id.isBlank()
+                        .any { it.givenGoldKarat == Karat.NOT_SPECIFIED } && selectedAccount.id.isBlank()
                 ) {
                     if (selectedAccount is WholeSaleCustomer) {
                         selectCustomerSheet = true
                     } else {
                         showSupplierSheet = true
                     }
-                } else if (remainsAmount > 0 && payments.filterIsInstance<GoldPayment>()
-                        .none { it.pricePerGram == 0.0 }
+                } else if ((remainsMoneyAmount > 0 || remainsGoldAmount > 0) && payments.filterIsInstance<GoldPayment>()
+                        .none { it.givenGoldKarat == Karat.NOT_SPECIFIED }
                 ) {
                     warningNotFullyPaidSheet = true
-                } else if (remainsAmount < 0 && payments.filterIsInstance<GoldPayment>()
-                        .none { it.pricePerGram == 0.0 }
+                } else if ((remainsMoneyAmount < 0 || remainsGoldAmount < 0) && payments.filterIsInstance<GoldPayment>()
+                        .none { it.givenGoldKarat == Karat.NOT_SPECIFIED }
                 ) {
                     confirmTheRemainsSheetVisible = true
-
                 } else {
                     onNext()
                 }
@@ -284,25 +295,55 @@ fun SelectPaymentsContent(
                         onClick = {
                             if (selectedAccount.id.isNotBlank()) {
                                 if (selectedAccount is WholeSaleCustomer) {
-                                    onAddPayment(
-                                        FuturePayment(
-                                            id = "Payment-" + UUID.randomUUID().toString(),
-                                            accountId = selectedAccount.id,
-                                            amount = remainsAmount.absoluteValue,
-                                            given = false,
-                                            type = PaymentType.REMAIN
+                                    if (remainsMoneyAmount < 0) {
+                                        onAddPayment(
+                                            FuturePayment(
+                                                id = "Destributor-" + UUID.randomUUID().toString(),
+                                                accountId = selectedAccount.id,
+                                                amount = remainsMoneyAmount.absoluteValue,
+                                                given = false,
+                                                goldPayment = false,
+                                                type = PaymentType.REMAIN
+                                            )
                                         )
-                                    )
+                                    }
+                                    if (remainsGoldAmount < 0) {
+                                        onAddPayment(
+                                            FuturePayment(
+                                                id = "Destributor-" + UUID.randomUUID().toString(),
+                                                accountId = selectedAccount.id,
+                                                amount = remainsGoldAmount.absoluteValue,
+                                                given = false,
+                                                goldPayment = true,
+                                                type = PaymentType.REMAIN
+                                            )
+                                        )
+                                    }
                                 } else {
-                                    onAddPayment(
-                                        FuturePayment(
-                                            id = "Payment-" + UUID.randomUUID().toString(),
-                                            accountId = selectedAccount.id,
-                                            amount = remainsAmount.absoluteValue,
-                                            given = true,
-                                            type = PaymentType.REMAIN
+                                    if (remainsMoneyAmount < 0) {
+                                        onAddPayment(
+                                            FuturePayment(
+                                                id = "Destributor-" + UUID.randomUUID().toString(),
+                                                accountId = selectedAccount.id,
+                                                amount = remainsMoneyAmount.absoluteValue,
+                                                given = true,
+                                                goldPayment = false,
+                                                type = PaymentType.REMAIN
+                                            )
                                         )
-                                    )
+                                    }
+                                    if (remainsGoldAmount < 0) {
+                                        onAddPayment(
+                                            FuturePayment(
+                                                id = "Destributor-" + UUID.randomUUID().toString(),
+                                                accountId = selectedAccount.id,
+                                                amount = remainsMoneyAmount.absoluteValue,
+                                                given = true,
+                                                goldPayment = true,
+                                                type = PaymentType.REMAIN
+                                            )
+                                        )
+                                    }
                                 }
                             } else if (selectedAccount is WholeSaleCustomer) {
                                 selectCustomerSheet = true
@@ -354,7 +395,7 @@ fun SelectPaymentsContent(
                 selectedAccount = selectedAccount,
                 currentUser = currentUser,
                 onSave = { updatedPayment ->
-                    if (selectedPayment!!.id.isBlank()) {
+                    if (selectedPayment!!.id.startsWith("Destributor")) {
                         onAddPayment(updatedPayment)
                     } else {
                         onEditPayment(updatedPayment)
@@ -400,7 +441,7 @@ fun SelectPaymentsContent(
                                     onAddPayment(
                                         LossPayment(
                                             accountId = selectedAccount.id,
-                                            amount = remainsAmount,
+                                            amount = remainsMoneyAmount,
                                             given = true,
                                             type = PaymentType.LOSS
                                         )
@@ -419,15 +460,30 @@ fun SelectPaymentsContent(
                             shape = RoundedCornerShape(4.dp),
                             onClick = {
                                 if (selectedAccount.id.isNotBlank()) {
-                                    onAddPayment(
-                                        FuturePayment(
-                                            id = "Payment-" + UUID.randomUUID().toString(),
-                                            accountId = selectedAccount.id,
-                                            amount = remainsAmount,
-                                            given = true,
-                                            type = PaymentType.FUTURES
+                                    if (remainsMoneyAmount > 0) {
+                                        onAddPayment(
+                                            FuturePayment(
+                                                id = "Destributor-" + UUID.randomUUID().toString(),
+                                                accountId = selectedAccount.id,
+                                                amount = remainsMoneyAmount,
+                                                given = true,
+                                                goldPayment = false,
+                                                type = PaymentType.FUTURES
+                                            )
                                         )
-                                    )
+                                    }
+                                    if (remainsGoldAmount > 0) {
+                                        onAddPayment(
+                                            FuturePayment(
+                                                id = "Destributor-" + UUID.randomUUID().toString(),
+                                                accountId = selectedAccount.id,
+                                                amount = remainsGoldAmount,
+                                                given = true,
+                                                goldPayment = true,
+                                                type = PaymentType.FUTURES
+                                            )
+                                        )
+                                    }
                                 } else if (selectedAccount is WholeSaleCustomer) {
                                     selectCustomerSheet = true
                                 } else {
@@ -615,7 +671,7 @@ fun SelectFromSalesChequesBottomSheetContent(
 @Composable
 private fun SelectPaymentsContentPreview() {
     SelectPaymentsContent(
-        totalAmount = 1000.0,
+        totalMoneyAmount = 1000.0,
         payments = listOf(
             ChequePayment(
                 id = "1",
@@ -641,7 +697,7 @@ private fun SelectPaymentsContentPreview() {
         onAccountSelected = {},
         currentUser = User(),
         suggestedAccount = listOf(),
-        totalPaid = 20.0,
+        totalMoneyPaid = 20.0,
     )
 
 }
