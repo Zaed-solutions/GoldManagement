@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.sale.DatedSales
 import com.zaed.common.data.model.sale.Transaction
+import com.zaed.common.ui.addpurchase.ProductType
 import com.zaed.common.ui.util.DateFormat
 import java.util.Date
 
@@ -27,7 +28,7 @@ fun DatedSalesWithSearchSection(
     selectedRange: Pair<Date?, Date?>,
     onCustomRangeSelected: (Pair<Date?, Date?>) -> Unit,
     datedSales: List<DatedSales>,
-    onSaleClicked: (String,String) -> Unit,
+    onSaleClicked: (String,ProductType) -> Unit,
     isEditable: Boolean = false,
     onEdit: (Transaction) -> Unit= {},
     isDeletable: Boolean = false,
@@ -58,8 +59,8 @@ fun DatedSalesWithSearchSection(
                         TransactionsList(
                             isLoading = isLoading,
                             transactions = sales,
-                            onTransactionClicked = { sale,_ ->
-                                onSaleClicked(sale.id, sale::class.qualifiedName?:"")
+                            onTransactionClicked = { sale,isProduct ->
+                                onSaleClicked(sale.id, isProduct)
                             },
                             onDeleteTransaction = { sale,_ ->
                                 onDelete(sale)

@@ -135,7 +135,7 @@ fun SelectPaymentsContent(
             } else {
                 stringResource(
                     R.string.grams_placeholder, totalGoldAmount
-                ) +if (totalMoneyPaid > 0) "+ ${remainsMoneyAmount.toMoneyFormat(2)}" else ""
+                ) + if (totalMoneyAmount > 0) "+ ${totalMoneyAmount.toMoneyFormat(2)}" else ""
             },
             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
             color = MaterialTheme.colorScheme.primary
@@ -145,13 +145,13 @@ fun SelectPaymentsContent(
                 text = stringResource(
                     R.string.remaining_amount_from,
                     if (payWithGold) (totalGoldAmount) else totalMoneyAmount
-                ),
+                ) + if (totalMoneyPaid > 0 &&payWithGold) "+ ${totalMoneyPaid.toMoneyFormat(2)}" else "",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.outline
             )
             Text(
-                text = if (!payWithGold) remainsMoneyAmount.toMoneyFormat(2) else "$remainsMoneyAmount g",
+                text = if (!payWithGold) remainsMoneyAmount.toMoneyFormat(2) else "$remainsGoldAmount g + ${remainsMoneyAmount.toMoneyFormat(2)}",
                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.primary
             )

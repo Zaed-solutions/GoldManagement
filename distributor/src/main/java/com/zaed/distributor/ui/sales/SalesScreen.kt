@@ -32,6 +32,7 @@ import com.zaed.common.R
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.WholesaleTransaction
+import com.zaed.common.ui.addpurchase.ProductType
 import com.zaed.common.ui.components.ConfirmDeleteDialog
 import com.zaed.common.ui.components.DatedSalesWithSearchSection
 import com.zaed.distributor.ui.theme.DistributorAppTheme
@@ -147,7 +148,7 @@ fun SalesScreenContent(
                 datedSales = state.datedSales,
                 onSaleClicked = { saleId , type ->
                     when(type){
-                        WholesaleTransaction::class.qualifiedName -> onAction(SalesUiAction.OnProductSaleClicked(saleId))
+                        ProductType.PRODUCT -> onAction(SalesUiAction.OnProductSaleClicked(saleId))
                         else -> onAction(SalesUiAction.OnGoldSaleClicked(saleId))
                     }
                 }

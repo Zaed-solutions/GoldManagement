@@ -30,13 +30,14 @@ import com.zaed.common.data.model.sale.DatedSales
 import com.zaed.common.data.model.sale.StoreTransaction
 import com.zaed.common.data.model.sale.Transaction
 import com.zaed.common.data.model.sale.WholesaleTransaction
+import com.zaed.common.ui.addpurchase.ProductType
 import com.zaed.common.ui.util.formatMoney
 
 @Composable
 fun DatedSalesItem(
     modifier: Modifier = Modifier,
     datedSale: DatedSales,
-    onSaleClicked: (String,String) -> Unit,
+    onSaleClicked: (String,ProductType) -> Unit,
     isEditable: Boolean = false,
     onEdit: (Transaction) -> Unit= {},
     isDeletable: Boolean = false,
@@ -101,8 +102,8 @@ fun DatedSalesItem(
                                 transaction = sale,
                                 onTransactionClicked = {
                                     when(sale){
-                                        is WholesaleTransaction -> onSaleClicked(sale.id,sale::class.qualifiedName?:"")
-                                        is StoreTransaction -> onSaleClicked(sale.id,sale::class.qualifiedName?:"")
+                                        is WholesaleTransaction -> onSaleClicked(sale.id,sale.productType)
+                                        is StoreTransaction -> onSaleClicked(sale.id,ProductType.PRODUCT)
                                     }
                                 },
                                 isDividerVisible = false,

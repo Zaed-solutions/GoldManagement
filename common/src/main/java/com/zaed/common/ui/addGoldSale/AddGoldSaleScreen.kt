@@ -29,7 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.GoldPayment
-import com.zaed.common.data.model.payment.PaymentType
+import com.zaed.common.data.model.payment.getGoldSalePayments
 import com.zaed.common.data.model.payment.getProductSalePayments
 import com.zaed.common.data.model.sale.Karat
 import com.zaed.common.ui.addGoldSale.components.SelectGoldContent
@@ -216,7 +216,7 @@ private fun AddGoldSaleScreenContent(
                             products = state.sale.products,
                             payWithGold = !state.payWithMoney,
                             query = state.customerSearchQuery,
-                            paymentsTypes = if (state.payWithMoney) getProductSalePayments() else listOf(PaymentType.GOLD),
+                            paymentsTypes = if (state.payWithMoney) getProductSalePayments() else  getGoldSalePayments(),
                             onQueryChanged = {
                                 onAction(AddGoldSaleUiAction.OnCustomerSearchQueryChanged(it))
                             },
