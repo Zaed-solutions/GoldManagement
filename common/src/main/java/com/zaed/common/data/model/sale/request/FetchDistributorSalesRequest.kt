@@ -4,3 +4,6 @@ data class FetchDistributorSalesRequest(
     val distributorId: String = "",
     val withOutStandingBill: Boolean = false
 )
+data class FetchOutStandingBillsRequest(
+    val distributorId: String = "",
+)

@@ -17,5 +17,6 @@ data class SalesUiState(
     val filteredSales: List<WholesaleTransaction> = emptyList(),
     val dateFilter: DateFormat = DateFormat.DATE,
     val selectedRange: Pair<Date?, Date?> = null to null,
-    val datedSales: List<DatedSales> = emptyList()
+    val datedSales: List<DatedSales> = emptyList(),
+    val isOutstanding: Boolean = false
 )

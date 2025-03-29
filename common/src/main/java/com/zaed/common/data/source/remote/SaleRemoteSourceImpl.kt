@@ -11,7 +11,6 @@ import com.google.firebase.firestore.SetOptions
 import com.zaed.common.data.model.authentication.ChangeLog
 import com.zaed.common.data.model.authentication.LogType
 import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
-import com.zaed.common.data.model.inventory.Inventory
 import com.zaed.common.data.model.inventory.InventoryType
 import com.zaed.common.data.model.loss.DistributorLoss
 import com.zaed.common.data.model.payment.BankTransferPayment
@@ -33,6 +32,7 @@ import com.zaed.common.data.model.sale.request.DeleteStoreSaleRequest
 import com.zaed.common.data.model.sale.request.DeleteWholesaleRequest
 import com.zaed.common.data.model.sale.request.FetchDistributorSalesRequest
 import com.zaed.common.data.model.sale.request.FetchIngotTransactionsRequest
+import com.zaed.common.data.model.sale.request.FetchOutStandingBillsRequest
 import com.zaed.common.data.model.sale.request.FetchStoreSalesRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleRequest
 import com.zaed.common.data.model.sale.request.UpdateIngotTransactionRequest
@@ -286,6 +286,7 @@ class SaleRemoteSourceImpl(
                 sListener?.remove()
             }
         }
+
 
     override fun fetchWholesaleCustomerSales(request: FetchWholesaleCustomerSalesRequest): Flow<Result<List<WholesaleTransaction>>> =
         callbackFlow {
@@ -642,19 +643,33 @@ class SaleRemoteSourceImpl(
                 if (it.type == PaymentType.FUTURES) {
                     val customerRef =
                         wholesaleCustomersCollection.document(request.sale.accountId)
-
-                    batch.update(
-                        customerRef,
-                        mapOf("moneyDebtAmount" to FieldValue.increment(it.amount.unaryMinus()))
-                    )
+                    if(it.goldPayment){
+                        batch.update(
+                            customerRef,
+                            mapOf("goldDebtAmount" to FieldValue.increment(it.amount.unaryMinus()))
+                        )
+                    }
+                    else {
+                        batch.update(
+                            customerRef,
+                            mapOf("moneyDebtAmount" to FieldValue.increment(it.amount.unaryMinus()))
+                        )
+                    }
 
                 } else if (it.type == PaymentType.REMAIN) {
                     val customerRef =
                         wholesaleCustomersCollection.document(request.sale.accountId)
-                    batch.update(
-                        customerRef,
-                        mapOf("moneyDebtAmount" to FieldValue.increment(it.amount))
-                    )
+                    if(it.goldPayment){
+                        batch.update(
+                            customerRef,
+                            mapOf("goldDebtAmount" to FieldValue.increment(it.amount))
+                        )
+                    }else {
+                        batch.update(
+                            customerRef,
+                            mapOf("moneyDebtAmount" to FieldValue.increment(it.amount))
+                        )
+                    }
                 } else if (it.type == PaymentType.LOSS) {
                     val document = distributorLossesCollection.document()
                     batch.set(
@@ -836,14 +851,21 @@ class SaleRemoteSourceImpl(
                 val customerRef = wholesaleCustomersCollection.document(request.sale.accountId)
 
                 Log.d("finding_the_sex", "existingPayment: ${existingPayment.amount}")
-                batch.update(
-                    customerRef,
-                    mapOf(
-                        "moneyDebtAmount" to FieldValue.increment(
-                            existingPayment.signedAmount().unaryMinus()
+                if(existingPayment.goldPayment){
+                    batch.update(
+                        customerRef,
+                        mapOf("goldDebtAmount" to FieldValue.increment(existingPayment.signedAmount().unaryMinus()))
+                    )
+                }else {
+                    batch.update(
+                        customerRef,
+                        mapOf(
+                            "moneyDebtAmount" to FieldValue.increment(
+                                existingPayment.signedAmount().unaryMinus()
+                            )
                         )
                     )
-                )
+                }
             }
             request.payments.forEach { payment ->
 
@@ -856,18 +878,32 @@ class SaleRemoteSourceImpl(
                     val amount = if (payment.type == PaymentType.FUTURES) {
                         val customerRef =
                             wholesaleCustomersCollection.document(request.sale.accountId)
-                        batch.update(
-                            customerRef,
-                            mapOf("moneyDebtAmount" to FieldValue.increment(payment.signedAmount()))
-                        )
+                        if(payment.goldPayment){
+                            batch.update(
+                                customerRef,
+                                mapOf("goldDebtAmount" to FieldValue.increment(payment.signedAmount()))
+                            )
+                        }else {
+                            batch.update(
+                                customerRef,
+                                mapOf("moneyDebtAmount" to FieldValue.increment(payment.signedAmount()))
+                            )
+                        }
                         payment.amount
                     }else if (payment.type == PaymentType.REMAIN) {
                         val customerRef =
                             wholesaleCustomersCollection.document(request.sale.accountId)
-                        batch.update(
-                            customerRef,
-                            mapOf("moneyDebtAmount" to FieldValue.increment(payment.signedAmount()))
-                        )
+                        if(payment.goldPayment){
+                            batch.update(
+                                customerRef,
+                                mapOf("goldDebtAmount" to FieldValue.increment(payment.signedAmount()))
+                            )
+                        }else {
+                            batch.update(
+                                customerRef,
+                                mapOf("moneyDebtAmount" to FieldValue.increment(payment.signedAmount()))
+                            )
+                        }
                         payment.amount
                     }else {
                         payment.amount

@@ -241,6 +241,7 @@ fun NavigationHost(
         }
         composable<Route.DistributorsSalesRoute> {
             val data = it.toRoute<Route.DistributorsSalesRoute>()
+            val isOutStanding = data.isOutStanding
             DistributorsSalesScreen(
                 onShowNavDrawer = onShowNavDrawer,
                 startDate = data.startDate,

@@ -43,12 +43,16 @@ fun SalesScreen(
     viewModel: SalesViewModel = koinViewModel(),
     onShowNavDrawer: () -> Unit,
     onNavigateToLogin: () -> Unit,
+    isOutstanding: Boolean =false,
     onNavigateToAddProductSale: (String) -> Unit,
     onNavigateToAddGoldSale: (String) -> Unit,
     onNavigateToProductSaleDetails: (String) -> Unit,
     onNavigateToGoldSaleDetails: (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect(Unit) {
+        viewModel.init(isOutstanding)
+    }
     LaunchedEffect(state.isSignedOut) {
         if (state.isSignedOut) {
             onNavigateToLogin()
@@ -86,7 +90,7 @@ fun SalesScreenContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = state.currentUser.fullName,
+                        text = if(state.isOutstanding) stringResource(R.string.outstanding_bills) else state.currentUser.fullName,
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
@@ -103,18 +107,20 @@ fun SalesScreenContent(
             )
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                modifier = Modifier
-                    .padding(),
-                shape = CircleShape,
-                onClick = { onAction(SalesUiAction.AddProductSaleClicked) },
-            ) {
-                Text(text = "New Sale")
-                Icon(
-                    modifier = Modifier.padding(start = 8.dp),
-                    imageVector = Icons.Default.ShoppingBag,
-                    contentDescription = "Add Sale"
-                )
+            if (!state.isOutstanding) {
+                ExtendedFloatingActionButton(
+                    modifier = Modifier
+                        .padding(),
+                    shape = CircleShape,
+                    onClick = { onAction(SalesUiAction.AddProductSaleClicked) },
+                ) {
+                    Text(text = "New Sale")
+                    Icon(
+                        modifier = Modifier.padding(start = 8.dp),
+                        imageVector = Icons.Default.ShoppingBag,
+                        contentDescription = "Add Sale"
+                    )
+                }
             }
         }
     ) { innerPadding ->

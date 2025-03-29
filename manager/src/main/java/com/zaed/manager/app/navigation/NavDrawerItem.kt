@@ -44,6 +44,10 @@ enum class NavDrawerItem(
             SubNavDrawerItem(
                 title = R.string.distributors_sales,
                 route = Route.DistributorsSalesRoute()
+            ),
+            SubNavDrawerItem(
+                title = R.string.outstanding_bills,
+                route = Route.DistributorsSalesRoute(isOutStanding = true)
             )
         )
     ),
