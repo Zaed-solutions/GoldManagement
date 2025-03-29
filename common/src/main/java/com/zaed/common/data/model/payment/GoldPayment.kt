@@ -1,6 +1,7 @@
 package com.zaed.common.data.model.payment
 
 import com.zaed.common.data.model.authentication.ChangeLog
+import com.zaed.common.data.model.sale.Karat
 import java.util.Date
 
 data class GoldPayment(
@@ -10,7 +11,7 @@ data class GoldPayment(
     override var amount: Double = 0.0,
     val givenGoldAmount: Double = 0.0,
     val pricePerGram: Double = 0.0,
-    val givenGoldKarat: Int = 0,
+    val givenGoldKarat: Karat = Karat.NOT_SPECIFIED,
     override val deleted: Boolean = false,
     override var given :Boolean = false,
     override var receiptNumber: String = "",

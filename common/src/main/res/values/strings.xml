@@ -391,4 +391,5 @@
     <string name="edit_silver_customer">Edit Silver Customer</string>
     <string name="add_silver_customer">Add Silver Customer</string>
     <string name="add_product_sale">Add Product Sale</string>
+    <string name="outstanding_bills">Outstanding Bills</string>
 </resources>

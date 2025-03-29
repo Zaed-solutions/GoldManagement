@@ -51,6 +51,7 @@ import com.zaed.common.data.model.payment.ChequePayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.getProductSalePayments
+import com.zaed.common.ui.addpurchase.ProductType
 import com.zaed.common.ui.components.BackIcon
 import com.zaed.common.ui.components.BalanceSection
 import com.zaed.common.ui.components.ConfirmDeleteBottomSheet
@@ -212,30 +213,39 @@ fun CustomerDetailsScreenContent(
                         TransactionsList(listState = listState,
                             isLoading = uiState.loading,
                             transactions = uiState.sales,
-                            onDeleteTransaction = { sale, isProduct ->
+                            onDeleteTransaction = { sale, productType ->
                                 onAction(
-                                    if (isProduct) {
-                                        CustomerDetailsUiAction.OnDeleteProductSale(sale.id)
-                                    } else {
-                                        CustomerDetailsUiAction.OnDeleteGoldSale(sale.id)
+                                    when (productType) {
+                                        ProductType.PRODUCT -> CustomerDetailsUiAction.OnDeleteProductSale(
+                                            sale.id
+                                        )
+                                        else -> {
+                                            CustomerDetailsUiAction.OnDeleteGoldSale(sale.id)
+                                        }
                                     }
                                 )
                             },
-                            onEditTransaction = { sale, isProduct ->
+                            onEditTransaction = { sale, productType ->
                                 onAction(
-                                    if (isProduct) {
-                                        CustomerDetailsUiAction.OnEditProductSale(sale.id)
-                                    } else {
-                                        CustomerDetailsUiAction.OnEditGoldSale(sale.id)
+                                    when (productType) {
+                                        ProductType.PRODUCT -> CustomerDetailsUiAction.OnEditProductSale(
+                                            sale.id
+                                        )
+                                        else-> {
+                                            CustomerDetailsUiAction.OnEditGoldSale(sale.id)
+                                        }
                                     }
                                 )
                             },
-                            onTransactionClicked = { sale, isProduct ->
+                            onTransactionClicked = { sale, productType ->
                                 onAction(
-                                    if (isProduct) {
-                                        CustomerDetailsUiAction.OnProductSaleClicked(sale.id)
-                                    } else {
-                                        CustomerDetailsUiAction.OnGoldSaleClicked(sale.id)
+                                    when (productType) {
+                                        ProductType.PRODUCT -> CustomerDetailsUiAction.OnProductSaleClicked(
+                                            sale.id
+                                        )
+                                        else-> {
+                                            CustomerDetailsUiAction.OnGoldSaleClicked(sale.id)
+                                        }
                                     }
                                 )
                             })

@@ -1,7 +1,7 @@
 package com.zaed.manager.ui.distributorssales
 
-import com.zaed.common.data.model.category.Category
 import com.zaed.common.data.model.authentication.User
+import com.zaed.common.data.model.category.Category
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.data.model.store.Store

@@ -130,7 +130,7 @@ fun SaleSummaryContent(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if (payWithGold) {
+                if (payWithGold && isKaratUnSpecified) {
                     Text(
                         text = stringResource(R.string.save_as_outstanding_bill),
                         style = MaterialTheme.typography.titleLarge,

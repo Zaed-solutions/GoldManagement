@@ -12,7 +12,8 @@ open class Payment(
     open val deleted: Boolean = false,
     open var receiptNumber: String = "",
     open val createdAt: Date = Date(),
-    open val logs: List<ChangeLog> = emptyList()
+    open val logs: List<ChangeLog> = emptyList(),
+    open val goldPayment: Boolean = false
 )
 fun Payment.signedAmount(): Double =
     when (given) {

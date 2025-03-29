@@ -32,7 +32,10 @@ class SalesViewModel(
     private val _uiState = MutableStateFlow(SalesUiState())
     val uiState = _uiState.asStateFlow()
 
-    init {
+   fun  init(isOutstanding: Boolean) {
+        _uiState.update { oldState ->
+            oldState.copy(isOutstanding = isOutstanding)
+        }
         fetchCurrentUser()
     }
 
@@ -56,7 +59,8 @@ class SalesViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             fetchSalesUseCase(
                 FetchDistributorSalesRequest(
-                    distributorId = uiState.value.currentUser.id
+                    distributorId = uiState.value.currentUser.id,
+                    withOutStandingBill = uiState.value.isOutstanding
                 )
             ).collect { result ->
                 result.onSuccess { data ->

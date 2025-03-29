@@ -12,9 +12,11 @@ import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.inventory.InventoryType
 import com.zaed.common.data.model.inventory.request.FetchInventoriesByTypeRequest
 import com.zaed.common.data.model.payment.FuturePayment
+import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentStatus
 import com.zaed.common.data.model.payment.request.FetchPaymentsByIdsRequest
+import com.zaed.common.data.model.sale.Karat
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.request.AddWholesaleRequest
 import com.zaed.common.data.model.sale.request.FetchWholesaleRequest
@@ -216,6 +218,7 @@ class AddGoldSaleViewModel(
                         sale = uiState.value.sale.copy(
                             accountId = customer.id,
                             customerName = customer.name,
+                            outStandingBill = !uiState.value.payWithMoney && uiState.value.payments.filterIsInstance<GoldPayment>().any { it.givenGoldKarat == Karat.NOT_SPECIFIED },
                             customerPhone = customer.phone,
                             paymentStatus = if ((uiState.value.sale.totalAmount - uiState.value.totalMoneyPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID,
                             logs = oldState.sale.logs + updateLog
@@ -260,7 +263,7 @@ class AddGoldSaleViewModel(
                         accountId = customer.id,
                         customerName = customer.name,
                         customerPhone = customer.phone,
-                        outStandingBill = !uiState.value.payWithMoney,
+                        outStandingBill = !uiState.value.payWithMoney && uiState.value.payments.filterIsInstance<GoldPayment>().any { it.givenGoldKarat == Karat.NOT_SPECIFIED },
                         distributorId = distributor.id,
                         distributorName = distributor.fullName,
                         createdAt = Date(),
@@ -356,6 +359,7 @@ class AddGoldSaleViewModel(
 
 
     private fun addPayment(payment: Payment) {
+        Log.d("payment550","in the vm"+payment)
         viewModelScope.launch {
             _uiState.update { oldState ->
                 oldState.copy(payments = oldState.payments + payment)

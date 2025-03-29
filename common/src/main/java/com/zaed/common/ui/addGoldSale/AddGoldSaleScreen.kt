@@ -20,10 +20,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -31,9 +29,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
 import com.zaed.common.data.model.customer.WholeSaleCustomer
 import com.zaed.common.data.model.payment.GoldPayment
-import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.getGoldSalePayments
 import com.zaed.common.data.model.payment.getProductSalePayments
+import com.zaed.common.data.model.sale.Karat
 import com.zaed.common.ui.addGoldSale.components.SelectGoldContent
 import com.zaed.common.ui.components.PaymentTypes
 import com.zaed.common.ui.components.PreviewSaleContent
@@ -204,8 +202,10 @@ private fun AddGoldSaleScreenContent(
                     }
                     3 -> {
                         SelectPaymentsContent(
-                            totalAmount = state.sale.totalAmount,
-                            totalPaid = state.totalMoneyPaid + state.totalFuturePaid,
+                            totalMoneyAmount = state.totalMoneyAmount,
+                            totalGoldAmount = state.totalGoldAmount,
+                            totalMoneyPaid = state.totalMoneyPaid + state.totalMoneyFuturePaid,
+                            totalGoldPaid = state.totalGoldPaid + state.totalGoldFuturePaid,
                             payments = state.payments,
                             discount = state.sale.discount,
                             onUpdateDiscount = {
@@ -216,7 +216,7 @@ private fun AddGoldSaleScreenContent(
                             products = state.sale.products,
                             payWithGold = !state.payWithMoney,
                             query = state.customerSearchQuery,
-                            paymentsTypes = if (state.payWithMoney) getProductSalePayments() else listOf(PaymentType.GOLD),
+                            paymentsTypes = if (state.payWithMoney) getProductSalePayments() else  getGoldSalePayments(),
                             onQueryChanged = {
                                 onAction(AddGoldSaleUiAction.OnCustomerSearchQueryChanged(it))
                             },
@@ -228,6 +228,7 @@ private fun AddGoldSaleScreenContent(
                                 onAction(AddGoldSaleUiAction.OnCustomerSelected(it as WholeSaleCustomer))
                             },
                             onAddPayment = {
+                                Log.d("payment550","in the screen"+it.toString())
                                 onAction(AddGoldSaleUiAction.OnAddPayment(it))
                             },
                             onEditPayment = {
@@ -251,7 +252,7 @@ private fun AddGoldSaleScreenContent(
                             payWithGold = !state.payWithMoney,
                             totalMoneyPaid = state.totalMoneyPaid,
                             totalGoldPaid = state.totalGoldPaid,
-                            isKaratUnSpecified = state.payments.filterIsInstance<GoldPayment>().any { it.pricePerGram==0.0 },
+                            isKaratUnSpecified = state.payments.filterIsInstance<GoldPayment>().any { it.givenGoldKarat==Karat.NOT_SPECIFIED },
                             totalAmount = state.sale.totalAmount,
                             isLoading = state.isLoading,
                             onCreate = {

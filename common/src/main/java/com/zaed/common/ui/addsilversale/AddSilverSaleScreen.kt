@@ -19,14 +19,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.data.model.customer.WholeSaleCustomer
-import com.zaed.common.ui.addGoldSale.AddGoldSaleViewModel
 import com.zaed.common.ui.addGoldSale.components.SelectSilverContent
 import com.zaed.common.ui.addpurchase.ProductType
 import com.zaed.common.ui.components.PreviewSaleContent
 import com.zaed.common.ui.components.ProgressIndicatorTopAppBar
 import com.zaed.common.ui.components.SaleSummaryContent
 import com.zaed.common.ui.components.SelectPaymentsContent
-import com.zaed.common.ui.components.SelectProductsContent
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -184,9 +182,9 @@ private fun AddSilverSaleScreenContent(
 
                     2 -> {
                         SelectPaymentsContent(
-                            totalAmount = state.sale.totalAmount,
+                            totalMoneyAmount = state.sale.totalAmount,
                             payments = state.payments,
-                            totalPaid = state.totalPaid + state.futurePaid,
+                            totalMoneyPaid = state.totalPaid + state.futurePaid,
                             discount = state.sale.discount,
                             selectedAccount = state.selectedCustomer,
                             currentUser = state.currentUser,

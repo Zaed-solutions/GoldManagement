@@ -32,6 +32,7 @@ import com.zaed.common.R
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.WholesaleTransaction
+import com.zaed.common.ui.addpurchase.ProductType
 import com.zaed.common.ui.components.ConfirmDeleteDialog
 import com.zaed.common.ui.components.DatedSalesWithSearchSection
 import com.zaed.distributor.ui.theme.DistributorAppTheme
@@ -43,12 +44,16 @@ fun SalesScreen(
     viewModel: SalesViewModel = koinViewModel(),
     onShowNavDrawer: () -> Unit,
     onNavigateToLogin: () -> Unit,
+    isOutstanding: Boolean =false,
     onNavigateToAddProductSale: (String) -> Unit,
     onNavigateToAddGoldSale: (String) -> Unit,
     onNavigateToProductSaleDetails: (String) -> Unit,
     onNavigateToGoldSaleDetails: (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect(Unit) {
+        viewModel.init(isOutstanding)
+    }
     LaunchedEffect(state.isSignedOut) {
         if (state.isSignedOut) {
             onNavigateToLogin()
@@ -86,7 +91,7 @@ fun SalesScreenContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = state.currentUser.fullName,
+                        text = if(state.isOutstanding) stringResource(R.string.outstanding_bills) else state.currentUser.fullName,
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
@@ -103,18 +108,20 @@ fun SalesScreenContent(
             )
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                modifier = Modifier
-                    .padding(),
-                shape = CircleShape,
-                onClick = { onAction(SalesUiAction.AddProductSaleClicked) },
-            ) {
-                Text(text = "New Sale")
-                Icon(
-                    modifier = Modifier.padding(start = 8.dp),
-                    imageVector = Icons.Default.ShoppingBag,
-                    contentDescription = "Add Sale"
-                )
+            if (!state.isOutstanding) {
+                ExtendedFloatingActionButton(
+                    modifier = Modifier
+                        .padding(),
+                    shape = CircleShape,
+                    onClick = { onAction(SalesUiAction.AddProductSaleClicked) },
+                ) {
+                    Text(text = "New Sale")
+                    Icon(
+                        modifier = Modifier.padding(start = 8.dp),
+                        imageVector = Icons.Default.ShoppingBag,
+                        contentDescription = "Add Sale"
+                    )
+                }
             }
         }
     ) { innerPadding ->
@@ -141,7 +148,7 @@ fun SalesScreenContent(
                 datedSales = state.datedSales,
                 onSaleClicked = { saleId , type ->
                     when(type){
-                        WholesaleTransaction::class.qualifiedName -> onAction(SalesUiAction.OnProductSaleClicked(saleId))
+                        ProductType.PRODUCT -> onAction(SalesUiAction.OnProductSaleClicked(saleId))
                         else -> onAction(SalesUiAction.OnGoldSaleClicked(saleId))
                     }
                 }

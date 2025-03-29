@@ -9,13 +9,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.zaed.common.data.model.sale.DatedSales
 import com.zaed.common.data.model.sale.Transaction
+import com.zaed.common.ui.addpurchase.ProductType
 
 @Composable
 fun DatedSalesList(
     modifier: Modifier = Modifier,
     isLoading : Boolean,
     datedSales: List<DatedSales>,
-    onSaleClicked: (String,String) -> Unit,
+    onSaleClicked: (String,ProductType) -> Unit,
     isEditable: Boolean = false,
     onEdit: (Transaction) -> Unit= {},
     isDeletable: Boolean = false,

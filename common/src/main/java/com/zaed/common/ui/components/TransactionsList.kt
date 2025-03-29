@@ -19,11 +19,11 @@ fun TransactionsList(
     listState: LazyListState = LazyListState(),
     isLoading: Boolean,
     transactions: List<Transaction>,
-    onTransactionClicked: (transaction: Transaction, isProduct: Boolean) -> Unit,
+    onTransactionClicked: (transaction: Transaction, productType: ProductType) -> Unit,
     isDeletable: Boolean = true,
-    onDeleteTransaction: (transaction: Transaction, isProduct: Boolean) -> Unit = {_, _ ->},
+    onDeleteTransaction: (transaction: Transaction, productType: ProductType) -> Unit = {_, _ ->},
     isEditable: Boolean = true,
-    onEditTransaction: (transaction: Transaction, isProduct: Boolean) -> Unit = {_, _ ->},
+    onEditTransaction: (transaction: Transaction, productType: ProductType) -> Unit = {_, _ ->},
 ) {
     ListWithLoading(
         isLoading = isLoading
@@ -38,17 +38,18 @@ fun TransactionsList(
                 items = transactions,
                 key = { it.id }
             ) { transaction ->
+                val productType = if(transaction is WholesaleTransaction && transaction.productType == ProductType.PRODUCT) ProductType.PRODUCT else ProductType.GOLD
                 TransactionItem(
                     modifier = Modifier.animateItem(),
                     transaction = transaction,
                     onTransactionClicked = {
-                        onTransactionClicked(transaction, transaction is WholesaleTransaction && transaction.productType == ProductType.PRODUCT)
+                        onTransactionClicked(transaction, productType)
                     },
                     onDelete = {
-                        onDeleteTransaction(transaction, transaction is WholesaleTransaction && transaction.productType == ProductType.PRODUCT)
+                        onDeleteTransaction(transaction, productType)
                     },
                     onEdit = {
-                        onEditTransaction(transaction, transaction is WholesaleTransaction && transaction.productType == ProductType.PRODUCT)
+                        onEditTransaction(transaction, productType)
                     },
                     isDeletable = isDeletable,
                     isEditable = isEditable,

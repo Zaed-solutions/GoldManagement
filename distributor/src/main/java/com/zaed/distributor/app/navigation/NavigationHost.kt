@@ -56,7 +56,7 @@ fun NavigationHost(
                     navController.navigate(Route.SignUpRoute)
                 },
                 onNavigateToHomeScreen = {
-                    navController.navigate(Route.SalesRoute) {
+                    navController.navigate(Route.SalesRoute()) {
                         popUpTo(Route.LoginRoute) {
                             inclusive = true
                         }
@@ -65,8 +65,10 @@ fun NavigationHost(
             )
         }
         composable<Route.SalesRoute> {
+            val data = it.toRoute<Route.SalesRoute>()
             SalesScreen(
                 onShowNavDrawer = onShowNavDrawer,
+                isOutstanding = data.isOutstanding,
                 onNavigateToLogin = {
                     navController.navigate(Route.LoginRoute) {
                         popUpTo(Route.LoginRoute) {
@@ -290,7 +292,7 @@ sealed interface Route {
     data object LoginRoute : Route
 
     @Serializable
-    data object SalesRoute : Route
+    data class SalesRoute(val isOutstanding : Boolean = false) : Route
 
     @Serializable
     data class AddProductSaleRoute(val saleId: String = "") : Route
