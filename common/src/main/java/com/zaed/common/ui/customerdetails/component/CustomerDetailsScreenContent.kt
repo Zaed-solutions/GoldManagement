@@ -1,6 +1,7 @@
 package com.zaed.common.ui.customerdetails.component
 
 import android.util.Log
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -45,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import com.zaed.common.R
 import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.data.model.cheque.ChequeStatus
+import com.zaed.common.data.model.customer.CustomerType
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
@@ -115,12 +117,19 @@ fun CustomerDetailsScreenContent(
                 .padding(it)
 
         ) {
-            val tabs = remember {
-                listOf(
-                    context.getString(R.string.money_payment),
-                    context.getString(R.string.gold_payment),
-                    context.getString(com.zaed.common.R.string.sales)
-                )
+            val tabs = remember(uiState.customer) {
+                if(uiState.customer.type == CustomerType.GOLD){
+                    listOf(
+                        CustomerDetailsTab.MONEY_PAYMENT,
+                        CustomerDetailsTab.GOLD_PAYMENT,
+                        CustomerDetailsTab.SALES
+                    )
+                } else {
+                    listOf(
+                        CustomerDetailsTab.MONEY_PAYMENT,
+                        CustomerDetailsTab.SALES
+                    )
+                }
             }
             PrimaryTabRow(selectedTabIndex = pagerState.currentPage, indicator = {
                 TabRowDefaults.PrimaryIndicator(
@@ -135,12 +144,12 @@ fun CustomerDetailsScreenContent(
                     width = Dp.Unspecified,
                 )
             }) {
-                tabs.forEachIndexed { index, title ->
+                tabs.forEachIndexed { index, item ->
                     Tab(selected = pagerState.currentPage == index, onClick = {
                         scope.launch {
                             pagerState.animateScrollToPage(index)
                         }
-                    }, text = { Text(text = title) })
+                    }, text = { Text(text = stringResource(item.title)) })
                 }
             }
 
@@ -210,72 +219,131 @@ fun CustomerDetailsScreenContent(
                         }
                     }
                     1 -> {
-                        Column {
-                            BalanceSection(
-                                modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
-                                amount = uiState.customer.goldDebtAmount,
-                                isGold = true
-                            )
-                            PaymentsList(
-                                modifier = Modifier.weight(1f),
-                                payments = uiState.goldPayments,
-                                onRemovePayment = { payment ->
-                                    selectedPayment = payment
-                                    confirmDeletePaymentSheet = true
-                                },
-                                canCashed = uiState.currentDistributor.role !=UserRole.DISTRIBUTOR,
-                                onChequeCashed = {payment->
-                                    onAction(CustomerDetailsUiAction.EditPayment((payment as ChequePayment).copy(chequeStatus = ChequeStatus.CASHED)))
-                                },
-                                onEditPayment = { payment ->
-                                    selectedPayment = payment
-                                    Log.d("TAG", "CustomerDetailsScreenContent2: $selectedPayment")
-                                    addPaymentBottomSheetVisible = true
-                                })
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Button(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .padding(4.dp),
-                                    onClick = {
-                                        isTaken = true
-                                        selectedPayment = GoldPayment(givenGoldKarat = Karat.K18)
-                                        addPaymentBottomSheetVisible = true
-                                    }, colors = ButtonDefaults.filledTonalButtonColors(
-                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                        contentColor = MaterialTheme.colorScheme.onPrimary
-                                    ), shape = RoundedCornerShape(4.dp)
-                                ) {
-                                    Text(text = stringResource(com.zaed.common.R.string.taken))
-                                }
-                                Button(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .padding(4.dp),
-                                    shape = RoundedCornerShape(4.dp),
-                                    onClick = {
-                                        isTaken = false
-                                        selectedPayment = GoldPayment(givenGoldKarat = Karat.K18)
-                                        addPaymentBottomSheetVisible = true
+                        if(tabs.size > 2) {
+                            Column {
+                                BalanceSection(
+                                    modifier = Modifier.padding(
+                                        vertical = 8.dp,
+                                        horizontal = 16.dp
+                                    ),
+                                    amount = uiState.customer.goldDebtAmount,
+                                    isGold = true
+                                )
+                                PaymentsList(
+                                    modifier = Modifier.weight(1f),
+                                    payments = uiState.goldPayments,
+                                    onRemovePayment = { payment ->
+                                        selectedPayment = payment
+                                        confirmDeletePaymentSheet = true
                                     },
-                                    colors = ButtonDefaults.filledTonalButtonColors(
-                                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                                        contentColor = MaterialTheme.colorScheme.error
-                                    )
+                                    canCashed = uiState.currentDistributor.role != UserRole.DISTRIBUTOR,
+                                    onChequeCashed = { payment ->
+                                        onAction(
+                                            CustomerDetailsUiAction.EditPayment(
+                                                (payment as ChequePayment).copy(
+                                                    chequeStatus = ChequeStatus.CASHED
+                                                )
+                                            )
+                                        )
+                                    },
+                                    onEditPayment = { payment ->
+                                        selectedPayment = payment
+                                        Log.d(
+                                            "TAG",
+                                            "CustomerDetailsScreenContent2: $selectedPayment"
+                                        )
+                                        addPaymentBottomSheetVisible = true
+                                    })
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text(text = stringResource(com.zaed.common.R.string.given))
+                                    Button(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(4.dp),
+                                        onClick = {
+                                            isTaken = true
+                                            selectedPayment =
+                                                GoldPayment(givenGoldKarat = Karat.K18)
+                                            addPaymentBottomSheetVisible = true
+                                        }, colors = ButtonDefaults.filledTonalButtonColors(
+                                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                            contentColor = MaterialTheme.colorScheme.onPrimary
+                                        ), shape = RoundedCornerShape(4.dp)
+                                    ) {
+                                        Text(text = stringResource(com.zaed.common.R.string.taken))
+                                    }
+                                    Button(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(4.dp),
+                                        shape = RoundedCornerShape(4.dp),
+                                        onClick = {
+                                            isTaken = false
+                                            selectedPayment =
+                                                GoldPayment(givenGoldKarat = Karat.K18)
+                                            addPaymentBottomSheetVisible = true
+                                        },
+                                        colors = ButtonDefaults.filledTonalButtonColors(
+                                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                                            contentColor = MaterialTheme.colorScheme.error
+                                        )
+                                    ) {
+                                        Text(text = stringResource(com.zaed.common.R.string.given))
+                                    }
                                 }
                             }
+                        } else {
+                            TransactionsList(
+                                listState = listState,
+                                isLoading = uiState.loading,
+                                transactions = uiState.sales,
+                                onDeleteTransaction = { sale, productType ->
+                                    onAction(
+                                        when (productType) {
+                                            ProductType.PRODUCT -> CustomerDetailsUiAction.OnDeleteProductSale(
+                                                sale.id
+                                            )
+                                            else -> {
+                                                CustomerDetailsUiAction.OnDeleteGoldSale(sale.id)
+                                            }
+                                        }
+                                    )
+                                },
+                                onEditTransaction = { sale, productType ->
+                                    onAction(
+                                        when (productType) {
+                                            ProductType.PRODUCT -> CustomerDetailsUiAction.OnEditProductSale(
+                                                sale.id
+                                            )
+                                            else-> {
+                                                CustomerDetailsUiAction.OnEditGoldSale(sale.id)
+                                            }
+                                        }
+                                    )
+                                },
+                                onTransactionClicked = { sale, productType ->
+                                    onAction(
+                                        when (productType) {
+                                            ProductType.PRODUCT -> CustomerDetailsUiAction.OnProductSaleClicked(
+                                                sale.id
+                                            )
+                                            else-> {
+                                                CustomerDetailsUiAction.OnGoldSaleClicked(sale.id)
+                                            }
+                                        }
+                                    )
+                                }
+                            )
                         }
                     }
 
                     2 -> {
-                        TransactionsList(listState = listState,
+                        TransactionsList(
+                            listState = listState,
                             isLoading = uiState.loading,
                             transactions = uiState.sales,
                             onDeleteTransaction = { sale, productType ->
@@ -390,4 +458,10 @@ fun CustomerDetailsScreenContent(
                 selectedPayment = null
             })
     }
+}
+
+enum class CustomerDetailsTab(@StringRes val title: Int) {
+    MONEY_PAYMENT(R.string.money_payment),
+    GOLD_PAYMENT(R.string.gold_payment),
+    SALES(R.string.sales)
 }
