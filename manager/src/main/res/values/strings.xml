@@ -1,5 +1,3 @@
 <resources>
     <string name="app_name" translatable="false">Evara-Manager</string>
-    <string name="outstanding_bills">OutStanding Bills</string>
-
 </resources>
