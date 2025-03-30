@@ -25,6 +25,7 @@ fun BalanceSection(
     modifier: Modifier = Modifier,
     isSupplier: Boolean = false,
     amount: Double,
+    isGold: Boolean = false,
 ) {
     Column(
         modifier = modifier.fillMaxWidth()
@@ -50,7 +51,11 @@ fun BalanceSection(
                         horizontal = 12.dp,
                         vertical = 4.dp
                     ),
-                    text = amount.absoluteValue.toMoneyFormat(2),
+                    text = if(isGold)
+                        stringResource(
+                            R.string.grams_placeholder,
+                            amount.absoluteValue.toString()
+                        ) else amount.absoluteValue.toMoneyFormat(2),
                     style = MaterialTheme.typography.titleLarge,
                     color = amount.getContentColor(isSupplier),
                 )

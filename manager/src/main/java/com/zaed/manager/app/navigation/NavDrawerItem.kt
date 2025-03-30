@@ -87,6 +87,10 @@ enum class NavDrawerItem(
                 route = Route.TransactionsRoute
             ),
             SubNavDrawerItem(
+                title = R.string.outstanding_bills,
+                route = Route.PendingBillsRoute
+            ),
+            SubNavDrawerItem(
                 title = R.string.ingots_transactions,
                 route = Route.IngotTransactionsRoute
             ),

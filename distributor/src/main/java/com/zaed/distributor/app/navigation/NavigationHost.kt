@@ -21,7 +21,7 @@ import com.zaed.common.ui.saledetails.goldsaledetails.GoldSaleDetailsScreen
 import com.zaed.common.ui.saledetails.productsaledetails.ProductSaleDetailsScreen
 import com.zaed.distributor.ui.addproductsale.AddProductSaleScreen
 import com.zaed.distributor.ui.losses.LossesScreen
-import com.zaed.distributor.ui.sales.SalesScreen
+import com.zaed.common.ui.sales.SalesScreen
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -117,16 +117,17 @@ fun NavigationHost(
         composable<Route.WholeSaleCustomers> {
             DisplayCustomersScreen(
                 onShowNavDrawer = onShowNavDrawer,
-                navigateToAddCustomer = {
-                    navController.navigate(Route.AddCustomers())
+                navigateToAddGoldCustomer = {
+                    navController.navigate(Route.AddCustomers(customerId = it, type = CustomerType.GOLD))
                 },
                 navigateToCustomerDetails = { customerId ->
                     navController.navigate(Route.CustomerDetails(customerId))
                 },
-                navigateToEditCustomer = { customerId ->
+                navigateToAddSilverCustomer = { customerId ->
                     navController.navigate(
                         Route.AddCustomers(
-                            customerId = customerId
+                            customerId = customerId,
+                            type = CustomerType.SILVER
                         )
                     )
                 }

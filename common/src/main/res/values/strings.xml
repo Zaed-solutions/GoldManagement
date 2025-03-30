@@ -348,7 +348,7 @@
     <string name="pay_with_money">Pay with Money</string>
     <string name="pay_with_gold">Pay With Gold</string>
     <string name="g_labor_cost">%1$sg + %2$s Labor Cost</string>
-    <string name="save_as_outstanding_bill">Save as OutStanding Bill</string>
+    <string name="save_as_outstanding_bill">Save as Pending Bill</string>
     <string name="money_payment">Money Payment</string>
     <string name="gold_payment">Gold Payment</string>
     <string name="note_template">Note: %1$s</string>
@@ -391,7 +391,7 @@
     <string name="edit_silver_customer">Edit Silver Customer</string>
     <string name="add_silver_customer">Add Silver Customer</string>
     <string name="add_product_sale">Add Product Sale</string>
-    <string name="outstanding_bills">Outstanding Bills</string>
+    <string name="outstanding_bills">Pending Bills</string>
     <string name="k24">24K</string>
     <string name="k18">18K</string>
 </resources>

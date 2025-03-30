@@ -31,7 +31,7 @@ data class StoreTransaction(
     logs = logs,
     deleted = deleted,
     products = products,
-    totalAmount = 0.0
+    totalAmount = 0.0,
 ) {
     @Transient
     override val profit

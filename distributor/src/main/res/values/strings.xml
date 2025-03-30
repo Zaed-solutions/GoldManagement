@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">Evara-d</string>
+    <string name="app_name" translatable="false">Evara-d</string>
 
 </resources>

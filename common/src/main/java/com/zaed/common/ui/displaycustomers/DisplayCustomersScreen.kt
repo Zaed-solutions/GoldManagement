@@ -10,9 +10,9 @@ import org.koin.androidx.compose.koinViewModel
 fun DisplayCustomersScreen(
     viewModel: DisplayCustomersViewModel = koinViewModel(),
     onShowNavDrawer: () -> Unit,
-    navigateToAddCustomer: () -> Unit,
+    navigateToAddGoldCustomer: (customerId: String) -> Unit,
+    navigateToAddSilverCustomer: (customerId: String) -> Unit,
     navigateToCustomerDetails: (String) -> Unit,
-    navigateToEditCustomer:(String) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     DisplayCustomersScreenContent(
@@ -20,11 +20,17 @@ fun DisplayCustomersScreen(
         onAction = { action ->
             when (action) {
                 DisplayWholeSalesCustomerUiAction.OnShowNavDrawer -> onShowNavDrawer()
-                is DisplayWholeSalesCustomerUiAction.OnAddWholeSaleCustomerClicked -> {
-                    navigateToAddCustomer()
+                is DisplayWholeSalesCustomerUiAction.OnAddGoldWholeSaleCustomerClicked -> {
+                    navigateToAddGoldCustomer("")
                 }
-                is DisplayWholeSalesCustomerUiAction.OnEditCustomerClicked -> {
-                    navigateToEditCustomer(action.customer.id)
+                is DisplayWholeSalesCustomerUiAction.OnEditGoldCustomerClicked -> {
+                    navigateToAddGoldCustomer(action.customer.id)
+                }
+                DisplayWholeSalesCustomerUiAction.OnAddSilverWholeSaleCustomerClicked -> {
+                    navigateToAddSilverCustomer("")
+                }
+                is DisplayWholeSalesCustomerUiAction.OnEditSilverCustomerClicked -> {
+                    navigateToAddSilverCustomer(action.customer.id)
                 }
                 is DisplayWholeSalesCustomerUiAction.OnCustomerClicked -> {
                     navigateToCustomerDetails(action.customer.id)

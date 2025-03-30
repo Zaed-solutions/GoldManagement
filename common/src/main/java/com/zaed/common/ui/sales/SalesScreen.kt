@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.sales
+package com.zaed.common.ui.sales
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
@@ -35,7 +35,7 @@ import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.ui.addpurchase.ProductType
 import com.zaed.common.ui.components.ConfirmDeleteDialog
 import com.zaed.common.ui.components.DatedSalesWithSearchSection
-import com.zaed.distributor.ui.theme.DistributorAppTheme
+import com.zaed.common.ui.theme.GoldManagementTheme
 import org.koin.androidx.compose.koinViewModel
 import java.util.Date
 
@@ -186,7 +186,7 @@ fun SalesScreenContent(
 @Preview
 @Composable
 private fun SalesScreenContentPreview() {
-    DistributorAppTheme {
+    GoldManagementTheme {
         SalesScreenContent(
             state = SalesUiState(
                 currentUser = User(

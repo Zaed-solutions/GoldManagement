@@ -1,5 +1,6 @@
 package com.zaed.common.ui.addcustomers
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -59,10 +60,9 @@ fun AddCustomersScreen(
     customerId: String,
     onBack: () -> Unit
 ) {
-        LaunchedEffect(Unit) {
-            viewModel.init(customerId, type)
-        }
-
+    LaunchedEffect(Unit) {
+        viewModel.init(customerId, type)
+    }
     val state by viewModel.state.collectAsStateWithLifecycle()
     AddCustomersScreenContent(
         uiState = state,
@@ -93,13 +93,13 @@ fun AddCustomersScreenContent(
         }
         if (uiState.successStatus) {
             snackBarError = false
-            snackBarHostState.showSnackbar(
-                message = if (uiState.isEditMode) context.getString(com.zaed.common.R.string.customer_edited) else context.getString(
-                    com.zaed.common.R.string.customer_added
+            Toast.makeText(
+                context,
+                if (uiState.isEditMode) context.getString(R.string.customer_edited) else context.getString(
+                    R.string.customer_added
                 ),
-                duration = SnackbarDuration.Short,
-                withDismissAction = true
-            )
+                Toast.LENGTH_LONG
+            ).show()
             onAction(AddCustomersUiAction.OnBack)
         }
     }
@@ -142,7 +142,7 @@ fun AddCustomersScreenContent(
                         }
                     ) {
                         Text(
-                            text = stringResource(com.zaed.common.R.string.save),
+                            text = stringResource(R.string.save),
                             style = MaterialTheme.typography.titleMedium
                         )
                     }
@@ -165,7 +165,7 @@ fun AddCustomersScreenContent(
             TextInputTextField(
                 modifier = Modifier
                     .fillMaxWidth(),
-                label = stringResource(com.zaed.common.R.string.full_name),
+                label = stringResource(R.string.full_name),
                 value = uiState.request.name,
                 imageVector = Icons.Default.Person,
                 onValueChange = { name ->
@@ -179,7 +179,7 @@ fun AddCustomersScreenContent(
             TextInputTextField(
                 modifier = Modifier
                     .fillMaxWidth(),
-                label = stringResource(com.zaed.common.R.string.email),
+                label = stringResource(R.string.email),
                 value = uiState.request.email,
                 imageVector = Icons.Default.Mail,
                 onValueChange = { email ->
@@ -197,7 +197,7 @@ fun AddCustomersScreenContent(
             TextInputTextField(
                 modifier = Modifier
                     .fillMaxWidth(),
-                label = stringResource(com.zaed.common.R.string.address),
+                label = stringResource(R.string.address),
                 value = uiState.request.address,
                 imageVector = Icons.Default.LocationOn,
                 onValueChange = { address ->
@@ -207,7 +207,7 @@ fun AddCustomersScreenContent(
             TextInputTextField(
                 modifier = Modifier
                     .fillMaxWidth(),
-                label = stringResource(com.zaed.common.R.string.city),
+                label = stringResource(R.string.city),
                 value = uiState.request.city,
                 imageVector = Icons.Default.LocationCity,
                 onValueChange = { city ->
@@ -259,11 +259,11 @@ fun AddCustomersTopBar(
     TopAppBar(
         title = {
             Text(
-                text = when{
+                text = when {
                     isEditMode && type == CustomerType.GOLD -> stringResource(R.string.edit_gold_customer)
                     type == CustomerType.GOLD -> stringResource(R.string.add_gold_customer)
-                    isEditMode -> stringResource(com.zaed.common.R.string.edit_silver_customer)
-                    else -> stringResource(com.zaed.common.R.string.add_silver_customer)
+                    isEditMode -> stringResource(R.string.edit_silver_customer)
+                    else -> stringResource(R.string.add_silver_customer)
                 }
             )
         },

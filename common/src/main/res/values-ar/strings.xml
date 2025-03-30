@@ -238,7 +238,7 @@
     <string name="show_less">عرض أقل</string>
     <string name="dd_mm_yyyy">يوم/شهر/سنة</string>
     <string name="the_value_is_bigger_than_the_remains_amount">القيمة أكبر من المبلغ المتبقي</string>
-    <string name="not_specified_yet">لم يتم تحديد العيار بعد</string>
+    <string name="not_specified_yet">عيار غير محدد</string>
     <string name="the_amount_to_be_paid">المبلغ الواجب دفعه</string>
     <string name="remaining_amount_from">المبلغ المتبقي من %1$s</string>
     <string name="select_payment_method">حدد طريقة الدفع</string>
@@ -379,5 +379,18 @@
     <string name="manager_sales">مبيعات المدير</string>
     <string name="manager_profit">ربح المدير</string>
     <string name="manager_loss">خسارة المدير</string>
-
+    <string name="silver">فضة</string>
+    <string name="add_silver_amounts">إضافة كميات الفضة</string>
+    <string name="add_silver">إضافة فضة</string>
+    <string name="sell_silver">بيع الفضة</string>
+    <string name="add_silver_sale">بيع الفضة</string>
+    <string name="add_gold_sale">بيع الذهب</string>
+    <string name="edit_gold_customer">تعديل عميل ذهب</string>
+    <string name="add_gold_customer">إضافة عميل ذهب</string>
+    <string name="edit_silver_customer">تعديل عميل فضة</string>
+    <string name="add_silver_customer">إضافة عميل فضة</string>
+    <string name="add_product_sale">بيع منتجات</string>
+    <string name="outstanding_bills">الفواتير المعلقة</string>
+    <string name="k24">عيار 24</string>
+    <string name="k18">عيار 18</string>
 </resources>

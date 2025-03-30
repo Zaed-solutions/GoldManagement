@@ -341,7 +341,7 @@ fun SaveGoldPaymentBottomSheetContent(
                         id = "Payment-"+UUID.randomUUID().toString()
                     )
                 }
-                onSave(payment.copy(amount = payment.givenGoldAmount * payment.pricePerGram))
+                onSave(payment.copy(amount = payment.givenGoldAmount))
             },
             enabled = payment.givenGoldAmount != 0.0
         ) {

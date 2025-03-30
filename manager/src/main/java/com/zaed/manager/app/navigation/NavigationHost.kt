@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.zaed.common.data.model.authentication.UserRole
+import com.zaed.common.data.model.customer.CustomerType
 import com.zaed.common.ui.addGoldSale.AddGoldSaleScreen
 import com.zaed.common.ui.addcustomers.AddCustomersScreen
 import com.zaed.common.ui.addpurchase.AddPurchaseScreen
@@ -19,6 +20,7 @@ import com.zaed.common.ui.purchaseDetails.PurchaseDetailsScreen
 import com.zaed.common.ui.saledetails.cashiersaledetails.SaleDetailsScreen
 import com.zaed.common.ui.saledetails.goldsaledetails.GoldSaleDetailsScreen
 import com.zaed.common.ui.saledetails.productsaledetails.ProductSaleDetailsScreen
+import com.zaed.common.ui.sales.SalesScreen
 import com.zaed.common.ui.salescheques.SalesChequesScreen
 import com.zaed.common.ui.supplierdetails.SupplierDetailsScreen
 import com.zaed.common.ui.suppliers.SuppliersScreen
@@ -68,16 +70,22 @@ fun NavigationHost(
         composable<Route.WholeSaleCustomers> {
             DisplayCustomersScreen(
                 onShowNavDrawer = onShowNavDrawer,
-                navigateToAddCustomer = {
-                    navController.navigate(Route.AddCustomers())
+                navigateToAddGoldCustomer = {
+                    navController.navigate(
+                        Route.AddCustomers(
+                            customerId = it,
+                            type = CustomerType.GOLD
+                        )
+                    )
                 },
                 navigateToCustomerDetails = { customerId ->
                     navController.navigate(Route.CustomerDetails(customerId))
                 },
-                navigateToEditCustomer = { customerId ->
+                navigateToAddSilverCustomer = { customerId ->
                     navController.navigate(
                         Route.AddCustomers(
-                            customerId = customerId
+                            customerId = customerId,
+                            type = CustomerType.SILVER
                         )
                     )
                 }
@@ -374,6 +382,29 @@ fun NavigationHost(
                 },
                 onShowNavDrawer = onShowNavDrawer,
                 onNavigateToSaleDetails = {
+                    navController.navigate(Route.GoldSaleDetailsRoute(it))
+                }
+            )
+        }
+        composable<Route.PendingBillsRoute> {
+            SalesScreen(
+                onShowNavDrawer = onShowNavDrawer,
+                isOutstanding = true,
+                onNavigateToLogin = {
+                    navController.navigate(Route.LoginRoute) {
+                        popUpTo(Route.LoginRoute) {
+                            inclusive = true
+                        }
+                    }
+                },
+                onNavigateToAddProductSale = {},
+                onNavigateToProductSaleDetails = {
+                    navController.navigate(Route.ProductSaleDetailsRoute(it))
+                },
+                onNavigateToAddGoldSale = {
+                    navController.navigate(Route.AddGoldSaleRoute(it))
+                },
+                onNavigateToGoldSaleDetails = {
                     navController.navigate(Route.GoldSaleDetailsRoute(it))
                 }
             )

@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.sales
+package com.zaed.common.ui.sales
 
 import com.zaed.common.ui.util.DateFormat
 import java.util.Date

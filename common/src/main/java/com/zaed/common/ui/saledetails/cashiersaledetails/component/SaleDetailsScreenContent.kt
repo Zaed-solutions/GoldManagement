@@ -103,7 +103,7 @@ fun SaleDetailsScreenContent(
                 receiptNumber = state.storeSale.receiptNumber,
                 createdAt = state.storeSale.createdAt,
                 totalPrice = state.storeSale.totalAmount,
-
+                transaction = state.storeSale,
                 onRequestReceipt = {
                     onAction(SaleDetailsUiAction.OnRequestReceipt)
                 }
@@ -115,39 +115,6 @@ fun SaleDetailsScreenContent(
                     customerDebt = 0.0,
                     onCustomerClicked = {}
                 )
-            }
-            Row(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Button(
-                    shape = RoundedCornerShape(8.dp),
-                    onClick = {
-                        isShareBottomSheetIsVisible = true
-                    },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(stringResource(R.string.share))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Icon(
-                        imageVector = Icons.Default.Share,
-                        contentDescription = null
-                    )
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                OutlinedButton(
-                    shape = RoundedCornerShape(8.dp),
-                    onClick = {
-                        isPrinterSheetVisible = true
-                    },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(stringResource(R.string.print))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Icon(
-                        imageVector = Icons.Default.Print,
-                        contentDescription = null
-                    )
-                }
             }
             //products
             TitledSection(

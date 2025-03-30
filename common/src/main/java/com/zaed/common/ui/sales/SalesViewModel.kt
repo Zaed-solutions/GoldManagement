@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.sales
+package com.zaed.common.ui.sales
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

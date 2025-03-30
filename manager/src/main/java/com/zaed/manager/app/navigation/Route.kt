@@ -1,5 +1,6 @@
 package com.zaed.manager.app.navigation
 
+import com.zaed.common.data.model.customer.CustomerType
 import kotlinx.serialization.Serializable
 
 sealed interface Route {
@@ -24,7 +25,7 @@ sealed interface Route {
     @Serializable
     data class DistributorsSalesRoute(val startDate: String?=null, val endDate: String?=null, val isOutStanding : Boolean = false): Route
     @Serializable
-    data class AddCustomers(val customerId: String = "") : Route
+    data class AddCustomers(val customerId: String = "", val type: CustomerType = CustomerType.GOLD) : Route
     @Serializable
     data object IngotTransactionsRoute : Route
     @Serializable
@@ -53,6 +54,8 @@ sealed interface Route {
     data class AddPurchaseRoute(val purchaseId: String = "") : Route
     @Serializable
     data object TransactionsRoute: Route
+    @Serializable
+    data object PendingBillsRoute: Route
     @Serializable
     data object DashboardRoute: Route
     @Serializable

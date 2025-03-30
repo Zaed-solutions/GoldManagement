@@ -102,6 +102,7 @@ private fun ProductSaleDetailsContent(
             // sale info
             SaleInfoSection(
                 receiptNumber = state.sale.receiptNumber,
+                transaction = state.sale,
                 createdAt = state.sale.createdAt,
                 totalPrice = state.sale.totalAmount,
                 paymentStatus = state.sale.paymentStatus,

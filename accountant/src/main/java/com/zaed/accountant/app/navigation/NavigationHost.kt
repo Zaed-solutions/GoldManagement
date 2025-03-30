@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.zaed.accountant.ui.purchases.PurchasesScreen
 import com.zaed.common.data.model.authentication.UserRole
+import com.zaed.common.data.model.customer.CustomerType
 import com.zaed.common.ui.addcustomers.AddCustomersScreen
 import com.zaed.common.ui.auth.login.LoginScreen
 import com.zaed.common.ui.auth.signup.SignUpScreen
@@ -136,16 +137,17 @@ fun NavigationHost(
         composable<Route.WholeSaleCustomers> {
             DisplayCustomersScreen(
                 onShowNavDrawer = onShowNavDrawer,
-                navigateToAddCustomer = {
-                    navController.navigate(Route.AddCustomers())
+                navigateToAddGoldCustomer = {
+                    navController.navigate(Route.AddCustomers(customerId = it, type = CustomerType.GOLD))
                 },
-                navigateToCustomerDetails = { customerId ->
+                navigateToCustomerDetails =  { customerId ->
                     navController.navigate(Route.CustomerDetails(customerId))
                 },
-                navigateToEditCustomer = { customerId ->
+                navigateToAddSilverCustomer = { customerId ->
                     navController.navigate(
                         Route.AddCustomers(
-                            customerId = customerId
+                            customerId = customerId,
+                            type = CustomerType.SILVER
                         )
                     )
                 }

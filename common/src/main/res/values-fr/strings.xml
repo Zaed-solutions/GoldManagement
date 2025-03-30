@@ -379,4 +379,18 @@
     <string name="apply">Appliquer</string>
     <string name="language_template">Langue : %1$s</string>
     <string name="range">Plage</string>
+    <string name="silver">L\'feḍḍa</string>
+    <string name="add_silver_amounts">Zid lkamiyat dial l\'feḍḍa</string>
+    <string name="add_silver">Zid l\'feḍḍa</string>
+    <string name="sell_silver">Biʻ l\'feḍḍa</string>
+    <string name="add_silver_sale">Zid biʻ l\'feḍḍa</string>
+    <string name="add_gold_sale">Zid biʻ d\'dahab</string>
+    <string name="edit_gold_customer">ʻaddel zboun d\'dahab</string>
+    <string name="add_gold_customer">Zid zboun d\'dahab</string>
+    <string name="edit_silver_customer">ʻaddel zboun l\'feḍḍa</string>
+    <string name="add_silver_customer">Zid zboun l\'feḍḍa</string>
+    <string name="add_product_sale">Zid biʻ montoj</string>
+    <string name="outstanding_bills">Lfawatir li mazal</string>
+    <string name="k24">Dahab 24 qirat</string>
+    <string name="k18">Dahab 18 qirat</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.zaed.accountant.app.navigation
 
+import com.zaed.common.data.model.customer.CustomerType
 import kotlinx.serialization.Serializable
 
 sealed interface Route{
@@ -10,7 +11,7 @@ sealed interface Route{
     @Serializable
     data object ChequesRoute: Route
     @Serializable
-    data class AddCustomers(val customerId: String = ""): Route
+    data class AddCustomers(val customerId: String = "", val type: CustomerType = CustomerType.GOLD): Route
     @Serializable
     data class CustomerDetails(val customerId: String) : Route
     @Serializable

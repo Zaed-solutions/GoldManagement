@@ -62,7 +62,12 @@ fun DisplayCustomersScreenContent(
         floatingActionButton = {
             AddCustomerFab(
                 onClick = {
-                    onAction(DisplayWholeSalesCustomerUiAction.OnAddWholeSaleCustomerClicked)
+                    onAction(
+                        if (pagerState.currentPage == 0)
+                            DisplayWholeSalesCustomerUiAction.OnAddGoldWholeSaleCustomerClicked
+                        else
+                            DisplayWholeSalesCustomerUiAction.OnAddSilverWholeSaleCustomerClicked
+                    )
                 }
             )
         },
@@ -162,14 +167,22 @@ fun DisplayCustomersScreenContent(
                                 customers = uiState.filteredGoldCustomers,
                                 isLoading = uiState.isLoading,
                                 onCustomerClicked = { customer ->
-                                    onAction(DisplayWholeSalesCustomerUiAction.OnCustomerClicked(customer))
+                                    onAction(
+                                        DisplayWholeSalesCustomerUiAction.OnCustomerClicked(
+                                            customer
+                                        )
+                                    )
                                 },
                                 onDeleteCustomer = { customer ->
                                     selectedCustomer = customer
                                     confirmDeleteSheet = true
                                 },
                                 onEditCustomer = { customer ->
-                                    onAction(DisplayWholeSalesCustomerUiAction.OnEditCustomerClicked(customer))
+                                    onAction(
+                                        DisplayWholeSalesCustomerUiAction.OnEditGoldCustomerClicked(
+                                            customer
+                                        )
+                                    )
                                 }
                             )
                         }
@@ -179,14 +192,22 @@ fun DisplayCustomersScreenContent(
                                 customers = uiState.filteredSilverCustomers,
                                 isLoading = uiState.isLoading,
                                 onCustomerClicked = { customer ->
-                                    onAction(DisplayWholeSalesCustomerUiAction.OnCustomerClicked(customer))
+                                    onAction(
+                                        DisplayWholeSalesCustomerUiAction.OnCustomerClicked(
+                                            customer
+                                        )
+                                    )
                                 },
                                 onDeleteCustomer = { customer ->
                                     selectedCustomer = customer
                                     confirmDeleteSheet = true
                                 },
                                 onEditCustomer = { customer ->
-                                    onAction(DisplayWholeSalesCustomerUiAction.OnEditCustomerClicked(customer))
+                                    onAction(
+                                        DisplayWholeSalesCustomerUiAction.OnEditSilverCustomerClicked(
+                                            customer
+                                        )
+                                    )
                                 }
                             )
                         }
@@ -204,7 +225,7 @@ fun DisplayCustomersScreenContent(
                         confirmDeleteSheet = true
                     },
                     onEditCustomer = { customer ->
-                        onAction(DisplayWholeSalesCustomerUiAction.OnEditCustomerClicked(customer))
+                        onAction(DisplayWholeSalesCustomerUiAction.OnEditSilverCustomerClicked(customer))
                     }
                 )
             } else {
@@ -219,7 +240,7 @@ fun DisplayCustomersScreenContent(
                         confirmDeleteSheet = true
                     },
                     onEditCustomer = { customer ->
-                        onAction(DisplayWholeSalesCustomerUiAction.OnEditCustomerClicked(customer))
+                        onAction(DisplayWholeSalesCustomerUiAction.OnEditGoldCustomerClicked(customer))
                     }
                 )
             }
@@ -233,9 +254,9 @@ fun DisplayCustomersScreenContent(
                 confirmDeleteSheet = false
             },
             onConfirm = {
+                confirmDeleteSheet = false
                 onAction(DisplayWholeSalesCustomerUiAction.OnCustomerDeleted(selectedCustomer!!))
                 selectedCustomer = null
-                confirmDeleteSheet = false
             }
         )
     }
