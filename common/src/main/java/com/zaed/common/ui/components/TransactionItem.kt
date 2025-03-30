@@ -57,7 +57,7 @@ fun TransactionItem(
     }
     val title = when{
         transaction is StoreTransaction -> "CR-${transaction.receiptNumber}"
-        transaction is WholesaleTransaction -> "PR-${transaction.receiptNumber}"
+        ( transaction is WholesaleTransaction)&&(!transaction.sale) -> "PR-${transaction.receiptNumber}"
         else -> "DR-${transaction.receiptNumber}"
     }
     val context = LocalContext.current

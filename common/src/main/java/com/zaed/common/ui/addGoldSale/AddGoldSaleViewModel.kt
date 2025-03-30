@@ -276,7 +276,7 @@ class AddGoldSaleViewModel(
                         distributorId = distributor.id,
                         distributorName = distributor.fullName,
                         createdAt = Date(),
-                        paymentStatus = if (!uiState.value.sale.payWithCash) PaymentStatus.SPECIFYING_KARAT else if ((uiState.value.sale.totalAmount - uiState.value.totalMoneyPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID
+                        paymentStatus = if (!uiState.value.sale.payWithCash&& uiState.value.payments.filterIsInstance<GoldPayment>().any { it.givenGoldKarat == Karat.NOT_SPECIFIED }) PaymentStatus.SPECIFYING_KARAT else if ((uiState.value.sale.totalAmount - uiState.value.totalMoneyPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID
                     )
                 )
             }
