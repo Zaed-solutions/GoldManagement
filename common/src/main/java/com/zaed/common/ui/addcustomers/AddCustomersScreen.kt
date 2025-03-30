@@ -59,11 +59,10 @@ fun AddCustomersScreen(
     customerId: String,
     onBack: () -> Unit
 ) {
-    if (customerId.isNotEmpty()) {
         LaunchedEffect(Unit) {
             viewModel.init(customerId, type)
         }
-    }
+
     val state by viewModel.state.collectAsStateWithLifecycle()
     AddCustomersScreenContent(
         uiState = state,

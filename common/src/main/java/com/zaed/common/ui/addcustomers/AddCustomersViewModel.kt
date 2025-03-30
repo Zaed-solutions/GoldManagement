@@ -1,5 +1,6 @@
 package com.zaed.common.ui.addcustomers
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.customer.AddWholeSaleCustomerRequest
@@ -50,6 +51,7 @@ class AddCustomersViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             getCurrentUserLoggedInUseCase().collect { result ->
                 result.onSuccess { data ->
+                    Log.d("AddCustomersViewModel", "getCurrentUser: $data")
                     _state.update {
                         it.copy(
                             distributor = data,

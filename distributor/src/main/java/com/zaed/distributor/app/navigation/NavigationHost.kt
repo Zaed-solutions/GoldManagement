@@ -56,7 +56,7 @@ fun NavigationHost(
                     navController.navigate(Route.SignUpRoute)
                 },
                 onNavigateToHomeScreen = {
-                    navController.navigate(Route.SalesRoute()) {
+                    navController.navigate(Route.SalesRoute) {
                         popUpTo(Route.LoginRoute) {
                             inclusive = true
                         }
@@ -65,10 +65,34 @@ fun NavigationHost(
             )
         }
         composable<Route.SalesRoute> {
-            val data = it.toRoute<Route.SalesRoute>()
             SalesScreen(
                 onShowNavDrawer = onShowNavDrawer,
-                isOutstanding = data.isOutstanding,
+                isOutstanding = false,
+                onNavigateToLogin = {
+                    navController.navigate(Route.LoginRoute) {
+                        popUpTo(Route.LoginRoute) {
+                            inclusive = true
+                        }
+                    }
+                },
+                onNavigateToAddProductSale = {
+                    navController.navigate(Route.AddProductSaleRoute(it))
+                },
+                onNavigateToProductSaleDetails = {
+                    navController.navigate(Route.ProductSaleDetailsRoute(it))
+                },
+                onNavigateToAddGoldSale = {
+                    navController.navigate(Route.AddGoldSaleRoute(it))
+                },
+                onNavigateToGoldSaleDetails = {
+                    navController.navigate(Route.GoldSaleDetailsRoute(it))
+                }
+            )
+        }
+        composable<Route.OutStandingSalesRoute> {
+            SalesScreen(
+                onShowNavDrawer = onShowNavDrawer,
+                isOutstanding = true,
                 onNavigateToLogin = {
                     navController.navigate(Route.LoginRoute) {
                         popUpTo(Route.LoginRoute) {
@@ -292,7 +316,9 @@ sealed interface Route {
     data object LoginRoute : Route
 
     @Serializable
-    data class SalesRoute(val isOutstanding : Boolean = false) : Route
+    data object SalesRoute : Route
+    @Serializable
+    data object OutStandingSalesRoute : Route
 
     @Serializable
     data class AddProductSaleRoute(val saleId: String = "") : Route

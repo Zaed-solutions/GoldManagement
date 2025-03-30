@@ -168,7 +168,14 @@ class AddGoldSaleViewModel(
             AddGoldSaleUiAction.OnDeleteAllProducts -> updateProductsSale(emptyList())
             is AddGoldSaleUiAction.OnUpdatePaymentType -> updatePaymentType(action.isCash)
             is AddGoldSaleUiAction.OnUpdateDiscount -> updateDiscount(action.discount)
+            AddGoldSaleUiAction.ResetPayments -> resetPayments()
             else -> Unit
+        }
+    }
+
+    private fun resetPayments() {
+        _uiState.update { oldState ->
+            oldState.copy(payments = emptyList())
         }
     }
 
@@ -182,7 +189,9 @@ class AddGoldSaleViewModel(
 
     private fun updatePaymentType(cash: Boolean) {
         _uiState.update { oldState ->
-            oldState.copy(payWithMoney = cash)
+            oldState.copy(
+                sale = oldState.sale.copy(payWithCash = cash)
+            )
         }
     }
 
@@ -218,7 +227,7 @@ class AddGoldSaleViewModel(
                         sale = uiState.value.sale.copy(
                             accountId = customer.id,
                             customerName = customer.name,
-                            outStandingBill = !uiState.value.payWithMoney && uiState.value.payments.filterIsInstance<GoldPayment>().any { it.givenGoldKarat == Karat.NOT_SPECIFIED },
+                            outStandingBill = !uiState.value.sale.payWithCash && uiState.value.payments.filterIsInstance<GoldPayment>().any { it.givenGoldKarat == Karat.NOT_SPECIFIED },
                             customerPhone = customer.phone,
                             paymentStatus = if ((uiState.value.sale.totalAmount - uiState.value.totalMoneyPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID,
                             logs = oldState.sale.logs + updateLog
@@ -263,11 +272,11 @@ class AddGoldSaleViewModel(
                         accountId = customer.id,
                         customerName = customer.name,
                         customerPhone = customer.phone,
-                        outStandingBill = !uiState.value.payWithMoney && uiState.value.payments.filterIsInstance<GoldPayment>().any { it.givenGoldKarat == Karat.NOT_SPECIFIED },
+                        outStandingBill = !uiState.value.sale.payWithCash && uiState.value.payments.filterIsInstance<GoldPayment>().any { it.givenGoldKarat == Karat.NOT_SPECIFIED },
                         distributorId = distributor.id,
                         distributorName = distributor.fullName,
                         createdAt = Date(),
-                        paymentStatus = if (!uiState.value.payWithMoney) PaymentStatus.SPECIFYING_KARAT else if ((uiState.value.sale.totalAmount - uiState.value.totalMoneyPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID
+                        paymentStatus = if (!uiState.value.sale.payWithCash&& uiState.value.payments.filterIsInstance<GoldPayment>().any { it.givenGoldKarat == Karat.NOT_SPECIFIED }) PaymentStatus.SPECIFYING_KARAT else if ((uiState.value.sale.totalAmount - uiState.value.totalMoneyPaid).toInt() <= 0) PaymentStatus.PAID else PaymentStatus.UNPAID
                     )
                 )
             }

@@ -22,6 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
+import com.zaed.common.data.model.payment.FuturePayment
+import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.ui.util.toMoneyFormat
 
@@ -101,7 +103,14 @@ fun PaymentTableItem(
             )
 
             Text(
-                text = payment.amount.toMoneyFormat(2),
+                text = if (payment is GoldPayment ) stringResource(
+                    R.string.grams_placeholder,
+                    payment.givenGoldAmount.toString()
+                )else if (payment is FuturePayment && payment.goldPayment){
+                    stringResource(
+                        R.string.grams_placeholder,
+                        payment.amount.toString())
+                } else payment.amount.toMoneyFormat(),
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.End,
                 maxLines = 1,

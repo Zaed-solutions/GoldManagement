@@ -48,9 +48,11 @@ import com.zaed.common.data.model.cheque.ChequeStatus
 import com.zaed.common.data.model.payment.BankTransferPayment
 import com.zaed.common.data.model.payment.CashPayment
 import com.zaed.common.data.model.payment.ChequePayment
+import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.PaymentType
 import com.zaed.common.data.model.payment.getProductSalePayments
+import com.zaed.common.data.model.sale.Karat
 import com.zaed.common.ui.addpurchase.ProductType
 import com.zaed.common.ui.components.BackIcon
 import com.zaed.common.ui.components.BalanceSection
@@ -155,7 +157,7 @@ fun CustomerDetailsScreenContent(
                             )
                             PaymentsList(
                                 modifier = Modifier.weight(1f),
-                                payments = uiState.payments,
+                                payments = uiState.moneyPayments,
                                 onRemovePayment = { payment ->
                                     selectedPayment = payment
                                     confirmDeletePaymentSheet = true
@@ -207,7 +209,69 @@ fun CustomerDetailsScreenContent(
                             }
                         }
                     }
-                    1->{}
+                    1 -> {
+                        Column {
+                            BalanceSection(
+                                modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+                                amount = uiState.customer.goldDebtAmount,
+                            )
+                            PaymentsList(
+                                modifier = Modifier.weight(1f),
+                                payments = uiState.goldPayments,
+                                onRemovePayment = { payment ->
+                                    selectedPayment = payment
+                                    confirmDeletePaymentSheet = true
+                                },
+                                canCashed = uiState.currentDistributor.role !=UserRole.DISTRIBUTOR,
+                                onChequeCashed = {payment->
+                                    onAction(CustomerDetailsUiAction.EditPayment((payment as ChequePayment).copy(chequeStatus = ChequeStatus.CASHED)))
+                                },
+                                onEditPayment = { payment ->
+                                    selectedPayment = payment
+                                    Log.d("TAG", "CustomerDetailsScreenContent2: $selectedPayment")
+                                    addPaymentBottomSheetVisible = true
+                                })
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Button(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .padding(4.dp),
+                                    onClick = {
+                                        isTaken = true
+                                        selectedPayment = GoldPayment(givenGoldKarat = Karat.K18)
+                                        addPaymentBottomSheetVisible = true
+                                    }, colors = ButtonDefaults.filledTonalButtonColors(
+                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                        contentColor = MaterialTheme.colorScheme.onPrimary
+                                    ), shape = RoundedCornerShape(4.dp)
+                                ) {
+                                    Text(text = stringResource(com.zaed.common.R.string.taken))
+                                }
+                                Button(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .padding(4.dp),
+                                    shape = RoundedCornerShape(4.dp),
+                                    onClick = {
+                                        isTaken = false
+                                        selectedPayment = GoldPayment(givenGoldKarat = Karat.K18)
+                                        addPaymentBottomSheetVisible = true
+                                    },
+                                    colors = ButtonDefaults.filledTonalButtonColors(
+                                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                                        contentColor = MaterialTheme.colorScheme.error
+                                    )
+                                ) {
+                                    Text(text = stringResource(com.zaed.common.R.string.given))
+                                }
+                            }
+                        }
+                    }
 
                     2 -> {
                         TransactionsList(listState = listState,

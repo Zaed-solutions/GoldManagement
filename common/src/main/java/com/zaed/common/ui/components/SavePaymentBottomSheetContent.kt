@@ -284,6 +284,7 @@ fun SaveGoldPaymentBottomSheetContent(
     onSave: (GoldPayment) -> Unit = {}
 ) {
     var payment by remember { mutableStateOf(initialPayment) }
+    val validKarats = remember { listOf(Karat.K18,Karat.NOT_SPECIFIED) }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -306,26 +307,26 @@ fun SaveGoldPaymentBottomSheetContent(
                 payment = payment.copy(givenGoldAmount = it)
             },
         )
-        NumberInputTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-            label = stringResource(R.string.gram_price),
-            value = payment.pricePerGram,
-            onValueChange = {
-                payment = payment.copy(pricePerGram = it)
-            },
-        )
-        TitledDropDownTextField2(
+//        NumberInputTextField(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(top = 16.dp),
+//            label = stringResource(R.string.gram_price),
+//            value = payment.pricePerGram,
+//            onValueChange = {
+//                payment = payment.copy(pricePerGram = it)
+//            },
+//        )
+        TitledDropDownTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
             label = stringResource(R.string.karat),
-            selectedValue = payment.givenGoldKarat,
+            selectedValue = stringResource(payment.givenGoldKarat.label),
             onValueChanged = {
-                payment = payment.copy(givenGoldKarat = it)
+                payment = payment.copy(givenGoldKarat = validKarats[it])
             },
-            options = Karat.entries
+            options = validKarats.map { stringResource(it.label) }
         )
         Button(
             modifier = Modifier

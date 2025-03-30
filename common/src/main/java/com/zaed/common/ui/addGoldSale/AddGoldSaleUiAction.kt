@@ -8,6 +8,7 @@ sealed interface AddGoldSaleUiAction {
     data object OnBackClicked : AddGoldSaleUiAction
     data object OnSubmitClicked : AddGoldSaleUiAction
     data object OnAddNewCustomerClicked : AddGoldSaleUiAction
+    data object ResetPayments : AddGoldSaleUiAction
     data class OnRemoveProduct(val productId: String) : AddGoldSaleUiAction
     data class OnDeleteProduct(val product: Product) : AddGoldSaleUiAction
     data class OnAddProduct(val product: Product) : AddGoldSaleUiAction

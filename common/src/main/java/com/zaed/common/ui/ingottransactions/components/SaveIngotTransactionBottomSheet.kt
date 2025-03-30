@@ -75,12 +75,12 @@ fun SaveIngotTransactionBottomSheet(
                 //karat
                 TitledDropDownTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    selectedValue = transaction.karat.value.toString(),
+                    selectedValue = stringResource(transaction.karat.label),
                     onValueChanged = { index ->
                         transaction = transaction.copy(karat = Karat.entries[index])
                     },
                     label = stringResource(id = R.string.karat),
-                    options = Karat.entries.map { it.value.toString() },
+                    options = Karat.entries.map { stringResource(it.label) },
                     shape = RoundedCornerShape(32.dp)
                 )
                 //grams

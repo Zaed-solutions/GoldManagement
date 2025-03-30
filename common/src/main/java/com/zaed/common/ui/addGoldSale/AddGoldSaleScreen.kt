@@ -98,11 +98,21 @@ private fun AddGoldSaleScreenContent(
     }
 
     BackHandler {
-        if (pagerState.currentPage > 0) {
+        if (pagerState.currentPage ==3  && state.sale.id.isNotBlank()) {
+            scope.launch {
+                pagerState.animateScrollToPage(pagerState.currentPage - 2)
+            }
+
+        } else if (pagerState.currentPage ==3){
             scope.launch {
                 pagerState.animateScrollToPage(pagerState.currentPage - 1)
             }
-        } else {
+            onAction(AddGoldSaleUiAction.ResetPayments)
+        }else if (pagerState.currentPage > 0){
+            scope.launch {
+                pagerState.animateScrollToPage(pagerState.currentPage - 1)
+            }
+        }else {
             onAction(AddGoldSaleUiAction.OnBackClicked)
         }
     }
@@ -184,7 +194,11 @@ private fun AddGoldSaleScreenContent(
                             },
                             onNext = {
                                 scope.launch {
-                                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                    if (state.sale.id.isBlank()) {
+                                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                                    }else{
+                                        pagerState.animateScrollToPage(pagerState.currentPage + 2)
+                                    }
                                 }
                             }
                         )
@@ -214,9 +228,9 @@ private fun AddGoldSaleScreenContent(
                             selectedAccount = state.selectedCustomer,
                             currentUser = state.currentUser,
                             products = state.sale.products,
-                            payWithGold = !state.payWithMoney,
+                            payWithGold = !state.sale.payWithCash,
                             query = state.customerSearchQuery,
-                            paymentsTypes = if (state.payWithMoney) getProductSalePayments() else  getGoldSalePayments(),
+                            paymentsTypes = if (state.sale.payWithCash) getProductSalePayments() else  getGoldSalePayments(),
                             onQueryChanged = {
                                 onAction(AddGoldSaleUiAction.OnCustomerSearchQueryChanged(it))
                             },
@@ -249,7 +263,7 @@ private fun AddGoldSaleScreenContent(
                         SaleSummaryContent(
                             account = state.selectedCustomer,
                             products = state.sale.products,
-                            payWithGold = !state.payWithMoney,
+                            payWithGold = !state.sale.payWithCash,
                             totalMoneyPaid = state.totalMoneyPaid,
                             totalGoldPaid = state.totalGoldPaid,
                             isKaratUnSpecified = state.payments.filterIsInstance<GoldPayment>().any { it.givenGoldKarat==Karat.NOT_SPECIFIED },

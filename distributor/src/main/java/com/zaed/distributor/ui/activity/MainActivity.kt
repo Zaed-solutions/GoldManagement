@@ -7,7 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -47,13 +46,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.zaed.common.R
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.authentication.UserApprovalStatus
 import com.zaed.common.data.model.authentication.UserRole
 import com.zaed.common.ui.auth.MainViewModel
-import com.zaed.common.ui.util.AppLanguage
-import com.zaed.common.R
 import com.zaed.common.ui.components.SelectLanguageDialog
+import com.zaed.common.ui.util.AppLanguage
 import com.zaed.distributor.app.navigation.NavigationHost
 import com.zaed.distributor.app.navigation.Route
 import com.zaed.distributor.app.navigation.mapToNavDrawerItems
@@ -191,7 +190,9 @@ fun App(
                             .padding(vertical = 8.dp)
                     ) {
                         Column(
-                            modifier = Modifier.verticalScroll(rememberScrollState())
+                            modifier = Modifier
+                                .weight(1f)
+                                .verticalScroll(rememberScrollState())
                         ) {
                             navDrawerItems.forEach { item ->
                                 NavigationDrawerItem(
@@ -223,7 +224,6 @@ fun App(
                                 )
                             }
                         }
-                        Spacer(modifier = Modifier.weight(1f))
                         HorizontalDivider(modifier = Modifier.padding(bottom = 8.dp))
                         NavigationDrawerItem(
                             shape = RoundedCornerShape(0.dp),

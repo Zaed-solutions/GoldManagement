@@ -18,12 +18,12 @@ enum class NavDrawerItem(
     PRODUCT_SALES(
         title = R.string.sales,
         icon = R.drawable.ic_money_plus,
-        route = Route.SalesRoute()
+        route = Route.SalesRoute
     ),
     OUTSTANDING_SALES(
         title = com.zaed.common.R.string.outstanding_bills,
         icon = R.drawable.ic_gold,
-        route = Route.SalesRoute(true)
+        route = Route.OutStandingSalesRoute
     ),
     CUSTOMERS(
         title = R.string.customers,

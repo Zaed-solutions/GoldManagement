@@ -129,12 +129,12 @@ fun SaveIngotSheetContent(
         //karat
         TitledDropDownTextField(
             modifier = Modifier.fillMaxWidth(),
-            selectedValue = product.karat.value.toString(),
+            selectedValue = stringResource(id = product.karat.label),
             onValueChanged = { index ->
                 product = product.copy(karat = Karat.entries[index])
             },
             label = stringResource(id = R.string.karat),
-            options = Karat.entries.map { it.value.toString() },
+            options = Karat.entries.map { stringResource(id = it.label) },
             shape = RoundedCornerShape(32.dp)
         )
 
