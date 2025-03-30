@@ -99,6 +99,7 @@ private fun GoldSaleDetailsContent(
         ) {
             // sale info
             SaleInfoSection(
+                transaction = state.sale,
                 receiptNumber = state.sale.receiptNumber,
                 createdAt = state.sale.createdAt,
                 totalPrice = state.sale.totalAmount,

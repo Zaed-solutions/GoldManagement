@@ -1,6 +1,7 @@
 package com.zaed.distributor.ui.activity
 
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -43,6 +44,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -66,6 +69,7 @@ import java.util.Locale
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestBluetoothPermissions()
         enableEdgeToEdge()
         setContent {
             val mainViewModel = getViewModel<MainViewModel>()
@@ -82,6 +86,41 @@ class MainActivity : ComponentActivity() {
                         onLanguageSelected = mainViewModel::setLanguage
                     )
                 }
+            }
+        }
+    }
+    private fun requestBluetoothPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val hasPermission =
+                listOf(
+                    ContextCompat.checkSelfPermission(
+                        this,
+                        android.Manifest.permission.BLUETOOTH,
+                    ) == android.content.pm.PackageManager.PERMISSION_GRANTED,
+                    ContextCompat.checkSelfPermission(
+                        this,
+                        android.Manifest.permission.BLUETOOTH_SCAN,
+                    ) == android.content.pm.PackageManager.PERMISSION_GRANTED,
+                    ContextCompat.checkSelfPermission(
+                        this,
+                        android.Manifest.permission.BLUETOOTH_ADMIN,
+                    ) == android.content.pm.PackageManager.PERMISSION_GRANTED,
+                    ContextCompat.checkSelfPermission(
+                        this,
+                        android.Manifest.permission.BLUETOOTH_CONNECT,
+                    ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+                ).all { it }
+            if (!hasPermission) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(
+                        android.Manifest.permission.BLUETOOTH,
+                        android.Manifest.permission.BLUETOOTH_SCAN,
+                        android.Manifest.permission.BLUETOOTH_ADMIN,
+                        android.Manifest.permission.BLUETOOTH_CONNECT,
+                    ),
+                    0
+                )
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.zaed.common.data.model.sale
 
 import com.zaed.common.data.model.authentication.ChangeLog
+import com.zaed.common.data.model.payment.PaymentStatus
 import java.util.Date
 
 abstract class Transaction(

@@ -53,6 +53,7 @@ import com.dantsu.escposprinter.connection.bluetooth.BluetoothPrintersConnection
 import com.dantsu.escposprinter.textparser.PrinterTextParserImg
 import com.zaed.common.R
 import com.zaed.common.data.model.sale.StoreTransaction
+import com.zaed.common.data.model.sale.Transaction
 import com.zaed.common.util.AsyncBluetoothEscPosPrint
 import com.zaed.common.util.AsyncEscPosPrint
 import com.zaed.common.util.AsyncEscPosPrinter
@@ -69,7 +70,7 @@ fun PrinterBottomSheet(
     modifier: Modifier = Modifier,
     isVisible: Boolean,
     onDismiss: () -> Unit,
-    sale: StoreTransaction,
+    sale: Transaction,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
