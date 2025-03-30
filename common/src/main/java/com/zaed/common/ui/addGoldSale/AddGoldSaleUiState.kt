@@ -19,7 +19,6 @@ data class AddGoldSaleUiState(
     val suggestedCustomers: List<WholeSaleCustomer> = emptyList(),
     val currentUser: User = User(),
     val payments: List<Payment> = emptyList(),
-    val payWithMoney:Boolean = true,
     val categories: List<Category> = emptyList(),
 ) {
     val totalMoneyPaid
@@ -31,6 +30,6 @@ data class AddGoldSaleUiState(
     val totalMoneyFuturePaid get() = payments.filter { (it.type == PaymentType.FUTURES) && !it.goldPayment }.sumOf { it.amount }
     val totalGoldFuturePaid get() = payments.filter { (it.type == PaymentType.FUTURES) && it.goldPayment }.sumOf { it.amount }
 
-    val totalMoneyAmount get() = if (payWithMoney) sale.totalAmount else sale.products.sumOf { it.totalLaborCost }
+    val totalMoneyAmount get() = if (sale.payWithCash) sale.totalAmount else sale.products.sumOf { it.totalLaborCost }
     val totalGoldAmount get() = sale.products.sumOf { it.grams }
 }

@@ -116,7 +116,7 @@ fun IngotTransactionItem(
                             text = stringResource(
                                 R.string.ingot_transaction_title_placeholder,
                                 transaction.grams,
-                                transaction.karat.value
+                                stringResource(transaction.karat.label)
                             ),
                             style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
                             maxLines = 1,

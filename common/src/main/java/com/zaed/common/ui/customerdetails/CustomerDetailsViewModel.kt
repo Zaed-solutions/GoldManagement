@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.common.data.model.customer.request.FetchWholesaleCustomerSalesRequest
+import com.zaed.common.data.model.payment.FuturePayment
+import com.zaed.common.data.model.payment.GoldPayment
 import com.zaed.common.data.model.payment.Payment
 import com.zaed.common.data.model.payment.request.AddNewPaymentRequest
 import com.zaed.common.data.model.payment.request.DeletePaymentRequest
@@ -33,8 +35,8 @@ class CustomerDetailsViewModel(
     private val editPaymentUseCase: EditPaymentUseCase,
     private val deleteWholeSaleUseCase: DeleteWholesaleUseCase,
     private val getCurrentUserLoggedInUseCase: GetCurrentUserLoggedInUseCase
-    ) : ViewModel() {
-        val TAG = "CustomerDetailsViewModel"
+) : ViewModel() {
+    val TAG = "CustomerDetailsViewModel"
 
     private val _uiState = MutableStateFlow(CustomerDetailsUiState())
     val uiState = _uiState.asStateFlow()
@@ -72,7 +74,7 @@ class CustomerDetailsViewModel(
                 request = FetchWholesaleCustomerSalesRequest(
                     customerId = customerId
                 )
-            ).collect{result->
+            ).collect { result ->
                 result.onSuccess { data ->
                     _uiState.update {
                         it.copy(
@@ -102,7 +104,7 @@ class CustomerDetailsViewModel(
     }
 
     private fun deleteProductSale(saleId: String) {
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             deleteWholeSaleUseCase(
                 DeleteWholesaleRequest(
                     id = saleId,
@@ -112,14 +114,14 @@ class CustomerDetailsViewModel(
             ).onSuccess {
                 Log.d(TAG, "deleteProductSale: success")
             }.onFailure {
-                Log.e(TAG, "deleteProductSale: ${it.message}",it )
+                Log.e(TAG, "deleteProductSale: ${it.message}", it)
                 it.printStackTrace()
             }
         }
     }
 
     private fun deleteGoldSale(saleId: String) {
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             deleteWholeSaleUseCase(
                 DeleteWholesaleRequest(
                     id = saleId,
@@ -135,7 +137,7 @@ class CustomerDetailsViewModel(
         }
     }
 
-     fun confirmEditPayment(oldPayment: Payment, newPayment: Payment) {
+    fun confirmEditPayment(oldPayment: Payment, newPayment: Payment) {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update {
                 it.copy(loading = true)
@@ -253,11 +255,20 @@ class CustomerDetailsViewModel(
                 request = FetchCustomerPaymentsRequest(customerId)
             ).collect { result ->
                 result.onSuccess { data ->
-                    _uiState.update {oldState->
+                    val moneyPayment = mutableListOf<Payment>()
+                    val goldPayment = mutableListOf<Payment>()
+                    data.sortedByDescending { it.createdAt }.forEach {
+                        if (it is GoldPayment || (it is FuturePayment && it.goldPayment)) {
+                             goldPayment.add(it)
+                        } else {
+                            moneyPayment.add(it)
+                        }
+                    }
+                    _uiState.update { oldState ->
                         oldState.copy(
                             loading = false,
-                            payments = data
-                                .sortedByDescending { it.createdAt }
+                            moneyPayments = moneyPayment,
+                            goldPayments = goldPayment
                         )
                     }
                 }.onFailure {
@@ -268,7 +279,6 @@ class CustomerDetailsViewModel(
             }
         }
     }
-
 
 
     private fun getCustomerDetails(customerId: String) {

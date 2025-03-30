@@ -24,7 +24,8 @@ data class WholesaleTransaction(
     override val receiptNumber: String = "",
     val productType: ProductType = ProductType.PRODUCT,
     val sale: Boolean = true,
-    override val outStandingBill : Boolean = false
+    override val outStandingBill : Boolean = false,
+    val payWithCash: Boolean = true
 ) : Transaction(
     id = id,
     accountId = accountId,

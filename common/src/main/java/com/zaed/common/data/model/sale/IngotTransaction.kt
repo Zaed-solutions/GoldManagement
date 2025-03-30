@@ -34,8 +34,8 @@ enum class TransactionType(@StringRes val stringRes: Int) {
     PURCHASE(R.string.purchase),
     SALE(R.string.sale)
 }
-enum class Karat (val value: Int) {
-    K24(24),
-    K18(18),
-    NOT_SPECIFIED(0)
+enum class Karat (@StringRes  val label: Int ) {
+    K24(R.string.k24),
+    K18(R.string.k18),
+    NOT_SPECIFIED(R.string.not_specified_yet)
 }

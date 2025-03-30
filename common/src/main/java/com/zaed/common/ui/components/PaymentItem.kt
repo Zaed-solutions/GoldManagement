@@ -186,10 +186,14 @@ fun PaymentItem(
                             modifier = Modifier.weight(1f)
                         )
                         Text(
-                            text = if (payment is GoldPayment) stringResource(
+                            text = if (payment is GoldPayment ) stringResource(
                                 R.string.grams_placeholder,
                                 payment.givenGoldAmount.toString()
-                            ) else payment.amount.toMoneyFormat(),
+                            )else if (payment is FuturePayment&& payment.goldPayment){
+                                stringResource(
+                                R.string.grams_placeholder,
+                                payment.amount.toString())
+                            } else payment.amount.toMoneyFormat(),
                             style = MaterialTheme.typography.titleMedium,
                             color = if (payment.given) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
                             fontWeight = FontWeight.Bold
