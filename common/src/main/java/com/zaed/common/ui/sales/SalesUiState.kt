@@ -1,4 +1,4 @@
-package com.zaed.distributor.ui.sales
+package com.zaed.common.ui.sales
 
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.payment.PaymentStatus

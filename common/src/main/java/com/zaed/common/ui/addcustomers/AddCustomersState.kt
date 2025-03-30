@@ -2,6 +2,7 @@ package com.zaed.common.ui.addcustomers
 
 import com.zaed.common.data.model.authentication.User
 import com.zaed.common.data.model.customer.AddWholeSaleCustomerRequest
+import com.zaed.common.data.model.customer.CustomerType
 import com.zaed.common.ui.auth.FieldsError
 
 data class AddCustomersState(
@@ -12,5 +13,5 @@ data class AddCustomersState(
     val successStatus: Boolean = false,
     val isEditMode: Boolean = false,
     val customerId: String = "",
-    val request: AddWholeSaleCustomerRequest = AddWholeSaleCustomerRequest()
+    val request: AddWholeSaleCustomerRequest = AddWholeSaleCustomerRequest(type = CustomerType.SILVER)
 )

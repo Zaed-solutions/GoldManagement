@@ -28,8 +28,12 @@ class WholeSalesCustomerRemoteDataSourceImpl(
     override fun getWholeSalesCustomers(distributorId:String): Flow<Result<List<WholeSaleCustomer>>> = callbackFlow {
         try {
             if(distributorId.isNotEmpty()) {
-                customersCollection.whereEqualTo("distributorId", distributorId)
-                    .addSnapshotListener { snapshot, error ->
+                customersCollection.where(
+                    Filter.and(
+                        Filter.equalTo("distributorId", distributorId),
+                        Filter.equalTo("deleted", false)
+                    )
+                ).addSnapshotListener { snapshot, error ->
                         if (error != null) {
                             crashlytics.recordException(error)
                             trySend(Result.failure(error))
@@ -222,7 +226,8 @@ class WholeSalesCustomerRemoteDataSourceImpl(
                     address = request.address,
                     city = request.city,
                     note = request.note,
-                    payWithCheques = request.payWithCheques
+                    payWithCheques = request.payWithCheques,
+                    type = request.type
                 )
             ).await()
             return Result.success(Unit)

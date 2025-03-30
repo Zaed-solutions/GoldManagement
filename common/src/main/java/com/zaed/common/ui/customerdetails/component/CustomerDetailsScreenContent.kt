@@ -214,6 +214,7 @@ fun CustomerDetailsScreenContent(
                             BalanceSection(
                                 modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
                                 amount = uiState.customer.goldDebtAmount,
+                                isGold = true
                             )
                             PaymentsList(
                                 modifier = Modifier.weight(1f),

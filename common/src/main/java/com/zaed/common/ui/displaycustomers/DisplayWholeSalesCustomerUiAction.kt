@@ -5,12 +5,18 @@ import com.zaed.common.data.model.customer.WholeSaleCustomer
 sealed interface DisplayWholeSalesCustomerUiAction {
     data object OnBackClicked : DisplayWholeSalesCustomerUiAction
     data object OnShowNavDrawer : DisplayWholeSalesCustomerUiAction
-    data object OnAddWholeSaleCustomerClicked : DisplayWholeSalesCustomerUiAction
+    data object OnAddGoldWholeSaleCustomerClicked : DisplayWholeSalesCustomerUiAction
+    data object OnAddSilverWholeSaleCustomerClicked : DisplayWholeSalesCustomerUiAction
     data class OnSearchQueryChanged(val query: String) : DisplayWholeSalesCustomerUiAction
-    data class OnCustomerClicked (val customer: WholeSaleCustomer) :
+    data class OnCustomerClicked(val customer: WholeSaleCustomer) :
         DisplayWholeSalesCustomerUiAction
-    data class OnCustomerDeleted( val customer: WholeSaleCustomer) :
+
+    data class OnCustomerDeleted(val customer: WholeSaleCustomer) :
         DisplayWholeSalesCustomerUiAction
-    data class OnEditCustomerClicked( val customer: WholeSaleCustomer) :
+
+    data class OnEditGoldCustomerClicked(val customer: WholeSaleCustomer) :
+        DisplayWholeSalesCustomerUiAction
+
+    data class OnEditSilverCustomerClicked(val customer: WholeSaleCustomer) :
         DisplayWholeSalesCustomerUiAction
 }

@@ -46,7 +46,10 @@ class PaymentRemoteDataSourceImpl(
                 is CashPayment -> {
                     batch.set(
                         document,
-                        request.payment.copy(id = document.id, accountId = request.accountId)
+                        request.payment.copy(
+                            id = document.id,
+                            accountId = request.accountId,
+                            )
                     )
                 }
 
@@ -99,6 +102,13 @@ class PaymentRemoteDataSourceImpl(
                     "moneyDebtAmount",
                     FieldValue.increment(request.payment.signedAmount().unaryMinus())
                 )
+            } else if(request.payment is GoldPayment) {
+                val docRef = customersCollection.document(request.accountId)
+                batch.update(
+                    docRef,
+                    "goldDebtAmount",
+                    FieldValue.increment(request.payment.signedAmount())
+                )
             } else {
                 val docRef = customersCollection.document(request.accountId)
                 batch.update(
@@ -123,8 +133,8 @@ class PaymentRemoteDataSourceImpl(
                         Filter.equalTo("deleted", false),
                         Filter.equalTo("accountId", request.customerId),
                         Filter.or(
-                            Filter.equalTo("type", PaymentType.FUTURES),
-                            Filter.equalTo("type", PaymentType.REMAIN),
+                            Filter.equalTo("receiptNumber", ""),
+                            Filter.inArray("type", listOf(PaymentType.FUTURES, PaymentType.REMAIN))
                         )
                     )
                 ).addSnapshotListener { snapshot, error ->
