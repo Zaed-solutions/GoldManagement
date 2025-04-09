@@ -59,6 +59,63 @@ class DashboardViewModel(
         loadStoreLoss()
         loadWholesaleLoss()
         loadManagerLoss()
+        loadGoldSales()
+        loadSilverSales()
+        loadIngotTransactions()
+    }
+
+    private fun loadIngotTransactions() {
+        viewModelScope.launch (Dispatchers.IO){
+            repository.getIngotTransactions(dateFilter = uiState.value.dateFilter).onSuccess { data ->
+                _uiState.update {
+                    it.copy(
+                        ingotTransactions = data, error = null
+                    )
+                }
+            }.onFailure { error ->
+                _uiState.update {
+                    it.copy(
+                        error = error.message ?: "Unknown error occurred"
+                    )
+                }
+            }
+        }
+    }
+
+    private fun loadSilverSales() {
+        viewModelScope.launch (Dispatchers.IO){
+            repository.getSilverSales(dateFilter = uiState.value.dateFilter).onSuccess { data ->
+                _uiState.update {
+                    it.copy(
+                        silverSales = data, error = null
+                    )
+                }
+            }.onFailure { error ->
+                _uiState.update {
+                    it.copy(
+                        error = error.message ?: "Unknown error occurred"
+                    )
+                }
+            }
+        }
+    }
+
+    private fun loadGoldSales() {
+        viewModelScope.launch (Dispatchers.IO){
+            repository.getGoldSales(dateFilter = uiState.value.dateFilter).onSuccess { data ->
+                _uiState.update {
+                    it.copy(
+                        goldSales = data, error = null
+                    )
+                }
+            }.onFailure { error ->
+                _uiState.update {
+                    it.copy(
+                        error = error.message ?: "Unknown error occurred"
+                    )
+                }
+            }
+        }
     }
 
     private fun loadManagerLoss() {

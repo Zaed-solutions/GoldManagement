@@ -25,7 +25,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.ui.util.toDateString
+import com.zaed.common.R
 import com.zaed.manager.ui.home.component.DateFilterDialog
+import com.zaed.manager.ui.home.component.EarningsAndLossesHeader
+import com.zaed.manager.ui.home.component.HomeSummary
+import com.zaed.manager.ui.home.component.HomeSummaryList
 import com.zaed.manager.ui.home.component.ReportType
 import com.zaed.manager.ui.home.component.SummaryCards
 import com.zaed.manager.ui.home.component.getDateFilterDisplayText
@@ -61,6 +65,10 @@ fun DashboardScreen(
 
                     }
                 }
+                is DashboardUiAction.OnStoresClicked -> { /*todo*/}
+                is DashboardUiAction.OnGoldSalesClicked -> { /*todo*/}
+                is DashboardUiAction.OnSilverSalesClicked -> { /*todo*/}
+                is DashboardUiAction.OnIngotTransactionsClicked -> { /*todo*/}
                 else -> viewModel.handleAction(action)
             }
         }
@@ -132,9 +140,9 @@ fun DashboardScreenContent(
                 .padding(it)
         ) {
 
-            SummaryCards(
-                totalProfit = uiState.totalProfit,
-                totalLoss = uiState.totalLoss,
+            EarningsAndLossesHeader(
+                totalEarnings = uiState.totalProfit,
+                totalLosses = uiState.totalLoss,
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -147,30 +155,43 @@ fun DashboardScreenContent(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            ReportGrid(
-                totalStoreSales = uiState.storesSales,
-                totalStoreSalesLoading = uiState.storesSalesLoading,
-                totalStoreProfit = uiState.storesProfit,
-                totalStoreProfitLoading = uiState.storesProfitLoading,
-                totalStoreLoss =  uiState.storesLoss,
-                totalStoreLossLoading =  uiState.storesLossLoading,
-                totalWholesaleSales =  uiState.wholesaleSales,
-                totalWholesaleSalesLoading =  uiState.wholesaleSalesLoading,
-                totalWholesaleProfit =  uiState.wholesaleProfit,
-                totalWholesaleProfitLoading =  uiState.wholesaleProfitLoading,
-                totalWholesaleLoss =  uiState.wholesaleLoss,
-                totalWholesaleLossLoading =  uiState.wholesaleLossLoading,
-                totalManagerSales =  uiState.managerSales,
-                totalManagerSalesLoading =  uiState.managerSalesLoading,
-                totalManagerProfit =  uiState.managerProfit,
-                totalManagerProfitLoading =  uiState.managerProfitLoading,
-                totalManagerLoss =  uiState.managerLoss,
-                totalManagerLossLoading =  uiState.managerLossLoading,
-                onReportClick = { reportType ->
-                    onAction(DashboardUiAction.NavigateToDetail(reportType))
-                }
+            HomeSummaryList(
+                summaries = listOf(
+                    HomeSummary(
+                        title = stringResource(R.string.stores),
+                        iconRes = R.drawable.ic_store,
+                        totalSales = uiState.storesSales,
+                        totalLosses = uiState.storesLoss,
+                        onClick = {
+                            onAction(DashboardUiAction.OnStoresClicked)
+                        }
+                    ),
+                    HomeSummary(
+                        title = stringResource(R.string.gold_sales),
+                        iconRes = R.drawable.ic_gold,
+                        totalSales = uiState.goldSales,
+                        onClick = {
+                            onAction(DashboardUiAction.OnGoldSalesClicked)
+                        }
+                    ),
+                    HomeSummary(
+                        title = stringResource(R.string.silver_sales),
+                        iconRes = R.drawable.ic_coins,
+                        totalSales = uiState.silverSales,
+                        onClick = {
+                            onAction(DashboardUiAction.OnSilverSalesClicked)
+                        }
+                    ),
+                    HomeSummary(
+                        title = stringResource(R.string.ingots_transactions),
+                        iconRes = R.drawable.ic_ingot,
+                        totalSales = uiState.ingotTransactions,
+                        onClick = {
+                            onAction(DashboardUiAction.OnIngotTransactionsClicked)
+                        }
+                    ),
+                )
             )
-
             uiState.error?.let { error ->
                 Text(
                     text = error,

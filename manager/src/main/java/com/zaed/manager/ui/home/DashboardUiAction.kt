@@ -17,5 +17,9 @@ sealed interface DashboardUiAction {
     data class SelectDateRange(val startDate: Date, val endDate: Date) : DashboardUiAction
     data object ApplyDateFilter : DashboardUiAction
     data object OnShowNavDrawer : DashboardUiAction
+    data object OnStoresClicked : DashboardUiAction
+    data object OnGoldSalesClicked : DashboardUiAction
+    data object OnSilverSalesClicked : DashboardUiAction
+    data object OnIngotTransactionsClicked : DashboardUiAction
     data object ReloadAllData : DashboardUiAction
 }

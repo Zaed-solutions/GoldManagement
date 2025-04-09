@@ -264,4 +264,75 @@ class DashboardRemoteSourceImpl(
             return Result.failure(e)
         }
     }
+
+    override suspend fun getGoldSales(dateFilter: DateFilter): Result<Double> {
+        try {
+            val query = wholesalesCollection.where(
+                Filter.and(
+                    Filter.equalTo("deleted", false),
+                    Filter.greaterThanOrEqualTo("createdAt", dateFilter.startDate),
+                    Filter.lessThan("createdAt", dateFilter.endDate),
+                    Filter.equalTo("productType", ProductType.GOLD)
+                )
+            )
+            val aggregateQuery = query.aggregate(AggregateField.sum("totalAmount"))
+            val result = aggregateQuery.get(AggregateSource.SERVER).await()
+            val sum = result.get(AggregateField.sum("totalAmount"))
+            Log.d("DashboardRemoteSourceImpl", "getGoldSales: $sum")
+
+            return Result.success((sum as? Double)?.toDouble() ?: 0.0)
+
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            e.printStackTrace()
+            return Result.failure(e)
+        }
+    }
+
+    override suspend fun getSilverSales(dateFilter: DateFilter): Result<Double> {
+        try {
+            val query = wholesalesCollection.where(
+                Filter.and(
+                    Filter.equalTo("deleted", false),
+                    Filter.greaterThanOrEqualTo("createdAt", dateFilter.startDate),
+                    Filter.lessThan("createdAt", dateFilter.endDate),
+                    Filter.equalTo("productType", ProductType.SILVER)
+                )
+            )
+            val aggregateQuery = query.aggregate(AggregateField.sum("totalAmount"))
+            val result = aggregateQuery.get(AggregateSource.SERVER).await()
+            val sum = result.get(AggregateField.sum("totalAmount"))
+            Log.d("DashboardRemoteSourceImpl", "getSilverSales: $sum")
+
+            return Result.success((sum as? Double)?.toDouble() ?: 0.0)
+
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            e.printStackTrace()
+            return Result.failure(e)
+        }
+    }
+
+    override suspend fun getIngotTransactions(dateFilter: DateFilter): Result<Double> {
+        try {
+            val query = ingotTransactionsCollection.where(
+                Filter.and(
+                    Filter.equalTo("deleted", false),
+                    Filter.greaterThanOrEqualTo("createdAt", dateFilter.startDate),
+                    Filter.lessThan("createdAt", dateFilter.endDate),
+                )
+            )
+            val aggregateQuery = query.aggregate(AggregateField.sum("totalEarning"))
+            val result = aggregateQuery.get(AggregateSource.SERVER).await()
+            val sum = result.get(AggregateField.sum("totalEarning"))
+            Log.d("DashboardRemoteSourceImpl", "getIngotTransactions: $sum")
+
+            return Result.success((sum as? Double)?.toDouble() ?: 0.0)
+
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            e.printStackTrace()
+            return Result.failure(e)
+        }
+    }
 }

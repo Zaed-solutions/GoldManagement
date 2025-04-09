@@ -12,4 +12,7 @@ interface DashboardRemoteSource {
     suspend fun getStoreLoss(dateFilter: DateFilter): Result<Double>
     suspend fun getManagerLoss(dateFilter: DateFilter): Result<Double>
     suspend fun getWholesaleLoss(dateFilter: DateFilter): Result<Double>
+    suspend fun getGoldSales(dateFilter: DateFilter): Result<Double>
+    suspend fun getSilverSales(dateFilter: DateFilter): Result<Double>
+    suspend fun getIngotTransactions(dateFilter: DateFilter): Result<Double>
 }

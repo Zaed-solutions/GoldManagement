@@ -22,4 +22,17 @@ class DashboardRepositoryImpl(
     override suspend fun getWholesaleLoss(dateFilter: DateFilter): Result<Double>  = dashboardRemoteSource.getWholesaleLoss(dateFilter)
 
     override suspend fun getManagerLoss(dateFilter: DateFilter): Result<Double>  = dashboardRemoteSource.getManagerLoss(dateFilter)
+
+    override suspend fun getGoldSales(dateFilter: DateFilter): Result<Double> {
+        return dashboardRemoteSource.getGoldSales(dateFilter)
+    }
+
+    override suspend fun getSilverSales(dateFilter: DateFilter): Result<Double> {
+        return dashboardRemoteSource.getSilverSales(dateFilter)
+    }
+
+    override suspend fun getIngotTransactions(dateFilter: DateFilter): Result<Double> {
+        return dashboardRemoteSource.getIngotTransactions(dateFilter)
+    }
+
 }

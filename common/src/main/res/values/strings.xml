@@ -394,4 +394,6 @@
     <string name="outstanding_bills">Pending Bills</string>
     <string name="k24">24K</string>
     <string name="k18">18K</string>
+    <string name="total_sales">Total Sales</string>
+    <string name="silver_sales">Silver Sales</string>
 </resources>

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name" translatable="false">Evara-Manager</string>
+    <string name="total_sales">Total Sales</string>
 </resources>

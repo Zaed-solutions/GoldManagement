@@ -38,6 +38,7 @@ import com.zaed.common.R
 import com.zaed.common.data.model.authentication.UserPermission
 import com.zaed.common.data.model.inventory.Inventory
 import com.zaed.common.data.model.sale.WholesaleTransaction
+import com.zaed.common.ui.addpurchase.ProductType
 import com.zaed.common.ui.components.DatedIngotTransactionsList
 import com.zaed.common.ui.components.DatedListWithFilter
 import com.zaed.common.ui.components.DatedLossesList
@@ -69,7 +70,7 @@ fun DistributorDetailsScreen(
             when(action){
                 DistributorDetailsUiAction.OnBackClicked -> onBackPressed()
                 is DistributorDetailsUiAction.OnSaleClicked -> {
-                    if(action.type == WholesaleTransaction::class.qualifiedName){
+                    if(action.type == ProductType.PRODUCT){
                         onNavigateToProductSaleDetails(action.saleId)
                     } else {
                         onNavigateToGoldSaleDetails(action.saleId)

@@ -23,6 +23,9 @@ data class DashboardUiState(
     val managerProfitLoading: Boolean = false,
     val managerLoss: Double = 0.0,
     val managerLossLoading: Boolean = false,
+    val goldSales: Double = 0.0,
+    val silverSales: Double = 0.0,
+    val ingotTransactions: Double = 0.0,
     val dateFilter: DateFilter = DateFilter(),
     val isLoading: Boolean = false,
     val error: String? = null
