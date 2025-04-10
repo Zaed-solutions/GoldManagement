@@ -124,6 +124,8 @@ fun SaveInventoryBottomSheet(
                                 onClick = {
                                     if (selectedInventory.quantity == 0.0) {
                                         isQuantityError = true
+                                    }else if (selectedInventory.quantity > availableQuantity) {
+                                        isQuantityError = true
                                     } else {
                                         onSaveInventory(selectedInventory)
                                     }

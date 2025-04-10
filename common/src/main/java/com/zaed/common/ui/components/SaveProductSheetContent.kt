@@ -44,6 +44,7 @@ fun SaveProductSheetContent(
     modifier: Modifier = Modifier,
     isStoreSale: Boolean,
     initialProduct: Product,
+    availableGrams : Double = Double.MAX_VALUE,
     onSaveProduct: (Product) -> Unit,
     deleteProduct: (Product) -> Unit
 ) {
@@ -63,6 +64,7 @@ fun SaveProductSheetContent(
         Spacer(modifier = Modifier.height(16.dp))
         ProductFieldsContent(
             isStoreSale = isStoreSale,
+            availableGrams = availableGrams,
             product1 = product,
             onValueChange = { newProduct ->
                 product = newProduct
@@ -84,7 +86,7 @@ fun SaveProductSheetContent(
                 onClick = {
                     onSaveProduct(product)
                 },
-                enabled = product.grams > 0.0 && product.gramPrice > 0.0
+                enabled = product.grams > 0.0 && product.gramPrice > 0.0 && product.quantity <= availableGrams
             ) {
                 Text(
                     text = stringResource(R.string.save)
@@ -113,7 +115,8 @@ fun SaveProductSheetContent(
 fun ProductFieldsContent(
     isStoreSale: Boolean,
     product1: Product,
-    onValueChange: (Product) -> Unit,
+    availableGrams : Double = Double.MAX_VALUE,
+    onValueChange: (Product) -> Unit={},
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -143,6 +146,8 @@ fun ProductFieldsContent(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(4.dp),
             withBorder = true,
+            isError =  product1.grams > availableGrams,
+            errorMessage = R.string.quantity_cannot_be_zero
         )
         //gram price
         NumberInputTextField(
@@ -469,6 +474,5 @@ private fun Previewff() {
     ProductFieldsContent(
         isStoreSale = true,
         product1 = Product(),
-        {}
     )
 }

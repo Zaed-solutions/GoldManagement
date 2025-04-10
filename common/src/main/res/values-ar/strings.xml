@@ -220,7 +220,7 @@
     <string name="account_number">رقم الحساب</string>
     <string name="account_holder_name">اسم صاحب الحساب</string>
     <string name="quantity">الكمية</string>
-    <string name="quantity_cannot_be_zero">لا يمكن أن تكون الكمية صفرًا</string>
+    <string name="quantity_cannot_be_zero">لا يمكن أن تكون الكمية صفرًا او اكبر من الكمية المتاحة</string>
     <string name="select_inventory">اختر المخزون</string>
     <string name="enter_added_quantity">أدخل الكمية المضافة</string>
     <string name="distributors">الموزعون</string>

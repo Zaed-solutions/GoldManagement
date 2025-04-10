@@ -36,6 +36,7 @@ import java.util.UUID
 fun SelectGoldContent(
     modifier: Modifier = Modifier,
     sale: WholesaleTransaction,
+    availableGrams : Double?=null,
     onAddGold: (Product) -> Unit,
     onRemoveGold: (id: String) -> Unit,
     onNext: () -> Unit,
@@ -105,6 +106,7 @@ fun SelectGoldContent(
             ) {
                 SaveGoldSheetContent(
                     initialProduct = selectedProduct,
+                    availableGrams = availableGrams,
                     onSaveProduct = {
                         onAddGold(it)
                         isAddProductSheetVisible = false

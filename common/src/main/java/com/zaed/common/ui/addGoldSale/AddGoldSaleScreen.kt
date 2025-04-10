@@ -141,6 +141,7 @@ private fun AddGoldSaleScreenContent(
                         //add products
                         SelectGoldContent(
                             sale = state.sale,
+                            availableGrams = state.categories.sumOf { it.availableGrams },
                             onAddGold = {
                                 onAction(AddGoldSaleUiAction.OnAddProduct(it))
                             },

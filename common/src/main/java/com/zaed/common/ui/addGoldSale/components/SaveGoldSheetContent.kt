@@ -1,4 +1,5 @@
 package com.zaed.common.ui.addGoldSale.components
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,6 +28,7 @@ import com.zaed.common.ui.components.TitledDropDownTextField
 fun SaveGoldSheetContent(
     modifier: Modifier = Modifier,
     initialProduct: Product,
+    availableGrams: Double?=null,
     onSaveProduct: (Product) -> Unit
 ) {
     var product by remember { mutableStateOf(initialProduct) }
@@ -48,6 +50,8 @@ fun SaveGoldSheetContent(
             onValueChange = { value ->
                 product = product.copy(grams = value)
             },
+            isError = product.grams > (availableGrams ?: Double.MAX_VALUE),
+            errorMessage = R.string.quantity_cannot_be_zero,
             label = stringResource(R.string.grams),
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
         )
@@ -80,7 +84,7 @@ fun SaveGoldSheetContent(
             onClick = {
                 onSaveProduct(product)
             },
-            enabled = product.grams > 0.0 && product.gramPrice > 0.0
+            enabled = product.grams > 0.0 && product.gramPrice > 0.0 && product.grams <= (availableGrams ?: Double.MAX_VALUE)
         ) {
             Text(
                 text = stringResource(R.string.save)
@@ -88,6 +92,7 @@ fun SaveGoldSheetContent(
         }
     }
 }
+
 @Composable
 fun SaveIngotSheetContent(
     modifier: Modifier = Modifier,

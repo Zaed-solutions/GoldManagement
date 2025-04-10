@@ -216,7 +216,7 @@
     <string name="account_number">Account Number</string>
     <string name="account_holder_name">Account Holder Name</string>
     <string name="quantity">Quantity</string>
-    <string name="quantity_cannot_be_zero">Quantity cannot be zero</string>
+    <string name="quantity_cannot_be_zero">Quantity cannot be zero or more than the available quantity</string>
     <string name="select_inventory">Select Inventory</string>
     <string name="enter_added_quantity">Enter added quantity</string>
     <string name="distributors">Distributors</string>
