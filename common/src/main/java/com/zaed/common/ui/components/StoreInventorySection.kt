@@ -54,6 +54,7 @@ fun StoreInventorySection(
         InventoryList(
             isLoading = isLoading,
             inventories = inventories,
+
             onInventoryClicked = onInventoryClicked
         )
     }
