@@ -1,4 +1,4 @@
-package com.zaed.manager.ui.stores.components
+package com.zaed.manager.ui.storesoverview.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues

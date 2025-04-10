@@ -11,9 +11,9 @@ sealed interface Route {
     @Serializable
     data object SignUpRoute : Route
     @Serializable
-    data object StoresRoute : Route
-    @Serializable
     data object WholeSaleCustomers : Route
+    @Serializable
+    data object StoresOverviewRoute : Route
     @Serializable
     data class StoresSalesRoute(val startDate: String?=null, val endDate: String?=null) : Route
     @Serializable
