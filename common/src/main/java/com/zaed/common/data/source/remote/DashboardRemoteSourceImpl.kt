@@ -353,6 +353,7 @@ class DashboardRemoteSourceImpl(
                 val sales = wholesalesCollection.where(
                     Filter.and(
                         Filter.equalTo("distributorId", user.id),
+                        Filter.equalTo("productType", ProductType.PRODUCT),
                         Filter.equalTo("deleted", false),
                         Filter.greaterThanOrEqualTo("createdAt", dateFilter.startDate),
                         Filter.lessThan("createdAt", dateFilter.endDate),
@@ -409,6 +410,7 @@ class DashboardRemoteSourceImpl(
                     Filter.and(
                         Filter.equalTo("distributorId", user.id),
                         Filter.equalTo("deleted", false),
+                        Filter.equalTo("productType", ProductType.GOLD),
                         Filter.greaterThanOrEqualTo("createdAt", dateFilter.startDate),
                         Filter.lessThan("createdAt", dateFilter.endDate),
                     )
@@ -463,6 +465,7 @@ class DashboardRemoteSourceImpl(
                     Filter.and(
                         Filter.equalTo("distributorId", user.id),
                         Filter.equalTo("deleted", false),
+                        Filter.equalTo("productType", ProductType.SILVER),
                         Filter.greaterThanOrEqualTo("createdAt", dateFilter.startDate),
                         Filter.lessThan("createdAt", dateFilter.endDate),
                     )
@@ -517,6 +520,7 @@ class DashboardRemoteSourceImpl(
                     Filter.and(
                         Filter.equalTo("userId", user.id),
                         Filter.equalTo("deleted", false),
+                        Filter.equalTo("productType", ProductType.INGOT),
                         Filter.greaterThanOrEqualTo("createdAt", dateFilter.startDate),
                         Filter.lessThan("createdAt", dateFilter.endDate),
                     )

@@ -1,5 +1,6 @@
 package com.zaed.manager.wholesaleoverview
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Replay
@@ -23,6 +25,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -30,11 +33,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.ui.addpurchase.ProductType
+import com.zaed.common.ui.components.FadedVerticalDivider
 import com.zaed.common.ui.util.toMoneyFormat
 import com.zaed.manager.R
 import com.zaed.manager.ui.home.DashboardUiAction
 import com.zaed.manager.ui.home.component.DateFilterDialog
-import com.zaed.manager.ui.home.component.EarningsAndLossesHeader
+import com.zaed.manager.ui.home.component.IncomeExpenseCardSection
 import com.zaed.manager.ui.home.component.getDateFilterDisplayText
 import com.zaed.manager.ui.theme.ManagerTheme
 import org.koin.androidx.compose.koinViewModel
@@ -49,6 +53,7 @@ fun WholesaleOverviewScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
+        Log.d("WholesaleOverviewScreen", "LaunchedEffect: $type")
         viewModel.init(type)
     }
     WholesaleOverviewScreenContent(
@@ -130,10 +135,27 @@ fun WholesaleOverviewScreenContent(
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            EarningsAndLossesHeader(
-                totalEarnings = uiState.wholesaleSummary.sumOf { it.profit },
-                totalLosses = uiState.wholesaleSummary.sumOf { it.loss },
-            )
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(90.dp),
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    IncomeExpenseCardSection(title = stringResource(com.zaed.common.R.string.total_earning), amount = uiState.wholesaleSummary.sumOf { it.profit })
+                    FadedVerticalDivider(modifier = Modifier.padding(horizontal = 40.dp))
+                    IncomeExpenseCardSection(
+                        title = stringResource(com.zaed.common.R.string.total_sales),
+                        amount = uiState.wholesaleSummary.sumOf { it.sales },
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -189,19 +211,6 @@ fun WholesaleOverviewScreenContent(
                             )
                             Text(
                                 text = summary.sales.toMoneyFormat(2),
-                                style = MaterialTheme.typography.titleLarge,
-                                modifier = Modifier.weight(1f),
-                            )
-                        }
-                        HorizontalDivider()
-                        Row {
-                            Text(
-                                text = stringResource(R.string.losses),
-                                style = MaterialTheme.typography.titleLarge,
-                                modifier = Modifier.weight(1f),
-                            )
-                            Text(
-                                text = summary.loss.toMoneyFormat(2),
                                 style = MaterialTheme.typography.titleLarge,
                                 modifier = Modifier.weight(1f),
                             )

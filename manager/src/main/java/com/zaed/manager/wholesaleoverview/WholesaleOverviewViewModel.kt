@@ -28,12 +28,14 @@ class WholesaleOverviewViewModel(
     val uiState: StateFlow<WholesaleOverviewUiState> = _uiState.asStateFlow()
 
     fun init(type: ProductType) {
+        _uiState.update { it.copy(type = type) }
         loadSummary(type)
 
         getCurrentUser()
     }
 
     private fun loadSummary(type: ProductType) {
+        Log.d("WholesaleOverviewViewModel", "loadSummary: $type")
         when (type) {
             ProductType.GOLD -> getGoldSalesData()
             ProductType.SILVER -> getSilverSaleData()
@@ -67,6 +69,7 @@ class WholesaleOverviewViewModel(
     }
 
     private fun getSilverSaleData() {
+        Log.d("WholesaleOverviewViewModel", "getSilverSaleData: ")
         viewModelScope.launch(Dispatchers.IO) {
             repository.getSilverDistributorSummary(
                 dateFilter = uiState.value.dateFilter
@@ -79,6 +82,7 @@ class WholesaleOverviewViewModel(
     }
 
     private fun getGoldSalesData() {
+        Log.d("WholesaleOverviewViewModel", "getGoldSalesData: ")
         viewModelScope.launch(Dispatchers.IO) {
             repository.getGoldDistributorSummary(
                 dateFilter = uiState.value.dateFilter
