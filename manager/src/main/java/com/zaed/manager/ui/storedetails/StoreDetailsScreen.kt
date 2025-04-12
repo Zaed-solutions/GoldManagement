@@ -49,7 +49,7 @@ import com.zaed.common.ui.components.MoreDropdownItem
 import com.zaed.common.ui.components.StoreInventorySection
 import com.zaed.common.ui.util.DateFormat
 import com.zaed.manager.ui.storedetails.components.SaveInventoryBottomSheet
-import com.zaed.manager.ui.stores.components.SaveStoreBottomSheet
+import com.zaed.manager.ui.storesoverview.components.SaveStoreBottomSheet
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 

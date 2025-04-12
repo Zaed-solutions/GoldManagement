@@ -44,7 +44,8 @@ fun DashboardScreen(
     navigateToStoresSales: (String, String) -> Unit,
     navigateToDistributorsSales: (String, String) -> Unit,
     navigateToWholesaleOverview : (ProductType) -> Unit,
-    onShowNavDrawer: () -> Unit
+    onShowNavDrawer: () -> Unit,
+    onNavigateToStoresOverview: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -76,6 +77,12 @@ fun DashboardScreen(
 
                     }
                 }
+                is DashboardUiAction.OnStoresClicked -> {
+                    onNavigateToStoresOverview()
+                }
+                is DashboardUiAction.OnGoldSalesClicked -> { /*todo*/}
+                is DashboardUiAction.OnSilverSalesClicked -> { /*todo*/}
+                is DashboardUiAction.OnIngotTransactionsClicked -> { /*todo*/}
 
                 is DashboardUiAction.OnStoresClicked -> { /*todo*/
                 }

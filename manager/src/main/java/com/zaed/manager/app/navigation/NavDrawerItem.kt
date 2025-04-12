@@ -15,20 +15,6 @@ enum class NavDrawerItem(
         icon = R.drawable.ic_order,
         route = Route.DashboardRoute
     ),
-    STORES_MAIN(
-        title = R.string.stores,
-        icon = R.drawable.ic_store,
-        subItems = listOf(
-            SubNavDrawerItem(
-                title = R.string.stores,
-                route = Route.StoresRoute
-            ),
-            SubNavDrawerItem(
-                title = R.string.stores_sales,
-                route = Route.StoresSalesRoute()
-            )
-        )
-    ),
     WHOLESALE_MAIN(
         title = R.string.wholesale,
         icon = R.drawable.ic_users,
