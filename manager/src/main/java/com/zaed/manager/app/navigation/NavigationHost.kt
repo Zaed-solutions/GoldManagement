@@ -45,11 +45,11 @@ fun NavigationHost(
     navController: NavHostController,
     onShowNavDrawer: () -> Unit
 ) {
-    NavHost (
-        modifier= modifier,
+    NavHost(
+        modifier = modifier,
         navController = navController,
-        startDestination =startDestination,
-    ){
+        startDestination = startDestination,
+    ) {
         composable<Route.LoginRoute> {
             LoginScreen(
                 role = UserRole.MANAGER,
@@ -60,8 +60,8 @@ fun NavigationHost(
                     navController.navigate(Route.SignUpRoute)
                 },
                 onNavigateToHomeScreen = {
-                    navController.navigate(Route.UserManagementRoute){
-                        popUpTo(Route.LoginRoute){
+                    navController.navigate(Route.UserManagementRoute) {
+                        popUpTo(Route.LoginRoute) {
                             inclusive = true
                         }
                     }
@@ -95,15 +95,13 @@ fun NavigationHost(
         composable<Route.DashboardRoute> {
             DashboardScreen(
                 onShowNavDrawer = onShowNavDrawer,
-                navigateToStoresSales = { startDate, endDate ->
-                    navController.navigate(Route.StoresSalesRoute(startDate, endDate))
-                },
-                navigateToDistributorsSales = {startDate, endDate ->
-                    navController.navigate(Route.DistributorsSalesRoute(startDate, endDate))
-                },
+
                 navigateToWholesaleOverview = {
                     navController.navigate(Route.WholesaleOverviewRoute(it))
-                }
+                },
+                onNavigateToStoresOverview = {
+                    navController.navigate(Route.StoresOverviewRoute)
+                },
             )
         }
         composable<Route.WholesaleOverviewRoute> {
@@ -113,10 +111,8 @@ fun NavigationHost(
                 navigateToDistributorDetails = { distributorId ->
                     navController.navigate(Route.DistributorDetailsRoute(distributorId))
                 },
-                onNavigateToStoresOverview = {
-                    navController.navigate(Route.StoresOverviewRoute)
-                }
-            )
+
+                )
         }
         composable<Route.AddCustomers> {
             val customerId = it.toRoute<Route.AddCustomers>().customerId
@@ -129,7 +125,7 @@ fun NavigationHost(
         }
         composable<Route.AddPurchaseRoute> {
             val purchaseId = it.toRoute<Route.AddPurchaseRoute>().purchaseId
-            AddPurchaseScreen (
+            AddPurchaseScreen(
                 purchaseId = purchaseId,
                 onBackClicked = {
                     navController.popBackStack()
@@ -149,7 +145,9 @@ fun NavigationHost(
                 purchaseId = purchaseId,
                 onBackClicked = {
                     val previousDestination =
-                        navController.previousBackStackEntry?.destination?.route?.substringBefore("?")
+                        navController.previousBackStackEntry?.destination?.route?.substringBefore(
+                            "?"
+                        )
                     if (previousDestination == Route.AddPurchaseRoute::class.qualifiedName) {
                         navController.navigate(Route.TransactionsRoute)
                     } else {
@@ -229,8 +227,9 @@ fun NavigationHost(
                 }
             )
         }
-        composable<Route.DistributorDetailsRoute> {backstackEntry ->
-            val distributorId = backstackEntry.toRoute<Route.DistributorDetailsRoute>().distributorId
+        composable<Route.DistributorDetailsRoute> { backstackEntry ->
+            val distributorId =
+                backstackEntry.toRoute<Route.DistributorDetailsRoute>().distributorId
             DistributorDetailsScreen(
                 distributorId = distributorId,
                 onNavigateToProductSaleDetails = {
@@ -288,7 +287,7 @@ fun NavigationHost(
                 onShowNavDrawer = onShowNavDrawer
             )
         }
-        composable<Route.ProductSaleDetailsRoute> {navBackStackEntry ->
+        composable<Route.ProductSaleDetailsRoute> { navBackStackEntry ->
             val saleId = navBackStackEntry.toRoute<Route.ProductSaleDetailsRoute>().saleId
             ProductSaleDetailsScreen(
                 onBackClicked = {
@@ -304,12 +303,14 @@ fun NavigationHost(
                 isAdmin = true
             )
         }
-        composable<Route.GoldSaleDetailsRoute> {navBackStackEntry ->
+        composable<Route.GoldSaleDetailsRoute> { navBackStackEntry ->
             val saleId = navBackStackEntry.toRoute<Route.GoldSaleDetailsRoute>().saleId
             GoldSaleDetailsScreen(
                 onBackClicked = {
                     val previousDestination =
-                        navController.previousBackStackEntry?.destination?.route?.substringBefore("?")
+                        navController.previousBackStackEntry?.destination?.route?.substringBefore(
+                            "?"
+                        )
                     if (previousDestination == Route.AddGoldSaleRoute::class.qualifiedName) {
                         navController.navigate(Route.AddGoldSaleRoute())
                     } else {
@@ -326,7 +327,7 @@ fun NavigationHost(
                 isAdmin = true
             )
         }
-        composable<Route.StoreSaleDetailsRoute> {navBackStackEntry ->
+        composable<Route.StoreSaleDetailsRoute> { navBackStackEntry ->
             val saleId = navBackStackEntry.toRoute<Route.StoreSaleDetailsRoute>().saleId
             SaleDetailsScreen(
                 onBack = {
@@ -342,7 +343,7 @@ fun NavigationHost(
         composable<Route.AddGoldSaleRoute> {
             val saleId = it.toRoute<Route.AddGoldSaleRoute>().saleId
             AddGoldSaleScreen(
-                onBackClicked = {navController.popBackStack()},
+                onBackClicked = { navController.popBackStack() },
                 saleId = saleId,
                 onOpenDrawer = onShowNavDrawer,
                 onNavigateToGoldSaleDetails = {

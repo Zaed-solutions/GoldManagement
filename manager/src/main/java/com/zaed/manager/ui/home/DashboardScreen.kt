@@ -26,12 +26,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
 import com.zaed.common.ui.addpurchase.ProductType
-import com.zaed.common.ui.util.toDateString
 import com.zaed.manager.ui.home.component.DateFilterDialog
 import com.zaed.manager.ui.home.component.EarningsAndLossesHeader
 import com.zaed.manager.ui.home.component.HomeSummary
 import com.zaed.manager.ui.home.component.HomeSummaryList
-import com.zaed.manager.ui.home.component.ReportType
 import com.zaed.manager.ui.home.component.getDateFilterDisplayText
 import com.zaed.manager.ui.theme.ManagerTheme
 import org.koin.androidx.compose.koinViewModel
@@ -41,8 +39,6 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun DashboardScreen(
     viewModel: DashboardViewModel = koinViewModel(),
-    navigateToStoresSales: (String, String) -> Unit,
-    navigateToDistributorsSales: (String, String) -> Unit,
     navigateToWholesaleOverview : (ProductType) -> Unit,
     onShowNavDrawer: () -> Unit,
     onNavigateToStoresOverview: () -> Unit
@@ -57,47 +53,21 @@ fun DashboardScreen(
                     onShowNavDrawer()
                 }
 
-                is DashboardUiAction.NavigateToDetail -> {
-                    when (action.reportType) {
-                        ReportType.STORE_SALES -> {
-                            navigateToStoresSales(
-                                uiState.dateFilter.startDate.toDateString(),
-                                uiState.dateFilter.endDate.toDateString()
-                            )
-                        }
-
-                        ReportType.WHOLESALE_SALES -> {
-                            navigateToDistributorsSales(
-                                uiState.dateFilter.startDate.toDateString(),
-                                uiState.dateFilter.endDate.toDateString()
-                            )
-                        }
-
-                        else -> {}
-
-                    }
-                }
                 is DashboardUiAction.OnStoresClicked -> {
                     onNavigateToStoresOverview()
                 }
-                is DashboardUiAction.OnGoldSalesClicked -> { /*todo*/}
-                is DashboardUiAction.OnSilverSalesClicked -> { /*todo*/}
-                is DashboardUiAction.OnIngotTransactionsClicked -> { /*todo*/}
 
-                is DashboardUiAction.OnStoresClicked -> { /*todo*/
-                }
-
-                is DashboardUiAction.OnGoldSalesClicked -> { /*todo*/
+                is DashboardUiAction.OnGoldSalesClicked -> {
                     navigateToWholesaleOverview(ProductType.GOLD)
 
                 }
 
-                is DashboardUiAction.OnSilverSalesClicked -> { /*todo*/
+                is DashboardUiAction.OnSilverSalesClicked -> {
                     navigateToWholesaleOverview(ProductType.SILVER)
 
                 }
 
-                is DashboardUiAction.OnIngotTransactionsClicked -> { /*todo*/
+                is DashboardUiAction.OnIngotTransactionsClicked -> {
                     navigateToWholesaleOverview(ProductType.INGOT)
                 }
 
