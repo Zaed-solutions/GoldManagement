@@ -123,6 +123,7 @@ private fun AddSilverSaleScreenContent(
                         //add products
                         SelectSilverContent(
                             sale = state.sale,
+                            availableCategories = state.categories,
                             onAddSilver = {
                                 onAction(AddSilverSaleUiAction.OnAddProduct(it))
                             },

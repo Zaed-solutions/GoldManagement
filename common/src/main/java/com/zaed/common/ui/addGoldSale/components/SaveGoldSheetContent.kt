@@ -54,6 +54,7 @@ fun SaveGoldSheetContent(
             errorMessage = R.string.quantity_cannot_be_zero,
             label = stringResource(R.string.grams),
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            supportingText = availableGrams?.let { stringResource(R.string.available_stock_template, it) }?:""
         )
         NumberInputTextField(
             modifier = Modifier.fillMaxWidth(),

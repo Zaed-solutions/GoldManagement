@@ -393,4 +393,12 @@
     <string name="outstanding_bills">Lfawatir li mazal</string>
     <string name="k24">Dahab 24 qirat</string>
     <string name="k18">Dahab 18 qirat</string>
+    <string name="silver_sales">Ventes d\'Argent</string>
+    <string name="stores_overview">Aperçu des Magasins</string>
+    <string name="total_sales">Ventes Totales</string>
+    <string name="profit">Profit</string>
+    <string name="gold_distributors">Distributeurs d\'Or</string>
+    <string name="product_distributors">Distributeurs de Produits</string>
+    <string name="silver_distributors">Distributeurs d\'Argent</string>
+    <string name="ingot_distributors">Distributeurs de Lingots</string>
 </resources>

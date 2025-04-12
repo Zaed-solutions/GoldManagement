@@ -147,7 +147,8 @@ fun ProductFieldsContent(
             shape = RoundedCornerShape(4.dp),
             withBorder = true,
             isError =  product1.grams > availableGrams,
-            errorMessage = R.string.quantity_cannot_be_zero
+            errorMessage = R.string.quantity_cannot_be_zero,
+            supportingText = availableGrams?.let { stringResource(R.string.available_stock_template, it) }?:""
         )
         //gram price
         NumberInputTextField(

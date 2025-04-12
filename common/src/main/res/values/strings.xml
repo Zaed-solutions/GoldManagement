@@ -100,9 +100,7 @@
     <string name="discount">Discount</string>
     <string name="save">Save</string>
     <string name="select_products">Select Products</string>
-    <string name="losses">Losses</string>
     <string name="sale">Sale</string>
-    <string name="sales">Sales</string>
     <string name="customer_information">Customer Information</string>
     <string name="sale_summary">Sale Summary</string>
     <string name="phone_number">Phone Number</string>
@@ -393,8 +391,15 @@
     <string name="add_product_sale">Add Product Sale</string>
     <string name="outstanding_bills">Pending Bills</string>
     <string name="k24">24K</string>
+    <string name="sales">Sales</string>
+    <string name="losses">Losses</string>
     <string name="k18">18K</string>
-    <string name="total_sales">Total Sales</string>
     <string name="silver_sales">Silver Sales</string>
     <string name="stores_overview">Stores Overview</string>
+    <string name="total_sales">Total Sales</string>
+    <string name="profit">Profit</string>
+    <string name="gold_distributors">Gold Distributors</string>
+    <string name="product_distributors">Product Distributors</string>
+    <string name="silver_distributors">Silver Distributors</string>
+    <string name="ingot_distributors">Ingot Distributors</string>
 </resources>

@@ -36,7 +36,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.ui.addpurchase.ProductType
 import com.zaed.common.ui.components.FadedVerticalDivider
 import com.zaed.common.ui.util.toMoneyFormat
-import com.zaed.manager.R
 import com.zaed.manager.ui.home.DashboardUiAction
 import com.zaed.manager.ui.home.component.DateFilterDialog
 import com.zaed.manager.ui.home.component.IncomeExpenseCardSection
@@ -137,10 +136,10 @@ fun WholesaleOverviewScreenContent(
             verticalArrangement = Arrangement.Top
         ) {
             val title = when(uiState.type){
-                ProductType.GOLD -> stringResource(R.string.gold_distributors)
-                ProductType.PRODUCT -> stringResource(R.string.product_distributors)
-                ProductType.SILVER -> stringResource(R.string.silver_distributors)
-                ProductType.INGOT -> stringResource(R.string.ingot_distributors)
+                ProductType.GOLD -> stringResource(com.zaed.common.R.string.gold_distributors)
+                ProductType.PRODUCT -> stringResource(com.zaed.common.R.string.product_distributors)
+                ProductType.SILVER -> stringResource(com.zaed.common.R.string.silver_distributors)
+                ProductType.INGOT -> stringResource(com.zaed.common.R.string.ingot_distributors)
             }
             Text(
                 text = title,
@@ -205,7 +204,7 @@ fun WholesaleOverviewScreenContent(
                         HorizontalDivider()
                         Row {
                             Text(
-                                text = stringResource(R.string.profit),
+                                text = stringResource(com.zaed.common.R.string.profit),
                                 style = MaterialTheme.typography.titleLarge,
                                 modifier = Modifier.weight(1f),
                             )
@@ -218,7 +217,7 @@ fun WholesaleOverviewScreenContent(
                         HorizontalDivider()
                         Row {
                             Text(
-                                text = stringResource(R.string.sales),
+                                text = stringResource(com.zaed.common.R.string.sales),
                                 style = MaterialTheme.typography.titleLarge,
                                 modifier = Modifier.weight(1f),
                             )
