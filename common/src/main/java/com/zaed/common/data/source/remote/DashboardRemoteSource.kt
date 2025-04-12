@@ -1,6 +1,7 @@
 package com.zaed.common.data.source.remote
 
 import com.zaed.common.data.model.dashboard.DateFilter
+import com.zaed.common.data.repository.WholesaleDistributorSummary
 
 interface DashboardRemoteSource {
     suspend fun getStoresProfits(dateFilter: DateFilter): Result<Double>
@@ -15,4 +16,8 @@ interface DashboardRemoteSource {
     suspend fun getGoldSales(dateFilter: DateFilter): Result<Double>
     suspend fun getSilverSales(dateFilter: DateFilter): Result<Double>
     suspend fun getIngotTransactions(dateFilter: DateFilter): Result<Double>
+    suspend fun getProductDistributorSummary(dateFilter: DateFilter): Result<List<WholesaleDistributorSummary>>
+    suspend fun getGoldDistributorSummary(dateFilter: DateFilter): Result<List<WholesaleDistributorSummary>>
+    suspend fun getSilverDistributorSummary(dateFilter: DateFilter): Result<List<WholesaleDistributorSummary>>
+    suspend fun getIngotDistributorSummary(dateFilter: DateFilter): Result<List<WholesaleDistributorSummary>>
 }

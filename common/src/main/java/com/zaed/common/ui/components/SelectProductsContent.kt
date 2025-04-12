@@ -171,6 +171,7 @@ fun SelectProductsContent(
                         SaveProductSheetContent(
                             isStoreSale = isStoreSale,
                             initialProduct = it,
+                            availableGrams = categories.firstOrNull { category -> category.id == it.categoryId }?.availableGrams ?: 0.0,
                             onSaveProduct = { newProduct ->
                                 onAddProduct(newProduct)
                                 enterProductSheetVisible = false

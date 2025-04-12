@@ -35,4 +35,20 @@ class DashboardRepositoryImpl(
         return dashboardRemoteSource.getIngotTransactions(dateFilter)
     }
 
+    override suspend fun getProductDistributorSummary(dateFilter: DateFilter): Result<List<WholesaleDistributorSummary>> {
+        return dashboardRemoteSource.getProductDistributorSummary(dateFilter)
+    }
+
+    override suspend fun getGoldDistributorSummary(dateFilter: DateFilter): Result<List<WholesaleDistributorSummary>> {
+        return dashboardRemoteSource.getGoldDistributorSummary(dateFilter)
+    }
+
+    override suspend fun getSilverDistributorSummary(dateFilter: DateFilter): Result<List<WholesaleDistributorSummary>> {
+        return dashboardRemoteSource.getSilverDistributorSummary(dateFilter)
+    }
+
+    override suspend fun getIngotDistributorSummary(dateFilter: DateFilter): Result<List<WholesaleDistributorSummary>> {
+        return dashboardRemoteSource.getIngotDistributorSummary(dateFilter)
+    }
+
 }

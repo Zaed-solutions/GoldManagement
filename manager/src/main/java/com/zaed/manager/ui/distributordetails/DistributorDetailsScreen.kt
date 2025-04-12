@@ -37,7 +37,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.common.R
 import com.zaed.common.data.model.authentication.UserPermission
 import com.zaed.common.data.model.inventory.Inventory
-import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.ui.addpurchase.ProductType
 import com.zaed.common.ui.components.DatedIngotTransactionsList
 import com.zaed.common.ui.components.DatedListWithFilter
@@ -290,6 +289,7 @@ fun DistributorScreenContent(
                 onDismiss = {
                     isSaveInventoryBottomSheetVisible = false
                 },
+                mainInventories = state.mainInventories,
                 initialInventory = selectedInventory,
                 inventories = state.mainInventories,
                 onSaveInventory = {

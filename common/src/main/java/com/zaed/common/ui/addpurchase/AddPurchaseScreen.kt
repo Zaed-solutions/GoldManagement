@@ -187,6 +187,7 @@ private fun AddPurchaseScreenContent(
                                             onAction(AddPurchaseUiAction.OnDeleteProduct(it))
                                         }
                                     },
+                                    availableCategories = listOf(),
                                     onNext = {
                                         scope.launch {
                                             pagerState.animateScrollToPage(pagerState.currentPage + 1)

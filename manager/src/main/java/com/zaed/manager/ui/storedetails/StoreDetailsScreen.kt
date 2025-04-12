@@ -321,6 +321,7 @@ fun StoreDetailsScreenContent(
                 },
                 initialInventory = selectedInventory,
                 inventories = state.mainInventories,
+                mainInventories = state.mainInventories,
                 onSaveInventory = {
                     isSaveInventoryBottomSheetVisible = false
                     onAction(StoreDetailsUiAction.OnSaveInventory(it))

@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.common.R
+import com.zaed.common.data.model.category.Category
 import com.zaed.common.data.model.sale.Product
 import com.zaed.common.data.model.sale.WholesaleTransaction
 import com.zaed.common.ui.addpurchase.ProductType
@@ -42,6 +43,7 @@ fun SelectSilverContent(
     onAddSilver: (Product) -> Unit,
     onRemoveSilver: (id: String) -> Unit,
     onNext: () -> Unit,
+    availableCategories : List<Category>,
     isPurchase: Boolean = false,
     ) {
     var isAddProductSheetVisible by remember { mutableStateOf(false) }
@@ -110,6 +112,7 @@ fun SelectSilverContent(
                 SaveSilverSheetContent(
                     isPurchase = isPurchase,
                     initialProduct = selectedProduct,
+                    availableGrams = availableCategories.sumOf { it.availableGrams },
                     onSaveProduct = {
                         onAddSilver(it)
                         isAddProductSheetVisible = false
@@ -125,6 +128,7 @@ fun SaveSilverSheetContent(
     modifier: Modifier = Modifier,
     isPurchase: Boolean = false,
     initialProduct: Product,
+    availableGrams: Double,
     onSaveProduct: (Product) -> Unit
 ) {
     var product by remember { mutableStateOf(initialProduct) }
@@ -159,6 +163,9 @@ fun SaveSilverSheetContent(
             },
             label = stringResource(R.string.grams),
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            isError = product.quantity>availableGrams,
+            errorMessage = R.string.quantity_cannot_be_zero,
+            supportingText = availableGrams?.let { stringResource(R.string.available_stock_template, it) }?:""
         )
         NumberInputTextField(
             modifier = Modifier.fillMaxWidth(),

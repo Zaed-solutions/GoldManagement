@@ -5,7 +5,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -37,6 +36,7 @@ fun SaveInventoryBottomSheet(
     modifier: Modifier = Modifier,
     isVisible: Boolean,
     onDismiss: () -> Unit,
+    mainInventories: List<Inventory>,
     initialInventory: Inventory,
     inventories: List<Inventory>,
     onSaveInventory: (Inventory) -> Unit,
@@ -95,12 +95,13 @@ fun SaveInventoryBottomSheet(
                             verticalArrangement = Arrangement.spacedBy(16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
+                            val availableQuantity = mainInventories.find { it.productName == selectedInventory.productName }?.quantity ?: 0.0
                             Text(
                                 text = stringResource(id = R.string.enter_added_quantity),
                                 style = MaterialTheme.typography.headlineMedium
                             )
                             InventoryItem(
-                                inventory = selectedInventory
+                                inventory = selectedInventory.copy(quantity = availableQuantity)
                             )
                             NumberInputTextField(
                                 modifier = Modifier.fillMaxWidth(),
@@ -122,6 +123,8 @@ fun SaveInventoryBottomSheet(
                                     .heightIn(min = 48.dp),
                                 onClick = {
                                     if (selectedInventory.quantity == 0.0) {
+                                        isQuantityError = true
+                                    }else if (selectedInventory.quantity > availableQuantity) {
                                         isQuantityError = true
                                     } else {
                                         onSaveInventory(selectedInventory)

@@ -220,7 +220,7 @@
     <string name="account_number">رقم الحساب</string>
     <string name="account_holder_name">اسم صاحب الحساب</string>
     <string name="quantity">الكمية</string>
-    <string name="quantity_cannot_be_zero">لا يمكن أن تكون الكمية صفرًا</string>
+    <string name="quantity_cannot_be_zero">لا يمكن أن تكون الكمية صفرًا او اكبر من الكمية المتاحة</string>
     <string name="select_inventory">اختر المخزون</string>
     <string name="enter_added_quantity">أدخل الكمية المضافة</string>
     <string name="distributors">الموزعون</string>
@@ -393,4 +393,12 @@
     <string name="outstanding_bills">الفواتير المعلقة</string>
     <string name="k24">عيار 24</string>
     <string name="k18">عيار 18</string>
+    <string name="silver_sales">مبيعات الفضة</string>
+    <string name="stores_overview">نظرة عامة على المتاجر</string>
+    <string name="total_sales">المبيعات الإجمالية</string>
+    <string name="profit">الربح</string>
+    <string name="gold_distributors">موزعو الذهب</string>
+    <string name="product_distributors">موزعو المنتجات</string>
+    <string name="silver_distributors">موزعو الفضة</string>
+    <string name="ingot_distributors">موزعو السبائك</string>
 </resources>

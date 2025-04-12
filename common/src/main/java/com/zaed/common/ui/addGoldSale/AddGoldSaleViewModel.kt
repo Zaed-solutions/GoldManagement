@@ -140,7 +140,11 @@ class AddGoldSaleViewModel(
                     _uiState.update { oldState ->
                         oldState.copy(currentUser = data)
                     }
-                    fetchInventories(data.id)
+                    if(data.role == UserRole.MANAGER){
+                        fetchInventories("")
+                    }else {
+                        fetchInventories(data.id)
+                    }
                 }.onFailure { e ->
                     Log.e(TAG, "fetchCurrentUser: ${e.message}", e)
                     e.printStackTrace()
