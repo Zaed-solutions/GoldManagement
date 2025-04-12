@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -50,6 +51,7 @@ fun WholesaleOverviewScreen(
     viewModel: WholesaleOverviewViewModel = koinViewModel(),
     type: ProductType = ProductType.PRODUCT,
     navigateToDistributorDetails: (String) -> Unit,
+    navigateBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
@@ -64,6 +66,7 @@ fun WholesaleOverviewScreen(
                 is DashboardUiAction.OnDistributorsSalesClicked ->{
                     navigateToDistributorDetails(action.distributorId)
                 }
+                is DashboardUiAction.OnBackClicked -> navigateBack()
                 else -> viewModel.handleAction(action)
             }
         }
@@ -93,6 +96,16 @@ fun WholesaleOverviewScreenContent(
                     ) {
                         Icon(
                             imageVector = Icons.Default.CalendarMonth,
+                            contentDescription = "Filter"
+                        )
+                    }
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { onAction(DashboardUiAction.OnBackClicked) }
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Default.ArrowBackIos,
                             contentDescription = "Filter"
                         )
                     }

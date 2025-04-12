@@ -23,4 +23,5 @@ sealed interface DashboardUiAction {
     data object OnIngotTransactionsClicked : DashboardUiAction
     data class OnDistributorsSalesClicked(val distributorId: String) : DashboardUiAction
     data object ReloadAllData : DashboardUiAction
+    data object OnBackClicked : DashboardUiAction
 }

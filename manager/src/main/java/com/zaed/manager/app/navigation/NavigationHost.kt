@@ -111,8 +111,10 @@ fun NavigationHost(
                 navigateToDistributorDetails = { distributorId ->
                     navController.navigate(Route.DistributorDetailsRoute(distributorId))
                 },
-
-                )
+                navigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
         composable<Route.AddCustomers> {
             val customerId = it.toRoute<Route.AddCustomers>().customerId
