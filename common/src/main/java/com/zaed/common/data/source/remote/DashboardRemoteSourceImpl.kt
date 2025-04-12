@@ -6,7 +6,9 @@ import com.google.firebase.firestore.AggregateField
 import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
+import com.zaed.common.data.model.authentication.UserPermission
 import com.zaed.common.data.model.dashboard.DateFilter
+import com.zaed.common.data.repository.WholesaleDistributorSummary
 import com.zaed.common.ui.addpurchase.ProductType
 import kotlinx.coroutines.tasks.await
 
@@ -20,6 +22,8 @@ class DashboardRemoteSourceImpl(
     private val storeLossesCollection = firestore.collection("store-losses")
     private val distributorLossesCollection = firestore.collection("distributor-losses")
     private val managerLossesCollection = firestore.collection("manager-losses")
+    private val USERS_COLLECTION = "users"
+    private val usersCollection = firestore.collection(USERS_COLLECTION)
     override suspend fun getStoresProfits(dateFilter: DateFilter): Result<Double> {
         try {
             Log.d("DashboardRemoteSourceImpl", "getStoresProfits: $dateFilter")
@@ -329,6 +333,223 @@ class DashboardRemoteSourceImpl(
 
             return Result.success((sum as? Double)?.toDouble() ?: 0.0)
 
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            e.printStackTrace()
+            return Result.failure(e)
+        }
+    }
+
+    override suspend fun getProductDistributorSummary(dateFilter: DateFilter): Result<List<WholesaleDistributorSummary>> {
+        try {
+            val productUsers = usersCollection.whereArrayContains(
+                "permissions",
+                UserPermission.SELL_PRODUCTS
+            ).get().await()
+            val data = mutableListOf<WholesaleDistributorSummary>()
+            productUsers.documents.forEach {
+                val user = it.toObject(com.zaed.common.data.model.authentication.User::class.java)
+                    ?: return@forEach
+                val sales = wholesalesCollection.where(
+                    Filter.and(
+                        Filter.equalTo("distributorId", user.id),
+                        Filter.equalTo("deleted", false),
+                        Filter.greaterThanOrEqualTo("createdAt", dateFilter.startDate),
+                        Filter.lessThan("createdAt", dateFilter.endDate),
+                    )
+                )
+                val losses = distributorLossesCollection.where(
+                    Filter.and(
+                        Filter.equalTo("userId", user.id),
+                        Filter.equalTo("deleted", false),
+                        Filter.greaterThanOrEqualTo("date", dateFilter.startDate),
+                        Filter.lessThan("date", dateFilter.endDate),
+                    )
+                )
+                val profit =
+                    sales.aggregate(AggregateField.sum("profit")).get(AggregateSource.SERVER)
+                        .await()
+                val totalSales =
+                    sales.aggregate(AggregateField.sum("totalAmount")).get(AggregateSource.SERVER)
+                        .await()
+                val loss = losses.aggregate(AggregateField.sum("value")).get(AggregateSource.SERVER)
+                    .await()
+
+                data.add(
+                    WholesaleDistributorSummary(
+                        profit = profit.get(AggregateField.sum("profit")) as? Double ?: 0.0,
+                        sales = totalSales.get(AggregateField.sum("totalAmount")) as? Double ?: 0.0,
+                        loss = loss.get(AggregateField.sum("value")) as? Double ?: 0.0,
+                        type = ProductType.PRODUCT,
+                        distributorName = user.fullName,
+                        distributorId = user.id
+
+                    )
+                )
+            }
+            return Result.success(data)
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            e.printStackTrace()
+            return Result.failure(e)
+        }
+    }
+
+    override suspend fun getGoldDistributorSummary(dateFilter: DateFilter): Result<List<WholesaleDistributorSummary>> {
+        try {
+            val productUsers = usersCollection.whereArrayContains(
+                "permissions",
+                UserPermission.SELL_GOLD
+            ).get().await()
+            val data = mutableListOf<WholesaleDistributorSummary>()
+            productUsers.documents.forEach {
+                val user = it.toObject(com.zaed.common.data.model.authentication.User::class.java)
+                    ?: return@forEach
+                val sales = wholesalesCollection.where(
+                    Filter.and(
+                        Filter.equalTo("distributorId", user.id),
+                        Filter.equalTo("deleted", false),
+                        Filter.greaterThanOrEqualTo("createdAt", dateFilter.startDate),
+                        Filter.lessThan("createdAt", dateFilter.endDate),
+                    )
+                )
+                val losses = distributorLossesCollection.where(
+                    Filter.and(
+                        Filter.equalTo("userId", user.id),
+                        Filter.equalTo("deleted", false),
+                        Filter.greaterThanOrEqualTo("date", dateFilter.startDate),
+                        Filter.lessThan("date", dateFilter.endDate),
+                    )
+                )
+                val profit =
+                    sales.aggregate(AggregateField.sum("profit")).get(AggregateSource.SERVER)
+                        .await()
+                val totalSales =
+                    sales.aggregate(AggregateField.sum("totalAmount")).get(AggregateSource.SERVER)
+                        .await()
+                val loss = losses.aggregate(AggregateField.sum("value")).get(AggregateSource.SERVER)
+                    .await()
+
+                data.add(
+                    WholesaleDistributorSummary(
+                        profit = profit.get(AggregateField.sum("profit")) as? Double ?: 0.0,
+                        sales = totalSales.get(AggregateField.sum("totalAmount")) as? Double ?: 0.0,
+                        loss = loss.get(AggregateField.sum("value")) as? Double ?: 0.0,
+                        type = ProductType.PRODUCT,
+                        distributorName = user.fullName,
+                        distributorId = user.id
+                    )
+                )
+            }
+            return Result.success(data)
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            e.printStackTrace()
+            return Result.failure(e)
+        }
+    }
+
+    override suspend fun getSilverDistributorSummary(dateFilter: DateFilter): Result<List<WholesaleDistributorSummary>> {
+        try {
+            val productUsers = usersCollection.whereArrayContains(
+                "permissions",
+                UserPermission.SELL_SILVER
+            ).get().await()
+            val data = mutableListOf<WholesaleDistributorSummary>()
+            productUsers.documents.forEach {
+                val user = it.toObject(com.zaed.common.data.model.authentication.User::class.java)
+                    ?: return@forEach
+                val sales = wholesalesCollection.where(
+                    Filter.and(
+                        Filter.equalTo("distributorId", user.id),
+                        Filter.equalTo("deleted", false),
+                        Filter.greaterThanOrEqualTo("createdAt", dateFilter.startDate),
+                        Filter.lessThan("createdAt", dateFilter.endDate),
+                    )
+                )
+                val losses = distributorLossesCollection.where(
+                    Filter.and(
+                        Filter.equalTo("userId", user.id),
+                        Filter.equalTo("deleted", false),
+                        Filter.greaterThanOrEqualTo("date", dateFilter.startDate),
+                        Filter.lessThan("date", dateFilter.endDate),
+                    )
+                )
+                val profit =
+                    sales.aggregate(AggregateField.sum("profit")).get(AggregateSource.SERVER)
+                        .await()
+                val totalSales =
+                    sales.aggregate(AggregateField.sum("totalAmount")).get(AggregateSource.SERVER)
+                        .await()
+                val loss = losses.aggregate(AggregateField.sum("value")).get(AggregateSource.SERVER)
+                    .await()
+
+                data.add(
+                    WholesaleDistributorSummary(
+                        profit = profit.get(AggregateField.sum("profit")) as? Double ?: 0.0,
+                        sales = totalSales.get(AggregateField.sum("totalAmount")) as? Double ?: 0.0,
+                        loss = loss.get(AggregateField.sum("value")) as? Double ?: 0.0,
+                        type = ProductType.PRODUCT,
+                        distributorName = user.fullName,
+                        distributorId = user.id
+                    )
+                )
+            }
+            return Result.success(data)
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            e.printStackTrace()
+            return Result.failure(e)
+        }
+    }
+
+    override suspend fun getIngotDistributorSummary(dateFilter: DateFilter): Result<List<WholesaleDistributorSummary>> {
+        try {
+            val productUsers = usersCollection.whereArrayContains(
+                "permissions",
+                UserPermission.SELL_INGOTS
+            ).get().await()
+            val data = mutableListOf<WholesaleDistributorSummary>()
+            productUsers.documents.forEach {
+                val user = it.toObject(com.zaed.common.data.model.authentication.User::class.java)
+                    ?: return@forEach
+                val sales = wholesalesCollection.where(
+                    Filter.and(
+                        Filter.equalTo("userId", user.id),
+                        Filter.equalTo("deleted", false),
+                        Filter.greaterThanOrEqualTo("createdAt", dateFilter.startDate),
+                        Filter.lessThan("createdAt", dateFilter.endDate),
+                    )
+                )
+                val losses = distributorLossesCollection.where(
+                    Filter.and(
+                        Filter.equalTo("distributorId", user.id),
+                        Filter.equalTo("deleted", false),
+                        Filter.greaterThanOrEqualTo("date", dateFilter.startDate),
+                        Filter.lessThan("date", dateFilter.endDate),
+                    )
+                )
+                val profit =
+                    sales.aggregate(AggregateField.sum("profit")).get(AggregateSource.SERVER)
+                        .await()
+                val totalSales =
+                    sales.aggregate(AggregateField.sum("totalAmount")).get(AggregateSource.SERVER)
+                        .await()
+                val loss = losses.aggregate(AggregateField.sum("value")).get(AggregateSource.SERVER)
+                    .await()
+
+                data.add(
+                    WholesaleDistributorSummary(
+                        profit = profit.get(AggregateField.sum("profit")) as? Double ?: 0.0,
+                        sales = totalSales.get(AggregateField.sum("totalAmount")) as? Double ?: 0.0,
+                        loss = loss.get(AggregateField.sum("value")) as? Double ?: 0.0,
+                        type = ProductType.PRODUCT,
+                        distributorName = user.fullName,
+                        distributorId = user.id
+                    )
+                )
+            }
+            return Result.success(data)
         } catch (e: Exception) {
             crashlytics.recordException(e)
             e.printStackTrace()

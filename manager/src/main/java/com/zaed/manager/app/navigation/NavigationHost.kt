@@ -36,6 +36,7 @@ import com.zaed.manager.ui.stores.StoresScreen
 import com.zaed.manager.ui.storessales.StoresSalesScreen
 import com.zaed.manager.ui.transactions.TransactionsScreen
 import com.zaed.manager.ui.usermanagement.UserManagementScreen
+import com.zaed.manager.wholesaleoverview.WholesaleOverviewScreen
 
 @Composable
 fun NavigationHost(
@@ -99,6 +100,18 @@ fun NavigationHost(
                 },
                 navigateToDistributorsSales = {startDate, endDate ->
                     navController.navigate(Route.DistributorsSalesRoute(startDate, endDate))
+                },
+                navigateToWholesaleOverview = {
+                    navController.navigate(Route.WholesaleOverviewRoute(it))
+                }
+            )
+        }
+        composable<Route.WholesaleOverviewRoute> {
+            val type = it.toRoute<Route.WholesaleOverviewRoute>().type
+            WholesaleOverviewScreen(
+                type = type,
+                navigateToDistributorDetails = { distributorId ->
+                    navController.navigate(Route.DistributorDetailsRoute(distributorId))
                 }
             )
         }

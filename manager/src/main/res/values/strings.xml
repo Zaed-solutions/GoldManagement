@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name" translatable="false">Evara-Manager</string>
     <string name="total_sales">Total Sales</string>
+    <string name="profit">Profit</string>
+    <string name="sales">Sales</string>
+    <string name="losses">Losses</string>
+    <string name="gold_distributors">Gold Distributors</string>
+    <string name="product_distributors">Product Distributors</string>
+    <string name="silver_distributors">Silver Distributors</string>
+    <string name="ingot_distributors">Ingot Distributors</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.zaed.manager.app.navigation
 
 import com.zaed.common.data.model.customer.CustomerType
+import com.zaed.common.ui.addpurchase.ProductType
 import kotlinx.serialization.Serializable
 
 sealed interface Route {
@@ -22,6 +23,8 @@ sealed interface Route {
     data class PurchaseDetailsRoute(val purchaseId: String) : Route
     @Serializable
     data object DistributorsRoute : Route
+    @Serializable
+    data class WholesaleOverviewRoute(val type: ProductType) : Route
     @Serializable
     data class DistributorsSalesRoute(val startDate: String?=null, val endDate: String?=null, val isOutStanding : Boolean = false): Route
     @Serializable

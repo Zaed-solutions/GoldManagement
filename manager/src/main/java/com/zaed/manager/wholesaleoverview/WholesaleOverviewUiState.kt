@@ -1,0 +1,41 @@
+package com.zaed.manager.wholesaleoverview
+
+import com.zaed.common.data.model.authentication.User
+import com.zaed.common.data.model.dashboard.DateFilter
+import com.zaed.common.data.repository.WholesaleDistributorSummary
+import com.zaed.common.ui.addpurchase.ProductType
+
+data class WholesaleOverviewUiState(
+    val currentUser: User = User(),
+    val storesSales: Double = 0.0,
+    val storesSalesLoading: Boolean = false,
+    val storesProfit: Double = 0.0,
+    val storesProfitLoading: Boolean = false,
+    val storesLoss: Double = 0.0,
+    val storesLossLoading: Boolean = false,
+    val wholesaleSales: Double = 0.0,
+    val wholesaleSalesLoading: Boolean = false,
+    val wholesaleProfit: Double = 0.0,
+    val wholesaleProfitLoading: Boolean = false,
+    val wholesaleLoss: Double = 0.0,
+    val wholesaleLossLoading: Boolean = false,
+    val managerSales: Double = 0.0,
+    val managerSalesLoading: Boolean = false,
+    val managerProfit: Double = 0.0,
+    val managerProfitLoading: Boolean = false,
+    val managerLoss: Double = 0.0,
+    val managerLossLoading: Boolean = false,
+    val goldSales: Double = 0.0,
+    val silverSales: Double = 0.0,
+    val ingotTransactions: Double = 0.0,
+    val dateFilter: DateFilter = DateFilter(),
+    val isLoading: Boolean = false,
+    val error: String? = null,
+    val wholesaleSummary :List<WholesaleDistributorSummary> = emptyList(),
+    val type : ProductType = ProductType.GOLD
+){
+    val totalProfit
+    get() = storesProfit + wholesaleProfit + managerProfit
+    val totalLoss
+    get() = storesLoss + wholesaleLoss + managerLoss
+}
