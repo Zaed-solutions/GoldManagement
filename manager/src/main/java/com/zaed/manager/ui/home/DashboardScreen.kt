@@ -44,7 +44,8 @@ fun DashboardScreen(
     viewModel: DashboardViewModel = koinViewModel(),
     navigateToStoresSales: (String, String) -> Unit,
     navigateToDistributorsSales: (String, String) -> Unit,
-    onShowNavDrawer: () -> Unit
+    onShowNavDrawer: () -> Unit,
+    onNavigateToStoresOverview: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -65,7 +66,9 @@ fun DashboardScreen(
 
                     }
                 }
-                is DashboardUiAction.OnStoresClicked -> { /*todo*/}
+                is DashboardUiAction.OnStoresClicked -> {
+                    onNavigateToStoresOverview()
+                }
                 is DashboardUiAction.OnGoldSalesClicked -> { /*todo*/}
                 is DashboardUiAction.OnSilverSalesClicked -> { /*todo*/}
                 is DashboardUiAction.OnIngotTransactionsClicked -> { /*todo*/}

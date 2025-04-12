@@ -32,7 +32,7 @@ import com.zaed.manager.ui.home.DashboardScreen
 import com.zaed.manager.ui.losses.LossesScreen
 import com.zaed.manager.ui.manufacturerorders.ManufacturerOrdersScreen
 import com.zaed.manager.ui.storedetails.StoreDetailsScreen
-import com.zaed.manager.ui.stores.StoresScreen
+import com.zaed.manager.ui.storesoverview.StoresOverviewScreen
 import com.zaed.manager.ui.storessales.StoresSalesScreen
 import com.zaed.manager.ui.transactions.TransactionsScreen
 import com.zaed.manager.ui.usermanagement.UserManagementScreen
@@ -99,6 +99,9 @@ fun NavigationHost(
                 },
                 navigateToDistributorsSales = {startDate, endDate ->
                     navController.navigate(Route.DistributorsSalesRoute(startDate, endDate))
+                },
+                onNavigateToStoresOverview = {
+                    navController.navigate(Route.StoresOverviewRoute)
                 }
             )
         }
@@ -191,14 +194,6 @@ fun NavigationHost(
         composable<Route.UserManagementRoute> {
             UserManagementScreen(
                 onShowNavDrawer = onShowNavDrawer
-            )
-        }
-        composable<Route.StoresRoute> {
-            StoresScreen(
-                onShowNavDrawer = onShowNavDrawer,
-                onNavigateToStoreDetails = {
-                    navController.navigate(Route.StoreDetailsRoute(it))
-                }
             )
         }
         composable<Route.StoreDetailsRoute> { backstackEntry ->
@@ -412,6 +407,19 @@ fun NavigationHost(
         composable<Route.CategoriesRoute> {
             CategoriesScreen(
                 onShowNavDrawer = onShowNavDrawer
+            )
+        }
+        composable<Route.StoresOverviewRoute> {
+            StoresOverviewScreen(
+                onNavigateToSaleDetails = {
+                    navController.navigate(Route.StoreSaleDetailsRoute(it))
+                },
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToStoreDetails = {
+                    navController.navigate(Route.StoreDetailsRoute(it))
+                }
             )
         }
     }

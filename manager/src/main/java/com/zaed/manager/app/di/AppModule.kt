@@ -10,6 +10,7 @@ import com.zaed.manager.ui.manufacturerorders.ManufacturerOrdersViewModel
 import com.zaed.common.ui.salescheques.SalesChequesScreenViewModel
 import com.zaed.manager.ui.storedetails.StoreDetailsViewModel
 import com.zaed.manager.ui.stores.StoresViewModel
+import com.zaed.manager.ui.storesoverview.StoresOverviewViewModel
 import com.zaed.manager.ui.storessales.StoresSalesViewModel
 import com.zaed.manager.ui.transactions.TransactionsViewModel
 import com.zaed.manager.ui.usermanagement.UserManagementViewModel
@@ -29,4 +30,5 @@ val appModule = module {
     viewModelOf(::TransactionsViewModel)
     viewModelOf(::DashboardViewModel)
     viewModelOf(::CategoriesViewModel)
+    viewModelOf(::StoresOverviewViewModel)
 }
